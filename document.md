@@ -166,7 +166,7 @@ where the arguments are
 * `bsf :: Basis` is the basis of the final state ;
 * `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same quantum numbers, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0` ; 
 * `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0`. 
-* `cstr_vec :: Vector{Vector{Integer}}` records the $c$ and $c^\dagger$ string of each term. A term with $l$ operators $c^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl})}_{o_{tl}}$ correspond to a length-$2l$ vector $(p_{t1},o_{t1},p_{t2},o_{t2},\dots p_{tl},o_{tl})$. Note that each element can have different length. Also note that this format bears a certain similarity with the `OpSum` in `ITensors` ; 
+* `cstr_vec :: Vector{Vector{Integer}}` records the $c$ and $c^\dagger$ string of each term. A term with $l$ operators $c^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl})}_{o_{tl}}$ correspond to a length-$`2l`$ vector $(p_{t1},o_{t1},p_{t2},o_{t2},\dots p_{tl},o_{tl})$. Note that each element can have different length. Also note that this format bears a certain similarity with the `OpSum` in `ITensors` ; 
 * `fac :: Vector{ComplexF64}` corresponds to the factor $U_t$ in each term.
 
 For example, the Hamiltonian for the fuzzy sphere Ising model
