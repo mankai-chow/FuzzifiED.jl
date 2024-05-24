@@ -86,7 +86,7 @@ The quantum numbers can also be imported from the `Sites` objects in `ITensors`.
 ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, qn_s :: QN)
 ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, cf_ref :: Vector{Int64})
 ```
-The first argument is a `Sites` object, where the modulus-$\pm 1$ quantum numbers will be taken out, and QNs with other modulus will be discarded automatically. Also note that only `Fermion` site type is supported. The second argument specifies the the quantum number of the selected configuration, it can be either explicitly a `QN` object, or a reference configuration composed of `0` and `1` in `ITensors` format. 
+The first argument is a `Sites` object, where the modulus-$\pm 1$ quantum numbers will be taken out, and QNs with other modulus will be discarded automatically. Also note that only `Fermion` site type is supported, and the quantum numbers of the `0` state must be all zero. The second argument specifies the the quantum number of the selected configuration, it can be either explicitly a `QN` object, or a reference configuration composed of `0` and `1` in `ITensors` format. Note that this will subject to the limitation in ITensors that the number of conserved quantities must be less than 4. 
 
 In the example of Ising model
 ```julia
@@ -192,15 +192,15 @@ $$\Phi=\sum_{t=1}^{N_t}U_tc^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_
 
 where $c^{(0)}=c$ and $c^{(1)}=c^\dagger$. Here the operator string sum is recorded together with the basis of the initial state and the basis of the final state
 ```julia
-Operator(bsd :: Basis, bsf :: Basis, red_q :: Int64, sym_q :: Int64, cstr_vec :: Vector{Vector{Int64}}, fac :: Vector{ComplexF64}) :
+Operator(bsd :: Basis, bsf :: Basis, cstr_vec :: Vector{Vector{Int64}}, fac :: Vector{ComplexF64} ; red_q :: Int64 = 0, sym_q :: Int64 = 0) :
 ```
 where the arguments are 
 * `bsd :: Basis` is the basis of the initial state ;
 * `bsf :: Basis` is the basis of the final state ;
-* `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same quantum numbers, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0` ; 
-* `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0`. 
-* `cstr_vec :: Vector{Vector{Integer}}` records the $c$ and $c^\dagger$ string of each term. A term with $l$ operators $c^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl})}_{o_{tl}}$ correspond to a length-$2l$ vector $(p_{t1},o_{t1},p_{t2},o_{t2},\dots p_{tl},o_{tl})$. Note that each element can have different length. Also note that this format bears a certain similarity with the `OpSum` in `ITensors` ; 
+* `cstr_vec :: Vector{Vector{Integer}}` records the $c$ and $c^\dagger$ string of each term. A term with $l$ operators $c^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl})}_{o_{tl}}$ correspond to a length-$2l$ vector $(p_{t1},o_{t1},p_{t2},o_{t2},\dots p_{tl},o_{tl})$. Note that each element can have different length. For constant term, input `[-1, -1]`; 
 * `fac :: Vector{ComplexF64}` corresponds to the factor $U_t$ in each term.
+* `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same quantum numbers, and the operator fully respects the symmetries, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0` ; 
+* `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0`. 
 
 For example, the Hamiltonian for the fuzzy sphere Ising model
 
@@ -254,18 +254,19 @@ for m1 = 0 : nm - 1
     push!(fac_hmt, -h)
 end
 # Generate the Hamiltonian operator
-hmt = Operator(bs, bs, 1, 1, cstr_hmt, fac_hmt)
+hmt = Operator(bs, bs, cstr_hmt, fac_hmt ; red_q = 1, sym_q = 1)
 ```
 
 ### ITensor support
 
 Alternatively, one can generate the operator using an `OpSum` object instead of `cstr_vec` and `fac` using the function `OperatorFromOpSum`.
 ```julia
-OperatorFromOpSum(bsd :: Basis, bsf :: Basis, red_q :: Int64, sym_q :: Int64, opsum :: Sum{Scaled{ComplexF64, Prod{Op}}})
+OperatorFromOpSum(bsd :: Basis, bsf :: Basis, opsum :: Sum{Scaled{ComplexF64, Prod{Op}}} ; red_q :: Int64 = 0, sym_q :: Int64 = 0)
 ```
+Note that the only operators supported are `"C"`, `"Cdag"` `"N"` and `"I"`.
+
 For the Hamiltonian of Ising model
 ```julia
-
 using WignerSymbols
 # Input the parameters of the Hamiltonian
 ps_pot = [ 4.75, 1. ] * 2.
@@ -305,7 +306,7 @@ for m1 = 0 : nm - 1
     global ops_hmt += -h, "Cdag", o1x, "C", o1
 end
 # Generate the Hamiltonian operator
-hmt = OperatorFromOpSum(bs, bs, 1, 1, ops_hmt)
+hmt = OperatorFromOpSum(bs, bs, ops_hmt ; red_q = 1, sym_q = 1)
 ```
 
 ## Generate the sparse matrix and diagonalise
@@ -352,6 +353,11 @@ We can similarly measure the action of an operator or its matrix on a state
 ```
 where `st_d` must be of length `op.bsd.dim` or `mat.dimd` and the result is a length-`op.bsf.dim` or `mat.dimf` vector. 
 
+Note that sometimes it is needed to transform a state from one basis to another. This can be done by constructing an identity operator. 
+```julia
+stf = Operator(bsd, bsf, [[-1, -1]], [ComplexF64(1)]) * std
+```
+
 For example, to measure the total angular momentum $L^2$ by definition
 
 $$
@@ -389,7 +395,7 @@ for o1 = 1 : no
     end
 end
 # Initialise the L2 operator
-l2 = Operator(bs, bs, 1, 1, cstr_l2, fac_l2)
+l2 = Operator(bs, bs, cstr_l2, fac_l2 ; red_q = 1, sym_q = 1)
 @time "Initialise L2" l2_mat = OpMat(l2)
 # Calculate the inner product for each eigenstate
 @time "Measure L2" l2_val = [ st[:, i]' * l2_mat * st[:, i] for i = 1 : length(enrg)]
@@ -414,7 +420,7 @@ To do that, we need to first repeat the calculation in the $\mathbb{Z}_2$-odd se
 qnz_s1 = ComplexF64[ 1, -1, 1 ] # Change only the discrete quantum numbers and generate the basis
 @time "Initialise Basis Z" bs1 = Basis(cfs, qnz_s1, cyc, perm_o, ph_o, fac_o) 
 @show bs1.dim 
-hmt = Operator(bs1, bs1, 1, 1, cstr_hmt, fac_hmt) # Generate and diagonalise Hamiltonian in the new basis
+hmt = Operator(bs1, bs1, cstr_hmt, fac_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
 @time "Initialise Hamiltonian" hmtmat = OpMat(hmt)
 @show hmtmat.nel
 @time "Diagonalise Hamiltonian" enrg1, st1 = GetEigensystem(hmtmat, 10)
@@ -437,7 +443,7 @@ for o1u = 1 : nm
     push!(fac_nz, -1 / nm)
 end
 # The nz operator sends a state in bs (+) to bs1 (-)
-nz = Operator(bs, bs1, 1, 0, cstr_nz, fac_nz)
+nz = Operator(bs, bs1, cstr_nz, fac_nz ; red_q = 1)
 # Measuring the finite size OPE
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
 ```

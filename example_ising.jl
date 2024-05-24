@@ -100,7 +100,7 @@ for m1 = 0 : nm - 1
     push!(fac_hmt, -h)
 end
 # Generate the Hamiltonian operator
-hmt = Operator(bs, bs, 1, 1, cstr_hmt, fac_hmt)
+hmt = Operator(bs, bs, cstr_hmt, fac_hmt ; red_q = 1, sym_q = 1)
 
 
 #=========================================
@@ -137,7 +137,7 @@ for o1 = 1 : no
     end
 end
 # Initialise the L2 operator
-l2 = Operator(bs, bs, 1, 1, cstr_l2, fac_l2)
+l2 = Operator(bs, bs, cstr_l2, fac_l2 ; red_q = 1, sym_q = 1)
 @time "Initialise L2" l2_mat = OpMat(l2)
 # Calculate the inner product for each eigenstate
 @time "Measure L2" l2_val = [ st[:, i]' * l2_mat * st[:, i] for i = 1 : length(enrg)]
@@ -156,7 +156,7 @@ MEASURE THE DENSITY OPERATOR OBSERVABLE
 qnz_s1 = ComplexF64[ 1, -1, 1 ] # Change only the discrete quantum numbers and generate the basis
 @time "Initialise Basis Z" bs1 = Basis(cfs, qnz_s1, cyc, perm_o, ph_o, fac_o) 
 @show bs1.dim 
-hmt = Operator(bs1, bs1, 1, 1, cstr_hmt, fac_hmt) # Generate and diagonalise Hamiltonian in the new basis
+hmt = Operator(bs1, bs1, cstr_hmt, fac_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
 @time "Initialise Hamiltonian" hmtmat = OpMat(hmt)
 @show hmtmat.nel
 @time "Diagonalise Hamiltonian" enrg1, st1 = GetEigensystem(hmtmat, 10)
@@ -177,6 +177,6 @@ for o1u = 1 : nm
     push!(fac_nz, -1 / nm)
 end
 # The nz operator sends a state in bs (+) to bs1 (-)
-nz = Operator(bs, bs1, 1, 0, cstr_nz, fac_nz)
+nz = Operator(bs, bs1, cstr_nz, fac_nz ; red_q = 1)
 # Measuring the finite size OPE
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))

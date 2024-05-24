@@ -44,7 +44,7 @@ function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, cf_ref 
     return Confs(no, qnu_s, qnu_o)
 end 
 
-function OperatorFromOpSum(bsd :: Basis, bsf :: Basis, red_q :: Int64, sym_q :: Int64, opsum :: Sum{Scaled{ComplexF64, Prod{Op}}})
+function OperatorFromOpSum(bsd :: Basis, bsf :: Basis, opsum :: Sum{Scaled{ComplexF64, Prod{Op}}} ; red_q :: Int64 = 0, sym_q :: Int64 = 0)
     cstr_vec = []
     fac = Vector{ComplexF64}(undef, 0)
     for i = 1 : length(opsum)
@@ -58,6 +58,8 @@ function OperatorFromOpSum(bsd :: Basis, bsf :: Basis, red_q :: Int64, sym_q :: 
                 append!(cstri, [0, opsite])
             elseif optype == "N"
                 append!(cstri, [1, opsite, 0, opsite])
+            elseif optype == "I"
+                append!(cstri, [-1, -1])
             else 
                 print("The only operator supported are C, Cdag and N")
             end
@@ -68,5 +70,5 @@ function OperatorFromOpSum(bsd :: Basis, bsf :: Basis, red_q :: Int64, sym_q :: 
         push!(fac, coefficient(opsum[i]))
         push!(cstr_vec, cstri)
     end
-    return Operator(bsd, bsf, red_q, sym_q, cstr_vec, fac)
+    return Operator(bsd, bsf, cstr_vec, fac ; red_q, sym_q)
 end

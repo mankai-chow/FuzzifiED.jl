@@ -70,7 +70,7 @@ mutable struct Operator
     nc :: Int64
     cstr :: Array{Int64, 2}
     fac :: Vector{ComplexF64}
-    function Operator(bsd :: Basis, bsf :: Basis, red_q :: Int64, sym_q :: Int64, cstr_vec :: Vector{Any}, fac :: Vector{ComplexF64})
+    function Operator(bsd :: Basis, bsf :: Basis, cstr_vec :: Vector{Any}, fac :: Vector{ComplexF64} ; red_q :: Int64 = 0, sym_q :: Int64 = 0)
         ntm = length(cstr_vec)
         nc = div(maximum(length.(cstr_vec)), 2)
         cstr_vec_eq = [ [tm ; fill(-1, 2 * nc - length(tm))] for tm in cstr_vec]
