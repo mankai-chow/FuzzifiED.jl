@@ -77,7 +77,7 @@ The resulting `Confs` object contains several elements :
 `FuzzifiED` supports discrete $\mathbb{Z}_n$ symmetries in the form of 
 
 $$
-\mathscr{Z}:\ c_o\mapsto \alpha_o^* c^{(p_o)}_{\pi_o},\quad c_o^\dagger\mapsto \alpha_o c^{(1-p_o)}_{\pi_o}
+\mathscr{Z}:\ c_o\to \alpha_o^* c^{(p_o)}_{\pi_o},\quad c_o^\dagger\to \alpha_o c^{(1-p_o)}_{\pi_o}
 $$
 
 where we use a notation $c^{(1)}=c^\dagger$ and $c^{0}=c$ for convenience, where $\pi_o$ is a permutation of $1,\dots N_o$, $\alpha_o$ is a coefficient, and $p_o$ specified whether or not particle-hole transformation is performed for the orbital. Note that one must guarentee that all these transformations commute with each other and also commute with the conserved quantities. 
@@ -106,9 +106,9 @@ As an example, in the Ising model, there are three $\mathbb{Z}_2$ transformation
 
 $$
 \begin{aligned}
-    \mathscr{P}:c^\dagger_{\sigma m}&\mapsto\sigma c_{-\sigma,m}\\
-    \mathscr{Z}:c^\dagger_{\sigma m}&\mapsto c^\dagger_{-\sigma,m}\\
-    \mathscr{R}_y:c^\dagger_{\sigma m}&\mapsto c^\dagger_{\sigma,-m}\\
+    \mathscr{P}:c^\dagger_{\sigma m}&\to\sigma c_{-\sigma,m}\\
+    \mathscr{Z}:c^\dagger_{\sigma m}&\to c^\dagger_{-\sigma,m}\\
+    \mathscr{R}_y:c^\dagger_{\sigma m}&\to c^\dagger_{\sigma,-m}\\
 \end{aligned}
 $$
 
