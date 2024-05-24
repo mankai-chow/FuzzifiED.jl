@@ -72,7 +72,7 @@ mutable struct Operator
     fac :: Vector{ComplexF64}
     function Operator(bsd :: Basis, bsf :: Basis, red_q :: Int64, sym_q :: Int64, cstr_vec :: Vector{Any}, fac :: Vector{ComplexF64})
         ntm = length(cstr_vec)
-        nc = div(maximum(length.(cstr_hmt)), 2)
+        nc = div(maximum(length.(cstr_vec)), 2)
         cstr_vec_eq = [ [tm ; fill(-1, 2 * nc - length(tm))] for tm in cstr_vec]
         cstr = reduce(hcat, cstr_vec_eq)
         return new(bsd, bsf, red_q, sym_q, ntm, nc, cstr, fac)
