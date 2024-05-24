@@ -6,7 +6,7 @@ The package `FuzzifiED` is designed to do exact diagonalisation (ED) calculation
 
 The compiled `lib_fuzzifi_ed.so` file can be used directly. Alternatively, one can also compile it from the Fortran source files by
 ```bash
-ifort -shared -fPIC -o lib_fuzzifi_ed.so -larpack -qopenmp ./fuzzifi_ed_fortran/*.f90
+ifort -shared -fPIC -larpack -qopenmp -O3 -o lib_fuzzifi_ed.so ./fuzzifi_ed_fortran/*.f90
 ```
 Include at the start of your Julia script
 ```julia
@@ -43,6 +43,7 @@ Q_1&=N_e,& q_{1,m\sigma}&=1\\
 Q_2&=L_z+N_es,&q_{2,m\sigma}&=m+s
 \end{aligned}
 $$
+
 where the orbital index $o$ contains both $m$ and $\sigma$. In the code, we store the spin-up orbitals in $o=1,\dots,N_m$ and the spin-down orbitals in $o=N_m+1,\dots,2N_m$. Thus, if we want to look at the $L_z=0$ half-filled sector
 
 ```julia
@@ -74,20 +75,24 @@ The resulting `Confs` object contains several elements :
 ## Implement the  discrete symmetries and initialise the basis
 
 `FuzzifiED` supports discrete $\mathbb{Z}_n$ symmetries in the form of 
+
 $$
 \mathscr{Z}:\ c_o\mapsto \alpha_o^* c^{(p_o)}_{\pi_o},\quad c_o^\dagger\mapsto \alpha_o c^{(1-p_o)}_{\pi_o}
 $$
+
 where we use a notation $c^{(1)}=c^\dagger$ and $c^{0}=c$ for convenience, where $\pi_o$ is a permutation of $1,\dots N_o$, $\alpha_o$ is a coefficient, and $p_o$ specified whether or not particle-hole transformation is performed for the orbital. Note that one must guarentee that all these transformations commute with each other and also commute with the conserved quantities. 
 
 After implementing these symmetries, a state in the new basis should look like 
+
 $$
 |I\rangle=\lambda_{i_{I1}}|i_{I1}\rangle+\lambda_{i_{I2}}|i_{I2}\rangle+\cdots+\lambda_{i_{Im_I}}|i_{Im_I}\rangle
 $$
+
 where the $|i\rangle$'s are configurations in the `Confs` generated in the last section. The $|I\rangle$ is a linear combination, and can be regarded as a grouping of $m_I$ configurationss.
 
 The function used to implement the discrete symmetries is 
 ```julia
-Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64}, cyc :: Vector{Int64}, perm_o :: perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Any}, fac_o :: Vector{Vector{ComplexF64}}) :: Basis
+Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64}, cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}}) :: Basis
 ```
 where the arguments are 
 * `cfs :: Confs` is the configuration set with only conserved quantities generated in the last step ;
@@ -98,6 +103,7 @@ where the arguments are
 * `fac_o :: Vector{Vector{ComplexF64}}` records the factor $p_o$ is determine whether or not to perform a particle-hole transformation. It has $N_Z$ elements and each of its elements is a vector of length $N_o$. 
 
 As an example, in the Ising model, there are three $\mathbb{Z}_2$ transformations, _viz._ the particle-hole transformation $\mathscr{P}$, the $\pi$-rotation along the $y$-axis $\mathscr{R}_y$ and the flavour symmetry $\mathscr{Z}$
+
 $$
 \begin{aligned}
     \mathscr{P}:c^\dagger_{\sigma m}&\mapsto\sigma c_{-\sigma,m}\\
@@ -105,6 +111,7 @@ $$
     \mathscr{R}_y:c^\dagger_{\sigma m}&\mapsto c^\dagger_{\sigma,-m}\\
 \end{aligned}
 $$
+
 Thus, if we want to look at the all-positive sector
 ```julia
 cyc = [ 2, 2, 2 ] # Input three Z_2 symmetries 
@@ -145,9 +152,11 @@ bs = Basis(conf)
 
 ## Record the Hamiltonian operator
 The operator here refers to the sum of product of $c$ and $c^\dagger$'s in the form 
+
 $$
 \Phi=\sum_{t=1}^{N_t}U_tc^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl})}_{o_{tl}}
 $$
+
 where $c^{(0)}=c$ and $c^{(1)}=c^\dagger$. Here the operator string sum is recorded together with the basis of the initial state and the basis of the final state
 ```julia
 function Operator(bsd :: Basis, bsf :: Basis, red_q :: Int64, sym_q :: Int64, cstr_vec :: Vector{Vector{Int64}}, fac :: Vector{ComplexF64}) :
@@ -161,9 +170,11 @@ where the arguments are
 * `fac :: Vector{ComplexF64}` corresponds to the factor $U_t$ in each term.
 
 For example, the Hamiltonian for the fuzzy sphere Ising model
+
 $$
 H=\sum_{m_1m_2m_3m_4}U_{m_1m_2m_3m_4}\delta_{m_1+m_2,m_3+m_4}c^\dagger_{m_1\uparrow}c^\dagger_{m_2\downarrow}c_{m_3\downarrow}c_{m_4\uparrow}-h\sum_m(c^\dagger_{m\uparrow}c_{m\downarrow}+\mathrm{h.c.})
 $$
+
 can be recorded with 
 
 ``` julia
@@ -258,6 +269,7 @@ We can similarly measure the action of an operator or its matrix on a state
 where `st_d` must be of length `op.bsd.dim` or `mat.dimd` and the result is a length-`op.bsf.dim` or `mat.dimf` vector. 
 
 For example, to measure the total angular momentum $L^2$ by definition
+
 $$
 \begin{aligned}
 L^2&=L^+L^-+(L^z)^2-L^z\\
@@ -265,10 +277,13 @@ L^z&=\sum_{\sigma m}mc^\dagger_mc_m\\
 L^\pm&=\sum_{\sigma m}\sqrt{(s\mp m)(s\pm m+1)}c^\dagger_{m\pm 1}c_m
 \end{aligned}
 $$
+
 The following code measures the angular momentum of each eigenstate and verify whether $|T\rangle$ is an eigenstate of $L^2$ by measuring 
+
 $$
 |L^2T\rangle=L^2|T\rangle,\quad\frac{|\langle T|L^2T\rangle|^2}{\langle T|T\rangle\langle L^2T|L^2T\rangle}
 $$
+
 ```julia
 cstr_l2 = []
 fac_l2 = Array{ComplexF64, 1}(undef, 0)
@@ -304,9 +319,11 @@ st_L2T = l2_mat * st[:, 3]
 ## Measuring the density operator
 
 Similar process can be used to calculate the OPE coefficient by measuring the density operator, by definition 
+
 $$ 
 \lambda_{\sigma\sigma\epsilon}=\frac{\langle\sigma|n^z_{00}|\epsilon\rangle}{\langle\sigma|n^z_{00}|\mathbb{I}\rangle},\quad n^z_{00}=\frac{1}{N_m}\sum_{\sigma m}\sigma c^\dagger_{\sigma m}c_{\sigma m}
 $$
+
 To do that, we need to first repeat the calculation in the $\mathbb{Z}_2$-odd sector
 ```julia
 # Repeat the calculation for the Z_2 odd sector (with subscript 1)
