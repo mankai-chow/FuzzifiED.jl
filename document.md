@@ -15,7 +15,7 @@ include("./fuzzified.jl")
 ```
 where `LibpathFuzzifiED` points to the Path of the `.so` file
 
-## Implement the conserved quantities and generate the states
+## Implement the conserved quantities and generate the configurations
 
 `FuzzifiED` supports conserved quantities in the form of 
 

@@ -3,7 +3,7 @@ include("./fuzzifi_ed.jl")
 
 
 #========================================================
-IMPLEMENT THE CONSERVED QUANTITIES AND GENERATE THE STATE
+IMPLEMENT THE CONSERVED QUANTITIES AND GENERATE THE CONFS
 ========================================================#
 
 # Inputing the basic setups
@@ -22,7 +22,7 @@ push!(qnu_s, ne)
 push!(qnu_o, vcat(fill(collect(0 : nm - 1), nf)...)) # qnu_o[2] = [0,1,...,7,1,2,...,7] to qnu_o
 push!(qnu_s, ne * s) 
 # Generate the configurations and print the number
-@time "Initialise Basis 0" cfs = Confs(no, qnu_s, qnu_o)
+@time "Initialise configurations" cfs = Confs(no, qnu_s, qnu_o)
 @show cfs.ncf
 
 
@@ -49,7 +49,7 @@ push!(perm_o, [ collect(nm : -1 : 1) ; collect(2 * nm : -1 : nm + 1) ]) # perm_o
 push!(ph_o, fill(0, no)) # ph_o[3] = [0,0,...,0] meaning no PH
 push!(fac_o, fill(ComplexF64(1), no)) # fac_o[3] = [1,1,...,1]
 # Generate the basis and print the dimension
-@time "Initialise Basis Z" bs = Basis(cfs, qnz_s, cyc, perm_o, ph_o, fac_o)
+@time "Initialise basis" bs = Basis(cfs, qnz_s, cyc, perm_o, ph_o, fac_o)
 @show bs.dim 
 
 
