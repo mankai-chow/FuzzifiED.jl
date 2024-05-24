@@ -153,9 +153,7 @@ bs = Basis(conf)
 ## Record the Hamiltonian operator
 The operator here refers to the sum of product of $c$ and $c^\dagger$'s in the form 
 
-$$
-\Phi=\sum_{t=1}^{N_t}U_tc^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl})}_{o_{tl}}
-$$
+$$\Phi=\sum_{t=1}^{N_t}U_tc^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl})}_{o_{tl}}$$
 
 where $c^{(0)}=c$ and $c^{(1)}=c^\dagger$. Here the operator string sum is recorded together with the basis of the initial state and the basis of the final state
 ```julia
