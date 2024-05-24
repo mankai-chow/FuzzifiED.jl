@@ -11,9 +11,16 @@ ifort -shared -fPIC -larpack -qopenmp -O3 -o lib_fuzzifi_ed.so ./fuzzifi_ed_fort
 Include at the start of your Julia script
 ```julia
 LibpathFuzzifiED = "./lib_fuzzifi_ed.so"
-include("./fuzzified.jl")
+include("./fuzzifi_ed.jl")
 ```
 where `LibpathFuzzifiED` points to the Path of the `.so` file
+
+### ITensor support
+
+This package also supports importing the `Site` and `OpSum` objects from `ITensors` library, to use that, include also 
+```julia
+include("./fuzzifi_ed_itensors.jl")
+```
 
 ## Implement the conserved quantities and generate the configurations
 
@@ -27,7 +34,7 @@ where $i=1,\dots,N_U$ is the index of conserved quantities, $o$ is the index of 
 
 The function used to implement the conserved quantities and generate all the configurations (_i.e._, direct product states) is 
 ```julia
-function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Vector{Int64}} ; nor = div(no, 2) :: Int64) :: Confs
+Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Vector{Int64}} ; nor = div(no, 2) :: Int64) :: Confs
 ```
 where the arguments are 
 * `no :: Int64` is the number of orbitals $N_o$ ;
@@ -71,6 +78,34 @@ The resulting `Confs` object contains several elements :
 * `ncf :: Int64` is the number of configurations 
 * `conf :: Vector{Int64}` is an array of length `ncf` containing all the configurations. Each configuration is expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th orbital in the `i`-th configuration is occupied ; if the bit is 0, then the orbital is empty. 
 * `nor :: Int64`, `lid :: Vector{Int64}` and `rid :: Vector{Int64}` contain the information of Lin table that is used to inversely look up the index `i` from the configuration. 
+
+### ITensor support
+
+The quantum numbers can also be imported from the `Sites` objects in `ITensors`. This can be done using the `ConfsFromSites` function
+``` julia 
+ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, qn_s :: QN)
+ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, cf_ref :: Vector{Int64})
+```
+The first argument is a `Sites` object, where the modulus-$\pm 1$ quantum numbers will be taken out, and QNs with other modulus will be discarded automatically. Also note that only `Fermion` site type is supported. The second argument specifies the the quantum number of the selected configuration, it can be either explicitly a `QN` object, or a reference configuration composed of `0` and `1` in `ITensors` format. 
+
+In the example of Ising model
+```julia
+# Overload the ITensors type "Fermion"
+function ITensors.space( :: SiteType"Fermion" ; m1 :: Int = 0)
+    return [
+        QN(("Nf", 0, -1), ("Lz",  0)) => 1
+        QN(("Nf", 1, -1), ("Lz", m1)) => 1
+    ]
+end
+# Initialise the sites
+sites = [ siteind("Fermion", m1 = mod(o - 1, nm)) for o :: Int = 1 : no]
+qn_s = QN(("Nf", ne), ("Lz", Int(ne * s)))
+@time "Initialise configurations" cfs = ConfsFromSites(sites, qn_s)
+# Alternatively, one can initialise the configuration quantum number by a reference state
+# cf_ref = [o <= ne ? 1 : 0 for o = 1 : no]
+# @time "Initialise configurations" cfs = ConfsFromSites(sites, cf_ref)
+@show cfs.ncf
+```
 
 ## Implement the  discrete symmetries and initialise the basis
 
@@ -157,14 +192,14 @@ $$\Phi=\sum_{t=1}^{N_t}U_tc^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_
 
 where $c^{(0)}=c$ and $c^{(1)}=c^\dagger$. Here the operator string sum is recorded together with the basis of the initial state and the basis of the final state
 ```julia
-function Operator(bsd :: Basis, bsf :: Basis, red_q :: Int64, sym_q :: Int64, cstr_vec :: Vector{Vector{Int64}}, fac :: Vector{ComplexF64}) :
+Operator(bsd :: Basis, bsf :: Basis, red_q :: Int64, sym_q :: Int64, cstr_vec :: Vector{Vector{Int64}}, fac :: Vector{ComplexF64}) :
 ```
 where the arguments are 
 * `bsd :: Basis` is the basis of the initial state ;
 * `bsf :: Basis` is the basis of the final state ;
 * `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same quantum numbers, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0` ; 
 * `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0`. 
-* `cstr_vec :: Vector{Vector{Integer}}` records the $c$ and $c^\dagger$ string of each term. A term with $l$ operators $`c^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl})}_{o_{tl}}`$ correspond to a length-$`2l`$ vector $(p_{t1},o_{t1},p_{t2},o_{t2},\dots p_{tl},o_{tl})$. Note that each element can have different length. Also note that this format bears a certain similarity with the `OpSum` in `ITensors` ; 
+* `cstr_vec :: Vector{Vector{Integer}}` records the $c$ and $c^\dagger$ string of each term. A term with $l$ operators $c^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl})}_{o_{tl}}$ correspond to a length-$2l$ vector $(p_{t1},o_{t1},p_{t2},o_{t2},\dots p_{tl},o_{tl})$. Note that each element can have different length. Also note that this format bears a certain similarity with the `OpSum` in `ITensors` ; 
 * `fac :: Vector{ComplexF64}` corresponds to the factor $U_t$ in each term.
 
 For example, the Hamiltonian for the fuzzy sphere Ising model
@@ -222,9 +257,60 @@ end
 hmt = Operator(bs, bs, 1, 1, cstr_hmt, fac_hmt)
 ```
 
+### ITensor support
+
+Alternatively, one can generate the operator using an `OpSum` object instead of `cstr_vec` and `fac` using the function `OperatorFromOpSum`.
+```julia
+OperatorFromOpSum(bsd :: Basis, bsf :: Basis, red_q :: Int64, sym_q :: Int64, opsum :: Sum{Scaled{ComplexF64, Prod{Op}}})
+```
+For the Hamiltonian of Ising model
+```julia
+
+using WignerSymbols
+# Input the parameters of the Hamiltonian
+ps_pot = [ 4.75, 1. ] * 2.
+h = 3.16
+global ops_hmt = OpSum()
+# Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
+for m1 = 0 : nm - 1
+    f1 = 0
+    o1 = m1 + f1 * nm + 1
+    m1r = m1 - s
+    for m2 = 0 : nm - 1
+        f2 = 1
+        o2 = m2 + f2 * nm + 1
+        m2r = m2 - s
+        for m3 = 0 : nm - 1
+            f3 = 1
+            o3 = m3 + f3 * nm + 1
+            m3r = m3 - s
+            m4 = m1 + m2 - m3 
+            if (m4 < 0 || m4 >= nm) continue end
+            f4 = 0
+            o4 = m4 + f4 * nm + 1
+            m4r = m4 - s
+            # Calculate the matrix element val from pseudopotentials
+            val = ComplexF64(0)
+            for l in 1 : length(ps_pot)
+                if (abs(m1r + m2r) > nm - l || abs(m3r + m4r) > nm - l) break end 
+                val += ps_pot[l] * (2 * nm - 2 * l + 1) * wigner3j(s, s, nm - l, m1r, m2r, -m1r - m2r) * wigner3j(s, s, nm - l, m4r, m3r, -m3r - m4r)
+            end 
+            # Record the interaction term
+            global ops_hmt += val, "Cdag", o1, "Cdag", o2, "C", o3, "C", o4
+        end
+    end
+    o1x = o1 + nm
+    # Record the transverse field term
+    global ops_hmt += -h, "Cdag", o1, "C", o1x
+    global ops_hmt += -h, "Cdag", o1x, "C", o1
+end
+# Generate the Hamiltonian operator
+hmt = OperatorFromOpSum(bs, bs, 1, 1, ops_hmt)
+```
+
 ## Generate the sparse matrix and diagonalise
 
-After specifying the Hamiltonian, we then use the function `OpMat` to generate a sparse matrix from the operator.
+After specifying the Hamiltonian, we then use the `OpMat` to generate a sparse matrix from the operator.
 ```julia
 OpMat(op :: Operator) :: OpMat
 ```
@@ -234,7 +320,7 @@ The fields of an `OpMat` object are
 * `nel :: Int64` records the number of elements ;
 * `colptr :: Vector{Int64}`, `rowid :: Vector{Int64}` and `elval :: Vector{ComplexF64}` records the elements of the sparse matrix as in the `SparseMatrixCSC` elements of Julia. 
 
-After that, the function `GetEigensystem` can be used to find the lowest eigenvalues and eigenstates
+After that, the `GetEigensystem` can be used to find the lowest eigenvalues and eigenstates
 ```julia
 OpMat(op :: Operator) :: OpMat
 GetEigensystem(mat :: OpMat, nst :: Int64 ; tol = 1E-8 :: Float64 ) :: Tuple{Vector{ComplexF64}, Matrix{ComplexF64}}
