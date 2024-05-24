@@ -1,6 +1,6 @@
 using ITensors
 
-function ConfsFromSite(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, qnu_s_it :: QN)
+function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, qn_s :: QN)
     no = length(sites)
     qn_names = []
     for site in sites 
@@ -18,7 +18,29 @@ function ConfsFromSite(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, qnu_s_it
         end
         push!(qnu_o, qnu_oi)
     end
-    qnu_s = [ val(qnu_s_it, qn_name) for qn_name in qn_names ]
+    qnu_s = [ val(qn_s, qn_name) for qn_name in qn_names ]
+    return Confs(no, qnu_s, qnu_o)
+end 
+
+function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, cf_ref :: Vector{Int64})
+    no = length(sites)
+    qn_names = []
+    for site in sites 
+        for qn in qn(site, 2)
+            if abs(qn.modulus) != 1 continue end
+            if qn.name in qn_names continue end
+            push!(qn_names, qn.name)
+        end
+    end
+    qnu_o = []
+    for qn_name in qn_names 
+        qnu_oi = []
+        for site in sites 
+            push!(qnu_oi, val(qn(site, 2), qn_name))
+        end
+        push!(qnu_o, qnu_oi)
+    end
+    qnu_s = [ cf_ref' * qnu_o[i] for i = 1 : length(qnu_o) ]
     return Confs(no, qnu_s, qnu_o)
 end 
 

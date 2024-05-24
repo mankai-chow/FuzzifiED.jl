@@ -6,13 +6,6 @@ include("./fuzzifi_ed_itensors.jl")
 IMPLEMENT THE CONSERVED QUANTITIES AND GENERATE THE CONFS
 ========================================================#
 
-# Overload the ITensors type "Fermion"
-function ITensors.space( :: SiteType"Fermion" ; m1 :: Int = 0)
-    return [
-        QN(("Nf", 0, -1), ("Lz",  0)) => 1
-        QN(("Nf", 1, -1), ("Lz", m1)) => 1
-    ]
-end
 
 # Inputing the basic setups
 nf = 2
@@ -20,11 +13,20 @@ nm = 8
 no = nf * nm
 s = .5 * (nm - 1)
 ne = div(no, 2)
+# Overload the ITensors type "Fermion"
+function ITensors.space( :: SiteType"Fermion" ; m1 :: Int = 0)
+    return [
+        QN(("Nf", 0, -1), ("Lz",  0)) => 1
+        QN(("Nf", 1, -1), ("Lz", m1)) => 1
+    ]
+end
 # Initialise the sites
 sites = [ siteind("Fermion", m1 = mod(o - 1, nm)) for o :: Int = 1 : no]
-# Initialise the configuration quantum number
-qnu_s_it = QN(("Nf", ne), ("Lz", Int(ne * s)))
-@time "Initialise configurations" cfs = ConfsFromSite(sites, qnu_s_it)
+qn_s = QN(("Nf", ne), ("Lz", Int(ne * s)))
+@time "Initialise configurations" cfs = ConfsFromSites(sites, qn_s)
+# Alternatively, one can initialise the configuration quantum number
+# cf_ref = [o <= ne ? 1 : 0 for o = 1 : no]
+# @time "Initialise configurations" cfs = ConfsFromSites(sites, cf_ref)
 @show cfs.ncf
 
 #=========================================================
@@ -113,27 +115,23 @@ GENERATE THE SPARSE MATRIX AND DIAGONALISE
 MEASURE THE TOTAL ANGULAR MOMENTUM OBSERVABLE
 ============================================#
 
-cstr_l2 = []
-fac_l2 = Array{ComplexF64, 1}(undef, 0)
+global ops_l2 = OpSum()
 for o1 = 1 : no 
     m1 = mod(o1 - 1, nm) 
     # record the -Lz term
-    push!(cstr_l2, [1, o1, 0, o1])
-    push!(fac_l2, -(m1 - s))
+    global ops_l2 += -(m1 - s), "N", o1
     for o2 = 1 : no 
         m2 = mod(o2 - 1, nm)
         # record the Lz^2 term
-        push!(cstr_l2, [1, o2, 0, o2, 1, o1, 0, o1])
-        push!(fac_l2, (m1 - s) * (m2 - s))
+        global ops_l2 += (m1 - s) * (m2 - s), "N", o2, "N", o1
         if m1 == nm - 1 continue end
         if m2 == 0 continue end 
         # record the L+L- term
-        push!(cstr_l2, [1, o1 + 1, 0, o1, 1, o2 - 1, 0, o2])
-        push!(fac_l2, sqrt(m2 * (nm - m2) * (m1 + 1) * (nm - m1 - 1)))
+        global ops_l2 += sqrt(m2 * (nm - m2) * (m1 + 1) * (nm - m1 - 1)), "Cdag", o1 + 1, "C", o1, "Cdag", o2 - 1, "C", o2
     end
 end
 # Initialise the L2 operator
-l2 = Operator(bs, bs, 1, 1, cstr_l2, fac_l2)
+l2 = OperatorFromOpSum(bs, bs, 1, 1, ops_l2)
 @time "Initialise L2" l2_mat = OpMat(l2)
 # Calculate the inner product for each eigenstate
 @time "Measure L2" l2_val = [ st[:, i]' * l2_mat * st[:, i] for i = 1 : length(enrg)]
@@ -163,16 +161,13 @@ st_e = st[:, 2] # epsilon state
 st_s = st1[:, 1]
 
 # Record the density operator n^z
-cstr_nz = []
-fac_nz = Array{ComplexF64, 1}(undef, 0)
+global ops_nz = OpSum()
 for o1u = 1 : nm
     o1d = o1u + nm
-    push!(cstr_nz, [1, o1u, 0, o1u])
-    push!(fac_nz, 1 / nm)
-    push!(cstr_nz, [1, o1d, 0, o1d])
-    push!(fac_nz, -1 / nm)
+    global ops_nz +=  1 / nm, "N", o1u
+    global ops_nz += -1 / nm, "N", o1d
 end
 # The nz operator sends a state in bs (+) to bs1 (-)
-nz = Operator(bs, bs1, 1, 0, cstr_nz, fac_nz)
+nz = OperatorFromOpSum(bs, bs1, 1, 0, ops_nz)
 # Measuring the finite size OPE
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
