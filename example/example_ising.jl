@@ -1,4 +1,5 @@
-using FuzzifiED
+include("../src/FuzzifiED.jl")
+using .FuzzifiED
 
 #========================================================
 IMPLEMENT THE CONSERVED QUANTITIES AND GENERATE THE CONFS
