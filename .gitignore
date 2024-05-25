@@ -1,7 +1,4 @@
 **/*.mod
 **/*.i90
 .vscode/
-**/*.js
-**/*.css
-**/*.json
-**/*.inv
+docs/build
