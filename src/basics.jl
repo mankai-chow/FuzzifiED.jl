@@ -1,6 +1,3 @@
-using LinearAlgebra
-import Base.:*
-
 mutable struct Confs
     no :: Int64 
     nor :: Int64

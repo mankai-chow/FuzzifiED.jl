@@ -1,5 +1,3 @@
-using ITensors
-
 function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, qn_s :: QN)
     no = length(sites)
     qn_names = []
