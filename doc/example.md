@@ -2,24 +2,23 @@
 
 The package `FuzzifiED` is designed to do exact diagonalisation (ED) calculation on the fuzzy sphere. In this example, we will illustrate how to use  `FuzzifiED` to calculate the spectrum of Ising model on fuzzy sphere and how to calculate the OPE coefficient $\lambda_{\sigma\sigma\epsilon}$ by measuring the expectation value of the density operator $n^z$. 
 
-## Compile and header
+## Install and header
 
-The compiled `lib_fuzzifi_ed.so` file can be used directly. Alternatively, one can also compile it from the Fortran source files by
-```bash
-ifort -shared -fPIC -larpack -qopenmp -O3 -o lib_fuzzifi_ed.so ./fuzzifi_ed_fortran/*.f90
+Install the package with the commands
+```julia
+julia> using Pkg; Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
 ```
 Include at the start of your Julia script
 ```julia
-LibpathFuzzifiED = "./lib_fuzzifi_ed.so"
-include("./fuzzifi_ed.jl")
+using FuzzifiED
 ```
-where `LibpathFuzzifiED` points to the Path of the `.so` file
 
 ### ITensor support
 
 This package also supports importing the `Site` and `OpSum` objects from `ITensors` library, to use that, include also 
 ```julia
-include("./fuzzifi_ed_itensors.jl")
+using ITensors 
+using FuzzifiED.ITensorSupport
 ```
 
 ## Implement the conserved quantities and generate the configurations
