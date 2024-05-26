@@ -1,4 +1,3 @@
-
 # FuzzifiED explained in an example
 
 In this example, we will illustrate how to use  `FuzzifiED` to calculate the spectrum of Ising model on fuzzy sphere and how to calculate the OPE coefficient ``\lambda_{\sigma\sigma\epsilon}`` by measuring the expectation value of the density operator ``n^z``. 
@@ -251,28 +250,23 @@ L^\pm&=\sum_{\sigma m}\sqrt{(s\mp m)(s\pm m+1)}c^\dagger_{m\pm 1}c_m
 \end{aligned}
 ```
 
-The following code measures the angular momentum of each eigenstate and verify whether ``|T\rangle`` is an eigenstate of ``L^2`` by measuring 
+The construction of the operator can be simplified by the (addition)[@ref +(tms1 :: Vector{Term}, tms2 :: Vector{Term})], (multiplication)[@ref *(tms1 :: Vector{Term}, tms2 :: Vector{Term})] and (Hermitian conjugate)[@ref adjoint(tms :: Vector{Term})] of terms. The following code measures the angular momentum of each eigenstate and verify whether ``|T\rangle`` is an eigenstate of ``L^2`` by measuring 
 
 ```math
 |L^2T\rangle=L^2|T\rangle,\quad\frac{|\langle T|L^2T\rangle|^2}{\langle T|T\rangle\langle L^2T|L^2T\rangle}
 ```
 
 ```julia
-tms_l2 = Vector{Term}(undef, 0)
-for o1 = 1 : no 
-    m1 = div(o1 - 1, nf) 
-    # record the -Lz term
-    push!(tms_l2, Term(-(m1 - s), [1, o1, 0, o1]))
-    for o2 = 1 : no 
-        m2 = div(o2 - 1, nf)
-        # record the Lz^2 term
-        push!(tms_l2, Term((m1 - s) * (m2 - s), [1, o2, 0, o2, 1, o1, 0, o1]))
-        if m1 == nm - 1 continue end
-        if m2 == 0 continue end 
-        # record the L+L- term
-        push!(tms_l2, Term(sqrt(m2 * (nm - m2) * (m1 + 1) * (nm - m1 - 1)), [1, o1 + nf, 0, o1, 1, o2 - nf, 0, o2]))
-    end
-end
+tms_lz = 
+    [ begin m = div(o - 1, nf)
+        Term(m - s, [1, o, 0, o])
+    end for o = 1 : no ]
+tms_lp = 
+    [ begin m = div(o - 1, nf)
+        Term(sqrt(m * (nm - m)), [1, o, 0, o - nf])
+    end for o = nf + 1 : no ]
+tms_lm = tms_lp' 
+tms_l2 = tms_lz * tms_lz - tms_lz + tms_lp * tms_lm
 # Initialise the L2 operator
 l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
 @time "Initialise L2" l2_mat = OpMat(l2)
@@ -312,15 +306,30 @@ st_s = st1[:, 1]
 and then generate and measure the density operator
 ```julia
 # Record the density operator n^z
-tms_nz = Vector{Term}(undef, 0)
-for m1 = 0 : nm - 1
-    o1u = 2 * m1 + 1
-    o1d = 2 * m1 + 2
-    push!(tms_nz, Term( 1 / nm, [1, o1u, 0, o1u]))
-    push!(tms_nz, Term(-1 / nm, [1, o1d, 0, o1d]))
-end
+tms_nz = [ Term(isodd(o) ? 1 / nm : -1 / nm, [1, o, 0, o]) for o = 1 : no]
 # The nz operator sends a state in bs (+) to bs1 (-)
 nz = Operator(bs, bs1, tms_nz ; red_q = 1)
 # Measuring the finite size OPE
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
+```
+
+## Use the built-in models
+
+The basis, Hamiltonian and the total angular momentum of the Ising model is built in the package (_cf._ [built-in models](@ref Built-in-models) and [Ising model](@ref Ising-model)). So one can write instead
+```julia
+nm = 12
+cfs = GenerateIsingConfs(nm) # Implement the conserved quantities and generate the confs
+bs = GenerateIsingBasis(cfs ; PH = 1, Ry = 1, Z2 = 1) # Implement the discrete symmetries and initialise the basis
+tms_hmt = GenerateIsingHamiltonianTerms(nm ; ps_pot = Number[4.75, 1.], fld_h = 3.16)
+hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1) # Record the Hamiltonian operator
+hmtmat = OpMat(hmt) # Generate the sparse matrix and diagonalise
+enrg, st = GetEigensystem(hmtmat, 10)
+@show real(enrg)
+
+# Measure the total angular momentum observable
+tms_l2 = GenerateL2Terms(nm, 2)
+l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
+l2_mat = OpMat(l2)
+l2_val = [ st[:, i]' * l2_mat * st[:, i] for i = 1 : length(enrg)]
+@show real(l2_val)
 ```

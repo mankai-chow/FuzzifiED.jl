@@ -10,10 +10,20 @@ using LinearAlgebra
 using FuzzifiED
 ```
 
-#### ITensor support
+### ITensor support
 
 This package also supports importing the `Site` and `OpSum` objects from `ITensors` library, to use that, include also 
 ```julia
 using ITensors 
 using FuzzifiED.ITensorsSupport
+```
+
+## Documentation outline 
+
+```@contents
+Pages = [
+    "example.md",
+    "reference.md"
+]
+Depth = 2
 ```
