@@ -1,5 +1,5 @@
 """
-    OpMat
+    mutable struct OpMat
 
 # Fields
 * `dimd :: Int64` and `dimf :: Int64` are the number of columns and rows of the matrix ;
@@ -18,7 +18,7 @@ mutable struct OpMat
 end 
 
 """
-    OpMat(op :: Operator) :: OpMat
+    function OpMat(op :: Operator) :: OpMat
 """
 function OpMat(op :: Operator)
     colptr = Array{Int64, 1}(undef, op.bsd.dim + 1)
@@ -38,7 +38,7 @@ function OpMat(op :: Operator)
 end
 
 """
-    GetEigensystem(mat :: OpMat, nst :: Int64 ; tol :: Float64 = 1E-8)
+    function GetEigensystem(mat :: OpMat, nst :: Int64 ; tol :: Float64 = 1E-8)
 
 # Output
 * A length-`nst` array recording the eigenvalues, and 
@@ -52,7 +52,7 @@ function GetEigensystem(mat :: OpMat, nst :: Int64 ; tol :: Float64 = 1E-8)
 end 
 
 """
-    *(mat :: OpMat, st_d :: Vector{ComplexF64})
+    function *(mat :: OpMat, st_d :: Vector{ComplexF64})
 
 Measure the action of a sparse matrix on a state. `st_d` must be of length `mat.dimd`. Returns a vector of length `mat.dimf` that represents the final state. 
 """
@@ -63,7 +63,7 @@ function *(mat :: OpMat, st_d :: Vector{ComplexF64})
 end
 
 """
-    *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, mat :: OpMat, st_d :: Vector{ComplexF64}) :: ComplexF64
+    function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, mat :: OpMat, st_d :: Vector{ComplexF64}) :: ComplexF64
 
 Measuring the inner product between two states and a sparse matrix. `st_d` must be of length `mat.dimd` and `st_fp` must be of length `mat.dimf`, and `st_fp` must be an adjoint. 
 """

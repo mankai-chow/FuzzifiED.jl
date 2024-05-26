@@ -1,5 +1,5 @@
 """
-    Confs
+    mutable struct Confs
 
 stores all the configurations that respects the U(1) conserved quantities. 
 
@@ -20,7 +20,7 @@ mutable struct Confs
 end 
 
 """
-    Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Vector{Int64}} ; nor :: Int64) :: Confs
+    function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Vector{Int64}} ; nor :: Int64) :: Confs
 
 # Arguments
 

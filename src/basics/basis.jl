@@ -1,5 +1,5 @@
 """
-    Basis
+    mutable struct Basis
 
 # Fields
 * `cfs :: Confs` is the basis with only conserved quantities generated in the last step ;
@@ -21,7 +21,7 @@ mutable struct Basis
 end 
 
 """
-    Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64}, cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}}) :: Basis
+    function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64}, cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}}) :: Basis
 
 # Arguments 
 
@@ -50,7 +50,7 @@ function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64}, cyc :: Vector{Int64}, 
 end 
 
 """
-    Basis(cfs :: Confs) :: Basis
+    function Basis(cfs :: Confs) :: Basis
 
 Generate a basis from the configurations without applying the ``\\mathbb{Z}_2`` symmetries
 """
