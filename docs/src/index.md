@@ -15,5 +15,5 @@ using FuzzifiED
 This package also supports importing the `Site` and `OpSum` objects from `ITensors` library, to use that, include also 
 ```julia
 using ITensors 
-using FuzzifiED.ITensorSupport
+using FuzzifiED.ITensorsSupport
 ```

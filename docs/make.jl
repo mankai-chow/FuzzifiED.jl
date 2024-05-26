@@ -4,7 +4,7 @@ include("../src/FuzzifiED.jl")
 using Documenter
 using LinearAlgebra, ITensors
 using .FuzzifiED
-using .FuzzifiED.ITensorSupport
+using .FuzzifiED.ITensorsSupport
 
 makedocs(sitename = "FuzzifiED.jl", 
     pages = ["Home" => "index.md", 

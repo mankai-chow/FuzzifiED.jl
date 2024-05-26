@@ -16,7 +16,7 @@ export Operator
 export OpMat
 export GetEigensystem
 
-module ITensorSupport 
+module ITensorsSupport 
     using ..FuzzifiED
     using ITensors
     include("itensors_support.jl")
