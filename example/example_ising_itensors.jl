@@ -20,7 +20,7 @@ function ITensors.space( :: SiteType"Fermion" ; m1 :: Int = 0)
     ]
 end
 # Initialise the sites
-sites = [ siteind("Fermion", m1 = mod(o - 1, nm)) for o :: Int = 1 : no]
+sites = [ siteind("Fermion", m1 = div(o - 1, nf)) for o :: Int = 1 : no]
 qn_s = QN(("Nf", ne), ("Lz", Int(ne * s)))
 @time "Initialise configurations" cfs = ConfsFromSites(sites, qn_s)
 # Alternatively, one can initialise the configuration quantum number
@@ -39,17 +39,17 @@ perm_o = []
 ph_o = []
 fac_o = []
 # Record the parity
-push!(perm_o, [ collect(nm + 1 : 2 * nm) ; collect(1 : nm) ]) # perm_o[1] = [9,10,...,16,1,2,...,8]
+push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no]) # perm_o[1] = [2,1,4,3,...,16,15]
 push!(ph_o, fill(1, no)) # ph_o[1] = [1,1,...,1] meaning PH
-push!(fac_o, [ fill(ComplexF64(1), nm) ; fill(ComplexF64(-1), nm) ]) # fac_o[1] = [1,1,...,1,-1,-1,...,-1]
+push!(fac_o, [ isodd(o) ? -1 : 1 for o = 1 : no]) # fac_o[1] = [1,-1,1,-1,...,1,-1]
 # Record the flavour symmetry
-push!(perm_o, [ collect(nm + 1 : 2 * nm) ; collect(1 : nm) ]) # perm_o[2] = [9,10,...,16,1,2,...,8]
-push!(ph_o, fill(0, no)) # ph_o[2] = [0,0,...,0] meaning no PH
-push!(fac_o, fill(ComplexF64(1), no)) # fac_o[2] = [1,1,...,1]
-# Record the pi-rotation
-push!(perm_o, [ collect(nm : -1 : 1) ; collect(2 * nm : -1 : nm + 1) ]) # perm_o[3] = [8,7,...,1,16,15,...,9]
+push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no]) # perm_o[3] = [2,1,4,3,...,16,15]
 push!(ph_o, fill(0, no)) # ph_o[3] = [0,0,...,0] meaning no PH
 push!(fac_o, fill(ComplexF64(1), no)) # fac_o[3] = [1,1,...,1]
+# Record the pi-rotation
+push!(perm_o, [ isodd(o) ? no - o : no + 2 - o for o = 1 : no]) # perm_o[2] = [15,16,13,14,...,1,2]
+push!(ph_o, fill(0, no)) # ph_o[2] = [0,0,...,0] meaning no PH
+push!(fac_o, fill(ComplexF64(1), no)) # fac_o[2] = [1,1,...,1]
 # Generate the basis and print the dimension
 @time "Initialise basis" bs = Basis(cfs, qnz_s, cyc, perm_o, ph_o, fac_o)
 @show bs.dim 
@@ -67,20 +67,20 @@ global ops_hmt = OpSum()
 # Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
 for m1 = 0 : nm - 1
     f1 = 0
-    o1 = m1 + f1 * nm + 1
+    o1 = m1 * nf + f1 + 1
     m1r = m1 - s
     for m2 = 0 : nm - 1
         f2 = 1
-        o2 = m2 + f2 * nm + 1
+        o2 = m2 * nf + f2 + 1
         m2r = m2 - s
         for m3 = 0 : nm - 1
             f3 = 1
-            o3 = m3 + f3 * nm + 1
+            o3 = m3 * nf + f3 + 1
             m3r = m3 - s
             m4 = m1 + m2 - m3 
             if (m4 < 0 || m4 >= nm) continue end
             f4 = 0
-            o4 = m4 + f4 * nm + 1
+            o4 = m4 * nf + f4 + 1
             m4r = m4 - s
             # Calculate the matrix element val from pseudopotentials
             val = ComplexF64(0)
@@ -92,7 +92,7 @@ for m1 = 0 : nm - 1
             global ops_hmt += val, "Cdag", o1, "Cdag", o2, "C", o3, "C", o4
         end
     end
-    o1x = o1 + nm
+    o1x = o1 + 1
     # Record the transverse field term
     global ops_hmt += -h, "Cdag", o1, "C", o1x
     global ops_hmt += -h, "Cdag", o1x, "C", o1
@@ -116,17 +116,17 @@ MEASURE THE TOTAL ANGULAR MOMENTUM OBSERVABLE
 
 global ops_l2 = OpSum()
 for o1 = 1 : no 
-    m1 = mod(o1 - 1, nm) 
+    m1 = div(o1 - 1, nf) 
     # record the -Lz term
     global ops_l2 += -(m1 - s), "N", o1
     for o2 = 1 : no 
-        m2 = mod(o2 - 1, nm)
+        m2 = div(o2 - 1, nf)
         # record the Lz^2 term
         global ops_l2 += (m1 - s) * (m2 - s), "N", o2, "N", o1
         if m1 == nm - 1 continue end
         if m2 == 0 continue end 
         # record the L+L- term
-        global ops_l2 += sqrt(m2 * (nm - m2) * (m1 + 1) * (nm - m1 - 1)), "Cdag", o1 + 1, "C", o1, "Cdag", o2 - 1, "C", o2
+        global ops_l2 += sqrt(m2 * (nm - m2) * (m1 + 1) * (nm - m1 - 1)), "Cdag", o1 + nf, "C", o1, "Cdag", o2 - nf, "C", o2
     end
 end
 # Initialise the L2 operator
@@ -161,8 +161,9 @@ st_s = st1[:, 1]
 
 # Record the density operator n^z
 global ops_nz = OpSum()
-for o1u = 1 : nm
-    o1d = o1u + nm
+for m1 = 0 : nm - 1
+    o1u = 2 * m1 + 1
+    o1d = 2 * m1 + 2
     global ops_nz +=  1 / nm, "N", o1u
     global ops_nz += -1 / nm, "N", o1d
 end

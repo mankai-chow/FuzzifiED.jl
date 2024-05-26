@@ -1,5 +1,4 @@
-include("../src/FuzzifiED.jl")
-using .FuzzifiED
+using FuzzifiED
 
 #========================================================
 IMPLEMENT THE CONSERVED QUANTITIES AND GENERATE THE CONFS
@@ -18,7 +17,7 @@ qnu_o = []
 push!(qnu_o, fill(1, no)) # qnu_o[1] = [1,1,...,1]
 push!(qnu_s, ne) 
 # Record the angular momentum
-push!(qnu_o, vcat(fill(collect(0 : nm - 1), nf)...)) # qnu_o[2] = [0,1,...,7,1,2,...,7] to qnu_o
+push!(qnu_o, [ div(o - 1, nf) for o = 1 : no ]) # qnu_o[2] = [0,0,1,1,...,7,7] to qnu_o
 push!(qnu_s, ne * s) 
 # Generate the configurations and print the number
 @time "Initialise configurations" cfs = Confs(no, qnu_s, qnu_o)
@@ -36,17 +35,17 @@ perm_o = []
 ph_o = []
 fac_o = []
 # Record the parity
-push!(perm_o, [ collect(nm + 1 : 2 * nm) ; collect(1 : nm) ]) # perm_o[1] = [9,10,...,16,1,2,...,8]
+push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no]) # perm_o[1] = [2,1,4,3,...,16,15]
 push!(ph_o, fill(1, no)) # ph_o[1] = [1,1,...,1] meaning PH
-push!(fac_o, [ fill(ComplexF64(1), nm) ; fill(ComplexF64(-1), nm) ]) # fac_o[1] = [1,1,...,1,-1,-1,...,-1]
+push!(fac_o, [ isodd(o) ? -1 : 1 for o = 1 : no]) # fac_o[1] = [1,-1,1,-1,...,1,-1]
 # Record the flavour symmetry
-push!(perm_o, [ collect(nm + 1 : 2 * nm) ; collect(1 : nm) ]) # perm_o[2] = [9,10,...,16,1,2,...,8]
-push!(ph_o, fill(0, no)) # ph_o[2] = [0,0,...,0] meaning no PH
-push!(fac_o, fill(ComplexF64(1), no)) # fac_o[2] = [1,1,...,1]
-# Record the pi-rotation
-push!(perm_o, [ collect(nm : -1 : 1) ; collect(2 * nm : -1 : nm + 1) ]) # perm_o[3] = [8,7,...,1,16,15,...,9]
+push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no]) # perm_o[3] = [2,1,4,3,...,16,15]
 push!(ph_o, fill(0, no)) # ph_o[3] = [0,0,...,0] meaning no PH
 push!(fac_o, fill(ComplexF64(1), no)) # fac_o[3] = [1,1,...,1]
+# Record the pi-rotation
+push!(perm_o, [ isodd(o) ? no - o : no + 2 - o for o = 1 : no]) # perm_o[2] = [15,16,13,14,...,1,2]
+push!(ph_o, fill(0, no)) # ph_o[2] = [0,0,...,0] meaning no PH
+push!(fac_o, fill(ComplexF64(1), no)) # fac_o[2] = [1,1,...,1]
 # Generate the basis and print the dimension
 @time "Initialise basis" bs = Basis(cfs, qnz_s, cyc, perm_o, ph_o, fac_o)
 @show bs.dim 
@@ -60,25 +59,24 @@ using WignerSymbols
 # Input the parameters of the Hamiltonian
 ps_pot = [ 4.75, 1. ] * 2.
 h = 3.16
-cstr_hmt = []
-fac_hmt = Array{ComplexF64, 1}(undef, 0)
+tms_hmt = Vector{Term}(undef, 0)
 # Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
 for m1 = 0 : nm - 1
     f1 = 0
-    o1 = m1 + f1 * nm + 1
+    o1 = m1 * nf + f1 + 1
     m1r = m1 - s
     for m2 = 0 : nm - 1
         f2 = 1
-        o2 = m2 + f2 * nm + 1
+        o2 = m2 * nf + f2 + 1
         m2r = m2 - s
         for m3 = 0 : nm - 1
             f3 = 1
-            o3 = m3 + f3 * nm + 1
+            o3 = m3 * nf + f3 + 1
             m3r = m3 - s
             m4 = m1 + m2 - m3 
             if (m4 < 0 || m4 >= nm) continue end
             f4 = 0
-            o4 = m4 + f4 * nm + 1
+            o4 = m4 * nf + f4 + 1
             m4r = m4 - s
             # Calculate the matrix element val from pseudopotentials
             val = ComplexF64(0)
@@ -87,19 +85,16 @@ for m1 = 0 : nm - 1
                 val += ps_pot[l] * (2 * nm - 2 * l + 1) * wigner3j(s, s, nm - l, m1r, m2r, -m1r - m2r) * wigner3j(s, s, nm - l, m4r, m3r, -m3r - m4r)
             end 
             # Record the interaction term val, "Cdag", o1, "Cdag", o2, "C", o3, "C", o4
-            push!(cstr_hmt, [1, o1, 1, o2, 0, o3, 0, o4])
-            push!(fac_hmt, val)
+            push!(tms_hmt, Term(val, [1, o1, 1, o2, 0, o3, 0, o4]))
         end
     end
-    o1x = o1 + nm
+    o1x = o1 + 1
     # Record the transverse field term
-    push!(cstr_hmt, [1, o1, 0, o1x])
-    push!(fac_hmt, -h)
-    push!(cstr_hmt, [1, o1x, 0, o1])
-    push!(fac_hmt, -h)
+    push!(tms_hmt, Term(-h, [1, o1, 0, o1x]))
+    push!(tms_hmt, Term(-h, [1, o1x, 0, o1]))
 end
 # Generate the Hamiltonian operator
-hmt = Operator(bs, bs, cstr_hmt, fac_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
 
 
 #=========================================
@@ -116,27 +111,23 @@ GENERATE THE SPARSE MATRIX AND DIAGONALISE
 MEASURE THE TOTAL ANGULAR MOMENTUM OBSERVABLE
 ============================================#
 
-cstr_l2 = []
-fac_l2 = Array{ComplexF64, 1}(undef, 0)
+tms_l2 = Vector{Term}(undef, 0)
 for o1 = 1 : no 
-    m1 = mod(o1 - 1, nm) 
+    m1 = div(o1 - 1, nf) 
     # record the -Lz term
-    push!(cstr_l2, [1, o1, 0, o1])
-    push!(fac_l2, -(m1 - s))
+    push!(tms_l2, Term(-(m1 - s), [1, o1, 0, o1]))
     for o2 = 1 : no 
-        m2 = mod(o2 - 1, nm)
+        m2 = div(o2 - 1, nf)
         # record the Lz^2 term
-        push!(cstr_l2, [1, o2, 0, o2, 1, o1, 0, o1])
-        push!(fac_l2, (m1 - s) * (m2 - s))
+        push!(tms_l2, Term((m1 - s) * (m2 - s), [1, o2, 0, o2, 1, o1, 0, o1]))
         if m1 == nm - 1 continue end
         if m2 == 0 continue end 
         # record the L+L- term
-        push!(cstr_l2, [1, o1 + 1, 0, o1, 1, o2 - 1, 0, o2])
-        push!(fac_l2, sqrt(m2 * (nm - m2) * (m1 + 1) * (nm - m1 - 1)))
+        push!(tms_l2, Term(sqrt(m2 * (nm - m2) * (m1 + 1) * (nm - m1 - 1)), [1, o1 + nf, 0, o1, 1, o2 - nf, 0, o2]))
     end
 end
 # Initialise the L2 operator
-l2 = Operator(bs, bs, cstr_l2, fac_l2 ; red_q = 1, sym_q = 1)
+l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
 @time "Initialise L2" l2_mat = OpMat(l2)
 # Calculate the inner product for each eigenstate
 @time "Measure L2" l2_val = [ st[:, i]' * l2_mat * st[:, i] for i = 1 : length(enrg)]
@@ -155,7 +146,7 @@ MEASURE THE DENSITY OPERATOR OBSERVABLE
 qnz_s1 = ComplexF64[ 1, -1, 1 ] # Change only the discrete quantum numbers and generate the basis
 @time "Initialise Basis Z" bs1 = Basis(cfs, qnz_s1, cyc, perm_o, ph_o, fac_o) 
 @show bs1.dim 
-hmt = Operator(bs1, bs1, cstr_hmt, fac_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
+hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
 @time "Initialise Hamiltonian" hmtmat = OpMat(hmt)
 @show hmtmat.nel
 @time "Diagonalise Hamiltonian" enrg1, st1 = GetEigensystem(hmtmat, 10)
@@ -166,16 +157,14 @@ st_e = st[:, 2] # epsilon state
 st_s = st1[:, 1]
 
 # Record the density operator n^z
-cstr_nz = []
-fac_nz = Array{ComplexF64, 1}(undef, 0)
-for o1u = 1 : nm
-    o1d = o1u + nm
-    push!(cstr_nz, [1, o1u, 0, o1u])
-    push!(fac_nz, 1 / nm)
-    push!(cstr_nz, [1, o1d, 0, o1d])
-    push!(fac_nz, -1 / nm)
+tms_nz = Vector{Term}(undef, 0)
+for m1 = 0 : nm - 1
+    o1u = 2 * m1 + 1
+    o1d = 2 * m1 + 2
+    push!(tms_nz, Term( 1 / nm, [1, o1u, 0, o1u]))
+    push!(tms_nz, Term(-1 / nm, [1, o1d, 0, o1d]))
 end
 # The nz operator sends a state in bs (+) to bs1 (-)
-nz = Operator(bs, bs1, cstr_nz, fac_nz ; red_q = 1)
+nz = Operator(bs, bs1, tms_nz ; red_q = 1)
 # Measuring the finite size OPE
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
