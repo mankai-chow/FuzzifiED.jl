@@ -1,13 +1,19 @@
 module FuzzifiED 
 
 using LinearAlgebra
+import Base.:+
+import Base.:-
 import Base.:*
+import Base.:/
+import Base.adjoint
+
 LibpathFuzzifiED = filter(f -> endswith(f, ".so"), readdir(dirname(@__FILE__), join = true))[1]
 
-include("confs.jl")
-include("basis.jl")
-include("operator.jl")
-include("opmat.jl")
+include("basics/confs.jl")
+include("basics/basis.jl")
+include("basics/term.jl")
+include("basics/operator.jl")
+include("basics/opmat.jl")
 
 export Confs
 export Basis
@@ -23,6 +29,21 @@ module ITensorsSupport
 
     export ConfsFromSites
     export OperatorFromOpSum
+end
+
+module Models 
+    using ..FuzzifiED 
+    using WignerSymbols
+    
+    include("models/threej.jl")
+    include("models/l2.jl")
+    include("models/ising.jl")
+
+    export GetInteractionMatrix
+    export GenerateL2Terms
+    export GenerateIsingConfs
+    export GenerateIsingBasis
+    export GenerateIsingHamiltonianTerms
 end
 
 end
