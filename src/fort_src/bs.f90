@@ -26,10 +26,10 @@ subroutine generate_trs(no, nor, ncf, lid, rid, conf, perm_o, ph_o, fac_o, id_f,
         cfp = 0
         do o = 0, no - 1
             o1 = perm_o(o + 1) - 1
+            if (kibits(cf, o, 1_8) == 1) cfp = kieor(cfp, kibits(cf1, o1 + 1, no))
             if (kibits(cf, o, 1_8) == ph_o(o + 1)) cycle
             phi = phi * fac_o(o + 1)
             cf1 = kibset(cf1, o1)
-            cfp = kieor(cfp, kibits(cf1, o1 + 1, no))
             ne = ne + 1
             ide(ne) = o1
         end do
