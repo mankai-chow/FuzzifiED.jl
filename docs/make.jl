@@ -6,4 +6,7 @@ using LinearAlgebra, ITensors
 using .FuzzifiED
 using .FuzzifiED.ITensorSupport
 
-makedocs(sitename = "FuzzifiED.jl") 
+makedocs(sitename = "FuzzifiED.jl", 
+    pages = ["Home" => "index.md", 
+        "Example" => "example.md",
+        "Reference" => "reference.md"]) 
