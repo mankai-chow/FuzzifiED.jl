@@ -1,0 +1,91 @@
+"""
+    Term
+
+A `Term` object records a term that looks like ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}\\dots c^{(p_l)}_{o_l}`` in an operator
+
+# Fields
+- `coeff :: ComplexF64` records the coefficient ``U``
+- `cstr :: Vector{Int64}` is a length-``2l`` vector ``(p_1,o_1,p_2,o_2,\\dots p_l,o_l)`` recording the operator string
+"""
+mutable struct Term 
+    coeff :: ComplexF64 
+    cstr :: Vector{Int64}
+end 
+
+"""
+    Operator
+
+An `Operator` object records the sum of terms together with information about its symmetry.
+
+# Fields
+* `bsd :: Basis` is the basis of the initial state ;
+* `bsf :: Basis` is the basis of the final state ;
+* `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same quantum numbers, and the operator fully respects the symmetries, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0` ; 
+* `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0` ;
+* `ntm :: Int64` is the number of terms ;
+* `nc :: Int64` is the maximum number of operators in an operator string
+* `cstrs :: Matrix{Int64}` is a matrix recording the operator string of each term. Each column corresponds to a term and is padded to the maximum length with `-1`'s.
+* `coeffs :: Vector{ComplexF64}` corresponds to the coefficients in each term.
+"""
+mutable struct Operator 
+    bsd :: Basis 
+    bsf :: Basis
+    red_q :: Int64
+    sym_q :: Int64
+    ntm :: Int64
+    nc :: Int64
+    cstrs :: Matrix{Int64}
+    coeffs :: Vector{ComplexF64}
+end 
+
+"""
+    Operator(bsd :: Basis, bsf :: Basis, cstr_vec :: Vector{Vector{Int64}}, coeffs :: Vector{ComplexF64} ; red_q :: Int64, sym_q :: Int64) :: Operator
+
+# Arguments
+* `bsd :: Basis` is the basis of the initial state ;
+* `bsf :: Basis` is the basis of the final state ;
+* `terms :: Vector{Term}` records the terms ; 
+* `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same quantum numbers, and the operator fully respects the symmetries, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0` ; 
+* `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0`. 
+"""
+function Operator(bsd :: Basis, bsf :: Basis, terms :: Vector{Term} ; red_q :: Int64 = 0, sym_q :: Int64 = 0)
+    ntm = length(terms)
+    nc = div(maximum([length(tm.cstr) for tm in terms]), 2)
+    cstrs_vec = [ [tm.cstr ; fill(-1, 2 * nc - length(tm.cstr))] for tm in terms]
+    cstrs = reduce(hcat, cstrs_vec)
+    coeffs = [ tm.coeff for tm in terms ]
+    return Operator(bsd, bsf, red_q, sym_q, ntm, nc, cstrs, coeffs)
+end
+
+"""
+    *(op :: Operator, st_d :: Vector{ComplexF64})
+
+Measure the action of an operator on a state. `st_d` must be of length `op.bsd.dim`. Returns a vector of length `op.bsf.dim` that represents the final state. 
+
+Note that sometimes it is needed to transform a state from one basis to another. This can be done by constructing an identity operator. 
+```julia
+stf = Operator(bsd, bsf, [[-1, -1]], [ComplexF64(1)]) * std
+```
+"""
+function *(op :: Operator, st_d :: Vector{ComplexF64})
+    st_f = Array{ComplexF64, 1}(undef, op.bsf.dim)
+    @ccall LibpathFuzzifiED.op_mp_action_op_(op.bsd.cfs.no :: Ref{Int64}, op.bsd.cfs.nor :: Ref{Int64}, 
+    op.bsd.cfs.ncf :: Ref{Int64}, op.bsd.dim :: Ref{Int64}, op.bsd.cfs.conf :: Ref{Int64}, op.bsd.cfs.lid :: Ref{Int64}, op.bsd.cfs.rid :: Ref{Int64}, op.bsd.szz :: Ref{Int64}, op.bsd.cfgr :: Ref{Int64}, op.bsd.cffac :: Ref{ComplexF64}, op.bsd.grel :: Ref{Int64}, op.bsd.grsz :: Ref{Int64}, 
+    op.bsf.cfs.ncf :: Ref{Int64}, op.bsf.dim :: Ref{Int64}, op.bsf.cfs.conf :: Ref{Int64}, op.bsf.cfs.lid :: Ref{Int64}, op.bsf.cfs.rid :: Ref{Int64}, op.bsf.szz :: Ref{Int64}, op.bsf.cfgr :: Ref{Int64}, op.bsf.cffac :: Ref{ComplexF64}, op.bsf.grel :: Ref{Int64}, op.bsf.grsz :: Ref{Int64}, 
+    op.ntm :: Ref{Int64}, op.nc :: Ref{Int64}, op.cstrs :: Ref{Int64}, op.coeffs :: Ref{ComplexF64}, op.red_q :: Ref{Int64}, st_d :: Ref{ComplexF64}, st_f :: Ref{ComplexF64}) :: Nothing
+    return st_f
+end
+
+"""
+    *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op :: Operator, st_d :: Vector{ComplexF64}) :: ComplexF64
+
+Measuring the inner product between two states and an operator. `st_d` must be of length `op.bsd.dim` and `st_fp` must be of length `op.bsf.dim`, and `st_fp` must be an adjoint. 
+"""
+function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op :: Operator, st_d :: Vector{ComplexF64})
+    ovl_ref = Ref{ComplexF64}(0)
+    @ccall LibpathFuzzifiED.op_mp_overlap_op_(op.bsd.cfs.no :: Ref{Int64}, op.bsd.cfs.nor :: Ref{Int64}, 
+    op.bsd.cfs.ncf :: Ref{Int64}, op.bsd.dim :: Ref{Int64}, op.bsd.cfs.conf :: Ref{Int64}, op.bsd.cfs.lid :: Ref{Int64}, op.bsd.cfs.rid :: Ref{Int64}, op.bsd.szz :: Ref{Int64}, op.bsd.cfgr :: Ref{Int64}, op.bsd.cffac :: Ref{ComplexF64}, op.bsd.grel :: Ref{Int64}, op.bsd.grsz :: Ref{Int64}, 
+    op.bsf.cfs.ncf :: Ref{Int64}, op.bsf.dim :: Ref{Int64}, op.bsf.cfs.conf :: Ref{Int64}, op.bsf.cfs.lid :: Ref{Int64}, op.bsf.cfs.rid :: Ref{Int64}, op.bsf.szz :: Ref{Int64}, op.bsf.cfgr :: Ref{Int64}, op.bsf.cffac :: Ref{ComplexF64}, op.bsf.grel :: Ref{Int64}, op.bsf.grsz :: Ref{Int64}, 
+    op.ntm :: Ref{Int64}, op.nc :: Ref{Int64}, op.cstrs :: Ref{Int64}, op.coeffs :: Ref{ComplexF64}, op.red_q :: Ref{Int64}, st_d :: Ref{ComplexF64}, st_fp' :: Ref{ComplexF64}, ovl_ref :: Ref{ComplexF64}) :: Nothing 
+    return ovl_ref[]
+end
