@@ -1,3 +1,5 @@
+! ifort -shared -fPIC -larpack -qopenmp -O3 -o lib_fuzzifi_ed.so ./fort_src/*.f90
+
 module cfs
     
 contains

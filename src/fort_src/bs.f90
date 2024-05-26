@@ -13,25 +13,27 @@ subroutine generate_trs(no, nor, ncf, lid, rid, conf, perm_o, ph_o, fac_o, id_f,
     integer(8), intent(out) :: id_f(ncf)
     complex(8), intent(out) :: phase(ncf)
 
-    integer(8) :: i, o, o1, cf, cf1, cfp, ide(no), ne, sgn, sgn1
+    integer(8) :: i, o, o1, cf, cf1, cfp, ide(no), ne, sgn, sgn1, cf0 
     complex(8) :: phi
 
-    !$omp parallel shared(no, nor, perm_o, fac_o, ncf, lid, rid, conf, id_f, phase) private(i, o, o1, cf, cf1, ide, ne, sgn, phi, sgn1)
+    cf0 = 0 
+    do o = 0, no - 1
+        if (ph_o(o + 1) == 1) cf0 = kibset(cf0, o)
+    end do
+    !$omp parallel shared(no, nor, perm_o, fac_o, ncf, lid, rid, conf, id_f, phase, cf0) private(i, o, o1, cf, cf1, ide, ne, sgn, phi, sgn1)
     !$omp do 
     do i = 1, ncf
         cf = conf(i)
-        cf1 = 0
+        cf1 = cf0
         ne = 0
         phi = 1.
         cfp = 0
-        do o = 0, no - 1
-            o1 = perm_o(o + 1) - 1
-            if (kibits(cf, o, 1_8) == 1) cfp = kieor(cfp, kibits(cf1, o1 + 1, no))
-            if (kibits(cf, o, 1_8) == ph_o(o + 1)) cycle
+        do o = no - 1, 0, -1
+            o1 = perm_o(o + 1) - 1 
+            if (kibits(cf, o, 1_8) == 0) cycle
             phi = phi * fac_o(o + 1)
-            cf1 = kibset(cf1, o1)
-            ne = ne + 1
-            ide(ne) = o1
+            cf1 = kieor(cf1, kibset(0_8, o1))
+            cfp = kieor(cfp, kibits(cf1, 0_8, o1))
         end do
         sgn = 0
         do o = 0, no - 1
