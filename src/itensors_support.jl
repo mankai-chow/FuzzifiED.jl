@@ -64,30 +64,29 @@ end
 Note that the only operators supported are `"C"`, `"Cdag"` `"N"` and `"I"`.
 """
 function OperatorFromOpSum(bsd :: Basis, bsf :: Basis, opsum :: Sum{Scaled{ComplexF64, Prod{Op}}} ; red_q :: Int64 = 0, sym_q :: Int64 = 0)
-    cstr_vec = []
-    fac = Vector{ComplexF64}(undef, 0)
+    tms = Vector{Term}(undef,0)
     for i = 1 : length(opsum)
-        cstri = []
+        cstr = []
         for j = 1 : length(opsum[i])
             optype = opsum[i][j].which_op
             opsite = opsum[i][j].sites[1]
             if optype == "Cdag"
-                append!(cstri, [1, opsite])
+                append!(cstr, [1, opsite])
             elseif optype == "C"
-                append!(cstri, [0, opsite])
+                append!(cstr, [0, opsite])
             elseif optype == "N"
-                append!(cstri, [1, opsite, 0, opsite])
+                append!(cstr, [1, opsite, 0, opsite])
             elseif optype == "I"
-                append!(cstri, [-1, -1])
+                append!(cstr, [-1, -1])
             else 
                 print("The only operator supported are C, Cdag and N")
             end
         end 
         if length(opsum[i]) == 0
-            append!(cstri, [-1, -1])
+            append!(cstr, [-1, -1])
         end
-        push!(fac, coefficient(opsum[i]))
-        push!(cstr_vec, cstri)
+        fac = coefficient(opsum[i])
+        push!(tms, Term(fac, cstr))
     end
-    return Operator(bsd, bsf, cstr_vec, fac ; red_q, sym_q)
+    return Operator(bsd, bsf, tms ; red_q, sym_q)
 end
