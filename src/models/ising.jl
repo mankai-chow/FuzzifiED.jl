@@ -68,7 +68,7 @@ end
 - `ps_pot :: Vector{Number}` is the pseudopotential of Ising interaction.
 - `fld_h :: Number` is the transverse field.
 """
-function GenerateIsingHamiltonianTerms(nm :: Int64 ; ps_pot :: Vector{Number} = Number[4.75, 1], fld_h :: Number = 3.16)
+function GetIsingIntTerms(nm :: Int64, ps_pot :: Vector)
     nf = 2
     no = nm * 2
     int_el = GetIntMatrix(nm, ps_pot)
@@ -87,12 +87,35 @@ function GenerateIsingHamiltonianTerms(nm :: Int64 ; ps_pot :: Vector{Number} = 
                 if (m4 <= 0 || m4 > nm) continue end
                 f4 = 0
                 o4 = (m4 - 1) * nf + f4 + 1
-                push!(tms_hmt, Term(int_el[m1, m2, m3] * 2., [1, o1, 1, o2, 0, o3, 0, o4]))
+                push!(tms_ising, Term(int_el[m1, m2, m3] * 2., [1, o1, 1, o2, 0, o3, 0, o4]))
             end
         end
-        o1x = o1 + 1
-        push!(tms_hmt, Term(-fld_h, [1, o1, 0, o1x]))
-        push!(tms_hmt, Term(-fld_h, [1, o1x, 0, o1]))
     end
-    return tms_hmt
+    return tms_ising
+end
+
+"""
+    function GetXPolTerms(nm :: Int64)
+
+Returns the terms for the density operator ``n^x_{l=0,m=0}``
+
+# Arguments 
+
+- `nm :: Int64` is the number of orbitals.
+"""
+function GetXPolTerms(nm :: Int64)
+    return [ Term(1, [1, isodd(i) ? i + 1 : i - 1, 0, i]) for i = 1 : 2 * nm]
+end
+
+"""
+    function GetZPolTerms(nm :: Int64)
+
+Returns the terms for the density operator ``n^z_{l=0,m=0}``
+
+# Arguments 
+
+- `nm :: Int64` is the number of orbitals.
+"""
+function GetZPolTerms(nm :: Int64)
+    return [ Term(isodd(i) ? 1 : -1, [1, i, 0, i]) for i = 1 : 2 * nm]
 end
