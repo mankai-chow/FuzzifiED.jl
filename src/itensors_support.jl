@@ -88,5 +88,24 @@ function OperatorFromOpSum(bsd :: Basis, bsf :: Basis, opsum :: Sum{Scaled{Compl
         fac = coefficient(opsum[i])
         push!(tms, Term(fac, cstr))
     end
-    return Operator(bsd, bsf, tms ; red_q, sym_q)
+    return tms
+end
+
+"""
+    function OpSumFromTerms(tms :: Vector{Term}) :: Sum{Scaled{ComplexF64, Prod{Op}}}
+
+Converts a series of terms to `OpSum` object in `ITensors`.
+
+"""
+function OpSumFromTerms(tms :: Vector{Term})
+    opsum = OpSum()
+    for tm in tms
+        optm = Any[tm.coeff]
+        for i = 1 : 2 : length(tm.cstr)
+            push!(optm, tm.cstr[i] == 0 ? "C" : "Cdag")
+            push!(optm, tm.cstr[i + 1])
+        end
+        opsum += Tuple(optm)
+    end
+    return opsum
 end
