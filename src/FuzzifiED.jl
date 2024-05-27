@@ -1,6 +1,7 @@
 module FuzzifiED 
 
 using LinearAlgebra
+using SparseArrays
 import Base.:+
 import Base.:-
 import Base.:*
@@ -21,6 +22,9 @@ export Term
 export Operator
 export OpMat
 export GetEigensystem
+export SparseMatrixCSCFromOpMat
+export GetConfId
+export GetConfWeight
 
 module ITensorsSupport 
     using ..FuzzifiED
@@ -28,7 +32,8 @@ module ITensorsSupport
     include("itensors_support.jl")
 
     export ConfsFromSites
-    export OperatorFromOpSum
+    export TermsFromOpSum
+    export OpSumFromTerms
 end
 
 module Models 
@@ -38,12 +43,22 @@ module Models
     include("models/threej.jl")
     include("models/l2.jl")
     include("models/ising.jl")
+    include("models/spn.jl")
 
-    export GetInteractionMatrix
-    export GenerateL2Terms
-    export GenerateIsingConfs
-    export GenerateIsingBasis
-    export GenerateIsingHamiltonianTerms
+    export GetIntMatrix
+    export GetL2Terms
+
+    export GetIsingConfs
+    export GetIsingBasis
+    export GetIsingIntTerms
+    export GetXPolTerms
+    export GetZPolTerms
+
+    export GetSpnConfs 
+    export GetSpnBasis 
+    export GetIdDenIntTerms 
+    export GetSpnPairIntTerms
+    export GetSpnC2Terms
 end
 
 end
