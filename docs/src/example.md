@@ -2,6 +2,8 @@
 
 In this example, we will illustrate how to use  `FuzzifiED` to calculate the spectrum of Ising model on fuzzy sphere and how to calculate the OPE coefficient ``\lambda_{\sigma\sigma\epsilon}`` by measuring the expectation value of the density operator ``n^z``. 
 
+The examples can be found in the directory [`example`](https://github.com/mankai-chow/FuzzifiED.jl/tree/main/example). Three versions of this example is provided. The first does not use the built-in example and is stored in [`example_ising_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/example/example_ising_primitive.jl) ; the second uses the interfaces with ITensors and is stored in [`example/example_ising_itensors.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/example/example_ising_itensors.jl) ; the third uese the built-in example for the Ising model and is stored in [`example/example_ising.jl`]((https://github.com/mankai-chow/FuzzifiED.jl/blob/main/example/example_ising.jl). The explanations following applied mainly to the primitive version. 
+
 ## Implement the conserved quantities and generate the configurations
 
 `FuzzifiED` supports conserved quantities in the form of 
@@ -66,6 +68,12 @@ qn_s = QN(("Nf", ne), ("Lz", Int(ne * s)))
 @show cfs.ncf
 ```
 
+### Built-in model 
+Using The built-in Ising model, the process above can be done in one line with the method [`GetIsingConfs`](@ref).
+```julia
+cfs = GetIsingConfs(nm)
+```
+
 ## Implement the discrete symmetries and initialise the basis
 
 `FuzzifiED` supports discrete ``\mathbb{Z}_n`` symmetries in the form of 
@@ -120,6 +128,12 @@ push!(fac_o, fill(ComplexF64(1), no)) # fac_o[2] = [1,1,...,1]
 ```
 
 Note that if no discrete symmetry is needed, one can simply put instead `bs = Basis(conf)`
+
+### Built-in model 
+Using The built-in Ising model, the process above can be done in one line with the method [`GetIsingBasis`](@ref).
+```julia
+bs = GetIsingBasis(cfs ; qn_p = 1, qn_r = 1, qn_z = 1)
+```
 
 ## Record the Hamiltonian operator
 The operator here refers to the sum of product of ``c`` and ``c^\dagger``'s in the form 
@@ -181,7 +195,7 @@ hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
 
 ### ITensor support
 
-Alternatively, one can generate the operator using an `OpSum` object instead of `cstr_vec` and `fac` using the function [`OperatorFromOpSum`](@ref).
+Alternatively, one can generate the operator using an `OpSum` object instead of `cstr_vec` and `fac` using the function [`TermsFromOpSum`](@ref).
 
 For the Hamiltonian of Ising model,
 ```julia
@@ -225,18 +239,27 @@ for m1 = 0 : nm - 1
     global ops_hmt += -h, "Cdag", o1x, "C", o1
 end
 # Generate the Hamiltonian operator
-hmt = OperatorFromOpSum(bs, bs, ops_hmt ; red_q = 1, sym_q = 1)
+tms_hmt = TermsFromOpSum(ops_hmt)
+hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+```
+
+### Built-in model 
+Using The built-in Ising model, the process above can be done in one line with the method [`GetIsingIntTerms`](@ref) and [`GetXPolTerms`](@ref)
+```julia
+tms_hmt = GetIsingIntTerms(nm, [4.75, 1.]) - 3.16 * GetXPolTerms(nm)
 ```
 
 ## Generate the sparse matrix and diagonalise
 
 After specifying the Hamiltonian, we then use the [`OpMat`](@ref) to generate a sparse matrix from the operator. To get the 10 lowest eigenstates and their energies
 ```julia
-@time "Initialise the Hamiltonian matrix" hmtmat = OpMat(hmt)
-@show hmtmat.nel
-@time "Diagonalise Hamiltonian" enrg, st = GetEigensystem(hmtmat, 10)
+@time "Initialise the Hamiltonian matrix" hmt_mat = OpMat(hmt)
+@show hmt_mat.nel
+@time "Diagonalise Hamiltonian" enrg, st = GetEigensystem(hmt_mat, 10)
 @show real(enrg)
 ```
+
+We also note that matrices with real elements can be generated with the option `type = Float64` in the `OpMat` function. 
 
 ## Measuring the angular momentum
 
@@ -279,6 +302,13 @@ st_L2T = l2_mat * st[:, 3]
 @show abs(st_L2T' * st_T) ^ 2 / ((st_T' * st_T) * (st_L2T' * st_L2T))
 ```
 
+### Built-in model 
+Using The built-in Ising model, the generation of the terms in total angular momentum can be done in one line with the method [`GetL2Terms`](@ref)
+```julia
+tms_l2 = GetL2Terms(nm, 2)
+```
+This method also applies to other models on fuzzy sphere. 
+
 ## Measuring the density operator
 
 Similar process can be used to calculate the OPE coefficient by measuring the density operator, by definition 
@@ -294,9 +324,9 @@ qnz_s1 = ComplexF64[ 1, -1, 1 ] # Change only the discrete quantum numbers and g
 @time "Initialise Basis Z" bs1 = Basis(cfs, qnz_s1, cyc, perm_o, ph_o, fac_o) 
 @show bs1.dim 
 hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
-@time "Initialise Hamiltonian" hmtmat = OpMat(hmt)
-@show hmtmat.nel
-@time "Diagonalise Hamiltonian" enrg1, st1 = GetEigensystem(hmtmat, 10)
+@time "Initialise Hamiltonian" hmt_mat = OpMat(hmt)
+@show hmt_mat.nel
+@time "Diagonalise Hamiltonian" enrg1, st1 = GetEigensystem(hmt_mat, 10)
 @show real(enrg1)
 # Record the identity, sigma and epsilon states 
 st_I = st[:, 1] # ground state
@@ -313,23 +343,9 @@ nz = Operator(bs, bs1, tms_nz ; red_q = 1)
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
 ```
 
-## Use the built-in models
-
-The basis, Hamiltonian and the total angular momentum of the Ising model is built in the package (_cf._ [built-in models](@ref Built-in-models) and [Ising model](@ref Ising-model)). So one can write instead
+### Built-in model 
+Using The built-in Ising model, the generation of the terms in density operator can be done in one line with the method [`GetZPolTerms`](@ref)
 ```julia
-nm = 12
-cfs = GenerateIsingConfs(nm) # Implement the conserved quantities and generate the confs
-bs = GenerateIsingBasis(cfs ; PH = 1, Ry = 1, Z2 = 1) # Implement the discrete symmetries and initialise the basis
-tms_hmt = GenerateIsingHamiltonianTerms(nm ; ps_pot = Number[4.75, 1.], fld_h = 3.16)
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1) # Record the Hamiltonian operator
-hmtmat = OpMat(hmt) # Generate the sparse matrix and diagonalise
-enrg, st = GetEigensystem(hmtmat, 10)
-@show real(enrg)
-
-# Measure the total angular momentum observable
-tms_l2 = GenerateL2Terms(nm, 2)
-l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
-l2_mat = OpMat(l2)
-l2_val = [ st[:, i]' * l2_mat * st[:, i] for i = 1 : length(enrg)]
-@show real(l2_val)
+tms_nz = GetZPolTerms(nm) 
 ```
+This method also applies to other models on fuzzy sphere. 
