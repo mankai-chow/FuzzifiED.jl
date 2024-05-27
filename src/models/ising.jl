@@ -71,8 +71,8 @@ end
 function GenerateIsingHamiltonianTerms(nm :: Int64 ; ps_pot :: Vector{Number} = Number[4.75, 1], fld_h :: Number = 3.16)
     nf = 2
     no = nm * 2
-    int_el = GetInteractionMatrix(nm, ps_pot)
-    tms_hmt = Vector{Term}(undef, 0)
+    int_el = GetIntMatrix(nm, ps_pot)
+    tms_ising = Vector{Term}(undef, 0)
     # Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
     for m1 = 1 : nm
         f1 = 0

@@ -9,7 +9,7 @@
 # Output
 - A `nm`*`nm`*`nm` array giving the interaction matrix ``U_{m_1,m_2,m_3,-m_1-m_2-m_3}``
 """
-function GetInteractionMatrix(nm :: Int64, ps_pot :: Vector{Number})
+function GetIntMatrix(nm :: Int64, ps_pot :: Vector)
     ## N = 2s+1, get V[i,j,k,l]
     int_el = zeros(ComplexF64, nm, nm, nm)
     s = .5 * (nm - 1)
