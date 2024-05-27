@@ -13,14 +13,14 @@ subroutine generate_trs(no, nor, ncf, lid, rid, conf, perm_o, ph_o, fac_o, id_f,
     integer(8), intent(out) :: id_f(ncf)
     complex(8), intent(out) :: phase(ncf)
 
-    integer(8) :: i, o, o1, cf, cf1, cfp, ide(no), ne, sgn, sgn1, cf0 
+    integer(8) :: i, o, o1, cf, cf1, cfp, ne, sgn, cf0 
     complex(8) :: phi
 
     cf0 = 0 
     do o = 0, no - 1
         if (ph_o(o + 1) == 1) cf0 = kibset(cf0, o)
     end do
-    !$omp parallel shared(no, nor, perm_o, fac_o, ncf, lid, rid, conf, id_f, phase, cf0) private(i, o, o1, cf, cf1, ide, ne, sgn, phi, sgn1)
+    !$omp parallel shared(no, nor, perm_o, fac_o, ncf, lid, rid, conf, id_f, phase, cf0) private(i, o, o1, cf, cf1, ne, sgn, phi)
     !$omp do 
     do i = 1, ncf
         cf = conf(i)
