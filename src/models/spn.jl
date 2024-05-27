@@ -1,3 +1,44 @@
+""" 
+    function GetIsingQnu(nm :: Int64) :: @NamedTuple{qnu_o :: Vector{Vector{Int64}}, qn_name :: Vector{String}, modul :: Vector{Int64}}
+
+returns the diagonal quantum numbers, _i.e._, particle number ``N_e``, angular momentum ``L_z`` and Cartans of the ``\\mathrm{Sp}(N)`` symmetry, of the fuzzy sphere Ising model. 
+
+# Arguments 
+
+- `nm :: Int64` is the number of orbitals ; 
+- `nf :: Int64` is the number of flavours ; 
+
+# Output
+
+A named tuple with three elements that can be directly fed into [`SitesFromQN`](@ref)
+
+- `qnu_o :: Vector{Vector{Int64}}` stores the charge of each orbital under each conserved quantity. See [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)))) for detail.
+- `qn_name :: Vector{String}` stores the name of each quantum number.
+- `modul :: Vector{Int64}` stores the modulus of each quantum number, 1 if no modulus. 
+
+"""
+function GetSpnQnu(nm :: Int64, nf :: Int64)
+    no = nf * nm
+    qnu_o = []
+    qn_name = Vector{String}(undef, 0)
+    modul = Vector{Int64}(undef, 0)
+    # Record the number of electrons
+    push!(qnu_o, fill(1, no)) 
+    push!(qn_name, "N_e")
+    push!(modul, 1)
+    # Record the angular momentum
+    push!(qnu_o, [ div(o - 1, nf) for o = 1 : no ]) 
+    push!(qn_name, "L_z")
+    push!(modul, 1)
+    # Record the Cartan 
+    for f = 0 : div(nf, 2) - 1
+        push!(qnu_o, vcat([ mod(f1, nf) == f ? 2 : (mod(f1, nf) == f + nf / 2 ? 0 : 1) for f1 = 0 : nf - 1, m1 = 1 : nm]...))
+        push!(qn_name, "S_z" * string(f + 1))
+        push!(modul, 1)
+    end
+    return (qnu_o = qnu_o, qn_name = qn_name, modul = modul)
+end
+
 """
     function GetSpnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, sz :: Vector{Int64}) :: Confs
 
@@ -22,19 +63,13 @@ function GetSpnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0
     no = nf * nm
     s = .5 * (nm - 1)
     qnu_s = Vector{Int64}(undef, 0)
-    qnu_o = []
-    # Record the number of electrons
-    push!(qnu_o, fill(1, no)) 
     push!(qnu_s, ne) 
-    # Record the angular momentum
-    push!(qnu_o, [ div(o - 1, nf) for o = 1 : no ]) 
     push!(qnu_s, Int(ne * s + lz))
-    # Record the Cartan 
     for f = 0 : div(nf, 2) - 1
-        push!(qnu_o, vcat([ mod(f1, nf) == f ? 2 : (mod(f1, nf) == f + nf / 2 ? 0 : 1) for f1 = 0 : nf - 1, m1 = 1 : nm]...))
         push!(qnu_s, ne + sz[f + 1])
     end
-    return Confs(no, qnu_s, qnu_o)
+    qnu = GetSpnQnu(nm, nf)
+    return Confs(no, qnu_s, qnu.qnu_o)
 end
 
 """

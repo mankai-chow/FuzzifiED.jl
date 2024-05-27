@@ -1,3 +1,32 @@
+""" 
+    function GetIsingQnu(nm :: Int64) :: @NamedTuple{qnu_o :: Vector{Vector{Int64}}, qn_name :: Vector{String}, modul :: Vector{Int64}}
+
+returns the diagonal quantum numbers, _i.e._, particle number ``N_e`` and angular momentum ``L_z``, of the fuzzy sphere Ising model. 
+
+# Arguments 
+
+- `nm :: Int64` is the number of orbitals ; 
+
+# Output
+
+A named tuple with three elements that can be directly fed into [`SitesFromQN`](@ref)
+
+- `qnu_o :: Vector{Vector{Int64}}` stores the charge of each orbital under each conserved quantity. See [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)))) for detail.
+- `qn_name :: Vector{String}` stores the name of each quantum number.
+- `modul :: Vector{Int64}` stores the modulus of each quantum number, 1 if no modulus. 
+
+"""
+function GetIsingQnu(nm :: Int64)
+    nf = 2
+    no = nf * nm
+    qnu_o = []
+    push!(qnu_o, fill(1, no)) 
+    push!(qnu_o, [ div(o - 1, nf) for o = 1 : no ]) 
+    qn_name = ["N_e", "L_z"]
+    modul = [1, 1]
+    return (qnu_o = qnu_o, qn_name = qn_name, modul = modul)
+end
+
 """
     function GetIsingConfs(nm :: Int64 ; ne :: Int64 = 0, lz :: Float64) :: Confs
 
@@ -10,19 +39,11 @@ Return the configurations with conserved particle number ``N_e`` and angular mom
 - `lz :: Float64` is the angular momentum. Facultive, 0 by default. 
 """
 function GetIsingConfs(nm :: Int64, ne :: Int64 ; lz :: Float64 = 0.0)
-    nf = 2
-    no = nf * nm
     s = .5 * (nm - 1)
-    qnu_s = Vector{Int64}(undef, 0)
-    qnu_o = []
-    # Record the number of electrons
-    push!(qnu_o, fill(1, no)) 
-    push!(qnu_s, ne) 
-    # Record the angular momentum
-    push!(qnu_o, [ div(o - 1, nf) for o = 1 : no ]) 
-    push!(qnu_s, Int(ne * s + lz))
+    qnu_s = Int64[ne, ne * s + lz]
+    qnu = GetIsingQnu(nm)
     # Generate the configurations and print the number
-    return Confs(no, qnu_s, qnu_o)
+    return Confs(no, qnu_s, qnu.qnu_o)
 end
 
 """

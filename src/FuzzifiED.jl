@@ -49,12 +49,14 @@ module Models
     export GetIntMatrix
     export GetL2Terms
 
+    export GetIsingQnu
     export GetIsingConfs
     export GetIsingBasis
     export GetIsingIntTerms
     export GetXPolTerms
     export GetZPolTerms
 
+    export GetSpnQnu
     export GetSpnConfs 
     export GetSpnBasis 
     export GetIdDenIntTerms 
