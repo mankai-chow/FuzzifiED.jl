@@ -1,9 +1,13 @@
 """
-    function GenerateL2Terms(nm :: Int64, nf :: Int64) :: Vector{Term}
+    function GetL2Terms(nm :: Int64, nf :: Int64) :: Vector{Term}
 
 Return the terms for the total angular momentum.
+
+# Arguments
+- `nm :: Int64` is the number of orbitals.
+- `nf :: Int64` is the number of flavours.
 """
-function GenerateL2Terms(nm :: Int64, nf :: Int64)
+function GetL2Terms(nm :: Int64, nf :: Int64)
     s = (nm - 1) / 2.0
     no = nm * nf
     tms_lz = 

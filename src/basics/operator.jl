@@ -1,7 +1,7 @@
 """
     mutable struct Operator
 
-An `Operator` object records the sum of terms together with information about its symmetry.
+An `Operator` object records the sum of terms together with information about its symmetry and the basis of the state it acts on and the basis of the resulting state.
 
 # Fields
 * `bsd :: Basis` is the basis of the initial state ;
@@ -24,8 +24,11 @@ mutable struct Operator
     coeffs :: Vector{ComplexF64}
 end 
 
+
 """
-    function Operator(bsd :: Basis, bsf :: Basis, cstr_vec :: Vector{Vector{Int64}}, coeffs :: Vector{ComplexF64} ; red_q :: Int64, sym_q :: Int64) :: Operator
+    function Operator(bsd :: Basis, bsf :: Basis, terms :: Vector{Term} ; red_q :: Int64, sym_q :: Int64) :: Operator
+
+generates an operator object from a series of terms. 
 
 # Arguments
 * `bsd :: Basis` is the basis of the initial state ;
@@ -43,8 +46,10 @@ function Operator(bsd :: Basis, bsf :: Basis, terms :: Vector{Term} ; red_q :: I
     return Operator(bsd, bsf, red_q, sym_q, ntm, nc, cstrs, coeffs)
 end
 
+
 """
-    function *(op :: Operator, st_d :: Vector{ComplexF64})
+    function *(op :: Operator, st_d :: Vector{ComplexF64}) :: Vector{ComplexF64}
+    function *(op :: Operator, st_d :: Vector{Float64}) :: Vector{Float64}
 
 Measure the action of an operator on a state. `st_d` must be of length `op.bsd.dim`. Returns a vector of length `op.bsf.dim` that represents the final state. 
 
@@ -73,6 +78,7 @@ end
 
 """
     function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op :: Operator, st_d :: Vector{ComplexF64}) :: ComplexF64
+    function *(st_fp :: LinearAlgebra.Adjoint{Float64, Vector{Float64}}, op :: Operator, st_d :: Vector{Float64}) :: Float64
 
 Measuring the inner product between two states and an operator. `st_d` must be of length `op.bsd.dim` and `st_fp` must be of length `op.bsf.dim`, and `st_fp` must be an adjoint. 
 """

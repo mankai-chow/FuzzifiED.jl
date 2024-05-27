@@ -1,5 +1,5 @@
 """
-    function GetInteractionMatrix(nm :: Int64, ps_pot :: Vector{Number}) :: Array{ComplexF64, 3}
+    function GetIntMatrix(nm :: Int64, ps_pot :: Vector{Number}) :: Array{ComplexF64, 3}
 
 # Argument
 
@@ -7,7 +7,7 @@
 - `ps_pot :: Vector{Number}` is the vector of non-zero pseudopotentials 
 
 # Output
-- A `nm`*`nm`*`nm` array giving the interaction matrix ``U_{m_1,m_2,m_3,-m_1-m_2-m_3}``
+- A `nm`&ast`nm`&ast`nm` array giving the interaction matrix ``U_{m_1,m_2,m_3,-m_1-m_2-m_3}``
 """
 function GetIntMatrix(nm :: Int64, ps_pot :: Vector)
     ## N = 2s+1, get V[i,j,k,l]

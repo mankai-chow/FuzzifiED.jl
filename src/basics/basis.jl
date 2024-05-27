@@ -1,13 +1,19 @@
 """
     mutable struct Basis
 
+This type stores the information of the basis that respects both the conserved quantities and the discrete symmetries. The states in the basis is in the form 
+```math
+|I\\rangle=\\lambda_{i_{I1}}|i_{I1}\\rangle+\\lambda_{i_{I2}}|i_{I2}\\rangle+\\cdots+\\lambda_{i_{Im_I}}|i_{Im_I}\\rangle
+```
+where ``|i\\rangle`` is a direct product state, _i.e._, the configurations ``|i_{Ik}\\rangle`` are grouped into a state ``|I\\rangle``. 
+
 # Fields
-* `cfs :: Confs` is the basis with only conserved quantities generated in the last step ;
+* `cfs :: Confs` stores the configurations that respect the conserved quantities ;
 * `dim :: Int64` is the dimension of the basis ;
 * `szz :: Int64` records the maximum size ``\\max m_g`` of groups;
 * `cfgr :: Vector{Int64}` is a vector of length `cfs.ncf` and records which group ``|I\\rangle`` each configuration ``|i\\rangle`` belong to ;
-* `cffac :: Vector{ComplexF64}` is a vector of length `cfs.ncf` and records the coefficients ``\\lambda_i`` ;
-* `grel :: Matrix{Int64}` is a `szz```\\times```dim` matrix that records the configurations in each group ``|i_{I1}\\rangle,\\dots,|i_{Im_I}\\rangle``
+* `cffac :: Vector{ComplexF64}` is a vector of length `cfs.ncf` and records the coefficients ``\\lambda_i`` of each configuration ;
+* `grel :: Matrix{Int64}` is a `szz``&ast``dim` matrix that records the configurations in each group ``|i_{Ik}\\rangle (k = 1,\\dots,m_I)``
 * `grsz :: Vector{Int64}` is a vector of length `dim` that records the size ``m_I`` of each group.
 """
 mutable struct Basis
@@ -20,17 +26,30 @@ mutable struct Basis
     grsz :: Vector{Int64}
 end 
 
+
 """
     function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64}, cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}}) :: Basis
 
+generates the basis that respects the discrete symmetries from the configurations that respects the conserved quantities. The discrete ``\\mathbb{Z}_n`` symmetries are in the form of 
+
+```math
+\\mathscr{Z}:\\ c_o\\to \\alpha_o^* c^{(p_o)}_{\\pi_o},\\quad c_o^\\dagger\\to \\alpha_o c^{(1-p_o)}_{\\pi_o}
+```
+
+where we use a notation ``c^{(1)}=c^\\dagger`` and ``c^{0}=c`` for convenience, where ``\\pi_o`` is a permutation of ``1,\\dots N_o``, ``\\alpha_o`` is a coefficient, and ``p_o`` specified whether or not particle-hole transformation is performed for the orbital. Note that one must guarentee that all these transformations commute with each other and also commute with the conserved quantities. 
+
 # Arguments 
 
-* `cfs :: Confs` is the configuration set with only conserved quantities generated in the last step ;
-* `qnz_s :: Vector{ComplexF64}` is a vector of length the same as the number of discrete symmetries ``N_Z`` that records the eigenvalue of each transformation ;
+* `cfs :: Confs` is the set of configurations with only conserved quantities ;
+* `qnz_s :: Vector{ComplexF64}` is a vector of length the same as the number of discrete symmetries that records the eigenvalue of each transformation ;
 * `cyc :: Vector{Int64}` records the cycle of each transformation. For ``\\mathbb{Z}_n`` symmetry, record ``n`` ;
 * `perm_o :: Vector{Vector{Int64}}` records the permutation ``\\pi_o``. It has ``N_Z`` elements and each of its elements is a vector of length ``N_o``. 
 * `ph_o :: Vector{Vector{Int64}}` records ``p_o`` to determine whether or not to perform a particle-hole transformation. It has ``N_Z`` elements and each of its elements is a vector of length ``N_o``. 
-* `fac_o :: Vector{Vector{ComplexF64}}` records the factor ``p_o`` is determine whether or not to perform a particle-hole transformation. It has ``N_Z`` elements and each of its elements is a vector of length ``N_o``. 
+* `fac_o :: Vector{Vector{ComplexF64}}` records the factor ``p_o`` is determine whether or not to perform a particle-hole transformation. Each of its elements is a vector of length ``N_o``. 
+
+# Output
+
+* `bs :: Basis` is the resulting `Basis` object
 """
 function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64}, cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any})
     nqnz = length(qnz_s)
@@ -49,10 +68,19 @@ function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64}, cyc :: Vector{Int64}, 
     return Basis(cfs, dim, szz, cfgr, cffac, grel, grsz)
 end 
 
+
 """
     function Basis(cfs :: Confs) :: Basis
 
-Generate a basis from the configurations without applying the ``\\mathbb{Z}_2`` symmetries
+Generate a basis from the configurations without applying the ``\\mathbb{Z}_2`` symmetries.
+
+# Arguments 
+
+* `cfs :: Confs` is the set of configurations with only conserved quantities ;
+
+# Output
+
+* `bs :: Basis` is the resulting `Basis` object
 """
 function Basis(cfs :: Confs)
     nqnz = 1

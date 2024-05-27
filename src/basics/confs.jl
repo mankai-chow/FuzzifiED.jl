@@ -1,7 +1,7 @@
 """
     mutable struct Confs
 
-stores all the configurations that respects the U(1) conserved quantities. 
+This type stores all the configurations that respects the conserved quantities and also a table to inversely look up the index from the configuration. 
 
 # Fields
 
@@ -19,8 +19,17 @@ mutable struct Confs
     rid :: Array{Int64,1}
 end 
 
+
 """
     function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Vector{Int64}} ; nor :: Int64) :: Confs
+
+generates the configurations that has the quantum numbers given by `qnu_s` of certain conserved quantities specified by `qnu_o :: Vector{Vector{Int64}}`
+
+```math
+Q_i=\\sum_{o=1}^{N_o}q_{io}n_o
+```
+
+where ``i=1,\\dots,N_U`` is the index of conserved quantities, ``o`` is the index of orbital, ``n_o=c^\\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. 
 
 # Arguments
 
@@ -28,6 +37,10 @@ end
 * `qnu_s :: Vector{Int64}` is the set of ``Q_i`` for the selected configurations ;
 * `qnu_o :: Vector{Vector{Int64}}` is the set of ``q_{io}`` for each quantum number and for each orbital. It should contain ``N_U`` elements and each element should be a vector of length ``N_o``. 
 * (`nor :: Int64` is the number of less significant bits used to generate the Lin table.)
+
+# Output
+
+* `cfs :: Confs` is a [`Confs`](@ref) object
 """
 function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2))
     # qnu_o :: Vector{Vector{Int64}}
