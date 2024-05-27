@@ -101,9 +101,9 @@ hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
 GENERATE THE SPARSE MATRIX AND DIAGONALISE
 =========================================#
 
-@time "Initialise the Hamiltonian matrix" hmtmat = OpMat(hmt)
-@show hmtmat.nel
-@time "Diagonalise Hamiltonian" enrg, st = GetEigensystem(hmtmat, 10)
+@time "Initialise the Hamiltonian matrix" hmt_mat = OpMat(hmt)
+@show hmt_mat.nel
+@time "Diagonalise Hamiltonian" enrg, st = GetEigensystem(hmt_mat, 10)
 @show real(enrg)
 
 
@@ -111,21 +111,16 @@ GENERATE THE SPARSE MATRIX AND DIAGONALISE
 MEASURE THE TOTAL ANGULAR MOMENTUM OBSERVABLE
 ============================================#
 
-tms_l2 = Vector{Term}(undef, 0)
-for o1 = 1 : no 
-    m1 = div(o1 - 1, nf) 
-    # record the -Lz term
-    push!(tms_l2, Term(-(m1 - s), [1, o1, 0, o1]))
-    for o2 = 1 : no 
-        m2 = div(o2 - 1, nf)
-        # record the Lz^2 term
-        push!(tms_l2, Term((m1 - s) * (m2 - s), [1, o2, 0, o2, 1, o1, 0, o1]))
-        if m1 == nm - 1 continue end
-        if m2 == 0 continue end 
-        # record the L+L- term
-        push!(tms_l2, Term(sqrt(m2 * (nm - m2) * (m1 + 1) * (nm - m1 - 1)), [1, o1 + nf, 0, o1, 1, o2 - nf, 0, o2]))
-    end
-end
+tms_lz = 
+    [ begin m = div(o - 1, nf)
+        Term(m - s, [1, o, 0, o])
+    end for o = 1 : no ]
+tms_lp = 
+    [ begin m = div(o - 1, nf)
+        Term(sqrt(m * (nm - m)), [1, o, 0, o - nf])
+    end for o = nf + 1 : no ]
+tms_lm = tms_lp' 
+tms_l2 = tms_lz * tms_lz - tms_lz + tms_lp * tms_lm
 # Initialise the L2 operator
 l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
 @time "Initialise L2" l2_mat = OpMat(l2)
@@ -147,9 +142,9 @@ qnz_s1 = ComplexF64[ 1, -1, 1 ] # Change only the discrete quantum numbers and g
 @time "Initialise Basis Z" bs1 = Basis(cfs, qnz_s1, cyc, perm_o, ph_o, fac_o) 
 @show bs1.dim 
 hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
-@time "Initialise Hamiltonian" hmtmat = OpMat(hmt)
-@show hmtmat.nel
-@time "Diagonalise Hamiltonian" enrg1, st1 = GetEigensystem(hmtmat, 10)
+@time "Initialise Hamiltonian" hmt_mat = OpMat(hmt)
+@show hmt_mat.nel
+@time "Diagonalise Hamiltonian" enrg1, st1 = GetEigensystem(hmt_mat, 10)
 @show real(enrg1)
 # Record the identity, sigma and epsilon states 
 st_I = st[:, 1] # ground state

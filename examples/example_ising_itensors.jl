@@ -98,15 +98,16 @@ for m1 = 0 : nm - 1
     global ops_hmt += -h, "Cdag", o1x, "C", o1
 end
 # Generate the Hamiltonian operator
-hmt = OperatorFromOpSum(bs, bs, ops_hmt ; red_q = 1, sym_q = 1)
+tms_hmt = TermsFromOpSum(ops_hmt)
+hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
 
 #=========================================
 GENERATE THE SPARSE MATRIX AND DIAGONALISE
 =========================================#
 
-@time "Initialise the Hamiltonian matrix" hmtmat = OpMat(hmt)
-@show hmtmat.nel
-@time "Diagonalise Hamiltonian" enrg, st = GetEigensystem(hmtmat, 10)
+@time "Initialise the Hamiltonian matrix" hmt_mat = OpMat(hmt)
+@show hmt_mat.nel
+@time "Diagonalise Hamiltonian" enrg, st = GetEigensystem(hmt_mat, 10)
 @show real(enrg)
 
 
@@ -130,7 +131,8 @@ for o1 = 1 : no
     end
 end
 # Initialise the L2 operator
-l2 = OperatorFromOpSum(bs, bs, ops_l2 ; red_q = 1, sym_q = 1)
+tms_l2 = TermsFromOpSum(ops_l2)
+l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
 @time "Initialise L2" l2_mat = OpMat(l2)
 # Calculate the inner product for each eigenstate
 @time "Measure L2" l2_val = [ st[:, i]' * l2_mat * st[:, i] for i = 1 : length(enrg)]
@@ -149,10 +151,10 @@ MEASURE THE DENSITY OPERATOR OBSERVABLE
 qnz_s1 = ComplexF64[ 1, -1, 1 ] # Change only the discrete quantum numbers and generate the basis
 @time "Initialise Basis" bs1 = Basis(cfs, qnz_s1, cyc, perm_o, ph_o, fac_o) 
 @show bs1.dim 
-hmt = OperatorFromOpSum(bs1, bs1, ops_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
-@time "Initialise Hamiltonian" hmtmat = OpMat(hmt)
-@show hmtmat.nel
-@time "Diagonalise Hamiltonian" enrg1, st1 = GetEigensystem(hmtmat, 10)
+hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
+@time "Initialise Hamiltonian" hmt_mat = OpMat(hmt)
+@show hmt_mat.nel
+@time "Diagonalise Hamiltonian" enrg1, st1 = GetEigensystem(hmt_mat, 10)
 @show real(enrg1)
 # Record the identity, sigma and epsilon states 
 st_I = st[:, 1] # ground state
@@ -168,6 +170,7 @@ for m1 = 0 : nm - 1
     global ops_nz += -1 / nm, "N", o1d
 end
 # The nz operator sends a state in bs (+) to bs1 (-)
-nz = OperatorFromOpSum(bs, bs1, ops_nz ; red_q = 1)
+tms_nz = TermsFromOpSum(ops_nz)
+nz = Operator(bs, bs1, tms_nz ; red_q = 1)
 # Measuring the finite size OPE
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
