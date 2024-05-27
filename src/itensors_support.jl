@@ -5,18 +5,20 @@ Converts a `Sites` object in the `ITensors` package to the `Confs` object
 
 # Arguments 
 
-* `sites :: Vector{Index{Vector{Pair{QN, Int64}}}}` is a `Sites` object, where the modulus-``\\pm 1`` quantum numbers will be taken out, and QNs with other modulus will be discarded automatically. Also note that only `Fermion` site type is supported, and the quantum numbers of the `0` state must be all zero. Note that this will subject to the limitation in ITensors that the number of conserved quantities must be less than 4. 
+* `sites :: Vector{Index{Vector{Pair{QN, Int64}}}}` is a `Sites` object. Only `Fermion` site type is supported, and the quantum numbers of the `0` state must be all zero. Note that this will subject to the limitation in ITensors that the number of conserved quantities must be less than 4. 
 * `qn_s :: QN` is a `QN` object that specifies the the quantum number of the selected configuration.
 
 """
 function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, qn_s :: QN)
     no = length(sites)
     qn_names = []
+    modul = Vector{Int64}()
     for site in sites 
         for qn in qn(site, 2)
-            if abs(qn.modulus) != 1 continue end
+            if abs(qn.modulus) == 0 continue end
             if qn.name in qn_names continue end
             push!(qn_names, qn.name)
+            push!(modul, abs(qn.modulus))
         end
     end
     qnu_o = []
@@ -28,7 +30,7 @@ function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, qn_s ::
         push!(qnu_o, qnu_oi)
     end
     qnu_s = [ val(qn_s, qn_name) for qn_name in qn_names ]
-    return Confs(no, qnu_s, qnu_o)
+    return Confs(no, qnu_s, qnu_o ; modul)
 end 
 
 """
@@ -41,11 +43,13 @@ end
 function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, cf_ref :: Vector{Int64})
     no = length(sites)
     qn_names = []
+    modul = Vector{Int64}()
     for site in sites 
         for qn in qn(site, 2)
-            if abs(qn.modulus) != 1 continue end
+            if abs(qn.modulus) == 0 continue end
             if qn.name in qn_names continue end
             push!(qn_names, qn.name)
+            push!(modul, abs(qn.modulus))
         end
     end
     qnu_o = []
@@ -56,9 +60,36 @@ function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, cf_ref 
         end
         push!(qnu_o, qnu_oi)
     end
-    qnu_s = [ cf_ref' * qnu_o[i] for i = 1 : length(qnu_o) ]
-    return Confs(no, qnu_s, qnu_o)
+    qnu_s = [ cf_ref' * qnu_oi for qnu_oi in qnu_o ]
+    return Confs(no, qnu_s, qnu_o ; modul)
 end 
+
+function ITensors.space( :: SiteType"Fermion"; no :: Int64 = 1, o :: Int = 1, 
+    qnu_o :: Vector{Any} = [fill(1, no)], 
+    qn_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], 
+    modul = [1 for qn in eachindex(qnu_o)] )
+    return [
+        QN(
+            [ (qn_name[i], qnu_o[i][o] * n, modul[i]) for i in eachindex(qnu_o)]...
+        ) => 1 for n = 0 : 1
+    ]
+end
+
+"""
+    function SitesFromQN(no :: Int64 ; qnu_o :: Vector{Vector{Int64}}, qn_name :: Vector{String}, modul :: Vector{Int64})
+
+returns the ITensors Sites object from the information of quantum numbers 
+
+# Arguments 
+
+- `no :: Int64` is the number of orbitals ; 
+- `qnu_o :: Vector{Vector{Int64}}` stores the charge of each orbital under each conserved quantity. See [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)))) for detail. 
+- `qn_name :: Vector{String}` stores the name of each quantum number. Facultive, QN1, QN2, ... by default. 
+- `modul :: Vector{Int64}` stores the modulus of each quantum number. Store 1 if no modulus. Facultive, all 1 by default. 
+"""
+function SitesFromQN(no :: Int64; qnu_o :: Vector{Any} = [fill(1, no)], qn_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)] )
+    return [ siteind("Fermion" ; no, o, qnu_o, qn_name, modul) for o = 1 : no ]
+end
 
 """
     function TermsFromOpSum(opsum :: Sum{Scaled{ComplexF64, Prod{Op}}}) :: Vector{Term}

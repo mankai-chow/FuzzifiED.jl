@@ -34,6 +34,7 @@ module ITensorsSupport
     export ConfsFromSites
     export TermsFromOpSum
     export OpSumFromTerms
+    export SitesFromQN
 end
 
 module Models 
