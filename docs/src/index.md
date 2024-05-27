@@ -2,7 +2,7 @@
 
 The package `FuzzifiED` is designed to do exact diagonalisation (ED) calculation on the fuzzy sphere. 
 
-This package is developped by Zheng Zhou (周正) at Perimeter Institute. If you use this package, please mention in the acknowledgement. If you have any questions, please contact at zzhou@pitp.ca.
+This package is developped by Zheng Zhou (周正) at Perimeter Institute. If you use this package, please mention in the acknowledgement. If you have any questions, please contact at [zzhou@pitp.ca](mailto:zzhou@pitp.ca).
 
 ## Installation
 

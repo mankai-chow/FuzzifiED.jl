@@ -53,10 +53,6 @@ end
 
 Measure the action of an operator on a state. `st_d` must be of length `op.bsd.dim`. Returns a vector of length `op.bsf.dim` that represents the final state. 
 
-Note that sometimes it is needed to transform a state from one basis to another. This can be done by constructing an identity operator. 
-```julia
-stf = Operator(bsd, bsf, [[-1, -1]], [ComplexF64(1)]) * std
-```
 """
 function *(op :: Operator, st_d :: Vector{ComplexF64})
     st_f = Array{ComplexF64, 1}(undef, op.bsf.dim)

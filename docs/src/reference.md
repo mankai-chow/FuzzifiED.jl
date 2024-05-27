@@ -75,6 +75,11 @@ The product of an operator on a state and the inner product of a final state, an
 *(mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64})
 *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64})
 ```
+Note that sometimes it is needed to transform a state from one basis to another. This can be done by constructing an identity operator. 
+```julia
+stf = Operator(bsd, bsf, [Term(1., [-1, -1])]) * std
+```
+
 The `OpMat` object can be converted with the `SparseMatrixCSC` object in the `SparseArrays` package.
 ```@docs
 SparseMatrixCSCFromOpMat(mat :: OpMat)

@@ -13,7 +13,7 @@ where ``|i\\rangle`` is a direct product state, _i.e._, the configurations ``|i_
 * `szz :: Int64` records the maximum size ``\\max m_g`` of groups;
 * `cfgr :: Vector{Int64}` is a vector of length `cfs.ncf` and records which group ``|I\\rangle`` each configuration ``|i\\rangle`` belong to ;
 * `cffac :: Vector{ComplexF64}` is a vector of length `cfs.ncf` and records the coefficients ``\\lambda_i`` of each configuration ;
-* `grel :: Matrix{Int64}` is a `szz``&ast``dim` matrix that records the configurations in each group ``|i_{Ik}\\rangle (k = 1,\\dots,m_I)``
+* `grel :: Matrix{Int64}` is a `szz``\\*``dim` matrix that records the configurations in each group ``|i_{Ik}\\rangle (k = 1,\\dots,m_I)``
 * `grsz :: Vector{Int64}` is a vector of length `dim` that records the size ``m_I`` of each group.
 """
 mutable struct Basis
@@ -102,9 +102,9 @@ looks up a the weight of a configuration in a state.
 
 # Arguments 
 
-* ``bs :: Basis`` is the basis of the state ; 
-* ``st :: Vector{ComplexF64}`` or ``st :: Vector{Float}`` is a vector of length `bs.dim` that stores the state ; 
-* ``cf :: Int64`` stores the configuration to be looked-up expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th orbital in the `i`-th configuration is occupied ; if the bit is 0, then the orbital is empty. 
+* `bs :: Basis` is the basis of the state ; 
+* `st :: Vector{ComplexF64}` or `st :: Vector{Float64}` is a vector of length `bs.dim` that stores the state ; 
+* `cf :: Int64` stores the configuration to be looked-up expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th orbital in the `i`-th configuration is occupied ; if the bit is 0, then the orbital is empty. 
 
 # Output
 

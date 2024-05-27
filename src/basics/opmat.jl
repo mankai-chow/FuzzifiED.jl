@@ -71,7 +71,7 @@ calls the Arpack package to calculate the lowest eigenstates of sparse matrix.
 # Output
 
 * A length-`nst` array that has the same type as `mat` recording the eigenvalues, and 
-* A `dimd`&ast`nst` matrix that has the same type as `mat` where every column records an eigenstate. 
+* A `dimd`\\*`nst` matrix that has the same type as `mat` where every column records an eigenstate. 
 """
 function GetEigensystem(mat :: OpMat{ComplexF64}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10))
     eigval = Array{ComplexF64, 1}(undef, nst + 1)

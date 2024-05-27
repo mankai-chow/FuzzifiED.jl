@@ -56,7 +56,7 @@ end
 """
     function *(tms1 :: Vector{Term}, tms2 :: Vector{Term}) :: Vector{Term}
 
-Return the naive product of two series of terms. The number of terms equals the product of the number of terms in `tms1` and `tms2`. For each term in `tms1` ``Uc^{(p_1)}_{o_1}\\dots`` and `tms2`, ``U'c^{(p'_1)}_{o'_1}\\dots``, a new term is formed by taking ``UU'c^{(p_1)}_{o_1}\\dotsc^{(p'_1)}_{o'_1}\\dots``
+Return the naive product of two series of terms. The number of terms equals the product of the number of terms in `tms1` and `tms2`. For each term in `tms1` ``Uc^{(p_1)}_{o_1}\\dots`` and `tms2` ``U'c^{(p'_1)}_{o'_1}\\dots``, a new term is formed by taking ``UU'c^{(p_1)}_{o_1}\\dots c^{(p'_1)}_{o'_1}\\dots``
 """
 function *(tms1 :: Vector{Term}, tms2 :: Vector{Term})
     return vcat([ Term(tm1.coeff * tm2.coeff, [tm1.cstr ; tm2.cstr])
