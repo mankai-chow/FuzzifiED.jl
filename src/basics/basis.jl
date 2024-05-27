@@ -64,3 +64,26 @@ function Basis(cfs :: Confs)
     grsz = fill(1, dim)
     return Basis(cfs, dim, szz, cfgr, cffac, grel, grsz)
 end 
+
+
+"""
+    GetConfWeight(bs :: Basis, st :: Vector{ComplexF64}, cf :: Int64) :: ComplexF64
+    GetConfWeight(bs :: Basis, st :: Vector{Float}, cf :: Int64) :: ComplexF64
+
+looks up a the weight of a configuration in a state. 
+
+# Arguments 
+
+* ``bs :: Basis`` is the basis of the state ; 
+* ``st :: Vector{ComplexF64}`` or ``st :: Vector{Float}`` is a vector of length `bs.dim` that stores the state ; 
+* ``cf :: Int64`` stores the configuration to be looked-up expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th orbital in the `i`-th configuration is occupied ; if the bit is 0, then the orbital is empty. 
+
+# Output
+
+* The weight of the configuration in the state 
+
+"""
+function GetConfWeight(bs :: Basis, st :: Vector, cf :: Int64)
+    id = GetConfId(bs.cfs, cf)
+    return st[bs.cfgr[id]] * bs.cffac[id]
+end

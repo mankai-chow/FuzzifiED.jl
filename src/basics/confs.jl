@@ -42,3 +42,23 @@ function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :
     @ccall LibpathFuzzifiED.cfs_mp_generate_cfs_(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, ncf :: Ref{Int64}, lid :: Ref{Int64}, rid :: Ref{Int64}, conf :: Ref{Int64}) :: Nothing
     return Confs(no, nor, ncf, conf, lid, rid)
 end 
+
+"""
+    GetConfId(cfs :: Confs, cf :: Int64) :: Int64
+
+inversely look up the index from the configuration
+
+# Arguments
+
+* `cfs :: Confs` stores the configurations.
+* `cf :: Int64` stores the configuration to be looked-up expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th orbital in the `i`-th configuration is occupied ; if the bit is 0, then the orbital is empty. 
+
+# Output
+* `id :: Int64` is the id of the configuration such that `cfs.conf[id] == cf`
+
+"""
+function GetConfId(cfs :: Confs, cf :: Int64)
+    cf_l = cf >> cfs.nor
+    cf_r = cf & (1 << cfs.nor - 1)
+    return cfs.lid[cf_l + 1] + cfs.rid[cf_r + 1]
+end 
