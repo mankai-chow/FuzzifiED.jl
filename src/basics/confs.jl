@@ -29,7 +29,7 @@ Q_i=\\sum_{o=1}^{N_o}q_{io}n_o
 ```
 or
 ```math
-Q_i=\\sum_{o=1}^{N_o}q_{io}n_o\ \\mathrm{mod}\ p_i
+Q_i=\\sum_{o=1}^{N_o}q_{io}n_o\\ \\mathrm{mod}\\ p_i
 ```
 where ``i=1,\\dots,N_U`` is the index of conserved quantities, ``o`` is the index of orbital, ``n_o=c^\\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. 
 
