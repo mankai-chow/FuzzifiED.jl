@@ -21,14 +21,16 @@ end
 
 
 """
-    function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Vector{Int64}} ; nor :: Int64) :: Confs
+    function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Vector{Int64}} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64}) :: Confs
 
-generates the configurations that has the quantum numbers given by `qnu_s` of certain conserved quantities specified by `qnu_o :: Vector{Vector{Int64}}`
-
+generates the configurations that has the diagonal quantum numbers given by `qnu_s` of certain conserved quantities specified by `qnu_o :: Vector{Vector{Int64}}`
 ```math
 Q_i=\\sum_{o=1}^{N_o}q_{io}n_o
 ```
-
+or
+```math
+Q_i=\\sum_{o=1}^{N_o}q_{io}n_o\ \\mathrm{mod}\ p_i
+```
 where ``i=1,\\dots,N_U`` is the index of conserved quantities, ``o`` is the index of orbital, ``n_o=c^\\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. 
 
 # Arguments
@@ -36,23 +38,24 @@ where ``i=1,\\dots,N_U`` is the index of conserved quantities, ``o`` is the inde
 * `no :: Int64` is the number of orbitals ``N_o`` ;
 * `qnu_s :: Vector{Int64}` is the set of ``Q_i`` for the selected configurations ;
 * `qnu_o :: Vector{Vector{Int64}}` is the set of ``q_{io}`` for each quantum number and for each orbital. It should contain ``N_U`` elements and each element should be a vector of length ``N_o``. 
-* (`nor :: Int64` is the number of less significant bits used to generate the Lin table.)
+* `nor :: Int64` is the number of less significant bits used to generate the Lin table. Facultive, ``N_o/2`` by default.
+* `modul :: Vector{Int64}` is the modulus of each quantum number. Setting it to 1 means there is no modulus. Facultive, all 1 by default. 
 
 # Output
 
 * `cfs :: Confs` is a [`Confs`](@ref) object
 """
-function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2))
+function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)))
     # qnu_o :: Vector{Vector{Int64}}
     nqnu = length(qnu_s)
     lid = Array{Int64, 1}(undef, 2 ^ (no - nor) + 1)
     ref_ncf = Ref{Int64}(0)
-    qnu_o_mat = reduce(hcat, qnu_o)
-    @ccall LibpathFuzzifiED.cfs_mp_count_cfs_(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, ref_ncf :: Ref{Int64}, lid :: Ref{Int64}) :: Nothing
+    qnu_o_mat = Matrix{Int64}(reduce(hcat, qnu_o))
+    @ccall LibpathFuzzifiED.cfs_mp_count_cfs_(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, modul :: Ref{Int64}, ref_ncf :: Ref{Int64}, lid :: Ref{Int64}) :: Nothing
     ncf = ref_ncf[]
     rid = Array{Int64, 1}(undef, 2 ^ nor + 1)
     conf = Array{Int64, 1}(undef, ncf)
-    @ccall LibpathFuzzifiED.cfs_mp_generate_cfs_(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, ncf :: Ref{Int64}, lid :: Ref{Int64}, rid :: Ref{Int64}, conf :: Ref{Int64}) :: Nothing
+    @ccall LibpathFuzzifiED.cfs_mp_generate_cfs_(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, modul :: Ref{Int64}, ncf :: Ref{Int64}, lid :: Ref{Int64}, rid :: Ref{Int64}, conf :: Ref{Int64}) :: Nothing
     return Confs(no, nor, ncf, conf, lid, rid)
 end 
 
