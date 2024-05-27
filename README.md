@@ -1,13 +1,14 @@
 The package `FuzzifiED` is designed to do exact diagonalisation (ED) calculation on the fuzzy sphere. 
 
+Documentations can be found at [this link](https://mankai-chow.github.io/FuzzifiED/)
+
 Install the package with the commands
 ```julia
 julia> using Pkg; Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
 ```
+Include at the start of your Julia script
+```julia
+using FuzzifiED
+```
 
-Documentations can be found at [this link](https://mankai-chow.github.io/FuzzifiED/)
-
-## Version 0.2.0 (26 May, 2024)
-
-- Add operations of terms.
-- Add built-in models. 
+This package is developped by Zheng Zhou (周正) at Perimeter Institute. If you use this package, please mention in the acknowledgement. If you have any questions, please contact at zzhou@pitp.ca.
