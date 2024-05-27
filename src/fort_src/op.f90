@@ -181,6 +181,84 @@ subroutine generate_op(no, nor, &
     !$omp end parallel
 end subroutine
 
+subroutine generate_op_re(no, nor, &
+    ncf_d, dim_d, conf_d, lid_d, rid_d, szz_d, cfgr_d, cffac_d, grel_d, grsz_d, &
+    ncf_f, dim_f, conf_f, lid_f, rid_f, szz_f, cfgr_f, cffac_f, grel_f, grsz_f, &
+    ntm, nc, cstr_tms, fac_tms, red_q, sym_q, nel, colptr, rowid, elval)
+    use omp_lib
+    implicit none
+    integer(8), intent(in) :: no, nor 
+
+    integer(8), intent(in) :: ncf_d, dim_d, szz_d
+    integer(8), intent(in) :: conf_d(ncf_d), lid_d(kibset(0_8, no - nor)), rid_d(kibset(0_8, nor))
+    integer(8), intent(in) :: cfgr_d(ncf_d), grel_d(szz_d, dim_d), grsz_d(dim_d)
+    complex(8), intent(in) :: cffac_d(ncf_d)
+
+    integer(8), intent(in) :: ncf_f, dim_f, szz_f
+    integer(8), intent(in) :: conf_f(ncf_f), lid_f(kibset(0_8, no - nor) + 1), rid_f(kibset(0_8, nor))
+    integer(8), intent(in) :: cfgr_f(ncf_f), grel_f(szz_f, dim_f), grsz_f(dim_f)
+    complex(8), intent(in) :: cffac_f(ncf_f)
+
+    integer(8), intent(in) :: red_q, sym_q, ntm, nc
+    integer(8), intent(in) :: cstr_tms(2 * nc, ntm)
+    complex(8), intent(in) :: fac_tms(ntm) ! ComplexF64
+    integer(8), intent(in) :: nel, colptr(ncf_d + 1)
+    integer(8), intent(out) :: rowid(nel)
+    real(8), intent(out) :: elval(nel)
+
+    integer(8) :: e, em, g, g1, i, i1, cf, cf1, t
+    integer(8) :: index, last_id, phase, mult
+    integer(8), allocatable :: last_el(:)
+    complex(8) :: val, fac, fac1
+
+    !$omp parallel shared(no, nor, ncf_d, dim_d, conf_d, lid_d, rid_d, szz_d, cfgr_d, cffac_d, grel_d, grsz_d, ncf_f, dim_f, conf_f, lid_f, rid_f, szz_f, cfgr_f, cffac_f, grel_f, grsz_f, ntm, nc, cstr_tms, fac_tms, red_q, sym_q, nel, colptr, rowid, elval) private(g, g1, e, em, i, i1, cf, cf1, index, last_el, last_id, phase, mult, val, fac, fac1, t)
+    allocate(last_el(dim_f))
+    last_el = 0
+    !$omp do
+    do g = 1, dim_d
+        if (mod(g, 10000) == 0) then 
+            if (omp_get_thread_num() == 0) print *, 'Generating Hamiltonian column', g, '*', omp_get_max_threads()
+        end if 
+        index = colptr(g) - 1
+        mult = grsz_d(g)
+        em = 1
+        if (red_q == 0) then 
+            em = grsz_d(g)
+            mult = 1
+        end if
+        do e = 1, em
+            i = grel_d(e, g)
+            if (i == -1) cycle
+            fac = cffac_d(i)
+            cf = conf_d(i)
+
+            do t = 1, ntm
+                phase = hopping(cf, cf1, no, nc, cstr_tms(:, t))
+                if (phase == 0) cycle
+                i1 = search_conf(no, nor, lid_f, rid_f, cf1)
+                val = fac_tms(t) * phase
+
+                g1 = cfgr_f(i1)
+                if (g1 == -1) cycle
+                if (sym_q > 0 .and. g1 < g) cycle
+                fac1 = cffac_f(i1)
+                last_id = last_el(g1)
+                if (last_id < colptr(g) .or. last_id >= colptr(g + 1)) then 
+                    index = index + 1
+                    last_el(g1) = index 
+                    rowid(index) = g1
+                    elval(index) = real(val * conjg(fac1) * fac * mult)
+                else 
+                    elval(last_id) = elval(last_id) + real(val * conjg(fac1) * fac * mult)
+                end if 
+            end do
+        end do
+    end do
+    !$omp end do 
+    deallocate(last_el)
+    !$omp end parallel
+end subroutine
+
 subroutine action_op(no, nor, &
     ncf_d, dim_d, conf_d, lid_d, rid_d, szz_d, cfgr_d, cffac_d, grel_d, grsz_d, &
     ncf_f, dim_f, conf_f, lid_f, rid_f, szz_f, cfgr_f, cffac_f, grel_f, grsz_f, &
