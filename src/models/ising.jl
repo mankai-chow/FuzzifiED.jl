@@ -39,6 +39,8 @@ Return the configurations with conserved particle number ``N_e`` and angular mom
 - `lz :: Float64` is the angular momentum. Facultive, 0 by default. 
 """
 function GetIsingConfs(nm :: Int64, ne :: Int64 ; lz :: Float64 = 0.0)
+    nf = 2
+    no = nf * nm
     s = .5 * (nm - 1)
     qnu_s = Int64[ne, ne * s + lz]
     qnu = GetIsingQnu(nm)
