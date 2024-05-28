@@ -63,22 +63,19 @@ function __init__()
     @require ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5" begin
         using ITensors
         using ITensors.HDF5
+        using ITensorMPOConstruction
 
         include("itensors_support/itensors_format.jl")
         export ConfsFromSites
         export TermsFromOpSum
         export OpSumFromTerms
         export SitesFromQN
-        
-        @require ITensorMPOConstruction = "f1f99f3b-4b00-4d2f-a9c2-ce76efdc8f31" begin 
-            using ITensorMPOConstruction
 
-            include("itensors_support/easy_sweep.jl")
-            export SweepOne
-            export EasySweep
-            export GetMpoSites
-            export GetMpo
-        end
+        include("itensors_support/easy_sweep.jl")
+        export SweepOne
+        export EasySweep
+        export GetMpoSites
+        export GetMpo
     end
 end
 

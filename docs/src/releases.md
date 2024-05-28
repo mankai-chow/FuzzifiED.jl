@@ -13,7 +13,7 @@
 - Add support for DMRG.
 - Add convertion from diagonal QNs to sites. 
 - Add the support of ``\mathbb{Z}_n`` diagonal quantum numbers in `Confs`.
-- Merge the submodules to the main package and set the dependency of ITensors to optional. 
+- Merge the submodules to the main package. 
 - Add Ising model in X basis.  
 - Add functions in built-in models to export diagonal QNs. 
 
