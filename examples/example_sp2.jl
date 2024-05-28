@@ -1,5 +1,4 @@
 using FuzzifiED
-using FuzzifiED.Models
 
 nm = 7
 nf = 4

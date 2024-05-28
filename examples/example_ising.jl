@@ -1,5 +1,4 @@
 using FuzzifiED
-using FuzzifiED.Models
 
 nm = 8
 cfs = GetIsingConfs(nm, nm)

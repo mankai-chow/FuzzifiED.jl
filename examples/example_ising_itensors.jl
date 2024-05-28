@@ -1,6 +1,5 @@
 using ITensors
 using FuzzifiED
-using FuzzifiED.ITensorsSupport
 
 #========================================================
 IMPLEMENT THE CONSERVED QUANTITIES AND GENERATE THE CONFS
