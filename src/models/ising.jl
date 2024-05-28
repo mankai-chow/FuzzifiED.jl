@@ -1,5 +1,5 @@
 """ 
-    function GetIsingQnu(nm :: Int64) :: @NamedTuple{qnu_o :: Vector{Vector{Int64}}, qn_name :: Vector{String}, modul :: Vector{Int64}}
+    function GetIsingQnu(nm :: Int64) :: @NamedTuple{qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}}
 
 returns the diagonal quantum numbers, _i.e._, particle number ``N_e`` and angular momentum ``L_z``, of the fuzzy sphere Ising model. 
 
@@ -12,7 +12,7 @@ returns the diagonal quantum numbers, _i.e._, particle number ``N_e`` and angula
 A named tuple with three elements that can be directly fed into [`SitesFromQN`](@ref)
 
 - `qnu_o :: Vector{Vector{Int64}}` stores the charge of each orbital under each conserved quantity. See [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)))) for detail.
-- `qn_name :: Vector{String}` stores the name of each quantum number.
+- `qnu_name :: Vector{String}` stores the name of each quantum number.
 - `modul :: Vector{Int64}` stores the modulus of each quantum number, 1 if no modulus. 
 
 """
@@ -22,9 +22,9 @@ function GetIsingQnu(nm :: Int64)
     qnu_o = []
     push!(qnu_o, fill(1, no)) 
     push!(qnu_o, [ div(o - 1, nf) for o = 1 : no ]) 
-    qn_name = ["N_e", "L_z"]
+    qnu_name = ["N_e", "L_z"]
     modul = [1, 1]
-    return (qnu_o = qnu_o, qn_name = qn_name, modul = modul)
+    return (qnu_o = qnu_o, qnu_name = qnu_name, modul = modul)
 end
 
 """
