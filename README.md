@@ -2,9 +2,9 @@ The package `FuzzifiED` is designed to do exact diagonalisation (ED) calculation
 
 Documentations can be found at [this link](https://mankai-chow.github.io/FuzzifiED/)
 
-Install the package with the commands
+Install the package and the unregistered prerequisites with the commands
 ```julia
-julia> using Pkg; Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
+julia> using Pkg; Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.git"); Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
 ```
 Include at the start of your Julia script
 ```julia
