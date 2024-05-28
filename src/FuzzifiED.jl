@@ -13,29 +13,31 @@ import Base.adjoint
 LibpathFuzzifiED = filter(f -> endswith(f, ".so"), readdir(dirname(@__FILE__), join = true))[1]
 
 include("basics/confs.jl")
-include("basics/basis.jl")
-include("basics/term.jl")
-include("basics/operator.jl")
-include("basics/opmat.jl")
-
 export Confs
+export GetConfId
+
+include("basics/basis.jl")
 export Basis
+export GetConfWeight
+
+include("basics/term.jl")
 export Term
+
+include("basics/operator.jl")
 export Operator
+
+include("basics/opmat.jl")
 export OpMat
 export GetEigensystem
 export SparseMatrixCSCFromOpMat
-export GetConfId
-export GetConfWeight
 
 include("models/threej.jl")
-include("models/l2.jl")
-include("models/ising.jl")
-include("models/spn.jl")
-
 export GetIntMatrix
+
+include("models/l2.jl")
 export GetL2Terms
 
+include("models/ising.jl")
 export GetIsingQnu
 export GetIsingConfs
 export GetIsingBasis
@@ -43,6 +45,12 @@ export GetIsingIntTerms
 export GetXPolTerms
 export GetZPolTerms
 
+include("models/ising_x.jl")
+export GetIsingXQnu
+export GetIsingXConfs
+export GetIsingXIntTerms
+
+include("models/spn.jl")
 export GetSpnQnu
 export GetSpnConfs 
 export GetSpnBasis 
@@ -51,15 +59,26 @@ export GetSpnPairIntTerms
 export GetSpnC2Terms
 
 function __init__()
+
     @require ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5" begin
         using ITensors
-        include("itensors_support.jl")
-        include("easy_sweep.jl")
-    
+        using ITensors.HDF5
+
+        include("itensors_support/itensors_format.jl")
         export ConfsFromSites
         export TermsFromOpSum
         export OpSumFromTerms
         export SitesFromQN
+        
+        @require ITensorMPOConstruction = "f1f99f3b-4b00-4d2f-a9c2-ce76efdc8f31" begin 
+            using ITensorMPOConstruction
+
+            include("itensors_support/easy_sweep.jl")
+            export SweepOne
+            export EasySweep
+            export GetMpoSites
+            export GetMpo
+        end
     end
 end
 
