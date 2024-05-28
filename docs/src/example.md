@@ -1,8 +1,10 @@
 # FuzzifiED explained in an example
 
-In this example, we will illustrate how to use  `FuzzifiED` to calculate the spectrum of Ising model on fuzzy sphere and how to calculate the OPE coefficient ``\lambda_{\sigma\sigma\epsilon}`` by measuring the expectation value of the density operator ``n^z``. 
+In this example, we will illustrate how to use `FuzzifiED` to calculate the spectrum of Ising model on fuzzy sphere and how to calculate the OPE coefficient ``\lambda_{\sigma\sigma\epsilon}`` by measuring the expectation value of the density operator ``n^z``. 
 
-The examples can be found in the directory [`example`](https://github.com/mankai-chow/FuzzifiED.jl/tree/main/example). Three versions of this example is provided. The first does not use the built-in example and is stored in [`example_ising_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/example/example_ising_primitive.jl) ; the second uses the interfaces with ITensors and is stored in [`example/example_ising_itensors.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/example/example_ising_itensors.jl) ; the third uese the built-in example for the Ising model and is stored in [`example/example_ising.jl`]((https://github.com/mankai-chow/FuzzifiED.jl/blob/main/example/example_ising.jl). The explanations following applied mainly to the primitive version. 
+The examples can be found in the directory [`examples`](https://github.com/mankai-chow/FuzzifiED.jl/tree/main/examples). Three versions of this example is provided. The first does not use the built-in example and is stored in [`ising_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_primitive.jl) ; the second uses the interfaces with ITensors and is stored in [`example_ising_itensors.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_itensors.jl) ; the third uese the built-in example for the Ising model and is stored in [`example_ising.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising.jl). The explanations following applied mainly to the primitive version. 
+
+In addition, an example of how `FuzzifiED` can facilitate DMRG calculation is given. Two versions of the DMRG example is provided. The first uses `MPO` and `dmrg` functions of the ITensors package and is stored in [`ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg.jl). The second uses the [`EasySweep`](@ref) function in the package which further wraps the `dmrg` function to facilitate the management of sweeps and is stored in [`ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl). 
 
 ## Implement the conserved quantities and generate the configurations
 
@@ -349,3 +351,63 @@ Using The built-in Ising model, the generation of the terms in density operator 
 tms_nz = GetZPolTerms(nm) 
 ```
 This method also applies to other models on fuzzy sphere. 
+
+### Use FuzzifiED to facilitate DMRG calculations
+
+```julia
+using FuzzifiED
+using ITensors
+
+nm = 12
+nf = 2
+no = nm * nf
+
+sites = SitesFromQN(; GetIsingXQnu(nm)...)
+tms_hmt = GetIsingXIntTerms(nm, [4.75, 1.]) - 3.16 * GetZPolTerms(nm)
+@time mpo_hmt = MPO(OpSumFromTerms(tms_hmt), sites)
+
+cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
+cfs = ConfsFromSites(sites, cf0)
+bs = Basis(cfs)
+hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt_mat = OpMat(hmt ; type = Float64)
+enrg, st = GetEigensystem(hmt_mat, 10)
+@show enrg
+
+st0 = MPS(sites, string.(cf0))
+Eg, stg = dmrg(mpo_hmt, st0 ; nsweeps = 10, maxdim = [10,20,50,100,200,500], noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], cutoff = [1E-8])
+@show Eg
+```
+### Use EasySweep to manage DMRG sweeps
+
+```julia
+using FuzzifiED
+using ITensors
+using ITensorMPOConstruction
+
+nm = 12
+nf = 2
+no = nm * nf
+
+path = "nm_$(nm)/"
+mkpath(path)
+
+tms_hmt = GetIsingXIntTerms(nm, [4.75, 1.]) - 3.16 * GetZPolTerms(nm)
+hmt, sites = GetMpoSites("hmt", tms_hmt ; path, GetIsingXQnu(nm)...)
+
+cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
+st0 = MPS(sites, string.(cf0))
+
+Eg, stg = EasySweep("g", hmt, st0 ; path)
+Ee, ste = EasySweep("e", hmt, st0 ; path, proj = ["g"])
+
+cf1 = cf0
+cf1[1] = 0
+cf1[2] = 1
+st1 = MPS(sites, string.(cf1))
+Es, sts = EasySweep("s", hmt, st1 ; path)
+
+tms_l2 = GetL2Terms(nm, 2)
+l2 = GetMpo("l2", tms_l2, sites ; path, old = true)
+@show inner(stg', l2, stg)
+```
