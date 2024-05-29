@@ -8,6 +8,14 @@
 
 ## May 2024
 
+### 29 May, 2024 (Version 0.4.3)
+
+- Add QNU truncation for ITensors use.
+- Change the Fortran code to be robust against QNU breaking terms
+- Add built-in density-density interaction. 
+- Add built-in 3-state Potts model.
+- Add built-in Ising model with magnetic line defect. 
+
 ### 28 May, 2024 (Version 0.4.0)
 
 - Add support for DMRG.

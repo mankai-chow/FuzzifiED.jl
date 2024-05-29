@@ -105,6 +105,11 @@ Conversely, the  `Sites` objects in `ITensors` can also be generated from a set 
 ```@docs
 SitesFromQnu(; qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)])
 ```
+If the number of quantum numbers are too many, it can be truncated by 
+```@docs
+TruncateQnu(; qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)], trunc_lth :: Int64 = 3, trunc_wt :: Vector{Int64} = [ 2 ^ (i - trunc_lth) for i = trunc_lth : length(qnu_o)]) 
+```
+
 The `OpSum` objects in `ITensors` can be converted with the collection of `Term`'s
 ```@docs
 TermsFromOpSum(opsum :: Sum{Scaled{ComplexF64, Prod{Op}}})
@@ -159,4 +164,19 @@ GetSpnBasis(cfs :: Confs, nf :: Int64 ; qn_p :: Int64 = 0, qn_r :: Int64 = 0, qn
 GetIdDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector)
 GetSpnPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector)
 GetSpnC2Terms(nm :: Int64, nf :: Int64) 
+```
+
+### Density-density interaction models 
+
+```@docs 
+GetDenIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.0], mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a'))
+GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
+```
+
+#### 3-state Potts model 
+
+```@docs
+GetLzQnu(nm :: Int64, nf :: Int64)
+GetLzConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0)
+GetS3Basis(cfs :: Confs ; qn_z3 :: Number = 0, qn_z2 :: Int64 = 0, qn_r = 0)
 ```
