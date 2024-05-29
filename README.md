@@ -4,11 +4,13 @@ Documentations can be found at [this link](https://mankai-chow.github.io/Fuzzifi
 
 Install the package and the unregistered prerequisites with the commands
 ```julia
-julia> using Pkg; Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.git"); Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
+julia> using Pkg; 
+julia> Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.git"); 
+julia> Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
 ```
 Include at the start of your Julia script
 ```julia
 using FuzzifiED
 ```
 
-This package is developped by Zheng Zhou (周正) at Perimeter Institute. If you use this package, please mention in the acknowledgement. If you have any questions, please contact at [zzhou@pitp.ca](mailto:zzhou@pitp.ca).
+This package is developped by Zheng Zhou (周正) at Perimeter Institute. If this package is helpful in your research, we would appreciate it if you mention in the acknowledgement. If you have any questions, please contact at [zzhou@pitp.ca](mailto:zzhou@pitp.ca).
