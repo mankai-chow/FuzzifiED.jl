@@ -52,10 +52,11 @@ where we use a notation ``c^{(1)}=c^\\dagger`` and ``c^{0}=c`` for convenience, 
 * `bs :: Basis` is the resulting `Basis` object
 """
 function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64}, cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any})
+    if (length(qnz_s) == 0) return Basis(cfs) end
     nqnz = length(qnz_s)
     perm_o_mat = reduce(hcat, perm_o)
     ph_o_mat = reduce(hcat, ph_o)
-    fac_o_mat = reduce(hcat, fac_o)
+    fac_o_mat = ComplexF64.(reduce(hcat, fac_o))
     dim_ref = Ref{Int64}(0)
     cfgr = Array{Int64, 1}(undef, cfs.ncf)
     cffac = Array{ComplexF64, 1}(undef, cfs.ncf)
