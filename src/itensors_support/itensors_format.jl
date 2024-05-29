@@ -75,6 +75,11 @@ function ITensors.space( :: SiteType"Fermion"; no :: Int64 = 1, o :: Int = 1,
     ]
 end
 
+function TruncateQnu(; qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)], trunc_lth :: Int64 = 3, trunc_wt :: Vector{Int64} = [ 2 ^ (i - trunc_lth) for i = trunc_lth : length(qnu_o)]) 
+    qnu_o1 = [ qnu_o[1 : trunc_lth - 1] ; [sum([ qnu_o[i + trunc_lth - 1] .* trunc_wt[i] for i in eachindex(trunc_wt)])] ] 
+    return (qnu_o = qnu_o1, qnu_name = qnu_name[1 : trunc_lth], modul = modul[1 : trunc_lth])
+end
+
 """
     function SitesFromQnu(; qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64})
 
