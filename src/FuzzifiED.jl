@@ -64,6 +64,13 @@ export GetIdDenIntTerms
 export GetSpnPairIntTerms
 export GetSpnC2Terms
 
+include("models/nn_int.jl")
+export GetLzQnu
+export GetLzConfs 
+export GetS3Basis
+export GetDenIntTerms
+export GetPolTerms
+
 function __init__()
 
     @require ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5" begin
