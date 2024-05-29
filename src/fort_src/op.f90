@@ -81,6 +81,8 @@ subroutine count_op(no, nor, &
                 phase = hopping(cf, cf1, no, nc, cstr_tms(:, :, t))
                 if (phase == 0) cycle
                 i1 = search_conf(no, nor, lid_f, rid_f, cf1)
+                if (i1 <= 0 .or. i1 > ncf_f) cycle
+                if (cf1 /= conf_f(i1)) cycle
 
                 g1 = cfgr_f(i1)
                 if (g1 == -1) cycle 
@@ -158,6 +160,8 @@ subroutine generate_op(no, nor, &
                 phase = hopping(cf, cf1, no, nc, cstr_tms(:, t))
                 if (phase == 0) cycle
                 i1 = search_conf(no, nor, lid_f, rid_f, cf1)
+                if (i1 <= 0 .or. i1 > ncf_f) cycle
+                if (cf1 /= conf_f(i1)) cycle
                 val = fac_tms(t) * phase
 
                 g1 = cfgr_f(i1)
@@ -236,6 +240,8 @@ subroutine generate_op_re(no, nor, &
                 phase = hopping(cf, cf1, no, nc, cstr_tms(:, t))
                 if (phase == 0) cycle
                 i1 = search_conf(no, nor, lid_f, rid_f, cf1)
+                if (i1 <= 0 .or. i1 > ncf_f) cycle
+                if (cf1 /= conf_f(i1)) cycle
                 val = fac_tms(t) * phase
 
                 g1 = cfgr_f(i1)
@@ -314,6 +320,8 @@ subroutine action_op(no, nor, &
                 phase = hopping(cf, cf1, no, nc, cstr_tms(:, t))
                 if (phase == 0) cycle
                 i1 = search_conf(no, nor, lid_f, rid_f, cf1)
+                if (i1 <= 0 .or. i1 > ncf_f) cycle
+                if (cf1 /= conf_f(i1)) cycle
                 val = fac_tms(t) * phase
 
                 g1 = cfgr_f(i1)
@@ -385,6 +393,8 @@ subroutine overlap_op(no, nor, &
                 phase = hopping(cf, cf1, no, nc, cstr_tms(:, t))
                 if (phase == 0) cycle
                 i1 = search_conf(no, nor, lid_f, rid_f, cf1)
+                if (i1 <= 0 .or. i1 > ncf_f) cycle
+                if (cf1 /= conf_f(i1)) cycle
                 val = fac_tms(t) * phase
 
                 g1 = cfgr_f(i1)
