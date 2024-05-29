@@ -76,7 +76,7 @@ function ITensors.space( :: SiteType"Fermion"; no :: Int64 = 1, o :: Int = 1,
 end
 
 """
-    function SitesFromQN(; qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64})
+    function SitesFromQnu(; qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64})
 
 returns the ITensors Sites object from the information of quantum numbers 
 
@@ -86,7 +86,7 @@ returns the ITensors Sites object from the information of quantum numbers
 - `qnu_name :: Vector{String}` stores the name of each quantum number. Facultive, QN1, QN2, ... by default. 
 - `modul :: Vector{Int64}` stores the modulus of each quantum number. Store 1 if no modulus. Facultive, all 1 by default. 
 """
-function SitesFromQN(; qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)])
+function SitesFromQnu(; qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)])
     no = length(qnu_o[1])
     return [ siteind("Fermion" ; no, o, qnu_o, qnu_name, modul) for o in eachindex(qnu_o[1]) ]
 end

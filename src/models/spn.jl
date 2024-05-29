@@ -10,7 +10,7 @@ returns the diagonal quantum numbers, _i.e._, particle number ``N_e``, angular m
 
 # Output
 
-A named tuple with three elements that can be directly fed into [`SitesFromQN`](@ref)
+A named tuple with three elements that can be directly fed into [`SitesFromQnu`](@ref)
 
 - `qnu_o :: Vector{Vector{Int64}}` stores the charge of each orbital under each conserved quantity. See [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)))) for detail.
 - `qnu_name :: Vector{String}` stores the name of each quantum number.

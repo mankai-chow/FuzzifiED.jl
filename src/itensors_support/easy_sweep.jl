@@ -167,7 +167,7 @@ function GetMpoSites(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{Complex
         close(f)
         println("FINISHED READING OPERATOR $(id)")
     else
-        sites = SitesFromQN(; qnu_o, qnu_name, modul)
+        sites = SitesFromQnu(; qnu_o, qnu_name, modul)
         os = TermsOrOpSum(tms)
 
         if (old)

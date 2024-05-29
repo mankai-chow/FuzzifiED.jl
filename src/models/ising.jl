@@ -9,7 +9,7 @@ returns the diagonal quantum numbers, _i.e._, particle number ``N_e`` and angula
 
 # Output
 
-A named tuple with three elements that can be directly fed into [`SitesFromQN`](@ref)
+A named tuple with three elements that can be directly fed into [`SitesFromQnu`](@ref)
 
 - `qnu_o :: Vector{Vector{Int64}}` stores the charge of each orbital under each conserved quantity. See [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)))) for detail.
 - `qnu_name :: Vector{String}` stores the name of each quantum number.
@@ -64,24 +64,32 @@ function GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r
     no = cfs.no
     qn_r1 = qn_r
     if (mod(no, 8) >= 4) qn_r1 = -qn_r end
-    cyc = [ 2, 2, 2 ] # Input three Z_2 symmetries 
-    qnz_s = ComplexF64[ qn_p, qn_z, qn_r ] # Quantum numbers are all positive 
-    # Initialise the vectors
+    cyc = Vector{Int64}(undef, 0)
+    qnz_s = Vector{ComplexF64}(undef, 0)
     perm_o = []
     ph_o = []
     fac_o = []
-    # Record the parity
-    push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no]) 
-    push!(ph_o, fill(1, no))
-    push!(fac_o, [ isodd(o) ? -1 : 1 for o = 1 : no])
-    # Record the flavour symmetry
-    push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no])
-    push!(ph_o, fill(0, no))
-    push!(fac_o, fill(ComplexF64(1), no))
-    # Record the pi-rotation
-    push!(perm_o, [ isodd(o) ? no - o : no + 2 - o for o = 1 : no])
-    push!(ph_o, fill(0, no)) 
-    push!(fac_o, fill(ComplexF64(1), no)) 
+    if qn_p != 0
+        push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no]) 
+        push!(ph_o, fill(1, no))
+        push!(fac_o, [ isodd(o) ? -1 : 1 for o = 1 : no])
+        push!(qnz_s, qn_p)
+        push!(cyc, 2)
+    end
+    if qn_z != 0
+        push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no])
+        push!(ph_o, fill(0, no))
+        push!(fac_o, fill(ComplexF64(1), no))
+        push!(qnz_s, qn_z)
+        push!(cyc, 2)
+    end
+    if qn_r != 0
+        push!(perm_o, [ isodd(o) ? no - o : no + 2 - o for o = 1 : no])
+        push!(ph_o, fill(0, no)) 
+        push!(fac_o, fill(ComplexF64(1), no)) 
+        push!(qnz_s, qn_r1)
+        push!(cyc, 2)
+    end
     # Generate the basis and print the dimension
     return Basis(cfs, qnz_s, cyc, perm_o, ph_o, fac_o)
 end
