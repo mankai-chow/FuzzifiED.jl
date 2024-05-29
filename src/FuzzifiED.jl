@@ -50,6 +50,12 @@ export GetIsingXQnu
 export GetIsingXConfs
 export GetIsingXIntTerms
 
+include("models/ising_def.jl")
+export GetIsingDefQnu
+export GetIsingDefConfs
+export GetIsingDefIntTerms
+export GetDefXPolTerms
+
 include("models/spn.jl")
 export GetSpnQnu
 export GetSpnConfs 
@@ -69,7 +75,8 @@ function __init__()
         export ConfsFromSites
         export TermsFromOpSum
         export OpSumFromTerms
-        export SitesFromQN
+        export SitesFromQnu
+        export TruncateQnu
 
         include("itensors_support/easy_sweep.jl")
         export SweepOne
