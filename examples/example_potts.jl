@@ -29,11 +29,11 @@ for (qn_r, (qn_z2, qn_z3)) in Iterators.product([-1, 1], [(1, 1), (-1, 1), (0, Ï
     l2_val = [ st[:, i]' * l2_mat * st[:, i] for i = 1 : length(enrg)]
 
     for i in eachindex(enrg) 
-        push!(result, [real(enrg[i]), round(real(l2_val[i]), digits = 6), Z2(qn_z2), Z3(qn_z3), Z2(qn_r)])
+        push!(result, [round(enrg[i], digits = 6), round(real(l2_val[i]), digits = 6), Z2(qn_z2), Z3(qn_z3), Z2(qn_r)])
     end
 end
 
-sort!(result)
+sort!(result, by = st -> real(st[1]))
 enrg_0 = result[1][1]
 enrg_T = filter(st -> abs(st[2] - 6) < eps(Float32) && st[3] == "+" && st[4] == 0, result)[1][1]
 result_dim = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
