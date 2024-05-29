@@ -362,7 +362,7 @@ nm = 12
 nf = 2
 no = nm * nf
 
-sites = SitesFromQN(; GetIsingXQnu(nm)...)
+sites = SitesFromQnu(; GetIsingXQnu(nm)...)
 tms_hmt = GetIsingXIntTerms(nm, [4.75, 1.]) - 3.16 * GetZPolTerms(nm)
 @time mpo_hmt = MPO(OpSumFromTerms(tms_hmt), sites)
 

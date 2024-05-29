@@ -103,7 +103,7 @@ ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, cf_ref :: Vector
 ```
 Conversely, the  `Sites` objects in `ITensors` can also be generated from a set of diagonal quantum numbers 
 ```@docs
-SitesFromQN(; qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)])
+SitesFromQnu(; qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)])
 ```
 The `OpSum` objects in `ITensors` can be converted with the collection of `Term`'s
 ```@docs
