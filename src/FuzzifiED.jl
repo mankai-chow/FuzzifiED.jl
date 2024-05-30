@@ -46,10 +46,10 @@ export GetDenIntTerms
 export GetPairIntTerms
 export GetPolTerms
 
-include("models/observable.jl")
-export Observable
-export StoreObservable!
-export StoreObservable
+include("models/sphere_obs.jl")
+export SphereObs
+export StoreComps!
+export StoreComps
 export Laplacian
 export GetComponent
 export GetPointValue

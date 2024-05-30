@@ -15,7 +15,7 @@ We also append in the end a list of
 `FuzzifiED` supports diagonal quantum numbers (QNU) in the form of 
 
 ```math
-Q_i=\sum_{o=1}^{N_o}q_{io}n_o\quad\mathrm{or}\quadQ_i=\sum_{o=1}^{N_o}q_{io}n_o\ \mathrm{mod}\ P_i
+Q_i=\sum_{o=1}^{N_o}q_{io}n_o\quad\mathrm{or}\quad Q_i=\sum_{o=1}^{N_o}q_{io}n_o\ \mathrm{mod}\ P_i
 ```
 
 where ``i=1,\dots,N_U`` is the index of diagonal quantum numbers, ``o`` is the index of orbital, ``n_o=c^\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. 
@@ -279,7 +279,7 @@ L^\pm&=\sum_{\sigma m}\sqrt{(s\mp m)(s\pm m+1)}c^\dagger_{m\pm 1}c_m
 \end{aligned}
 ```
 
-The construction of the operator can be simplified by the [addition](@ref +(tms1 :: Vector{Term}, tms2 :: Vector{Term})), [multiplication](@ref *(tms1 :: Vector{Term}, tms2 :: Vector{Term})), [Hermitian conjugate](@ref adjoint(tms :: Vector{Term})) and [Simplification](@ref SimplifyTerms) of terms. The following code measures the angular momentum of each eigenstate and verify whether ``|T\rangle`` is an eigenstate of ``L^2`` by measuring 
+The construction of the operator can be simplified by the [addition](@ref +(tms1 :: Vector{Term}, tms2 :: Vector{Term})), [multiplication](@ref *(tms1 :: Vector{Term}, tms2 :: Vector{Term})), [Hermitian conjugate](@ref adjoint(tms :: Vector{Term})) and [simplification](@ref SimplifyTerms) of terms. The following code measures the angular momentum of each eigenstate and verify whether ``|T\rangle`` is an eigenstate of ``L^2`` by measuring 
 
 ```math
 |L^2T\rangle=L^2|T\rangle,\quad\frac{|\langle T|L^2T\rangle|^2}{\langle T|T\rangle\langle L^2T|L^2T\rangle}
