@@ -1,5 +1,4 @@
 using FuzzifiED
-using PrettyTables
 
 nm = 7
 nf = 4
@@ -36,5 +35,7 @@ enrg_0 = result[1][1]
 enrg_T = filter(st -> abs(st[2] - 6) < eps(Float32) && abs(st[3]) < eps(Float32), result)[1][1]
 result_dim = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
 result_display = permutedims(hcat(result_dim...))
-
-pretty_table(result_display, header = ["Dim", "Energy", "L2", "C2", "PH", "RY", "Z1", "Z2", "X"])
+display(result_display)
+# For better output, change the last line to 
+# using PrettyTables
+# pretty_table(result_display, header = ["Dim", "Energy", "L2", "C2", "PH", "RY", "Z1", "Z2", "X"])
