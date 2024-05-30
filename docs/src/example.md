@@ -6,17 +6,21 @@ The examples can be found in the directory [`examples`](https://github.com/manka
 
 In addition, an example of how `FuzzifiED` can facilitate DMRG calculation is given. Two versions of the DMRG example is provided. The first uses `MPO` and `dmrg` functions of the ITensors package and is stored in [`ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg.jl). The second uses the [`EasySweep`](@ref) function in the package which further wraps the `dmrg` function to facilitate the management of sweeps and is stored in [`ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl). 
 
-## Implement the conserved quantities and generate the configurations
+We also append in the end a list of 
 
-`FuzzifiED` supports conserved quantities in the form of 
+## Exact diagonalisation with FuzzifiED
+
+### Implement the diagonal quantum numbers and generate the configurations
+
+`FuzzifiED` supports diagonal quantum numbers (QNU) in the form of 
 
 ```math
-Q_i=\sum_{o=1}^{N_o}q_{io}n_o
+Q_i=\sum_{o=1}^{N_o}q_{io}n_o\quad\mathrm{or}\quadQ_i=\sum_{o=1}^{N_o}q_{io}n_o\ \mathrm{mod}\ P_i
 ```
 
-where ``i=1,\dots,N_U`` is the index of conserved quantities, ``o`` is the index of orbital, ``n_o=c^\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. 
+where ``i=1,\dots,N_U`` is the index of diagonal quantum numbers, ``o`` is the index of orbital, ``n_o=c^\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. 
 
-The function used to implement the conserved quantities and generate all the configurations (_i.e._, direct product states) is [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2))). There are two conserved quantities in the Ising model, _viz._ the particle number and the angular momentum
+The function used to implement the diagonal quantum numbers and generate all the configurations (_i.e._, direct product states) is [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2))). There are two diagonal quantum numbers in the Ising model, _viz._ the particle number and the angular momentum
 
 ```math
 \begin{aligned}
@@ -25,7 +29,7 @@ Q_2&=L_z+N_es,&q_{2,m\sigma}&=m+s
 \end{aligned}
 ```
 
-where the orbital index ``o`` contains both ``m`` and ``\sigma``. In the code, we store the spin-up orbitals in ``o=1,\dots,N_m`` and the spin-down orbitals in ``o=N_m+1,\dots,2N_m``. Thus, if we want to look at the ``L_z=0`` half-filled sector
+where the orbital index ``o`` contains both ``m`` and ``\sigma``. In the code, we store the orbitals with the same $m$ together, _viz._ we store the spin-up orbitals in odd ``o=1,3,\dots,2N_m-1`` and the spin-down orbitals in even ``o=2,4,\dots,2N_m``. Thus, if we want to look at the ``L_z=0`` half-filled sector
 
 ```julia
 # Inputing the basic setups
@@ -48,7 +52,7 @@ push!(qnu_s, ne * s)
 @show cfs.ncf
 ```
 
-### ITensor support
+#### ITensor support
 
 The quantum numbers can also be imported from the `Sites` objects in `ITensors`. This can be done using the [`ConfsFromSites`](@ref) function.
 
@@ -70,13 +74,13 @@ qn_s = QN(("Nf", ne), ("Lz", Int(ne * s)))
 @show cfs.ncf
 ```
 
-### Built-in model 
+#### Built-in model 
 Using The built-in Ising model, the process above can be done in one line with the method [`GetIsingConfs`](@ref).
 ```julia
 cfs = GetIsingConfs(nm)
 ```
 
-## Implement the discrete symmetries and initialise the basis
+### Implement the discrete symmetries and initialise the basis
 
 `FuzzifiED` supports discrete ``\mathbb{Z}_n`` symmetries in the form of 
 
@@ -84,7 +88,7 @@ cfs = GetIsingConfs(nm)
 \mathscr{Z}:\ c_o\to \alpha_o^* c^{(p_o)}_{\pi_o},\quad c_o^\dagger\to \alpha_o c^{(1-p_o)}_{\pi_o}
 ```
 
-where we use a notation ``c^{(1)}=c^\dagger`` and ``c^{0}=c`` for convenience, where ``\pi_o`` is a permutation of ``1,\dots N_o``, ``\alpha_o`` is a coefficient, and ``p_o`` specified whether or not particle-hole transformation is performed for the orbital. Note that one must guarentee that all these transformations commute with each other and also commute with the conserved quantities. 
+where we use a notation ``c^{(1)}=c^\dagger`` and ``c^{0}=c`` for convenience, where ``\pi_o`` is a permutation of ``1,\dots N_o``, ``\alpha_o`` is a coefficient, and ``p_o`` specified whether or not particle-hole transformation is performed for the orbital. Note that one must guarentee that all these transformations commute with each other and also commute with the diagonal quantum numbers. 
 
 After implementing these symmetries, a state in the new basis should look like 
 
@@ -131,13 +135,13 @@ push!(fac_o, fill(ComplexF64(1), no)) # fac_o[2] = [1,1,...,1]
 
 Note that if no discrete symmetry is needed, one can simply put instead `bs = Basis(conf)`
 
-### Built-in model 
+#### Built-in model 
 Using The built-in Ising model, the process above can be done in one line with the method [`GetIsingBasis`](@ref).
 ```julia
 bs = GetIsingBasis(cfs ; qn_p = 1, qn_r = 1, qn_z = 1)
 ```
 
-## Record the Hamiltonian operator
+### Record the Hamiltonian operator
 The operator here refers to the sum of product of ``c`` and ``c^\dagger``'s in the form 
 
 ```math
@@ -195,7 +199,7 @@ end
 hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
 ```
 
-### ITensor support
+#### ITensor support
 
 Alternatively, one can generate the operator using an `OpSum` object instead of `cstr_vec` and `fac` using the function [`TermsFromOpSum`](@ref).
 
@@ -245,13 +249,13 @@ tms_hmt = TermsFromOpSum(ops_hmt)
 hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
 ```
 
-### Built-in model 
+#### Built-in model 
 Using The built-in Ising model, the process above can be done in one line with the method [`GetIsingIntTerms`](@ref) and [`GetXPolTerms`](@ref)
 ```julia
 tms_hmt = GetIsingIntTerms(nm, [4.75, 1.]) - 3.16 * GetXPolTerms(nm)
 ```
 
-## Generate the sparse matrix and diagonalise
+### Generate the sparse matrix and diagonalise
 
 After specifying the Hamiltonian, we then use the [`OpMat`](@ref) to generate a sparse matrix from the operator. To get the 10 lowest eigenstates and their energies
 ```julia
@@ -263,7 +267,7 @@ After specifying the Hamiltonian, we then use the [`OpMat`](@ref) to generate a 
 
 We also note that matrices with real elements can be generated with the option `type = Float64` in the `OpMat` function. 
 
-## Measuring the angular momentum
+### Measuring the angular momentum
 
 We can measure the inner product of a final state, an operator or its matrix and an initial state or the action of an operator or its matrix on a state by directly using the [`*`](@ref) operator. To measure the total angular momentum ``L^2`` by definition
 
@@ -275,7 +279,7 @@ L^\pm&=\sum_{\sigma m}\sqrt{(s\mp m)(s\pm m+1)}c^\dagger_{m\pm 1}c_m
 \end{aligned}
 ```
 
-The construction of the operator can be simplified by the (addition)[@ref +(tms1 :: Vector{Term}, tms2 :: Vector{Term})], (multiplication)[@ref *(tms1 :: Vector{Term}, tms2 :: Vector{Term})] and (Hermitian conjugate)[@ref adjoint(tms :: Vector{Term})] of terms. The following code measures the angular momentum of each eigenstate and verify whether ``|T\rangle`` is an eigenstate of ``L^2`` by measuring 
+The construction of the operator can be simplified by the [addition](@ref +(tms1 :: Vector{Term}, tms2 :: Vector{Term})), [multiplication](@ref *(tms1 :: Vector{Term}, tms2 :: Vector{Term})) and [Hermitian conjugate](@ref adjoint(tms :: Vector{Term})) of terms. The following code measures the angular momentum of each eigenstate and verify whether ``|T\rangle`` is an eigenstate of ``L^2`` by measuring 
 
 ```math
 |L^2T\rangle=L^2|T\rangle,\quad\frac{|\langle T|L^2T\rangle|^2}{\langle T|T\rangle\langle L^2T|L^2T\rangle}
@@ -304,14 +308,14 @@ st_L2T = l2_mat * st[:, 3]
 @show abs(st_L2T' * st_T) ^ 2 / ((st_T' * st_T) * (st_L2T' * st_L2T))
 ```
 
-### Built-in model 
+#### Built-in model 
 Using The built-in Ising model, the generation of the terms in total angular momentum can be done in one line with the method [`GetL2Terms`](@ref)
 ```julia
 tms_l2 = GetL2Terms(nm, 2)
 ```
 This method also applies to other models on fuzzy sphere. 
 
-## Measuring the density operator
+### Measuring the density operator
 
 Similar process can be used to calculate the OPE coefficient by measuring the density operator, by definition 
 
@@ -345,69 +349,95 @@ nz = Operator(bs, bs1, tms_nz ; red_q = 1)
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
 ```
 
-### Built-in model 
+#### Built-in model 
 Using The built-in Ising model, the generation of the terms in density operator can be done in one line with the method [`GetZPolTerms`](@ref)
 ```julia
 tms_nz = GetZPolTerms(nm) 
 ```
 This method also applies to other models on fuzzy sphere. 
 
-### Use FuzzifiED to facilitate DMRG calculations
+## DMRG calculations with FuzzifiED
 
+In this example, we calculate the ground state MPS of the fuzzy sphere Ising model by DMRG in ITensors, and use the same objects to do ED calculation and compare the result. 
+
+We first set-up the calculation by
 ```julia
 using FuzzifiED
 using ITensors
-
 nm = 12
 nf = 2
 no = nm * nf
-
+```
+The first object we need is the sites. FuzzifiED overloads the fermion type and supports direct generation of the sites from the diagonal quantum numbers by the function [`SitesFromQnu`](@ref). The diagonal quantum numbers of the Ising model is built in and can be generated by the function [`GetIsingXQnu`](@ref). The Ising model is expressed in the basis of ``XX-Z`` so that the flavour symmetry is diagonal. 
+```julia
 sites = SitesFromQnu(; GetIsingXQnu(nm)...)
+```
+We then generate the terms of the Hamiltonian using the built-in functions, convert it to `OpSum` type in by the [`OpSumFromTerms`](@ref), and convert it to MPO using the `MPO` function in ITensors
+```julia
 tms_hmt = GetIsingXIntTerms(nm, [4.75, 1.]) - 3.16 * GetZPolTerms(nm)
 @time mpo_hmt = MPO(OpSumFromTerms(tms_hmt), sites)
-
+```
+We then use the all-up state as the initial state. In FuzzifiED, the occupied and empty sites are expressed by 0 and 1, while they are expressed by `"0"` and `"1"` in ITensors, so a conversion to string is needed. 
+```julia
 cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
+st0 = MPS(sites, string.(cf0))
+```
+After that, the Hamiltonian MPO and the initial state MPS can be used for input for DMRG calculation. 
+```julia
+Eg, stg = dmrg(mpo_hmt, st0 ; nsweeps = 10, maxdim = [10,20,50,100,200,500], noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], cutoff = [1E-8])
+@show Eg
+```
+We then convert these objects for the ED calculate. The configurations can be generated from Sites and a reference configuration by the function [`ConfsFromSites`](@ref). 
+```julia
 cfs = ConfsFromSites(sites, cf0)
 bs = Basis(cfs)
 hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 10)
 @show enrg
-
-st0 = MPS(sites, string.(cf0))
-Eg, stg = dmrg(mpo_hmt, st0 ; nsweeps = 10, maxdim = [10,20,50,100,200,500], noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], cutoff = [1E-8])
-@show Eg
 ```
+
 ### Use EasySweep to manage DMRG sweeps
 
+EasySweep facilitates the management of DMRG process by automatically recording the intermediate results and recovering these results if a job is stopped and run again on HPC. It also manages the gradual increase of maximal bond dimensions and the determination of convergence by the criteria of energy. We first specify a path where the results are stored. The Hamiltonian MPO and the sites can be either generated or read from file by the function [`GetMpoSites`](@ref). The input is the quantum numbers and the terms or OpSum ; the output is the MPO and the sites
 ```julia
-using FuzzifiED
-using ITensors
-using ITensorMPOConstruction
-
-nm = 12
-nf = 2
-no = nm * nf
-
 path = "nm_$(nm)/"
 mkpath(path)
-
 tms_hmt = GetIsingXIntTerms(nm, [4.75, 1.]) - 3.16 * GetZPolTerms(nm)
 hmt, sites = GetMpoSites("hmt", tms_hmt ; path, GetIsingXQnu(nm)...)
-
+```
+After generating the initial state MPS, the DMRG calculation of the states ``\mathbb{I}`` and ``\epsilon`` can be done by the [`EasySweep`](@ref) function.  
+```julia
 cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
 st0 = MPS(sites, string.(cf0))
-
 Eg, stg = EasySweep("g", hmt, st0 ; path)
 Ee, ste = EasySweep("e", hmt, st0 ; path, proj = ["g"])
-
+```
+The total angular momentum can be measured by generating the MPO of ``L^2`` and measure the inner product 
+```julia
+tms_l2 = GetL2Terms(nm, 2)
+l2 = GetMpo("l2", tms_l2, sites ; path, old = true)
+@show inner(stg', l2, stg)
+```
+The ``\mathbb{Z}_2``-odd ``\sigma`` state can be calculated similarly.
+```julia
 cf1 = cf0
 cf1[1] = 0
 cf1[2] = 1
 st1 = MPS(sites, string.(cf1))
 Es, sts = EasySweep("s", hmt, st1 ; path)
-
-tms_l2 = GetL2Terms(nm, 2)
-l2 = GetMpo("l2", tms_l2, sites ; path, old = true)
-@show inner(stg', l2, stg)
 ```
+
+## List of examples
+
+The following examples of FuzzifiED can be found in the repository [`examples`](https://github.com/mankai-chow/FuzzifiED.jl/tree/main/examples).
+
+* [`example_ising.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising.jl) does the ED calculation of Ising model through the built-in models. 
+* [`example_ising_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_primitive.jl) does the ED calculation of Ising model through the primitive functions.
+* [`example_ising_itensors.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_itensors.jl) does the ED calculation of Ising model by the Sites and OpSum objects in ITensors.
+* [`example_ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg.jl) does the DMRG calculation of Ising model through the `dmrg` function in ITensors.
+* [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) does the DMRG calculation of Ising model through the `EasySweep` function which wraps ITensors.
+* [`example_ising_def.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_def.jl) does the ED calculation of Ising model with magnetic line defect or defect creation or changing operators.
+* [`example_ising_def_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_def_dmrg.jl) does the DMRG calculation of Ising model with magnetic line defect or defect changing operators. 
+* [`example_sp2.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_sp2.jl) does the ED calculation of the ``\mathrm{SO}(5)`` DQCP model.
+* [`example_potts.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_potts.jl) does the ED calculation of the three-states Potts model.

@@ -2,9 +2,8 @@
 
 ## On-going constructions 
 
-- Add support for DMRG calculations 
-- Add density-density interactions
 - Add density operators, pairing operators and their composite. 
+- Add support for ``\mathrm{O}(3)`` model. 
 
 ## May 2024
 
