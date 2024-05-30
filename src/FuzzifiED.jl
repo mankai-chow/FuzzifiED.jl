@@ -43,6 +43,7 @@ export GetL2Terms
 include("models/nn_int.jl")
 export GetSnBasis
 export GetDenIntTerms
+export GetPairIntTerms
 export GetPolTerms
 
 include("models/observable.jl")
