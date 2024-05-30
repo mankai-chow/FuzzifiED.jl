@@ -21,5 +21,5 @@ function GetL2Terms(nm :: Int64, nf :: Int64)
     tms_lm = tms_lp' 
     tms_l2 = tms_lz * tms_lz - tms_lz + tms_lp * tms_lm
     # Initialise the L2 operator
-    return tms_l2
+    return SimplifyTerms(tms_l2)
 end
