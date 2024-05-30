@@ -1,5 +1,4 @@
-include("../src/FuzzifiED.jl")
-using .FuzzifiED
+using FuzzifiED
 
 nm = 12
 cfs_pp = GetIsingDefConfs(nm, nm ; def_conf = [1, 1])

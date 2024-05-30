@@ -1,5 +1,4 @@
-include("../src/FuzzifiED.jl")
-using .FuzzifiED
+using FuzzifiED
 using ITensors
 
 nm = 12

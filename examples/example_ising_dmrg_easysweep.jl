@@ -1,6 +1,5 @@
 using FuzzifiED
 using ITensors
-using ITensorMPOConstruction
 
 nm = 12
 nf = 2
