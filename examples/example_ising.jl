@@ -1,9 +1,9 @@
 using FuzzifiED
 
 nm = 8
-cfs = GetIsingConfs(nm, nm)
+cfs = GetLzConfs(nm, 2, nm)
 bs = GetIsingBasis(cfs ; qn_p = 1, qn_r = 1, qn_z = 1)
-tms_hmt = GetIsingIntTerms(nm, [4.75, 1.]) - 3.16 * GetXPolTerms(nm)
+tms_hmt = GetIsingIntTerms(nm ; ps_pot = [4.75, 1.]) - 3.16 * GetXPolTerms(nm)
 hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 10)

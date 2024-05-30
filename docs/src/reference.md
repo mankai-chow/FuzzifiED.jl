@@ -1,6 +1,6 @@
 # Reference
 
-## Basics 
+## Core
 
 ### Configurations
 ```@docs
@@ -41,6 +41,11 @@ The product of terms with a number, the sum and product of terms and the adjoint
 *(tms1 :: Vector{Term}, tms2 :: Vector{Term})
 adjoint(tms :: Vector{Term})
 ```
+The terms can be simplified by 
+```@docs
+NormalOrder(tm :: Term)
+SimplifyTerms(tms :: Vector{Term})
+```
 
 ### Operator
 
@@ -80,7 +85,7 @@ Note that sometimes it is needed to transform a state from one basis to another.
 stf = Operator(bsd, bsf, [Term(1., [-1, -1])]) * std
 ```
 
-The `OpMat` object can be converted with the `SparseMatrixCSC` object in the `SparseArrays` package.
+The `OpMat` object can be converted with the `SparseMatrixCSC` object in the `SparseArrays` package. This will allow, _e.g._, full diagonalisation using the linear algebra package of julia. 
 ```@docs
 SparseMatrixCSCFromOpMat(mat :: OpMat)
 OpMat(matcsc :: SparseMatrixCSC)
@@ -137,23 +142,65 @@ GetIntMatrix(nm :: Int64, ps_pot :: Vector{Number})
 GetL2Terms(nm :: Int64, nf :: Int64)
 ```
 
+### Density-density interaction models 
+
+```@docs 
+GetDenIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.0], mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a'))
+GetPairIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.0], mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a'))
+GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
+```
+
+### Observable
+
+Fuzzified supports local observables that can be decomposed into angular components ``\Phi(\Omega)=\sum_{lm}\Phi_{lm}Y^{(s)}_{lm}``
+```@docs
+Observable
+```
+It can be initialised with the following methods 
+```@docs
+Observable(s2 :: Int64, l2m :: Int64, get_comp :: Function)
+Observable(s2 :: Int64, l2m :: Int64, cmps :: Dict{Tuple{Int64, Int64}, Vector{Term}})
+```
+The following methods explicitly calculates and stores each component
+```@docs
+StoreObservable!(obs :: Observable)
+StoreObservable(obs :: Observable)
+```
+The multiplication, addition, conjugate and Laplacian operation of an observable is supported 
+```@docs
+*(fac :: Number, obs :: Observable) 
++(obs1 :: Observable, obs2 :: Observable) 
+adjoint(obs :: Observable)
+*(obs1 :: Observable, obs2 :: Observable)
+Laplacian(obs :: Observable)
+```
+The observables can be evaluated either at an angular component or at a real-space point.
+```@docs
+GetComponent(obs :: Observable, l :: Number, m :: Number)
+GetPointValue(obs :: Observable, θ :: Float64, ϕ :: Float64)
+```
+Two types of operators, _viz._ electrons and density operators are built-in.
+```@docs
+Electron(nf :: Int64, nm :: Int64, f :: Int64)
+Density(nf :: Int64, nm :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
+```
+
 ### Ising model
 
 ```@docs
-GetIsingQnu(nm :: Int64)
-GetIsingConfs(nm :: Int64, ne :: Int64 ; lz :: Float64 = 0.0)
+GetLzQnu(nm :: Int64, nf :: Int64)
+GetLzConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0)
 GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0)
-GetIsingIntTerms(nm :: Int64, ps_pot :: Vector)
+GetIsingIntTerms(nm :: Int64 ; ps_pot :: Vector = [1.])
 GetXPolTerms(nm :: Int64)
 GetZPolTerms(nm :: Int64)
 ```
 
-### Ising model in the X basis
+#### Ising model in the X basis
 
 ```@docs
-GetIsingXQnu(nm :: Int64)
-GetIsingXConfs(nm :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, sz :: Int64 = 0)
-GetIsingXIntTerms(nm :: Int64, ps_pot :: Vector)
+GetLzZnQnu(nm :: Int64, nf :: Int64)
+GetLzZnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, zn :: Int64 = 0)
 ```
 
 ### ``\mathrm{Sp}(N)`` model
@@ -161,22 +208,12 @@ GetIsingXIntTerms(nm :: Int64, ps_pot :: Vector)
 ```@docs
 GetSpnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, sz :: Vector{Int64} = fill(0, div(nf, 2)))
 GetSpnBasis(cfs :: Confs, nf :: Int64 ; qn_p :: Int64 = 0, qn_r :: Int64 = 0, qn_z :: Vector{Int64} = fill(0, div(nf, 2)), qn_x :: Vector{Int64} = fill(0, div(nf, 4)))
-GetIdDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector)
-GetSpnPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector)
+GetSpnPairIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.])
 GetSpnC2Terms(nm :: Int64, nf :: Int64) 
 ```
 
-### Density-density interaction models 
-
-```@docs 
-GetDenIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.0], mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a'))
-GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
-```
-
-#### 3-state Potts model 
+### 3-state Potts model 
 
 ```@docs
-GetLzQnu(nm :: Int64, nf :: Int64)
-GetLzConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0)
-GetS3Basis(cfs :: Confs ; qn_z3 :: Number = 0, qn_z2 :: Int64 = 0, qn_r = 0)
+GetSnBasis(cfs :: Confs, nf :: Int64 ; qn_r :: Int64 = 0, perm :: Vector = [], qn_z :: Vector{<:Number} = Number[]) 
 ```

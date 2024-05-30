@@ -5,8 +5,9 @@ nm = 12
 nf = 2
 no = nm * nf
 
-sites = SitesFromQnu(; GetIsingXQnu(nm)...)
-tms_hmt = GetIsingXIntTerms(nm, [4.75, 1.]) - 3.16 * GetZPolTerms(nm)
+sites = SitesFromQnu(; GetLzZnQnu(nm, 2)...)
+sigma_x = [ 0 1 ; 1 0 ]
+tms_hmt = SimplifyTerms(GetDenIntTerms(nm, 2 ; ps_pot = [4.75, 1.]) - GetDenIntTerms(nm, 2 ; ps_pot = [4.75, 1.] ; mat_a = sigma_x) - 3.16 * GetZPolTerms(nm))
 @time mpo_hmt = MPO(OpSumFromTerms(tms_hmt), sites)
 cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
 st0 = MPS(sites, string.(cf0))

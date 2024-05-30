@@ -3,7 +3,7 @@ using FuzzifiED
 nm = 7
 nf = 4
 cfs = GetSpnConfs(nm, nf, 2 * nm)
-tms_hmt = GetIdDenIntTerms(nm, nf, [1.]) - GetSpnPairIntTerms(nm, nf, [.9])
+tms_hmt = SimplifyTerms(GetDenIntTerms(nm, nf) + .9 * GetSpnPairIntTerms(nm, nf))
 tms_l2 = GetL2Terms(nm, nf)
 tms_c2 = GetSpnC2Terms(nm, nf)
 
