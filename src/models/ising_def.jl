@@ -1,21 +1,3 @@
-""" 
-    function GetIsingQnu(nm :: Int64) :: @NamedTuple{qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}}
-
-returns the diagonal quantum numbers, _i.e._, particle number ``N_e`` and angular momentum ``L_z``, of the fuzzy sphere Ising model. 
-
-# Arguments 
-
-- `nm :: Int64` is the number of orbitals ; 
-
-# Output
-
-A named tuple with three elements that can be directly fed into [`SitesFromQnu`](@ref)
-
-- `qnu_o :: Vector{Vector{Int64}}` stores the charge of each orbital under each conserved quantity. See [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)))) for detail.
-- `qnu_name :: Vector{String}` stores the name of each quantum number.
-- `modul :: Vector{Int64}` stores the modulus of each quantum number, 1 if no modulus. 
-
-"""
 function GetIsingDefQnu(nm :: Int64 ; def_conf :: Vector{Int64} = [1, 1])
     nf = 2
     no = nf * nm
@@ -37,17 +19,7 @@ function GetIsingDefQnu(nm :: Int64 ; def_conf :: Vector{Int64} = [1, 1])
     return (qnu_o = qnu_o, qnu_name = qnu_name, modul = modul)
 end
 
-"""
-    function GetIsingConfs(nm :: Int64 ; ne :: Int64 = 0, lz :: Float64) :: Confs
 
-Return the configurations with conserved particle number ``N_e`` and angular momentum ``L_z``.
-        
-# Arguments
-
-- `nm :: Int64` is the number of orbitals ``2s+1``.
-- `ne :: Int64` is the number of electrons.
-- `lz :: Float64` is the angular momentum. Facultive, 0 by default. 
-"""
 function GetIsingDefConfs(nm :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, def_conf :: Vector{Int64} = [1, 1])
     nf = 2
     no = nf * nm
@@ -64,22 +36,6 @@ function GetIsingDefConfs(nm :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, def_co
     return Confs(no, qnu_s, qnu.qnu_o)
 end
 
-"""
-    function GetIsingIntTerms(nm :: Int64, ps_pot :: Vector) :: Vector{Term}
-
-Returns the terms for the ising interaction 
-
-```math
-\\sum_{m_1m_2m_3m_4}2U_{m_1m_2m_3m_4}c^{\\dagger}_{m_1\\uparrow}c^{\\dagger}_{m_2\\downarrow}c_{m_3\\downarrow}c_{m_4\\uparrow}
-```
-
-from the pseudopotentials. 
-
-# Arguments 
-
-- `nm :: Int64` is the number of orbitals ``2s+1``.
-- `ps_pot :: Vector{Number}` is the pseudopotential of Ising interaction.
-"""
 function GetIsingDefIntTerms(nm :: Int64, ps_pot :: Vector ; def_conf :: Vector{Int64} = [1, 1] )
     nf = 2
     no = nm * 2
@@ -112,7 +68,7 @@ function GetIsingDefIntTerms(nm :: Int64, ps_pot :: Vector ; def_conf :: Vector{
             end
         end
     end
-    return tms_ising
+    return SimplifyTerms(tms_ising)
 end
 
 
