@@ -1,7 +1,7 @@
 name = "FuzzifiED"
 uuid = "b45b6d2d-92f2-400f-a7df-d2d897927e5f"
 authors = ["Zheng Zhou"]
-version = "0.4.3"
+version = "0.5.0"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
@@ -10,3 +10,4 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 WignerSymbols = "9f57e263-0b3d-5e2e-b1be-24f2bb48858b" 
 ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5"
 ITensorMPOConstruction = "f1f99f3b-4b00-4d2f-a9c2-ce76efdc8f31"
+SphericalHarmonics = "c489a379-e885-57ff-9236-bd896d33c250"

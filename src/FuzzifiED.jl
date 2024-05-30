@@ -4,6 +4,7 @@ using LinearAlgebra
 using SparseArrays
 using Requires
 using WignerSymbols
+using SphericalHarmonics
 import Base.:+
 import Base.:-
 import Base.:*
@@ -22,6 +23,8 @@ export GetConfWeight
 
 include("core/term.jl")
 export Term
+export NormalOrder
+export SimplifyTerms
 
 include("core/operator.jl")
 export Operator
@@ -37,39 +40,43 @@ export GetIntMatrix
 include("models/l2.jl")
 export GetL2Terms
 
+include("models/nn_int.jl")
+export GetSnBasis
+export GetDenIntTerms
+export GetPolTerms
+
+include("models/observable.jl")
+export Observable
+export StoreObservable!
+export StoreObservable
+export Laplacian
+export GetComponent
+export GetPointValue
+export Electron
+export Density
+
 include("models/ising.jl")
-export GetIsingQnu
-export GetIsingConfs
+export GetLzQnu
+export GetLzZnQnu
+export GetLzConfs 
+export GetLzZnConfs
 export GetIsingBasis
 export GetIsingIntTerms
 export GetXPolTerms
 export GetZPolTerms
 
-include("models/ising_x.jl")
-export GetIsingXQnu
-export GetIsingXConfs
-export GetIsingXIntTerms
+include("models/spn.jl")
+export GetSpnQnu
+export GetSpnConfs
+export GetSpnBasis
+export GetSpnPairIntTerms
+export GetSpnC2Terms
 
 include("models/ising_def.jl")
 export GetIsingDefQnu
 export GetIsingDefConfs
 export GetIsingDefIntTerms
 export GetDefXPolTerms
-
-include("models/spn.jl")
-export GetSpnQnu
-export GetSpnConfs 
-export GetSpnBasis 
-export GetIdDenIntTerms 
-export GetSpnPairIntTerms
-export GetSpnC2Terms
-
-include("models/nn_int.jl")
-export GetLzQnu
-export GetLzConfs 
-export GetS3Basis
-export GetDenIntTerms
-export GetPolTerms
 
 function __init__()
 

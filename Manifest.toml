@@ -1,8 +1,8 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.1"
+julia_version = "1.10.3"
 manifest_format = "2.0"
-project_hash = "1e2ba61c31ff9feb9fb5e70a41188773952e8908"
+project_hash = "9896b2653ad7d3e945bf8598f56d0894c3284c94"
 
 [[deps.Accessors]]
 deps = ["CompositionsBase", "ConstructionBase", "Dates", "InverseFunctions", "LinearAlgebra", "MacroTools", "Markdown", "Test"]
@@ -150,7 +150,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.1.0+0"
+version = "1.1.1+0"
 
 [[deps.CompositionsBase]]
 git-tree-sha1 = "802bb88cd69dfd1509f6670416bd4434015693ad"
@@ -283,11 +283,37 @@ git-tree-sha1 = "9c3149243abb5bc0bad0431d6c4fcac0f4443c7c"
 uuid = "f0d1745a-41c9-11e9-1dd9-e5d34d218721"
 version = "1.6.0"
 
+[[deps.ITensorMPOConstruction]]
+deps = ["ITensorMPS", "ITensors", "LinearAlgebra", "Memoize", "SparseArrays", "TimerOutputs"]
+git-tree-sha1 = "4027778364314cff5248e18c4663c16e8e89b6f5"
+repo-rev = "main"
+repo-url = "https://github.com/ITensor/ITensorMPOConstruction.jl.git"
+uuid = "f1f99f3b-4b00-4d2f-a9c2-ce76efdc8f31"
+version = "0.1.0"
+
+[[deps.ITensorMPS]]
+deps = ["ITensorTDVP", "ITensors", "Reexport"]
+git-tree-sha1 = "b57642ae2549ab339dbd2dc760b7ecf0a60a46a4"
+uuid = "0d1a4710-d33b-49a5-8f18-73bdf49b47e2"
+version = "0.2.3"
+
+[[deps.ITensorTDVP]]
+deps = ["Compat", "ITensors", "KrylovKit", "LinearAlgebra", "PackageExtensionCompat", "Printf", "TimerOutputs"]
+git-tree-sha1 = "aaf3836950a3c7715ab39bb49a7d2a0e285f4112"
+uuid = "25707e16-a4db-4a07-99d9-4d67b7af0342"
+version = "0.4.4"
+
+    [deps.ITensorTDVP.extensions]
+    ITensorTDVPObserversExt = "Observers"
+
+    [deps.ITensorTDVP.weakdeps]
+    Observers = "338f10d5-c7f1-4033-a7d1-f9dec39bcaa0"
+
 [[deps.ITensors]]
 deps = ["Adapt", "BitIntegers", "ChainRulesCore", "Compat", "Dictionaries", "DocStringExtensions", "Functors", "IsApprox", "KrylovKit", "LinearAlgebra", "LinearMaps", "NDTensors", "PackageExtensionCompat", "Pkg", "Printf", "Random", "Requires", "SerializedElementArrays", "SimpleTraits", "StaticArrays", "Strided", "TimerOutputs", "TupleTools", "Zeros"]
-git-tree-sha1 = "c706b78babab430c705ef9c5db9abca5257f156b"
+git-tree-sha1 = "ff05a3d5b58efdd9c90a5b283637235aa52bc453"
 uuid = "9136182c-28ba-11e9-034c-db9fb085ebd5"
-version = "0.6.10"
+version = "0.6.11"
 
     [deps.ITensors.extensions]
     ITensorsHDF5Ext = "HDF5"
@@ -324,6 +350,11 @@ git-tree-sha1 = "9cc2baf75c6d09f9da536ddf58eb2f29dedaf461"
 uuid = "842dd82b-1e85-43dc-bf29-5d0ee9dffc48"
 version = "1.4.0"
 
+[[deps.IntegerMathUtils]]
+git-tree-sha1 = "b8ffb903da9f7b8cf695a8bead8e01814aa24b30"
+uuid = "18e54dd8-cb9d-406c-a71d-865a43cbb235"
+version = "0.1.2"
+
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
@@ -354,6 +385,15 @@ deps = ["ChainRulesCore", "GPUArraysCore", "LinearAlgebra", "Printf", "VectorInt
 git-tree-sha1 = "3f3a92bbe8f568b689a7f7bc193f7c717d793751"
 uuid = "0b1a1467-8014-51b9-945f-bf0ae24f4b77"
 version = "0.7.1"
+
+[[deps.LRUCache]]
+git-tree-sha1 = "b3cc6698599b10e652832c2f23db3cab99d51b59"
+uuid = "8ac3fa9e-de4c-5943-b1dc-09c6b5f20637"
+version = "1.6.1"
+weakdeps = ["Serialization"]
+
+    [deps.LRUCache.extensions]
+    SerializationExt = ["Serialization"]
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -425,6 +465,12 @@ deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
 version = "2.28.2+1"
 
+[[deps.Memoize]]
+deps = ["MacroTools"]
+git-tree-sha1 = "2b1dfcba103de714d31c033b5dacc2e4a12c7caa"
+uuid = "c03570c3-d221-55d1-a50c-7939bbd78826"
+version = "0.4.4"
+
 [[deps.MicroCollections]]
 deps = ["Accessors", "BangBang", "InitialValues"]
 git-tree-sha1 = "44d32db644e84c75dab479f1bc15ee76a1a3618f"
@@ -437,9 +483,9 @@ version = "2023.1.10"
 
 [[deps.NDTensors]]
 deps = ["Accessors", "Adapt", "ArrayLayouts", "BlockArrays", "Compat", "Dictionaries", "EllipsisNotation", "FillArrays", "Folds", "Functors", "GPUArraysCore", "HalfIntegers", "InlineStrings", "LinearAlgebra", "MacroTools", "MappedArrays", "PackageExtensionCompat", "Random", "SimpleTraits", "SparseArrays", "SplitApplyCombine", "StaticArrays", "Strided", "StridedViews", "TimerOutputs", "TupleTools", "VectorInterface"]
-git-tree-sha1 = "8d673ee3b01ec69622367767d56240d984ccfd7e"
+git-tree-sha1 = "92cd028e7b2f97c5067ada38c96c275af5279f2c"
 uuid = "23ae76d9-e61a-49c4-8f12-3f1a16adf9cf"
-version = "0.3.8"
+version = "0.3.15"
 
     [deps.NDTensors.extensions]
     NDTensorsAMDGPUExt = "AMDGPU"
@@ -502,6 +548,12 @@ git-tree-sha1 = "9306f6085165d270f7e3db02af26a400d580f5c6"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
 version = "1.4.3"
 
+[[deps.Primes]]
+deps = ["IntegerMathUtils"]
+git-tree-sha1 = "cb420f77dc474d23ee47ca8d14c90810cafe69e7"
+uuid = "27ebfcd6-29c5-5fa9-bf4b-fb8fc14df3ae"
+version = "0.5.6"
+
 [[deps.Printf]]
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
@@ -513,6 +565,16 @@ uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 [[deps.Random]]
 deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+
+[[deps.RationalRoots]]
+git-tree-sha1 = "e5f5db699187a4810fda9181b34250deeedafd81"
+uuid = "308eb6b3-cc68-5ff3-9e97-c3c4da4fa681"
+version = "0.2.1"
+
+[[deps.Reexport]]
+git-tree-sha1 = "45e428421666073eab6f2da5c9d310d99bb12f9b"
+uuid = "189a3867-3050-52da-a836-e630ba90ab69"
+version = "1.2.2"
 
 [[deps.Referenceables]]
 deps = ["Adapt"]
@@ -712,6 +774,12 @@ deps = ["LinearAlgebra"]
 git-tree-sha1 = "833b06acd39f0abc97bc1170bd28e4f713619b37"
 uuid = "409d34a3-91d5-4945-b6ec-7529ddf182d8"
 version = "0.4.5"
+
+[[deps.WignerSymbols]]
+deps = ["HalfIntegers", "LRUCache", "Primes", "RationalRoots"]
+git-tree-sha1 = "960e5f708871c1d9a28a7f1dbcaf4e0ee34ee960"
+uuid = "9f57e263-0b3d-5e2e-b1be-24f2bb48858b"
+version = "2.0.0"
 
 [[deps.Zeros]]
 deps = ["Test"]
