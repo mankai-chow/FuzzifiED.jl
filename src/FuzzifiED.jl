@@ -12,21 +12,21 @@ import Base.adjoint
 
 LibpathFuzzifiED = filter(f -> endswith(f, ".so"), readdir(dirname(@__FILE__), join = true))[1]
 
-include("basics/confs.jl")
+include("core/confs.jl")
 export Confs
 export GetConfId
 
-include("basics/basis.jl")
+include("core/basis.jl")
 export Basis
 export GetConfWeight
 
-include("basics/term.jl")
+include("core/term.jl")
 export Term
 
-include("basics/operator.jl")
+include("core/operator.jl")
 export Operator
 
-include("basics/opmat.jl")
+include("core/opmat.jl")
 export OpMat
 export GetEigensystem
 export SparseMatrixCSCFromOpMat
