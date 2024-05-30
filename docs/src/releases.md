@@ -2,8 +2,8 @@
 
 ## On-going constructions 
 
-- Add density operators, pairing operators and their composite. 
 - Add support for ``\mathrm{O}(3)`` model. 
+- Add calculation for entanglement. 
 
 ## May 2024
 
