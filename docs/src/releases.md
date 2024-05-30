@@ -7,6 +7,12 @@
 
 ## May 2024
 
+### 30 May, 2024 (Version 0.5.0)
+
+- Enable simplification of terms.
+- Add general observables and built-in electrons and density operators. 
+- Reorganise the realisations of built-in models
+
 ### 29 May, 2024 (Version 0.4.3)
 
 - Add QNU truncation for ITensors use.
