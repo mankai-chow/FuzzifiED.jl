@@ -9,7 +9,6 @@ This package is developped by Zheng Zhou (周正) at Perimeter Institute and col
 To install the package and the unregistered prerequisites, please first enter Julia by entering in the command line `julia`, and then enter the commands
 ```julia
 julia> using Pkg; 
-julia> Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.git"); 
 julia> Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
 ```
 Include at the start of your Julia script
@@ -22,13 +21,19 @@ using FuzzifiED
 ```@contents
 Pages = [
     "example.md",
-    "reference.md"
+    "core.md",
+    "itensors.md",
+    "models.md"
 ]
-Depth = 3
+Depth = 2
 ```
 
 ## Index 
 
 ```@index
-Pages = ["reference.md"]
+Pages = [
+    "core.md",
+    "itensors.md",
+    "models.md"
+]
 ```

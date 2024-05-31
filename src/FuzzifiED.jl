@@ -84,7 +84,6 @@ function __init__()
     @require ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5" begin
         using ITensors
         using ITensors.HDF5
-        using ITensorMPOConstruction
 
         include("itensors_support/itensors_format.jl")
         export ConfsFromSites

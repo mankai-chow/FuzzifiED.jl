@@ -11,7 +11,8 @@
 
 - Enable simplification of terms.
 - Add general observables and built-in electrons and density operators. 
-- Reorganise the realisations of built-in models
+- Reorganise the realisations of built-in models.
+- Cancel ITensorMPOConstruction dependence. 
 
 ### 29 May, 2024 (Version 0.4.3)
 

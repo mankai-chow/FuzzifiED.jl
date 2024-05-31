@@ -400,13 +400,32 @@ enrg, st = GetEigensystem(hmt_mat, 10)
 
 ### Use EasySweep to manage DMRG sweeps
 
-EasySweep facilitates the management of DMRG process by automatically recording the intermediate results and recovering these results if a job is stopped and run again on HPC. It also manages the gradual increase of maximal bond dimensions and the determination of convergence by the criteria of energy. We first specify a path where the results are stored. The Hamiltonian MPO and the sites can be either generated or read from file by the function [`GetMpoSites`](@ref). The input is the quantum numbers and the terms or OpSum ; the output is the MPO and the sites
+EasySweep facilitates the management of DMRG process by automatically recording the intermediate results and recovering these results if a job is stopped and run again on HPC. It also manages the gradual increase of maximal bond dimensions and the determination of convergence by the criteria of energy. Before the calculation, we need to define a method to generate MPO from OpSum and Sites. We suggest using `MPO_new` from package `ITensorMPOConstruction`, which can be installed through 
+```julia
+julia> Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.git"); 
+```
+```julia
+using ITensorMPOConstruction
+function MyMPO(os, sites)
+    operatorNames = [ "I", "C", "Cdag", "N" ]
+    opCacheVec = [ [OpInfo(ITensors.Op(name, n), sites[n]) for name in operatorNames] for n in eachindex(sites)  ]
+    mpo = MPO_new(os, sites ; basisOpCacheVec = opCacheVec)
+end
+```
+We also need to specify a path where the results are stored. 
 ```julia
 path = "nm_$(nm)/"
 mkpath(path)
+```
+The Hamiltonian MPO and the sites can be either generated or read from file by the function [`GetMpoSites`](@ref). The input is the quantum numbers and the terms or OpSum ; the output is the MPO and the sites
+```julia
 sigma_x = [ 0 1 ; 1 0 ]
-tms_hmt = SimplifyTerms(GetDenIntTerms(nm ; ps_pot = [4.75, 1.]) - GetDenIntTerms(nm ; ps_pot = [4.75, 1.], mat_a = sigma_x) - 3.16 * GetZPolTerms(nm))
-hmt, sites = GetMpoSites("hmt", tms_hmt ; path, GetLzZnQnu(nm, 2)...)
+tms_hmt = SimplifyTerms(
+    GetDenIntTerms(nm, 2 ; ps_pot = [4.75, 1.]) - 
+    GetDenIntTerms(nm, 2 ; ps_pot = [4.75, 1.], mat_a = sigma_x) - 
+    3.16 * GetZPolTerms(nm)
+)
+hmt, sites = GetMpoSites("hmt", tms_hmt ; path, GetLzZnQnu(nm, 2)..., mpo_method = MyMPO)
 ```
 After generating the initial state MPS, the DMRG calculation of the states ``\mathbb{I}`` and ``\epsilon`` can be done by the [`EasySweep`](@ref) function.  
 ```julia
