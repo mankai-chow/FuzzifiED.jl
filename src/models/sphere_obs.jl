@@ -10,7 +10,7 @@ stores the information of a local observable (or local operator) ``\\Phi`` that 
 
 - `s2 :: Int64` is twice the spin ``2s`` of the observable.
 - `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the observable. 
-- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Vector{Term}` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq s\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
+- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Vector{Term}` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq l\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
 - `stored_q :: Bool` is a boolean that specifies whether or not each component of the observable is stored.
 - `comps :: Dict{Tuple{Int64, Int64}, Vector{Term}}` stores each component of the observable in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
 """
@@ -144,9 +144,9 @@ end
 enables the Hermitian conjugate of an observable.
 ```math
 \\begin{aligned}
-    Φ^†(Ω)&=∑_{lm}(Φ_{lm})^†̄Y^{(s)}_{lm}(Ω)=∑_{lm}(Φ_{lm})^†(-1)^{s+m)Y^{(-s)}_{l,-m}(Ω)\\\\
+    Φ^†(Ω)&=∑_{lm}(Φ_{lm})^†\\bar{Y}^{(s)}_{lm}(Ω)=∑_{lm}(Φ_{lm})^†(-1)^{s+m)Y^{(-s)}_{l,-m}(Ω)\\\\
     (Φ^†)_{lm}&=(-1)^{s-m}(Φ_{l,-m})^†
-\\begin{aligned}
+\\end{aligned}
 ```
 """
 function adjoint(obs :: SphereObs)
@@ -226,7 +226,6 @@ function GetPointValue(obs :: SphereObs, θ :: Float64, ϕ :: Float64)
     end
     return tms
 end
-
 
 """
     function Electron(nf :: Int64, nm :: Int64, f :: Int64) :: SphereObs
