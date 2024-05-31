@@ -13,7 +13,13 @@ import Base.zero
 import Base.adjoint
 
 export LibpathFuzzifiED
-LibpathFuzzifiED = filter(f -> endswith(f, ".so"), readdir(dirname(@__FILE__), join = true))[1]
+if Sys.islinux()
+    LibpathFuzzifiED = dirname(@__FILE__) * "/libs/lib_fuzzifi_ed.so"
+elseif Sys.isapple()
+    LibpathFuzzifiED = dirname(@__FILE__) * "/libs/lib_fuzzifi_ed.dylib"
+else
+    printf("Please compile and specify the libpath in LibpathFuzzifiED.")
+end
 
 include("core/confs.jl")
 export Confs

@@ -1,6 +1,6 @@
 The package `FuzzifiED` is designed to do exact diagonalisation (ED) calculation on the fuzzy sphere, and also facilitates the DMRG calculations by ITensors. It can also be used for generic fermion models. 
 
-This package is currently only supported on Linux environments. 
+This package is currently only supported on Linux and MacOS environments.
 
 Documentations can be found at [this link](https://mankai-chow.github.io/FuzzifiED/). 
 

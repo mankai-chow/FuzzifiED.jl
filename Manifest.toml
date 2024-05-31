@@ -2,7 +2,7 @@
 
 julia_version = "1.10.3"
 manifest_format = "2.0"
-project_hash = "9896b2653ad7d3e945bf8598f56d0894c3284c94"
+project_hash = "32a50138b515d953dd89824680552e094737172a"
 
 [[deps.Accessors]]
 deps = ["CompositionsBase", "ConstructionBase", "Dates", "InverseFunctions", "LinearAlgebra", "MacroTools", "Markdown", "Test"]
@@ -215,6 +215,12 @@ deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
 
+[[deps.ElasticArrays]]
+deps = ["Adapt"]
+git-tree-sha1 = "75e5697f521c9ab89816d3abeea806dfc5afb967"
+uuid = "fdbdab4c-e67f-52f5-8c3f-e7b388dad3d4"
+version = "1.2.12"
+
 [[deps.EllipsisNotation]]
 deps = ["StaticArrayInterface"]
 git-tree-sha1 = "3507300d4343e8e4ad080ad24e335274c2e297a9"
@@ -282,32 +288,6 @@ version = "0.1.6"
 git-tree-sha1 = "9c3149243abb5bc0bad0431d6c4fcac0f4443c7c"
 uuid = "f0d1745a-41c9-11e9-1dd9-e5d34d218721"
 version = "1.6.0"
-
-[[deps.ITensorMPOConstruction]]
-deps = ["ITensorMPS", "ITensors", "LinearAlgebra", "Memoize", "SparseArrays", "TimerOutputs"]
-git-tree-sha1 = "4027778364314cff5248e18c4663c16e8e89b6f5"
-repo-rev = "main"
-repo-url = "https://github.com/ITensor/ITensorMPOConstruction.jl.git"
-uuid = "f1f99f3b-4b00-4d2f-a9c2-ce76efdc8f31"
-version = "0.1.0"
-
-[[deps.ITensorMPS]]
-deps = ["ITensorTDVP", "ITensors", "Reexport"]
-git-tree-sha1 = "b57642ae2549ab339dbd2dc760b7ecf0a60a46a4"
-uuid = "0d1a4710-d33b-49a5-8f18-73bdf49b47e2"
-version = "0.2.3"
-
-[[deps.ITensorTDVP]]
-deps = ["Compat", "ITensors", "KrylovKit", "LinearAlgebra", "PackageExtensionCompat", "Printf", "TimerOutputs"]
-git-tree-sha1 = "aaf3836950a3c7715ab39bb49a7d2a0e285f4112"
-uuid = "25707e16-a4db-4a07-99d9-4d67b7af0342"
-version = "0.4.4"
-
-    [deps.ITensorTDVP.extensions]
-    ITensorTDVPObserversExt = "Observers"
-
-    [deps.ITensorTDVP.weakdeps]
-    Observers = "338f10d5-c7f1-4033-a7d1-f9dec39bcaa0"
 
 [[deps.ITensors]]
 deps = ["Adapt", "BitIntegers", "ChainRulesCore", "Compat", "Dictionaries", "DocStringExtensions", "Functors", "IsApprox", "KrylovKit", "LinearAlgebra", "LinearMaps", "NDTensors", "PackageExtensionCompat", "Pkg", "Printf", "Random", "Requires", "SerializedElementArrays", "SimpleTraits", "StaticArrays", "Strided", "TimerOutputs", "TupleTools", "Zeros"]
@@ -465,12 +445,6 @@ deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
 version = "2.28.2+1"
 
-[[deps.Memoize]]
-deps = ["MacroTools"]
-git-tree-sha1 = "2b1dfcba103de714d31c033b5dacc2e4a12c7caa"
-uuid = "c03570c3-d221-55d1-a50c-7939bbd78826"
-version = "0.4.4"
-
 [[deps.MicroCollections]]
 deps = ["Accessors", "BangBang", "InitialValues"]
 git-tree-sha1 = "44d32db644e84c75dab479f1bc15ee76a1a3618f"
@@ -571,11 +545,6 @@ git-tree-sha1 = "e5f5db699187a4810fda9181b34250deeedafd81"
 uuid = "308eb6b3-cc68-5ff3-9e97-c3c4da4fa681"
 version = "0.2.1"
 
-[[deps.Reexport]]
-git-tree-sha1 = "45e428421666073eab6f2da5c9d310d99bb12f9b"
-uuid = "189a3867-3050-52da-a836-e630ba90ab69"
-version = "1.2.2"
-
 [[deps.Referenceables]]
 deps = ["Adapt"]
 git-tree-sha1 = "02d31ad62838181c1a3a5fd23a1ce5914a643601"
@@ -620,6 +589,23 @@ uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 version = "1.10.0"
+
+[[deps.SphericalHarmonicArrays]]
+deps = ["SphericalHarmonicModes", "TupleTools"]
+git-tree-sha1 = "cace97afd6be1088619c9413c732d7012dc46f96"
+uuid = "9dd28c12-4719-4e7d-b634-e7b733a6d046"
+version = "0.4.12"
+
+[[deps.SphericalHarmonicModes]]
+git-tree-sha1 = "ac0df3386523fa1807aa9e53e882964da70f881a"
+uuid = "0e9554e2-b38b-11e9-16d7-9d9abfec665a"
+version = "0.4.16"
+
+[[deps.SphericalHarmonics]]
+deps = ["ElasticArrays", "Printf", "SphericalHarmonicArrays", "SphericalHarmonicModes"]
+git-tree-sha1 = "2e14a8d66771a273853a8a807155b1bbd3c7c729"
+uuid = "c489a379-e885-57ff-9236-bd896d33c250"
+version = "0.1.14"
 
 [[deps.SplitApplyCombine]]
 deps = ["Dictionaries", "Indexing"]
