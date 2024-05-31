@@ -228,7 +228,7 @@ function GetPointValue(obs :: SphereObs, θ :: Float64, ϕ :: Float64)
 end
 
 """
-    function Electron(nf :: Int64, nm :: Int64, f :: Int64) :: SphereObs
+    function Electron(nm :: Int64, nf :: Int64, f :: Int64) :: SphereObs
 
 returns the electron annihilation operator ``ψ_f``
 
@@ -238,7 +238,7 @@ returns the electron annihilation operator ``ψ_f``
 - ``nm :: Int64`` is the number of orbitals.
 - ``f :: Int64`` is the index of the orbital to be taken.
 """
-function Electron(nf :: Int64, nm :: Int64, f :: Int64)
+function Electron(nm :: Int64, nf :: Int64, f :: Int64)
     gc = (l2, m2) -> (l2 == nm - 1) ? [Term(1.0, [0, f + nf * ((m2 + nm - 1) ÷ 2)])] : Term[]
     return SphereObs(nm - 1, nm - 1, gc)
 end
@@ -246,7 +246,7 @@ end
 
 
 """
-    function Density(nf :: Int64, nm :: Int64 ; mat :: Matrix{<:Number}) :: SphereObs
+    function Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number}) :: SphereObs
 
 returns the density operator ``n=∑_{ff'}ψ^†_{f}M_{ff'}ψ_{f'}``
 
@@ -256,8 +256,8 @@ returns the density operator ``n=∑_{ff'}ψ^†_{f}M_{ff'}ψ_{f'}``
 - ``nm :: Int64`` is the number of orbitals.
 - ``mat :: Int64`` is the matrix ``M_{ff'}``. Facultive, identity matrix ``\\mathbb{I}`` by default.
 """
-function Density(nf :: Int64, nm :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
-    el = [ StoreComps(Electron(nf, nm, f)) for f = 1 : nf ]
+function Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
+    el = [ StoreComps(Electron(nm, nf, f)) for f = 1 : nf ]
     obs = SphereObs(0, 0, Dict{Tuple{Int64, Int64}, Vector{Term}}())
     for f1 = 1 : nf, f2 = 1 : nf
         if abs(mat[f1, f2]) < 1E-13 continue end 

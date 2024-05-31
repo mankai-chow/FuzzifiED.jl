@@ -41,8 +41,8 @@ GetPointValue(obs :: SphereObs, θ :: Float64, ϕ :: Float64)
 ```
 Two types of operators, _viz._ electrons and density operators are built-in.
 ```@docs
-Electron(nf :: Int64, nm :: Int64, f :: Int64)
-Density(nf :: Int64, nm :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
+Electron(nm :: Int64, nf :: Int64, f :: Int64)
+Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
 ```
 
 ## Ising model and Potts model
