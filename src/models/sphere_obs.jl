@@ -66,7 +66,7 @@ function StoreComps!(obs :: SphereObs)
     l2m = obs.l2m
     for l2 = abs(s2) : 2 : l2m
         for m2 = -l2 : 2 : l2 
-            cmps[(l2, m2)] = obs.get_comp(l2, m2)
+            cmps[(l2, m2)] = SimplifyTerms(obs.get_comp(l2, m2))
         end
     end
     obs.stored_q = true 
@@ -153,7 +153,6 @@ function adjoint(obs :: SphereObs)
     s2 = obs.s2
     l2m = obs.l2m
     obs1 = SphereObs(-s2, l2m, (l2, m2) -> obs.get_comp(l2, -m2)' * (iseven((s2 - m2) ÷ 2) ? 1 : -1))
-    if (obs.stored_q) StoreComps!(obs1) end 
     return obs1
 end
 
@@ -170,7 +169,7 @@ function *(obs1 :: SphereObs, obs2 :: SphereObs)
     l2m1 = obs1.l2m
     l2m2 = obs2.l2m
     l2m = l2m1 + l2m2
-    gc = ((l2, m2) -> sum([sum([sum([
+    gc = ((l2, m2) -> sum(Vector{Term}[sum(Vector{Term}[sum(Vector{Term}[
             (iseven(s2 + m2) ? 1 : -1) *
             sqrt((l21 + 1) * (l22 + 1) * (l2 + 1) / (4 * π)) *
             wigner3j(l21/2, l22/2, l2/2, -s21/2, -s22/2, s2/2) *

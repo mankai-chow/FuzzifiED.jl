@@ -18,6 +18,9 @@ mutable struct Term
     cstr :: Vector{Int64}
 end 
 
+function zero( x :: Type{Vector{Term}})
+    return Term[]
+end
 
 """
     function *(fac :: Number, tms :: Vector{Term}) :: Vector{Term}

@@ -9,8 +9,10 @@ import Base.:+
 import Base.:-
 import Base.:*
 import Base.:/
+import Base.zero
 import Base.adjoint
 
+export LibpathFuzzifiED
 LibpathFuzzifiED = filter(f -> endswith(f, ".so"), readdir(dirname(@__FILE__), join = true))[1]
 
 include("core/confs.jl")

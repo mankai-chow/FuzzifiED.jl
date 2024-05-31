@@ -28,6 +28,9 @@ enrg1, st1 = GetEigensystem(hmt_mat, 10)
 st_I = st[:, 1] 
 st_e = st[:, 2] 
 st_s = st1[:, 1]
-tms_nz = GetZPolTerms(nm) 
+tms_nz = SimplifyTerms(GetComponent(Density(nm, 2 ; mat = [ 1 0 ; 0 -1 ]), 0.0, 0.0))
 nz = Operator(bs, bs1, tms_nz ; red_q = 1) 
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
+
+tms_ndn = Density(nm, 2 ; mat = [ 1 0 ; 0 -1 ]) * Density(nm, 2 ; mat = [ 1 0 ; 0 -1 ])
+@show SimplifyTerms(GetPointValue(tms_ndn, 0.0, 0.0))
