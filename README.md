@@ -1,6 +1,8 @@
 The package `FuzzifiED` is designed to do exact diagonalisation (ED) calculation on the fuzzy sphere, and also facilitates the DMRG calculations by ITensors. It can also be used for generic fermion models. 
 
-Documentations can be found at [this link](https://mankai-chow.github.io/FuzzifiED/)
+This package is currently only supported on Linux environments. 
+
+Documentations can be found at [this link](https://mankai-chow.github.io/FuzzifiED/). 
 
 To install the package, please first enter Julia by entering in the command line `julia`, and then enter the commands
 ```julia
