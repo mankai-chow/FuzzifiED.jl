@@ -50,6 +50,6 @@ Or equivalent on Windows.
 
 5. When using FuzzifiED, declare at the header 
 ```julia
-LibFuzzifiED = "$workdir/FuzzifiED_Fortran/lib_fuzzifi_ed.so"
+FuzzifiED.LibFuzzifiED = "$workdir/FuzzifiED_Fortran/lib_fuzzifi_ed.so"
 ```
 change `.so` to `.dylib` or `.dll` if you are not on Linux. 
