@@ -44,7 +44,7 @@ ifort -shared -fPIC -larpack -qopenmp -O3 -o lib_fuzzifi_ed.so ./fort_src/*.o
 ```
 On MacOS
 ```bash
-ifort -dynamiclib -larpack -qopenmp -O3 -o lib_fuzzifi_ed.dylib ./fort_src/*.o
+ifort -dynamiclib -fPIC -larpack -qopenmp -O3 -o lib_fuzzifi_ed.dylib ./fort_src/*.o
 ```
 Or equivalent on Windows.
 
