@@ -40,11 +40,11 @@ ifort -larpack -qopenmp -O3 -c diag_re.f90
 ```
 On linux
 ```bash
-ifort -shared -fPIC -larpack -qopenmp -O3 -o lib_fuzzifi_ed.so ./fort_src/*.o
+ifort -shared -fPIC -larpack -qopenmp -O3 -o lib_fuzzifi_ed.so ./*.o
 ```
 On MacOS
 ```bash
-ifort -dynamiclib -fPIC -larpack -qopenmp -O3 -o lib_fuzzifi_ed.dylib ./fort_src/*.o
+ifort -dynamiclib -fPIC -larpack -qopenmp -O3 -o lib_fuzzifi_ed.dylib ./*.o
 ```
 Or equivalent on Windows.
 
