@@ -5,21 +5,13 @@ using SparseArrays
 using Requires
 using WignerSymbols
 using SphericalHarmonics
+using FuzzifiED_jll
 import Base.:+
 import Base.:-
 import Base.:*
 import Base.:/
 import Base.zero
 import Base.adjoint
-
-export LibpathFuzzifiED
-if Sys.islinux()
-    LibpathFuzzifiED = dirname(@__FILE__) * "/libs/lib_fuzzifi_ed.so"
-elseif Sys.isapple()
-    LibpathFuzzifiED = dirname(@__FILE__) * "/libs/lib_fuzzifi_ed.dylib"
-else
-    printf("Please compile and specify the libpath in LibpathFuzzifiED.")
-end
 
 include("core/confs.jl")
 export Confs

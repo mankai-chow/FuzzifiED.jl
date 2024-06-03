@@ -61,11 +61,11 @@ function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64}, cyc :: Vector{Int64}, 
     cfgr = Array{Int64, 1}(undef, cfs.ncf)
     cffac = Array{ComplexF64, 1}(undef, cfs.ncf)
     szz = prod([ abs(qnz_s[i]) < 1E-8 ? 1 : cyc[i] for i = 1 : nqnz ])
-    @ccall LibpathFuzzifiED.bs_mp_generate_bs_cfgr_(cfs.no :: Ref{Int64}, cfs.nor :: Ref{Int64}, cfs.ncf :: Ref{Int64}, cfs.lid :: Ref{Int64}, cfs.rid :: Ref{Int64}, cfs.conf :: Ref{Int64}, nqnz :: Ref{Int64}, qnz_s :: Ref{ComplexF64}, cyc :: Ref{Int64}, perm_o_mat :: Ref{Int64}, ph_o_mat :: Ref{Int64}, fac_o_mat :: Ref{ComplexF64}, szz :: Ref{Int64}, dim_ref :: Ref{Int64}, cfgr :: Ref{Int64}, cffac :: Ref{ComplexF64}) :: Nothing
+    @ccall FuzzifiED_jll.LibpathFuzzifiED.__bs_MOD_generate_bs_cfgr(cfs.no :: Ref{Int64}, cfs.nor :: Ref{Int64}, cfs.ncf :: Ref{Int64}, cfs.lid :: Ref{Int64}, cfs.rid :: Ref{Int64}, cfs.conf :: Ref{Int64}, nqnz :: Ref{Int64}, qnz_s :: Ref{ComplexF64}, cyc :: Ref{Int64}, perm_o_mat :: Ref{Int64}, ph_o_mat :: Ref{Int64}, fac_o_mat :: Ref{ComplexF64}, szz :: Ref{Int64}, dim_ref :: Ref{Int64}, cfgr :: Ref{Int64}, cffac :: Ref{ComplexF64}) :: Nothing
     dim = dim_ref[]
     grel = Array{Int64, 2}(undef, szz, dim)
     grsz = Array{Int64, 1}(undef, dim)
-    @ccall LibpathFuzzifiED.bs_mp_generate_bs_grel_(cfs.ncf :: Ref{Int64}, szz :: Ref{Int64}, dim :: Ref{Int64}, cfgr :: Ref{Int64}, grel :: Ref{Int64}, grsz :: Ref{Int64}) :: Nothing
+    @ccall FuzzifiED_jll.LibpathFuzzifiED.__bs_MOD_generate_bs_grel(cfs.ncf :: Ref{Int64}, szz :: Ref{Int64}, dim :: Ref{Int64}, cfgr :: Ref{Int64}, grel :: Ref{Int64}, grsz :: Ref{Int64}) :: Nothing
     return Basis(cfs, dim, szz, cfgr, cffac, grel, grsz)
 end 
 

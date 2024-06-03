@@ -31,7 +31,7 @@ or
 ```math
 Q_i=\\sum_{o=1}^{N_o}q_{io}n_o\\ \\mathrm{mod}\\ p_i
 ```
-where ``i=1,\\dots,N_U`` is the index of conserved quantities, ``o`` is the index of orbital, ``n_o=c^\\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. 
+where ``i=1,\\dots,N_U`` is the index of conserved quantities, ``o`` is the index of orbital, ``n_o=c^\\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. (A list of ``q_o`` with both positive and negative entries can be adapted by shifting every elements by a same value)
 
 # Arguments
 
@@ -51,11 +51,11 @@ function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :
     lid = Array{Int64, 1}(undef, 2 ^ (no - nor) + 1)
     ref_ncf = Ref{Int64}(0)
     qnu_o_mat = Matrix{Int64}(reduce(hcat, qnu_o))
-    @ccall LibpathFuzzifiED.cfs_mp_count_cfs_(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, modul :: Ref{Int64}, ref_ncf :: Ref{Int64}, lid :: Ref{Int64}) :: Nothing
+    @ccall FuzzifiED_jll.LibpathFuzzifiED.__cfs_MOD_count_cfs(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, modul :: Ref{Int64}, ref_ncf :: Ref{Int64}, lid :: Ref{Int64}) :: Nothing
     ncf = ref_ncf[]
     rid = Array{Int64, 1}(undef, 2 ^ nor + 1)
     conf = Array{Int64, 1}(undef, ncf)
-    @ccall LibpathFuzzifiED.cfs_mp_generate_cfs_(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, modul :: Ref{Int64}, ncf :: Ref{Int64}, lid :: Ref{Int64}, rid :: Ref{Int64}, conf :: Ref{Int64}) :: Nothing
+    @ccall FuzzifiED_jll.LibpathFuzzifiED.__cfs_MOD_generate_cfs(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, modul :: Ref{Int64}, ncf :: Ref{Int64}, lid :: Ref{Int64}, rid :: Ref{Int64}, conf :: Ref{Int64}) :: Nothing
     return Confs(no, nor, ncf, conf, lid, rid)
 end 
 

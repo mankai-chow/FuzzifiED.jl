@@ -1,6 +1,7 @@
-using FuzzifiED
+include("../src/FuzzifiED.jl")
+using .FuzzifiED
 
-nm = 8
+nm = 12
 cfs = GetLzConfs(nm, 2, nm)
 bs = GetIsingBasis(cfs ; qn_p = 1, qn_r = 1, qn_z = 1)
 tms_hmt = GetIsingIntTerms(nm ; ps_pot = [4.75, 1.]) - 3.16 * GetXPolTerms(nm)
