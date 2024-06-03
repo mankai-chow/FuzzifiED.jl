@@ -32,11 +32,11 @@ git clone --branch=Intel-compiler https://github.com/mankai-chow/FuzzifiED_Fortr
 4. Compile the fortran code with the ifort compiler/
 ```bash
 cd FuzzifiED_Fortran
-ifort -larpack -qopenmp -O3 -c cfs.f90
-ifort -larpack -qopenmp -O3 -c bs.f90
-ifort -larpack -qopenmp -O3 -c op.f90
-ifort -larpack -qopenmp -O3 -c diag.f90
-ifort -larpack -qopenmp -O3 -c diag_re.f90
+ifort -fPIC -larpack -qopenmp -O3 -c cfs.f90
+ifort -fPIC -larpack -qopenmp -O3 -c bs.f90
+ifort -fPIC -larpack -qopenmp -O3 -c op.f90
+ifort -fPIC -larpack -qopenmp -O3 -c diag.f90
+ifort -fPIC -larpack -qopenmp -O3 -c diag_re.f90
 ```
 On linux
 ```bash
