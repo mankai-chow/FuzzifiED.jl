@@ -5,6 +5,12 @@
 - Add support for ``\mathrm{O}(3)`` model. 
 - Add calculation for entanglement. 
 
+## June 2024
+
+### 3 June, 2024 (Version 0.5.8)
+
+- Change the binary dependence to Julia Binary Builder. 
+
 ## May 2024
 
 ### 30 May, 2024 (Version 0.5.0)

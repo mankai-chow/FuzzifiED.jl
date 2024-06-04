@@ -18,7 +18,7 @@ We also append in the end a list of
 Q_i=\sum_{o=1}^{N_o}q_{io}n_o\quad\mathrm{or}\quad Q_i=\sum_{o=1}^{N_o}q_{io}n_o\ \mathrm{mod}\ P_i
 ```
 
-where ``i=1,\dots,N_U`` is the index of diagonal quantum numbers, ``o`` is the index of orbital, ``n_o=c^\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. 
+where ``i=1,\dots,N_U`` is the index of diagonal quantum numbers, ``o`` is the index of orbital, ``n_o=c^\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. (A list of ``q_o`` with both positive and negative entries can be adapted by shifting every elements by a same value)
 
 The function used to implement the diagonal quantum numbers and generate all the configurations (_i.e._, direct product states) is [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2))). There are two diagonal quantum numbers in the Ising model, _viz._ the particle number and the angular momentum
 
