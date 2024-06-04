@@ -15,7 +15,7 @@ We also append in the end a list of
 `FuzzifiED` supports diagonal quantum numbers (QNU) in the form of 
 
 ```math
-Q_i=\sum_{o=1}^{N_o}q_{io}n_o \quad \textrm{$U(1)$ symmetry} \quad\mathrm{or}\quad Q_i=\sum_{o=1}^{N_o}q_{io}n_o\ \mathrm{mod}\ P_i \quad \textrm{Discrete $Z_p$ symmetry}
+Q_i=\sum_{o=1}^{N_o}q_{io}n_o \quad \textrm{$U(1)$ symmetry} \quad\mathrm{or}\quad Q_i=\sum_{o=1}^{N_o}q_{io}n_o\ \mathrm{mod}\ P_i \quad \textrm{Discrete $Z_P$ symmetry}
 ```
 
 where ``i=1,\dots,N_U`` is the index of diagonal quantum numbers, ``o`` is the index of orbital, ``n_o=c^\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. (A list of ``q_o`` with both positive and negative entries can be adapted by shifting every elements by a same value)
