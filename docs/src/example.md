@@ -80,7 +80,7 @@ Using The built-in Ising model, the process above can be done in one line with t
 cfs = GetLzConfs(nm, 2)
 ```
 
-### Implement the discrete symmetries and initialise the basis
+### Implement the (non-diagonal) discrete symmetries and initialise the basis
 
 `FuzzifiED` supports discrete ``\mathbb{Z}_n`` symmetries in the form of 
 
