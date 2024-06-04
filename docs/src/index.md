@@ -8,6 +8,8 @@ This package is developped by Zheng Zhou (周正) at Perimeter Institute and col
 
 ## Install
 
+This package may have issue on 32-bit systems. To Apple Silicon (Mac M1, M2, etc.) users: you may want to use Julia (https://julialang.org/downloads/) for x86 (Intel or Rosetta) instead of macOS (Apple Silicon).
+
 To install the package, please first enter Julia by entering in the command line `julia`, and then enter the commands
 ```julia
 julia> using Pkg; 
