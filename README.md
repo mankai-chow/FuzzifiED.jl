@@ -6,8 +6,6 @@ Documentations can be found at [this link](https://mankai-chow.github.io/Fuzzifi
 
 This package may have issue on 32-bit systems.
 
-This package is developped by Zheng Zhou (周正) at Perimeter Institute and collaborators. If this package is helpful in your research, we would appreciate it if you mention in the acknowledgement. If you have any questions, please contact at [zzhou@pitp.ca](mailto:zzhou@pitp.ca).
-
 To install the package, please first enter Julia by entering in the command line `julia`, and then enter the commands
 ```julia
 julia> using Pkg; 
@@ -18,6 +16,5 @@ Include at the start of your Julia script
 ```julia
 using FuzzifiED
 ```
-
 
 This package is developped by Zheng Zhou (周正) at Perimeter Institute and collaborators. If this package is helpful in your research, we would appreciate it if you mention in the acknowledgement. If you have any questions, please contact at [zzhou@pitp.ca](mailto:zzhou@pitp.ca).
