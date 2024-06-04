@@ -15,7 +15,7 @@ We also append in the end a list of
 `FuzzifiED` supports diagonal quantum numbers (QNU) in the form of 
 
 ```math
-Q_i=\sum_{o=1}^{N_o}q_{io}n_o\quad\mathrm{or}\quad Q_i=\sum_{o=1}^{N_o}q_{io}n_o\ \mathrm{mod}\ P_i
+Q_i=\sum_{o=1}^{N_o}q_{io}n_o \, \mathrm{$U(1)$ symmetry} \quad\mathrm{or}\quad Q_i=\sum_{o=1}^{N_o}q_{io}n_o\ \mathrm{mod}\ P_i \, \mathrm{Discrete $Z_p$ symmetry}
 ```
 
 where ``i=1,\dots,N_U`` is the index of diagonal quantum numbers, ``o`` is the index of orbital, ``n_o=c^\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. (A list of ``q_o`` with both positive and negative entries can be adapted by shifting every elements by a same value)
@@ -98,7 +98,7 @@ After implementing these symmetries, a state in the new basis should look like
 
 where the ``|i\rangle``'s are configurations in the `Confs` generated in the last section. The ``|I\rangle`` is a linear combination, and can be regarded as a grouping of ``m_I`` configurations.
 
-The function used to implement the discrete symmetries is [`Basis`](@ref). There are three ``\mathbb{Z}_2`` transformations in the Ising model, _viz._ the particle-hole transformation ``\mathscr{P}``, the ``\pi``-rotation along the ``y``-axis ``\mathscr{R}_y`` and the flavour symmetry ``\mathscr{Z}``
+The function used to implement the discrete symmetries is [`Basis`](@ref). There are three ``\mathbb{Z}_2`` transformations in the Ising model, _viz._ the particle-hole transformation ``\mathscr{P}``, the ``\pi``-rotation along the ``y``-axis ``\mathscr{R}_y`` and the flavour (Ising) symmetry ``\mathscr{Z}``
 
 ```math
 \begin{aligned}
