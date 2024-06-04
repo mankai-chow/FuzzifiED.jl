@@ -13,5 +13,5 @@ makedocs(sitename = "FuzzifiED.jl",
         "Example" => "example.md",
         "Core functions" => "core.md",
         "ITensors support" => "itensors.md",
-        "Models" => "models.md",
+        "Built-in models" => "models.md",
         "Releases" => "releases.md"]) 
