@@ -1,5 +1,4 @@
-include("../src/FuzzifiED.jl")
-using .FuzzifiED
+using FuzzifiED
 
 nm = 12
 cfs = GetLzConfs(nm, 2, nm)

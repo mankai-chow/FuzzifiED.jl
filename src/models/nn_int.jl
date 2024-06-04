@@ -47,9 +47,6 @@ function GetSnBasis(cfs :: Confs, nf :: Int64 ; qn_r :: Int64 = 0, perm :: Vecto
         push!(qnz_s, qn_z[i]) 
         push!(cyc, length(perm[i]))
     end
-    @show qnz_s 
-    @show cyc 
-    @show perm_o 
     # Generate the basis and print the dimension
     return Basis(cfs, qnz_s, cyc, perm_o, ph_o, fac_o)
 end
