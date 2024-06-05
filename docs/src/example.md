@@ -12,11 +12,11 @@ We also append in the end a list of
 
 ### Implement the diagonal quantum numbers and generate the configurations
 
-`FuzzifiED` supports $\mathrm{U}(1)$ diagonal quantum numbers (QNU) 
+`FuzzifiED` supports ``\mathrm{U}(1)`` diagonal quantum numbers (QNU) 
 ```math
 Q_i=\sum_{o=1}^{N_o}q_{io}n_o
 ```
-or $\mathbb{Z}_2$ diagonal quantum numbers
+or ``\mathbb{Z}_n`` diagonal quantum numbers with period ``P_i``
 ```math
 Q_i=\sum_{o=1}^{N_o}q_{io}n_o\ \mathrm{mod}\ P_i
 ```
