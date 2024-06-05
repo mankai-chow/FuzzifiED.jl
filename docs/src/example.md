@@ -457,6 +457,7 @@ The following examples of FuzzifiED can be found in the repository [`examples`](
 * [`example_ising.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising.jl) does the ED calculation of Ising model through the built-in models. 
 * [`example_ising_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_primitive.jl) does the ED calculation of Ising model through the primitive functions.
 * [`example_ising_itensors.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_itensors.jl) does the ED calculation of Ising model by the Sites and OpSum objects in ITensors.
+* [`example_ising_full.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_full.jl) does the full diagonalisation by converting the Hamiltonian into a full matrix and call functions in LinearAlgebra package. 
 * [`example_ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg.jl) does the DMRG calculation of Ising model through the `dmrg` function in ITensors.
 * [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) does the DMRG calculation of Ising model through the `EasySweep` function which wraps ITensors.
 * [`example_ising_def.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_def.jl) does the ED calculation of Ising model with magnetic line defect or defect creation or changing operators.
