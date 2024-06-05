@@ -2,7 +2,7 @@
 
 The package `FuzzifiED` is designed to do exact diagonalisation (ED) calculation on the fuzzy sphere, and also facilitates the DMRG calculations by ITensors. It can also be used for generic fermion models. 
 
-Documentations can be found at [http://docs.fuzzified.world/](http://docs.fuzzified.world/). (For Perimeter researchers, for now please use a VPN to access the documentation.)
+Documentations can be found at [http://docs.fuzzified.world/](http://docs.fuzzified.world/).
 
 To Apple Silicon (Mac M1, M2, etc.) users: you may want to use [Julia](https://julialang.org/downloads/) for x86 (Intel or Rosetta) instead of macOS (Apple Silicon). 
 
