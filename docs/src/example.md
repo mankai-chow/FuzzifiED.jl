@@ -12,12 +12,14 @@ We also append in the end a list of
 
 ### Implement the diagonal quantum numbers and generate the configurations
 
-`FuzzifiED` supports diagonal quantum numbers (QNU) in the form of 
-
+`FuzzifiED` supports $\mathrm{U}(1)$ diagonal quantum numbers (QNU) 
 ```math
-Q_i=\sum_{o=1}^{N_o}q_{io}n_o \quad \textrm{$U(1)$ symmetry} \quad\mathrm{or}\quad Q_i=\sum_{o=1}^{N_o}q_{io}n_o\ \mathrm{mod}\ P_i \quad \textrm{Discrete $Z_P$ symmetry}
+Q_i=\sum_{o=1}^{N_o}q_{io}n_o
 ```
-
+or $\mathbb{Z}_2$ diagonal quantum numbers
+```math
+Q_i=\sum_{o=1}^{N_o}q_{io}n_o\ \mathrm{mod}\ P_i
+```
 where ``i=1,\dots,N_U`` is the index of diagonal quantum numbers, ``o`` is the index of orbital, ``n_o=c^\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. (A list of ``q_o`` with both positive and negative entries can be adapted by shifting every elements by a same value)
 
 The function used to implement the diagonal quantum numbers and generate all the configurations (_i.e._, direct product states) is [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2))). There are two diagonal quantum numbers in the Ising model, _viz._ the particle number and the angular momentum
@@ -28,8 +30,7 @@ Q_1&=N_e,& q_{1,m\sigma}&=1\\
 Q_2&=L_z+N_es,&q_{2,m\sigma}&=m+s
 \end{aligned}
 ```
-
-where the orbital index ``o`` contains both ``m`` and ``\sigma``. In the code, we store the orbitals with the same $m$ together, _viz._ we store the spin-up orbitals in odd ``o=1,3,\dots,2N_m-1`` and the spin-down orbitals in even ``o=2,4,\dots,2N_m``. Thus, if we want to look at the ``L_z=0`` half-filled sector
+where the orbital index ``o`` contains both ``m`` and ``\sigma``. In the code, we store the orbitals with the same ``m`` together, _viz._ we store the spin-up orbitals in odd ``o=1,3,\dots,2N_m-1`` and the spin-down orbitals in even ``o=2,4,\dots,2N_m``. Thus, if we want to look at the ``L_z=0`` half-filled sector
 
 ```julia
 # Inputing the basic setups
@@ -80,9 +81,9 @@ Using The built-in Ising model, the process above can be done in one line with t
 cfs = GetLzConfs(nm, 2)
 ```
 
-### Implement the (non-diagonal) discrete symmetries and initialise the basis
+### Implement the off-diagonal ``\mathbb{Z}_n`` symmetries and initialise the basis
 
-`FuzzifiED` supports discrete ``\mathbb{Z}_n`` symmetries in the form of 
+`FuzzifiED` supports off diagonal discrete ``\mathbb{Z}_n`` symmetries in the form of 
 
 ```math
 \mathscr{Z}:\ c_o\to \alpha_o^* c^{(p_o)}_{\pi_o},\quad c_o^\dagger\to \alpha_o c^{(1-p_o)}_{\pi_o}
