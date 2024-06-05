@@ -45,7 +45,7 @@ where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_
 * `cyc :: Vector{Int64}` records the cycle of each transformation. For ``ℤ_n`` symmetry, record ``n`` ;
 * `perm_o :: Vector{Vector{Int64}}` records the permutation ``π_o``. It has ``N_Z`` elements and each of its elements is a vector of length ``N_o``. 
 * `ph_o :: Vector{Vector{Int64}}` records ``p_o`` to determine whether or not to perform a particle-hole transformation. It has ``N_Z`` elements and each of its elements is a vector of length ``N_o``. 
-* `fac_o :: Vector{Vector{ComplexF64}}` records the factor ``p_o`` is determine whether or not to perform a particle-hole transformation. Each of its elements is a vector of length ``N_o``. 
+* `fac_o :: Vector{Vector{ComplexF64}}` records the factor ``α_o`` in the transformation. Each of its elements is a vector of length ``N_o``. 
 
 # Output
 
