@@ -109,7 +109,7 @@ end
 
 Return the normal-ordered pair-pair interaction term in the Hamiltonian 
 ```math 
-∑_{\\{m_i,f_i\\}}U_{m_1m_2m_3m_4}M^A_{f_1f_2}M^B_{f_4f_3}c^{†}_{m_1f_1}c^{†}_{m_2f_2}c_{m_3f_3}c_{m_4f_4}
+∑_{\\{m_i,f_i\\}}U_{m_1m_2m_3m_4}M^A_{f_1f_2}M^B_{f_3f_4}c^{†}_{m_1f_1}c^{†}_{m_2f_2}c_{m_3f_3}c_{m_4f_4}
 ```
 
 # Arguments 
@@ -142,10 +142,10 @@ function GetPairIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} =
                 m4 = m1 + m2 - m3 
                 if (m4 <= 0 || m4 > nm) continue end
                 for f4 = 1 : nf 
-                    if (abs(mat_b[f4, f3]) < 1E-13) continue end
+                    if (abs(mat_b[f3, f4]) < 1E-13) continue end
                     o4 = (m4 - 1) * nf + f4
                     if (o3 == o4) continue end
-                    val = mat_a[f1, f2] * mat_b[f4, f3] * int_el[m1, m2, m3]
+                    val = mat_a[f1, f2] * mat_b[f3, f4] * int_el[m1, m2, m3]
                     if (abs(val) < 1E-15) continue end 
                     push!(tms, Term(val, [1, o1, 1, o2, 0, o3, 0, o4]))
                 end

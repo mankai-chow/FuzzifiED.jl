@@ -179,7 +179,7 @@ Returns the quadratic Casimir ``C_2`` of the ``\\mathrm{Sp}(N)`` symmetry.
 """
 function GetSpnC2Terms(nm :: Int64, nf :: Int64) 
     no = nm * nf
-    tms = SimplifyTerms(GetDenIntTerms(nm, nf ; ps_pot = [isodd(m) ? -.5 : 0 for m = 1 : nm]) + GetSpnPairIntTerms(nm, nf, ; ps_pot = [isodd(m) ? 1.0 : 0 for m = 1 : nm]))
+    tms = SimplifyTerms(GetDenIntTerms(nm, nf ; ps_pot = [isodd(m) ? -.5 : 0 for m = 1 : nm]) + GetSpnPairIntTerms(nm, nf ; ps_pot = [isodd(m) ? 1.0 : 0 for m = 1 : nm]))
     for o1 = 1 : no 
         push!(tms, Term(.25 + .25 * nf, [1, o1, 0, o1]))
         for o2 = o1 + 1 : no 
