@@ -117,7 +117,7 @@ qnz_s = ComplexF64[ 1, 1, 1 ] # All-positive sector ; for Z_2-odd sector, put -1
 perm_o = []
 ph_o = []
 fac_o = []
-# Record the parity
+# Record the parity (PH)
 push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no]) # perm_o[1] = [2,1,4,3,...,16,15]
 push!(ph_o, fill(1, no)) # ph_o[1] = [1,1,...,1] meaning PH
 push!(fac_o, [ isodd(o) ? -1 : 1 for o = 1 : no]) # fac_o[1] = [1,-1,1,-1,...,1,-1]
