@@ -10,9 +10,9 @@ To Apple Silicon (Mac M1, M2, etc.) users: you may want to use [Julia](https://j
 
 To install the package, please first enter Julia by entering in the command line `julia`, and then enter the commands
 ```julia
-julia> using Pkg; 
-julia> Pkg.add(url="https://github.com/mankai-chow/FuzzifiED_jll.jl.git")
-julia> Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
+using Pkg ;
+Pkg.add(url="https://github.com/mankai-chow/FuzzifiED_jll.jl.git") ;
+julia> Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git") ;
 ```
 Include at the start of your Julia script
 ```julia
