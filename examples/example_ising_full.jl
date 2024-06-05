@@ -1,5 +1,4 @@
 using FuzzifiED
-using SparseArrays
 using LinearAlgebra
 
 nm = 8
