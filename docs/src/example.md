@@ -462,4 +462,4 @@ The following examples of FuzzifiED can be found in the repository [`examples`](
 * [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) does the DMRG calculation of Ising model through the `EasySweep` function which wraps ITensors.
 * [`example_ising_def.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_def.jl) does the ED calculation of Ising model with magnetic line defect or defect creation or changing operators.
 * [`example_ising_def_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_def_dmrg.jl) does the DMRG calculation of Ising model with magnetic line defect or defect changing operators. 
-* [`example_so5.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_sp2.jl) does the ED calculation of the ``\mathrm{SO}(5)`` DQCP model.
+* [`example_so5_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_so5_primitive.jl) does the ED calculation of the ``\mathrm{SO}(5)`` DQCP model.

@@ -60,14 +60,3 @@ GetIsingIntTerms(nm :: Int64 ; ps_pot :: Vector = [1.])
 GetXPolTerms(nm :: Int64)
 GetZPolTerms(nm :: Int64)
 ```
-
-## ``\mathrm{SO}(5)`` model
-
-The following methods is especially helpful for ``\mathrm{SO}(5)`` DQCP models.
-
-```@docs
-GetSpnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, sz :: Vector{Int64} = fill(0, div(nf, 2)))
-GetSpnBasis(cfs :: Confs, nf :: Int64 ; qn_p :: Int64 = 0, qn_r :: Int64 = 0, qn_z :: Vector{Int64} = fill(0, div(nf, 2)), qn_x :: Vector{Int64} = fill(0, div(nf, 4)))
-GetSpnPairIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.])
-GetSpnC2Terms(nm :: Int64, nf :: Int64) 
-```
