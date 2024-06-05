@@ -33,6 +33,7 @@ include("core/opmat.jl")
 export OpMat
 export GetEigensystem
 export SparseMatrixCSCFromOpMat
+export MatrixFromOpMat
 
 include("models/threej.jl")
 export GetIntMatrix

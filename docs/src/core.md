@@ -83,8 +83,9 @@ Note that sometimes it is needed to transform a state from one basis to another.
 stf = Operator(bsd, bsf, [Term(1., [-1, -1])]) * std
 ```
 
-The `OpMat` object can be converted with the `SparseMatrixCSC` object in the `SparseArrays` package. This will allow, _e.g._, full diagonalisation using the linear algebra package of julia. 
+The `OpMat` object can be converted into a full matrix or converted with the `SparseMatrixCSC` object in the `SparseArrays` package. This will allow, _e.g._, full diagonalisation using the linear algebra package of julia. 
 ```@docs
 SparseMatrixCSCFromOpMat(mat :: OpMat)
+MatrixFromOpMat(mat :: OpMat)
 OpMat(matcsc :: SparseMatrixCSC)
 ```

@@ -149,3 +149,14 @@ converts the `SparseMatrixCSC` object in the `SparseArrays` package to an `OpMat
 function OpMat(matcsc :: SparseMatrixCSC)
     return OpMat{typeof(matcsc.nzval[1])}(matcsc.n, matcsc.m, 0, length(matcsc.rowval), matcsc.colptr, matcsc.rowval, matcsc.nzval)
 end
+
+
+"""
+    MatrixFromOpMat(mat :: OpMat{ComplexF64}) :: SparseMatrixCSC{Int64,ComplexF64}
+    MatrixFromOpMat(mat :: OpMat{Float64}) :: SparseMatrixCSC{Int64,Float64}
+
+converts the `OpMat` objects to a full matrix.
+"""
+function MatrixFromOpMat(mat :: OpMat)
+    return Matrix(SparseMatrixCSCFromOpMat(mat))
+end
