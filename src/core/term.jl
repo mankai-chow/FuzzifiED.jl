@@ -1,11 +1,11 @@
 """
     mutable struct Term
 
-A `Term` object records a term that looks like ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}\\dots c^{(p_l)}_{o_l}`` in an operator
+A `Term` object records a term that looks like ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}… c^{(p_l)}_{o_l}`` in an operator
 
 # Fields
 - `coeff :: ComplexF64` records the coefficient ``U``
-- `cstr :: Vector{Int64}` is a length-``2l`` vector ``(p_1,o_1,p_2,o_2,\\dots p_l,o_l)`` recording the operator string
+- `cstr :: Vector{Int64}` is a length-``2l`` vector ``(p_1,o_1,p_2,o_2,… p_l,o_l)`` recording the operator string
 
 # Method 
 
@@ -59,7 +59,7 @@ end
 """
     function *(tms1 :: Vector{Term}, tms2 :: Vector{Term}) :: Vector{Term}
 
-Return the naive product of two series of terms. The number of terms equals the product of the number of terms in `tms1` and `tms2`. For each term in `tms1` ``Uc^{(p_1)}_{o_1}\\dots`` and `tms2` ``U'c^{(p'_1)}_{o'_1}\\dots``, a new term is formed by taking ``UU'c^{(p_1)}_{o_1}\\dots c^{(p'_1)}_{o'_1}\\dots``
+Return the naive product of two series of terms. The number of terms equals the product of the number of terms in `tms1` and `tms2`. For each term in `tms1` ``Uc^{(p_1)}_{o_1}…`` and `tms2` ``U'c^{(p'_1)}_{o'_1}…``, a new term is formed by taking ``UU'c^{(p_1)}_{o_1}… c^{(p'_1)}_{o'_1}…``
 """
 function *(tms1 :: Vector{Term}, tms2 :: Vector{Term})
     return vcat([ Term(tm1.coeff * tm2.coeff, [tm1.cstr ; tm2.cstr])
@@ -75,7 +75,7 @@ end
     function adjoint(tm :: Term) :: Term
     function adjoint(tms :: Vector{Term}) :: Vector{Term}
 
-Return the Hermitian conjugate of a series of terms. For each term ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}\\dots c^{(p_l)}_{o_l}``, the adjoint is ``\\bar{U}c^{(1-p_l)}_{o_l}\\dots c^{(1-p_2)}_{o_2}c^{(1-p_1)}_{o_1}``
+Return the Hermitian conjugate of a series of terms. For each term ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}… c^{(p_l)}_{o_l}``, the adjoint is ``\\bar{U}c^{(1-p_l)}_{o_l}… c^{(1-p_2)}_{o_2}c^{(1-p_1)}_{o_1}``
 """
 function adjoint(tms :: Vector{Term})
     return adjoint.(tms)

@@ -183,7 +183,7 @@ for m1 = 0 : nm - 1
             m4r = m4 - s
             # Calculate the matrix element val from pseudopotentials
             val = ComplexF64(0)
-            for l in 1 : length(ps_pot)
+            for l in eachindex(ps_pot)
                 if (abs(m1r + m2r) > nm - l || abs(m3r + m4r) > nm - l) break end 
                 val += ps_pot[l] * (2 * nm - 2 * l + 1) * wigner3j(s, s, nm - l, m1r, m2r, -m1r - m2r) * wigner3j(s, s, nm - l, m4r, m3r, -m3r - m4r)
             end 
@@ -232,7 +232,7 @@ for m1 = 0 : nm - 1
             m4r = m4 - s
             # Calculate the matrix element val from pseudopotentials
             val = ComplexF64(0)
-            for l in 1 : length(ps_pot)
+            for l in eachindex(ps_pot)
                 if (abs(m1r + m2r) > nm - l || abs(m3r + m4r) > nm - l) break end 
                 val += ps_pot[l] * (2 * nm - 2 * l + 1) * wigner3j(s, s, nm - l, m1r, m2r, -m1r - m2r) * wigner3j(s, s, nm - l, m4r, m3r, -m3r - m4r)
             end 
@@ -301,7 +301,7 @@ tms_l2 = SimplifyTerms(tms_lz * tms_lz - tms_lz + tms_lp * tms_lm)
 l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
 @time "Initialise L2" l2_mat = OpMat(l2)
 # Calculate the inner product for each eigenstate
-@time "Measure L2" l2_val = [ st[:, i]' * l2_mat * st[:, i] for i = 1 : length(enrg)]
+@time "Measure L2" l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 @show real(l2_val)
 # Verify whether T is an eigenstate of L^2
 st_T = st[:, 3]

@@ -12,7 +12,7 @@ enrg, st = GetEigensystem(hmt_mat, 10)
 tms_l2 = GetL2Terms(nm, 2)
 l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
 l2_mat = OpMat(l2 ; type = Float64)
-l2_val = [ st[:, i]' * l2_mat * st[:, i] for i = 1 : length(enrg)]
+l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 @show l2_val
 
 st_T = st[:, 3]

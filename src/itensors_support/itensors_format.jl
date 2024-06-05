@@ -80,16 +80,19 @@ end
 
 truncates the list of ``N_U`` QNU's from to a number ``N'_U`` acceptable by ITensors. The new quantum numbers are 
 ```math
-    Q'_1=Q_1,\\ Q'_2=Q_2,\\ \\dots,\\ Q'_{N'_U-1}=Q_{N'_U-1}\\ Q'_{N'_U}=\\lambda_{N'_U}Q_{N'_U}+\\lambda_{N'_U+1}Q_{N'_U+1}+\\dots+\\lambda_{N_U}Q_{N_U}
+\\begin{aligned}
+    &Q'_1=Q_1,\\ Q'_2=Q_2,\\ …,\\ Q'_{N'_U-1}=Q_{N'_U-1}\\\\
+    &Q'_{N'_U}=λ_{N'_U}Q_{N'_U}+λ_{N'_U+1}Q_{N'_U+1}+…+λ_{N_U}Q_{N_U}
+\\end{aligned}
 ```
 
 # Arguments
 
 - `qnu_o :: Vector{Vector{Int64}}` stores the charge of each orbital under each conserved quantity. See [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)))) for detail. 
-- `qnu_name :: Vector{String}` stores the name of each quantum number. Facultive, QN1, QN2, ... by default. 
-- `modul :: Vector{Int64}` stores the modulus of each quantum number. Store 1 if no modulus. Facultive, all 1 by default. 
-- `trunc_lth :: Int64` stores the truncated numbers of QNU. Facultive, 3 by default. 
-- `trunc_wt :: Vecotr{Int64}` stores the ``N_U-N'_U+1`` coefficients ``\\lambda``. Facultive, ``1,2,4,8,\\dots`` by default. 
+- `qnu_name :: Vector{String}` stores the name of each quantum number. Facultative, QN1, QN2, ... by default. 
+- `modul :: Vector{Int64}` stores the modulus of each quantum number. Store 1 if no modulus. Facultative, all 1 by default. 
+- `trunc_lth :: Int64` stores the truncated numbers of QNU. Facultative, 3 by default. 
+- `trunc_wt :: Vecotr{Int64}` stores the ``N_U-N'_U+1`` coefficients ``λ``. Facultative, ``1,2,4,8,…`` by default. 
 
 # Output
 
@@ -113,8 +116,8 @@ returns the ITensors Sites object from the information of quantum numbers
 # Arguments 
 
 - `qnu_o :: Vector{Vector{Int64}}` stores the charge of each orbital under each conserved quantity. See [`Confs`](@ref Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)))) for detail. 
-- `qnu_name :: Vector{String}` stores the name of each quantum number. Facultive, QN1, QN2, ... by default. 
-- `modul :: Vector{Int64}` stores the modulus of each quantum number. Store 1 if no modulus. Facultive, all 1 by default. 
+- `qnu_name :: Vector{String}` stores the name of each quantum number. Facultative, QN1, QN2, ... by default. 
+- `modul :: Vector{Int64}` stores the modulus of each quantum number. Store 1 if no modulus. Facultative, all 1 by default. 
 """
 function SitesFromQnu(; qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)])
     no = length(qnu_o[1])
@@ -129,9 +132,9 @@ Converts a `OpSum` object in `ITensors` to a series of terms. Note that the only
 """
 function TermsFromOpSum(opsum :: Sum{Scaled{ComplexF64, Prod{Op}}})
     tms = Vector{Term}(undef,0)
-    for i = 1 : length(opsum)
+    for i in eachindex(opsum)
         cstr = []
-        for j = 1 : length(opsum[i])
+        for j in eachindex(opsum[i])
             optype = opsum[i][j].which_op
             opsite = opsum[i][j].sites[1]
             if optype == "Cdag"

@@ -3,7 +3,7 @@
 
 stores the information of a local observable (or local operator) ``\\Phi`` that can be decomposed into angular components.
 ```math 
-    \\Phi(\\Omega)=\\sum_{lm}\\Phi_{lm}Y^{(s)}_{lm}
+    \\Phi(\\Omega)=∑_{lm}\\Phi_{lm}Y^{(s)}_{lm}
 ```
 
 # Fields
@@ -26,7 +26,7 @@ end
 """
     function SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function) :: SphereObs
 
-initialises the observable from ``2s``, ``2l_{\\max}`` and the function ``(l,m)\\mapsto\\Phi_{lm}``
+initialises the observable from ``2s``, ``2l_{\\max}`` and the function ``(l,m)↦\\Phi_{lm}``
 
 # Arguments
 
@@ -141,10 +141,10 @@ end
 """
     function adjoint(obs :: SphereObs) :: SphereObs
     
-enables the Hermitian conjugate of an observable.
+enables the Hermitian conjugate of a spherical observable.
 ```math
 \\begin{aligned}
-    Φ^†(Ω)&=∑_{lm}(Φ_{lm})^†\\bar{Y}^{(s)}_{lm}(Ω)=∑_{lm}(Φ_{lm})^†(-1)^{s+m)Y^{(-s)}_{l,-m}(Ω)\\\\
+    Φ^†(Ω)&=∑_{lm}(Φ_{lm})^†\\bar{Y}^{(s)}_{lm}(Ω)=∑_{lm}(Φ_{lm})^†(-1)^{s+m}Y^{(-s)}_{l,-m}(Ω)\\\\
     (Φ^†)_{lm}&=(-1)^{s-m}(Φ_{l,-m})^†
 \\end{aligned}
 ```
@@ -253,7 +253,7 @@ returns the density operator ``n=∑_{ff'}ψ^†_{f}M_{ff'}ψ_{f'}``
 
 - ``nf :: Int64`` is the number of flavours.
 - ``nm :: Int64`` is the number of orbitals.
-- ``mat :: Int64`` is the matrix ``M_{ff'}``. Facultive, identity matrix ``\\mathbb{I}`` by default.
+- ``mat :: Int64`` is the matrix ``M_{ff'}``. Facultative, identity matrix ``\\mathbb{I}`` by default.
 """
 function Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
     el = [ StoreComps(Electron(nm, nf, f)) for f = 1 : nf ]

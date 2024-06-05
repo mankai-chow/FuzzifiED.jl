@@ -1,4 +1,4 @@
-# julia --color=yes --project make.jl && rm -r publish/FuzzifiED && mv build/ publish/FuzzifiED/
+# julia --color=yes --project make.jl && rm -r publish/*/* ; mv -f build/* publish
 push!(LOAD_PATH,"../src/")
 
 include("../src/FuzzifiED.jl")

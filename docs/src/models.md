@@ -63,7 +63,7 @@ GetZPolTerms(nm :: Int64)
 
 ## ``\mathrm{Sp}(N)`` model
 
-The following methods is especially helpful for ``\mathrm{Sp}(N)`` model and Potts model.
+The following methods is especially helpful for ``\mathrm{Sp}(N)`` models.
 
 ```@docs
 GetSpnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, sz :: Vector{Int64} = fill(0, div(nf, 2)))

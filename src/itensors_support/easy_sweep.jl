@@ -30,15 +30,15 @@ This function performs one round of `nsweeps` sweeps. It first checks the file `
 - `hmt :: MPO` is an MPO specifying the Hamiltonian.
 - `st0 :: MPS` is an MPS specifying the initial state. 
 - `dim1 :: Int64` is a bond dimension that will be used to identify the result. 
-- `path :: String` identifies the path where the results will be accessed and stored. Facultive, `./` by default. 
-- `cutoff :: Vector{Float64}` is the cutoff that will be sent into DMRG. Facultive, `[1.E-9]` by default. 
-- `maxdim :: Vector{Int64}` specifies the maximal bond dimension of each sweep. Facultive, `[dim1]` by default. 
-- `nsweeps :: Int64` specifies the number of sweeps in the round. Facultive, 10 by default. 
-- `noise :: Vector{Float64}` specifies the noise of each sweep and will be sent into DMRG. Facultive, `[1E-6,1E-7,0]` by default. 
-- `proj :: Vector{String}` specifies the name of the states that will be projected. Facultive, empty by default. 
-- `e_tol :: Float64` specifies the energy tolerence as a criteria to end the sweeps. Facultive, `1E-6` by default. 
-- `weight :: Float64` specifies the weight of projected states and will be sent into DMRG. Facultive, 100.0 by default.
-- `observer :: AbstractObserver` specifies the measurement and cutoff condition for each sweep. Facultive, by default the observer will print the energy and cutoff once the energy difference is less than `e_tol` at each sweep. 
+- `path :: String` identifies the path where the results will be accessed and stored. Facultative, `./` by default. 
+- `cutoff :: Vector{Float64}` is the cutoff that will be sent into DMRG. Facultative, `[1.E-9]` by default. 
+- `maxdim :: Vector{Int64}` specifies the maximal bond dimension of each sweep. Facultative, `[dim1]` by default. 
+- `nsweeps :: Int64` specifies the number of sweeps in the round. Facultative, 10 by default. 
+- `noise :: Vector{Float64}` specifies the noise of each sweep and will be sent into DMRG. Facultative, `[1E-6,1E-7,0]` by default. 
+- `proj :: Vector{String}` specifies the name of the states that will be projected. Facultative, empty by default. 
+- `e_tol :: Float64` specifies the energy tolerence as a criteria to end the sweeps. Facultative, `1E-6` by default. 
+- `weight :: Float64` specifies the weight of projected states and will be sent into DMRG. Facultative, 100.0 by default.
+- `observer :: AbstractObserver` specifies the measurement and cutoff condition for each sweep. Facultative, by default the observer will print the energy and cutoff once the energy difference is less than `e_tol` at each sweep. 
 
 """
 function SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: String = "./", cutoff :: Vector{Float64} = [1E-9], maxdim :: Vector{Int64} = [dim1], nsweeps :: Int64 = 10, noise :: Vector{Float64} = [1E-6,1E-7,0], proj :: Vector{String} = String[], e_tol :: Float64 = 1E-6, weight :: Float64 = 100.0, observer :: AbstractObserver = EasySweepObserver(e_tol))
@@ -59,11 +59,11 @@ function SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: 
     else
         fs = [ h5open("$(path)st_$(fi).h5", "r") for fi in proj ]
         grs = [ "st_d$(dim1)" for fi in proj ]
-        for i = 1 : length(proj)
+        for i in eachindex(proj)
             if (haskey(fs[i], grs[i])) continue end
             grs[i] = "st_fin"
         end
-        sts = [ read(fs[i], grs[i], MPS) for i = 1 : length(proj) ]
+        sts = [ read(fs[i], grs[i], MPS) for i in eachindex(proj) ]
         for fi in fs
             close(fi) 
         end 
@@ -94,18 +94,18 @@ This function automatically performs several rounds of DMRG sweeps with increasi
 - `id :: String` is a string identifying the file to which the results will be accessed and written.
 - `hmt :: MPO` is an MPO specifying the Hamiltonian.
 - `st00 :: MPS` is an MPS specifying the initial state. 
-- `path :: String` identifies the path where the results will be accessed and stored. Facultive, `./` by default. 
-- `dim_list :: Vector{Int64} :: Int64` is a list that specifies the maximal bond dimensions of each round of sweeps starting from the second round. Facultive, `[1000,2000,3000,4000,5000,6000]` by default
-- `proj :: Vector{String}` specifies the name of the states that will be projected. Facultive, empty by default. 
-- `e_tol1 :: Float64` specifies the energy tolerence as a criteria to end the round of sweeps for each round of sweeps. Facultive, `1E-6` by default. 
-- `e_tol :: Float64` specifies the energy tolerence as a criteria to end the entire process. Facultive, `1E-7` by default. 
-- `cutoff :: Vector{Float64}` is the cutoff that will be sent into DMRG. Facultive, `[1.E-9]` by default. 
-- `maxdim0 :: Vector{Int64}` specifies the maximal bond dimensions of the first round of sweeps. Facultive, `[1E-4,3E-5,1E-5,3E-6,1E-6,3E-7]` by default. 
-- `noise0 :: Vector{Float64}` specifies the noise of each sweep in the initial round and will be sent into DMRG. Facultive, `[1E-4,3E-5,1E-5,3E-6,1E-6,3E-7]` by default. 
-- `noise :: Vector{Float64}` specifies the noise of each sweep from the second round and will be sent into DMRG. Facultive, `[1E-6,1E-7,0]` by default. 
-- `nsweeps :: Int64` specifies the number of sweeps in each round from the second rounds. Facultive, 10 by default. 
-- `weight :: Float64` specifies the weight of projected states and will be sent into DMRG. Facultive, 100.0 by default.
-- `observer :: AbstractObserver` specifies the measurement and cutoff condition for each sweep starting from the second round. Facultive, by default the observer will print the energy and cutoff once the energy difference is less than `e_tol` at each sweep. 
+- `path :: String` identifies the path where the results will be accessed and stored. Facultative, `./` by default. 
+- `dim_list :: Vector{Int64} :: Int64` is a list that specifies the maximal bond dimensions of each round of sweeps starting from the second round. Facultative, `[1000,2000,3000,4000,5000,6000]` by default
+- `proj :: Vector{String}` specifies the name of the states that will be projected. Facultative, empty by default. 
+- `e_tol1 :: Float64` specifies the energy tolerence as a criteria to end the round of sweeps for each round of sweeps. Facultative, `1E-6` by default. 
+- `e_tol :: Float64` specifies the energy tolerence as a criteria to end the entire process. Facultative, `1E-7` by default. 
+- `cutoff :: Vector{Float64}` is the cutoff that will be sent into DMRG. Facultative, `[1.E-9]` by default. 
+- `maxdim0 :: Vector{Int64}` specifies the maximal bond dimensions of the first round of sweeps. Facultative, `[1E-4,3E-5,1E-5,3E-6,1E-6,3E-7]` by default. 
+- `noise0 :: Vector{Float64}` specifies the noise of each sweep in the initial round and will be sent into DMRG. Facultative, `[1E-4,3E-5,1E-5,3E-6,1E-6,3E-7]` by default. 
+- `noise :: Vector{Float64}` specifies the noise of each sweep from the second round and will be sent into DMRG. Facultative, `[1E-6,1E-7,0]` by default. 
+- `nsweeps :: Int64` specifies the number of sweeps in each round from the second rounds. Facultative, 10 by default. 
+- `weight :: Float64` specifies the weight of projected states and will be sent into DMRG. Facultative, 100.0 by default.
+- `observer :: AbstractObserver` specifies the measurement and cutoff condition for each sweep starting from the second round. Facultative, by default the observer will print the energy and cutoff once the energy difference is less than `e_tol` at each sweep. 
 
 """
 function EasySweep(id :: String, hmt :: MPO, st00 :: MPS ; path :: String = "./", dim_list :: Vector{Int64} = [1000,2000,3000,4000,5000,6000], proj :: Vector{String} = String[], e_tol1 :: Float64 = 1E-6, e_tol :: Float64 = 1E-7, cutoff :: Vector{Float64} = [1E-9], maxdim0 :: Vector{Int64} = [10,20,50,100,200,500], noise0 :: Vector{Float64} = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], noise :: Vector{Float64} = [1E-6,2E-7,5E-8,1E-8,0], nsweeps :: Int64 = 10, weight :: Float64 = 100.0, observer :: AbstractObserver = EasySweepObserver(e_tol1))
@@ -152,11 +152,11 @@ This function returns the MPO and sites for a given operator and a Hilbert space
 
 - `id :: String` is a string identifying the file to which the results will be accessed and written.
 - `tms :: Vector{Term}` or `tms :: Sum{Scaled{ComplexF64, Prod{Op}}}` is either an array of terms or a `OpSum` objects that specifies the expression of the operator. 
-- `path :: String` identifies the path where the results will be accessed and stored. Facultive, `./` by default. 
+- `path :: String` identifies the path where the results will be accessed and stored. Facultative, `./` by default. 
 - `qnu_o :: Vector{Vector{Int64}}` is a list where each element specifies a quantum number. Each element is a list that specifies the charges of each orbital under the quantum number. Obligatory. 
-- `qnu_name :: Vector{String}` specifies the name of each quantum number. Facultive, QN1, QN2, ... by default. 
-- `module :: Vector{Int64}` specifies the modulus of each quantum number. Facultive, all 1 by default.
-- `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultive, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. 
+- `qnu_name :: Vector{String}` specifies the name of each quantum number. Facultative, QN1, QN2, ... by default. 
+- `module :: Vector{Int64}` specifies the modulus of each quantum number. Facultative, all 1 by default.
+- `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultative, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. 
 
 """
 function GetMpoSites(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}} ; path :: String = "./", qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)], mpo_method :: Function = MPO)
@@ -193,8 +193,8 @@ This function returns the MPO for a given operator and a given set of sites. It 
 - `id :: String` is a string identifying the file to which the results will be accessed and written.
 - `tms :: Vector{Term}` or `tms :: Sum{Scaled{ComplexF64, Prod{Op}}}` is either an array of terms or a `OpSum` objects that specifies the expression of the operator. 
 - `sites :: Vector{<:Index}` specifies the sites that the operator is acting on. 
-- `path :: String` identifies the path where the results will be accessed and stored. Facultive, `./` by default. 
-- `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultive, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. 
+- `path :: String` identifies the path where the results will be accessed and stored. Facultative, `./` by default. 
+- `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultative, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. 
 
 """
 function GetMpo(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}}, sites :: Vector{<:Index} ; path :: String = "./", mpo_method :: Function = MPO)

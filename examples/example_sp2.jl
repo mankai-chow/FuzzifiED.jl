@@ -19,11 +19,11 @@ for (qn_p, qn_r, (qn_z, qn_x)) in Iterators.product([1, -1], [1, -1], [([1, 1], 
     
     l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
     l2_mat = OpMat(l2 ; type = Float64)
-    l2_val = [ st[:, i]' * l2_mat * st[:, i] for i = 1 : length(enrg)]
+    l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
     
     c2 = Operator(bs, bs, tms_c2 ; red_q = 1, sym_q = 1)
     c2_mat = OpMat(c2 ; type = Float64)
-    c2_val = [ st[:, i]' * c2_mat * st[:, i] for i = 1 : length(enrg)]
+    c2_val = [ st[:, i]' * c2_mat * st[:, i] for i in eachindex(enrg)]
 
     for i in eachindex(enrg) 
         push!(result, [enrg[i] ; round(l2_val[i], digits = 6) ; round(c2_val[i], digits = 6) ; ds.([qn_p ; qn_r ; qn_z ; qn_x])])

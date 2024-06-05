@@ -29,7 +29,7 @@ for (qn_r, qn_z) in Iterators.product([-1, 1], [[1, 1], [1, -1], [ω, 0]])
 
     l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
     l2_mat = OpMat(l2)
-    l2_val = [ st[:, i]' * l2_mat * st[:, i] for i = 1 : length(enrg)]
+    l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 
     for i in eachindex(enrg) 
         push!(result, [round(enrg[i], digits = 6), round(real(l2_val[i]), digits = 6), Z2(qn_z[2]), Z3(qn_z[1]), Z2(qn_r)])
