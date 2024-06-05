@@ -233,9 +233,9 @@ returns the electron annihilation operator ``ψ_f``
 
 # Arguments
 
-- ``nf :: Int64`` is the number of flavours.
-- ``nm :: Int64`` is the number of orbitals.
-- ``f :: Int64`` is the index of the orbital to be taken.
+- `nf :: Int64` is the number of flavours.
+- `nm :: Int64` is the number of orbitals.
+- `f :: Int64` is the index of the orbital to be taken.
 """
 function Electron(nm :: Int64, nf :: Int64, f :: Int64)
     gc = (l2, m2) -> (l2 == nm - 1) ? [Term(1.0, [0, f + nf * ((m2 + nm - 1) ÷ 2)])] : Term[]
@@ -251,9 +251,9 @@ returns the density operator ``n=∑_{ff'}ψ^†_{f}M_{ff'}ψ_{f'}``
 
 # Arguments
 
-- ``nf :: Int64`` is the number of flavours.
-- ``nm :: Int64`` is the number of orbitals.
-- ``mat :: Int64`` is the matrix ``M_{ff'}``. Facultative, identity matrix ``\\mathbb{I}`` by default.
+- `nf :: Int64` is the number of flavours.
+- `nm :: Int64` is the number of orbitals.
+- `mat :: Int64` is the matrix ``M_{ff'}``. Facultative, identity matrix ``\\mathbb{I}`` by default.
 """
 function Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
     el = [ StoreComps(Electron(nm, nf, f)) for f = 1 : nf ]
