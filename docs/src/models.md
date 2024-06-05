@@ -45,9 +45,9 @@ Electron(nm :: Int64, nf :: Int64, f :: Int64)
 Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
 ```
 
-## Ising model and Potts model
+## Ising model
 
-The following methods is especially helpful for Ising model and Potts model.
+The following methods is especially helpful for Ising model.
 
 ```@docs
 GetLzQnu(nm :: Int64, nf :: Int64)
@@ -61,9 +61,9 @@ GetXPolTerms(nm :: Int64)
 GetZPolTerms(nm :: Int64)
 ```
 
-## ``\mathrm{Sp}(N)`` model
+## ``\mathrm{SO}(5)`` model
 
-The following methods is especially helpful for ``\mathrm{Sp}(N)`` models.
+The following methods is especially helpful for ``\mathrm{SO}(5)`` DQCP models.
 
 ```@docs
 GetSpnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, sz :: Vector{Int64} = fill(0, div(nf, 2)))

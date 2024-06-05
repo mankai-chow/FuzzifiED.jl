@@ -7,6 +7,12 @@
 
 ## June 2024
 
+### 5 June, 2024 (Version 0.6.0)
+
+- Add support for full diagonalisation. 
+- Fix bugs and typos.
+- Ready for formal release !
+
 ### 3 June, 2024 (Version 0.5.8)
 
 - Change the binary dependence to Julia Binary Builder. 
