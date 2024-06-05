@@ -111,7 +111,7 @@ The function used to implement the discrete symmetries is [`Basis`](@ref). There
 
 Thus, if we want to look at the all-positive sector
 ```julia
-cyc = [ 2, 2, 2 ] # Input three Z_2 symmetries 
+cyc = [ 2, 2, 2 ] # Input three Z_2 symmetries, for Z_n symmetries one should replace 2 with n. 
 qnz_s = ComplexF64[ 1, 1, 1 ] # Quantum numbers are all positive 
 # Initialise the vectors
 perm_o = []
