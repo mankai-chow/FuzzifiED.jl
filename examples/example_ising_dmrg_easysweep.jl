@@ -5,7 +5,7 @@ using ITensorMPOConstruction
 function MyMPO(os, sites)
     operatorNames = [ "I", "C", "Cdag", "N" ]
     opCacheVec = [ [OpInfo(ITensors.Op(name, n), sites[n]) for name in operatorNames] for n in eachindex(sites)  ]
-    return mpo = MPO_new(os, sites ; basisOpCacheVec = opCacheVec)
+    return MPO_new(os, sites ; basisOpCacheVec = opCacheVec)
 end
 
 nm = 12
