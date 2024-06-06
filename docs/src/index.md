@@ -20,7 +20,7 @@ Include at the start of your Julia script
 ```julia
 using FuzzifiED
 ```
-
+Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook.
 
 ## Outline 
 
