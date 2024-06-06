@@ -89,3 +89,9 @@ SparseMatrixCSCFromOpMat(mat :: OpMat)
 MatrixFromOpMat(mat :: OpMat)
 OpMat(matcsc :: SparseMatrixCSC)
 ```
+
+## Miscellaneous
+
+```@docs
+SilentStd
+```
