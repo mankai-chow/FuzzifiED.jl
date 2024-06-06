@@ -6,10 +6,6 @@ If this package is helpful in your research, we would appreciate it if you menti
 
 ## Install
 
-Download Julia at [this link](https://julialang.org/downloads/). 
-
-To Apple Silicon (Mac M1, M2, etc.) users : The support for AArch64 architecture is not guarenteed. You may want to use Julia for x86 (Intel or Rosetta) instead of macOS (Apple Silicon).
-
 To install the package, please first enter Julia by entering in the command line `julia`, and then enter the commands
 ```julia
 using Pkg ;
@@ -20,7 +16,13 @@ Include at the start of your Julia script
 ```julia
 using FuzzifiED
 ```
-Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook.
+
+## Tips 
+
+- Download Julia at [this link](https://julialang.org/downloads/). 
+- To Apple Silicon (Mac M1, M2, etc.) users : The support for AArch64 architecture is not guarenteed. You may want to use Julia for x86 (Intel or Rosetta) instead of macOS (Apple Silicon).
+- Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook. To use Julia in Jupyter Notebook, the package `IJulia` is needed. 
+
 
 ## Outline 
 
