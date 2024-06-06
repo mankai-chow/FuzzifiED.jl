@@ -133,9 +133,9 @@ function SparseMatrixCSCFromOpMat(mat :: OpMat)
     if (mat.sym_q == 0) 
         return matcsc1
     elseif (mat.sym_q == 1)
-        return matcsc1 + adjoint(tril(matcsc1, -1))
+        return matcsc1 + adjoint(matcsc1) - spdiagm(diag(matcsc1))
     elseif (mat.sym_q == 2)
-        return matcsc1 + transpose(tril(matcsc1, -1))
+        return matcsc1 + transpose(matcsc1) - spdiagm(diag(matcsc1))
     end
 end
 
