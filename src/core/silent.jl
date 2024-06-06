@@ -6,7 +6,6 @@ a flag to determine whether logs of the FuzzifiED functions should be turned off
 SilentStd = false
 macro ctrlstd(ex)
     quote
-        @show SilentStd
         if SilentStd
             # Save the current stdout and stderr
             original_stdout = stdout
