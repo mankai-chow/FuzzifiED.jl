@@ -168,7 +168,7 @@ Return the basis with conserved parity ``\\mathscr{P}``, flavour symmetry ``𝒵
 - `qn_r :: Int64` is the quantum number for  ``π`` rotation along ``y``-axis compared with the ground state. Facultative, 0 by default.
 """
 function GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0)
-    nm = no ÷ 2
+    nm = cfs.no ÷ 2
     qn_r1 = qn_r
     if (mod(nm, 4) >= 2) qn_r1 = -qn_r end
     qnz_s = Vector{ComplexF64}(undef, 0)
