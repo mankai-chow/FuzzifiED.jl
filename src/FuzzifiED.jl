@@ -69,6 +69,7 @@ export GetLzQnu
 export GetLzZnQnu
 export GetLzConfs 
 export GetLzZnConfs
+export GetIsingQnz
 export GetIsingBasis
 export GetIsingIntTerms
 export GetXPolTerms
