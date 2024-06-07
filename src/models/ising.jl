@@ -127,7 +127,7 @@ Return the off-diagonal quantum numbers of the parity ``\\mathscr{P}``, flavour 
 - `qn_z :: Int64` is the particle quantum number for ``ℤ_2``-flavour transformation. Facultative, 0 by default.
 - `qn_r :: Int64` is the quantum number for  ``π`` rotation along ``y``-axis compared with the ground state. Facultative, 0 by default.
 """
-function GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0)
+function GetIsingQnz(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0)
     no = cfs.no
     cyc = Vector{Int64}(undef, 0)
     perm_o = []
@@ -168,37 +168,14 @@ Return the basis with conserved parity ``\\mathscr{P}``, flavour symmetry ``𝒵
 - `qn_r :: Int64` is the quantum number for  ``π`` rotation along ``y``-axis compared with the ground state. Facultative, 0 by default.
 """
 function GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0)
-    no = cfs.no
     qn_r1 = qn_r
     if (mod(no, 8) >= 4) qn_r1 = -qn_r end
-    cyc = Vector{Int64}(undef, 0)
     qnz_s = Vector{ComplexF64}(undef, 0)
-    perm_o = []
-    ph_o = []
-    fac_o = []
-    if qn_p != 0
-        push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no]) 
-        push!(ph_o, fill(1, no))
-        push!(fac_o, [ isodd(o) ? -1 : 1 for o = 1 : no])
-        push!(qnz_s, qn_p)
-        push!(cyc, 2)
-    end
-    if qn_z != 0
-        push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no])
-        push!(ph_o, fill(0, no))
-        push!(fac_o, fill(ComplexF64(1), no))
-        push!(qnz_s, qn_z)
-        push!(cyc, 2)
-    end
-    if qn_r != 0
-        push!(perm_o, [ isodd(o) ? no - o : no + 2 - o for o = 1 : no])
-        push!(ph_o, fill(0, no)) 
-        push!(fac_o, fill(ComplexF64(1), no)) 
-        push!(qnz_s, qn_r1)
-        push!(cyc, 2)
-    end
+    if qn_p != 0 push!(qnz_s, qn_p) end
+    if qn_z != 0 push!(qnz_s, qn_z) end
+    if qn_r != 0 push!(qnz_s, qn_r1) end
     # Generate the basis and print the dimension
-    return Basis(cfs, qnz_s ; cyc, perm_o, ph_o, fac_o)
+    return Basis(cfs, qnz_s ; GetIsingQnz(cfs ; qn_p, qn_z, qn_r)...)
 end
 
 """
