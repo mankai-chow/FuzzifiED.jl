@@ -142,7 +142,7 @@ function GetSpnBasis(cfs :: Confs, nf :: Int64 ; qn_p :: Int64 = 0, qn_r :: Int6
         push!(fac_o, fill(ComplexF64(1), no))
     end
 
-    return Basis(cfs, qnz_s, cyc, perm_o, ph_o, fac_o)
+    return Basis(cfs, qnz_s ; cyc, perm_o, ph_o, fac_o)
 end
 
 """

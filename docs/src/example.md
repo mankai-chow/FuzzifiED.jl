@@ -130,7 +130,7 @@ push!(perm_o, [ isodd(o) ? no - o : no + 2 - o for o = 1 : no]) # perm_o[2] = [1
 push!(ph_o, fill(0, no)) # ph_o[2] = [0,0,...,0] meaning no PH
 push!(fac_o, fill(ComplexF64(1), no)) # fac_o[2] = [1,1,...,1]
 # Generate the basis and print the dimension
-@time "Initialise basis" bs = Basis(cfs, qnz_s, cyc, perm_o, ph_o, fac_o)
+@time "Initialise basis" bs = Basis(cfs, qnz_s ; cyc, perm_o, ph_o, fac_o)
 @show bs.dim 
 ```
 
@@ -328,7 +328,7 @@ To do that, we need to first repeat the calculation in the ``\mathbb{Z}_2``-odd 
 ```julia
 # Repeat the calculation for the Z_2 odd sector (with subscript 1)
 qnz_s1 = ComplexF64[ 1, -1, 1 ] # Change only the discrete quantum numbers and generate the basis
-@time "Initialise Basis Z" bs1 = Basis(cfs, qnz_s1, cyc, perm_o, ph_o, fac_o) 
+@time "Initialise Basis Z" bs1 = Basis(cfs, qnz_s1 ; cyc, perm_o, ph_o, fac_o) 
 @show bs1.dim 
 hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
 @time "Initialise Hamiltonian" hmt_mat = OpMat(hmt)

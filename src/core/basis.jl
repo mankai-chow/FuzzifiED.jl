@@ -28,7 +28,7 @@ end
 
 
 """
-    function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64}, cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}}) :: Basis
+    function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}}) :: Basis
 
 generates the basis that respects the off-diagonal ``ℤ_n`` quantum numbers (QNZ) from the diagonal QN–preserving configurations. The discrete ``ℤ_n`` symmetries are in the form of 
 
@@ -51,7 +51,7 @@ where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_
 
 * `bs :: Basis` is the resulting `Basis` object
 """
-function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64}, cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any})
+function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any})
     if (length(qnz_s) == 0) return Basis(cfs) end
     nqnz = length(qnz_s)
     perm_o_mat = reduce(hcat, perm_o)

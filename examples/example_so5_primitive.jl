@@ -74,7 +74,7 @@ for qn_p in [1, -1], qn_r in [1, -1], (qn_z1, qn_z2) in [(1, 1), (1, -1), (-1, 1
     @show qn_p, qn_r, qn_z1, qn_z2
     qnz_s = ComplexF64[ qn_p, qn_r, qn_z1, qn_z2 ]
 
-    bs = Basis(cfs, qnz_s, cyc, perm_o, ph_o, fac_o)
+    bs = Basis(cfs, qnz_s ; cyc, perm_o, ph_o, fac_o)
     hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
     hmt_mat = OpMat(hmt ; type = Float64)
     enrg, st = GetEigensystem(hmt_mat, 10)
