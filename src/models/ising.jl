@@ -169,7 +169,7 @@ Return the basis with conserved parity ``\\mathscr{P}``, flavour symmetry ``𝒵
 """
 function GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0)
     qn_r1 = qn_r
-    if (mod(no, 8) >= 4) qn_r1 = -qn_r end
+    if (mod(cfs.no, 8) >= 4) qn_r1 = -qn_r end
     qnz_s = Vector{ComplexF64}(undef, 0)
     if qn_p != 0 push!(qnz_s, qn_p) end
     if qn_z != 0 push!(qnz_s, qn_z) end
