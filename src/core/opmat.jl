@@ -152,8 +152,8 @@ end
 
 
 """
-    MatrixFromOpMat(mat :: OpMat{ComplexF64}) :: SparseMatrixCSC{Int64,ComplexF64}
-    MatrixFromOpMat(mat :: OpMat{Float64}) :: SparseMatrixCSC{Int64,Float64}
+    MatrixFromOpMat(mat :: OpMat{ComplexF64}) :: Matrix{ComplexF64}
+    MatrixFromOpMat(mat :: OpMat{Float64}) :: Matrix{Int64,Float64}
 
 converts the `OpMat` objects to a full matrix.
 """
