@@ -23,7 +23,7 @@ for nea = 0 : nm
         push!(qnu_s_lst, [[nea, lza], [neb, lzb]])
     end
 end
-ent_spec = GetEntSpec(st_g, bs, qnu_s_lst, qnz_s_lst ; GetLzQnu(nm, 2)..., GetIsingQnz(nm ; qn_z = 1)..., amp_oa, amp_ob)
+@time "Calculate entanglement spectrum" ent_spec = GetEntSpec(st_g, bs, qnu_s_lst, qnz_s_lst ; GetLzQnu(nm, 2)..., GetIsingQnz(nm ; qn_z = 1)..., amp_oa, amp_ob)
 
 eig_rho = vcat(values(ent_spec)...)
 tr_rho = sum(eig_rho)
