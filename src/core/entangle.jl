@@ -51,17 +51,18 @@ function GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, qnu_s_lst :: Vector{An
     EntSpec = Dict{@NamedTuple{qnu_sa :: Vector{<:Number}, qnz_sa :: Vector{<:Number}, qnu_sb :: Vector{<:Number}, qnz_sb :: Vector{<:Number}}, Vector{Float64}}()
     for qnu_s in qnu_s_lst 
         cfsa = Confs(no, qnu_s[1], qnu_o ; nor, modul)
-        if (cfs_a.ncf == 0) continue end 
+        if (cfsa.ncf == 0) continue end 
         cfsb = Confs(no, qnu_s[2], qnu_o ; nor, modul)
         if (cfsb.ncf == 0) continue end 
         for qnz_s in qnz_s_lst 
-            bsa = Basis(cfsa, qnz_s[1] ; cyc, perm_o, ph_o, fac_o)
+            bsa = Basis(cfsa, ComplexF64.(qnz_s[1]) ; cyc, perm_o, ph_o, fac_o)
             if (bsa.dim == 0) continue end 
-            bsb = Basis(cfsb, qnz_s[2] ; cyc, perm_o, ph_o, fac_o)
+            bsb = Basis(cfsb, ComplexF64.(qnz_s[2]) ; cyc, perm_o, ph_o, fac_o)
             if (bsb.dim == 0) continue end 
             st_dcp = StateDecompMat(st, bs0, bsa, bsb, amp_oa, amp_ob) 
             ent_spec = abs.(svdvals(st_dcp)) .^ 2
             EntSpec[(qnu_sa = qnu_s[1], qnz_sa = qnz_s[1], qnu_sb = qnu_s[2], qnz_sb = qnz_s[2])] = ent_spec
         end
     end
+    return EntSpec
 end
