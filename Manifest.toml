@@ -1,6 +1,6 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.3"
+julia_version = "1.10.4"
 manifest_format = "2.0"
 project_hash = "402effafe4ac908e098b31873fdb24a3ca663664"
 
@@ -286,11 +286,11 @@ uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
 [[deps.FuzzifiED_jll]]
 deps = ["Arpack_jll", "Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "LLVMOpenMP_jll", "Libdl"]
-git-tree-sha1 = "d3b86d2eeb1bba059689b49586907cae15cad2ae"
+git-tree-sha1 = "519a1afb787bada578cfca33493cae712c1f7abc"
 repo-rev = "main"
 repo-url = "https://github.com/mankai-chow/FuzzifiED_jll.jl.git"
 uuid = "0fc6ce7e-a225-5ad5-93a0-97260cfa1513"
-version = "0.5.10+0"
+version = "0.6.1+0"
 
 [[deps.GPUArraysCore]]
 deps = ["Adapt"]

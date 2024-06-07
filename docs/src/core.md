@@ -90,6 +90,13 @@ MatrixFromOpMat(mat :: OpMat)
 OpMat(matcsc :: SparseMatrixCSC)
 ```
 
+## Entanglement
+
+```@docs
+StateDecompMat(st :: Vector{<:Number}, bs0 :: Basis, bsa :: Basis, bsb :: Basis, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number})
+GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, qnu_s_lst :: Vector{Any}, qnz_s_lst :: Vector{Any} ; qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)], cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any}, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oa .^ 2)))
+```
+
 ## Miscellaneous
 
 ```@docs

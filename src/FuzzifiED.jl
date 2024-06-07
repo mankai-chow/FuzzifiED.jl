@@ -38,6 +38,10 @@ export GetEigensystem
 export SparseMatrixCSCFromOpMat
 export MatrixFromOpMat
 
+include("core/entangle.jl")
+export StateDecompMat
+export GetEntSpec
+
 include("models/threej.jl")
 export GetIntMatrix
 
