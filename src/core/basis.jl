@@ -51,7 +51,7 @@ where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_
 
 * `bs :: Basis` is the resulting `Basis` object
 """
-function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any}, num_th = Threads.nthreads(), silent_std = SilentStd)
+function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any}, num_th = NumThreads, silent_std = SilentStd)
     if (length(qnz_s) == 0) return Basis(cfs) end
     nqnz = length(qnz_s)
     perm_o_mat = reduce(hcat, perm_o)

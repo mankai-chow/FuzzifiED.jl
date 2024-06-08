@@ -19,7 +19,7 @@ import Base.adjoint
 a flag to determine whether logs of the FuzzifiED functions should be turned off. False by default. If you want to evaluate without log, put `FuzzifiED.SilentStd = true`
 """
 SilentStd = false
-NumThreads = Threads.nthreads() 
+NumThreads = Threads.nthreads()
 export SilentStd
 export NumThreads
 

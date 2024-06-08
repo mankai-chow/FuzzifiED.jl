@@ -83,7 +83,7 @@ Return the configurations with conserved particle number ``N_e`` and angular mom
 - `ne :: Int64` is the number of electrons.
 - `lz :: Float64` is the angular momentum. Facultative, 0 by default. 
 """
-function GetLzConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, num_th = Threads.nthreads(), silent_std = SilentStd)
+function GetLzConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, num_th = NumThreads, silent_std = SilentStd)
     no = nf * nm
     s = .5 * (nm - 1)
     qnu_s = Int64[ne, ne * s + lz]
@@ -106,7 +106,7 @@ Return the configurations with conserved particle number ``N_e``, angular moment
 - `lz :: Float64` is the angular momentum. Facultative, 0 by default. 
 - `zn :: Float64` is the flavour charge. Facultative, 0 by default. 
 """
-function GetLzZnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, zn :: Int64 = 0, num_th = Threads.nthreads(), silent_std = SilentStd)
+function GetLzZnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, zn :: Int64 = 0, num_th = NumThreads, silent_std = SilentStd)
     no = nf * nm
     s = .5 * (nm - 1)
     qnu_s = Int64[ne, ne * s + lz, zn]
@@ -167,7 +167,7 @@ Return the basis with conserved parity ``\\mathscr{P}``, flavour symmetry ``𝒵
 - `qn_z :: Int64` is the particle quantum number for ``ℤ_2``-flavour transformation. Facultative, 0 by default.
 - `qn_r :: Int64` is the quantum number for  ``π`` rotation along ``y``-axis compared with the ground state. Facultative, 0 by default.
 """
-function GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0, num_th = Threads.nthreads(), silent_std = SilentStd)
+function GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0, num_th = NumThreads, silent_std = SilentStd)
     nm = cfs.no ÷ 2
     qn_r1 = qn_r
     if (mod(nm, 4) >= 2) qn_r1 = -qn_r end
