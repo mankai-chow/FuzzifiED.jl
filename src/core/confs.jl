@@ -45,18 +45,17 @@ where ``i=1,…,N_U`` is the index of quantum number, ``o`` is the index of orbi
 
 * `cfs :: Confs` is a [`Confs`](@ref) object
 """
-function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)), num_th = NumThreads, silent_std = SilentStd)
+function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)), num_th = NumThreads, disp_std = !SilentStd)
     # qnu_o :: Vector{Vector{Int64}}
     nqnu = length(qnu_s)
     lid = Array{Int64, 1}(undef, 2 ^ (no - nor) + 1)
     ref_ncf = Ref{Int64}(0)
     qnu_o_mat = Matrix{Int64}(reduce(hcat, qnu_o))
-    @ccall FuzzifiED_jll.LibpathFuzzifiED.__cfs_MOD_count_cfs(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, modul :: Ref{Int64}, ref_ncf :: Ref{Int64}, lid :: Ref{Int64}, num_th :: Ref{Int64}, silent_std :: Ref{Bool}) :: Nothing
+    @ccall FuzzifiED_jll.LibpathFuzzifiED.__cfs_MOD_count_cfs(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, modul :: Ref{Int64}, ref_ncf :: Ref{Int64}, lid :: Ref{Int64}, num_th :: Ref{Int64}, disp_std :: Ref{Bool}) :: Nothing
     ncf = ref_ncf[]
     rid = Array{Int64, 1}(undef, 2 ^ nor + 1)
     conf = Array{Int64, 1}(undef, ncf)
-    @show silent_std
-    @ccall FuzzifiED_jll.LibpathFuzzifiED.__cfs_MOD_generate_cfs(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, modul :: Ref{Int64}, ncf :: Ref{Int64}, lid :: Ref{Int64}, rid :: Ref{Int64}, conf :: Ref{Int64}, num_th :: Ref{Int64}, silent_std :: Ref{Bool}) :: Nothing
+    @ccall FuzzifiED_jll.LibpathFuzzifiED.__cfs_MOD_generate_cfs(no :: Ref{Int64}, nor :: Ref{Int64}, nqnu :: Ref{Int64}, qnu_s :: Ref{Int64}, qnu_o_mat :: Ref{Int64}, modul :: Ref{Int64}, ncf :: Ref{Int64}, lid :: Ref{Int64}, rid :: Ref{Int64}, conf :: Ref{Int64}, num_th :: Ref{Int64}, disp_std :: Ref{Bool}) :: Nothing
     return Confs(no, nor, ncf, conf, lid, rid)
 end 
 

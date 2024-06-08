@@ -51,7 +51,7 @@ where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_
 
 * `bs :: Basis` is the resulting `Basis` object
 """
-function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any}, num_th = NumThreads, silent_std = SilentStd)
+function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any}, num_th = NumThreads, disp_std = !SilentStd)
     if (length(qnz_s) == 0) return Basis(cfs) end
     nqnz = length(qnz_s)
     perm_o_mat = reduce(hcat, perm_o)
@@ -61,11 +61,11 @@ function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64},
     cfgr = Array{Int64, 1}(undef, cfs.ncf)
     cffac = Array{ComplexF64, 1}(undef, cfs.ncf)
     szz = prod([ abs(qnz_s[i]) < 1E-8 ? 1 : cyc[i] for i = 1 : nqnz ])
-    @ccall FuzzifiED_jll.LibpathFuzzifiED.__bs_MOD_generate_bs_cfgr(cfs.no :: Ref{Int64}, cfs.nor :: Ref{Int64}, cfs.ncf :: Ref{Int64}, cfs.lid :: Ref{Int64}, cfs.rid :: Ref{Int64}, cfs.conf :: Ref{Int64}, nqnz :: Ref{Int64}, qnz_s :: Ref{ComplexF64}, cyc :: Ref{Int64}, perm_o_mat :: Ref{Int64}, ph_o_mat :: Ref{Int64}, fac_o_mat :: Ref{ComplexF64}, szz :: Ref{Int64}, dim_ref :: Ref{Int64}, cfgr :: Ref{Int64}, cffac :: Ref{ComplexF64}, num_th :: Ref{Int64}, silent_std :: Ref{Bool}) :: Nothing
+    @ccall FuzzifiED_jll.LibpathFuzzifiED.__bs_MOD_generate_bs_cfgr(cfs.no :: Ref{Int64}, cfs.nor :: Ref{Int64}, cfs.ncf :: Ref{Int64}, cfs.lid :: Ref{Int64}, cfs.rid :: Ref{Int64}, cfs.conf :: Ref{Int64}, nqnz :: Ref{Int64}, qnz_s :: Ref{ComplexF64}, cyc :: Ref{Int64}, perm_o_mat :: Ref{Int64}, ph_o_mat :: Ref{Int64}, fac_o_mat :: Ref{ComplexF64}, szz :: Ref{Int64}, dim_ref :: Ref{Int64}, cfgr :: Ref{Int64}, cffac :: Ref{ComplexF64}, num_th :: Ref{Int64}, disp_std :: Ref{Bool}) :: Nothing
     dim = dim_ref[]
     grel = Array{Int64, 2}(undef, szz, dim)
     grsz = Array{Int64, 1}(undef, dim)
-    @ccall FuzzifiED_jll.LibpathFuzzifiED.__bs_MOD_generate_bs_grel(cfs.ncf :: Ref{Int64}, szz :: Ref{Int64}, dim :: Ref{Int64}, cfgr :: Ref{Int64}, grel :: Ref{Int64}, grsz :: Ref{Int64}, num_th :: Ref{Int64}, silent_std :: Ref{Bool}) :: Nothing
+    @ccall FuzzifiED_jll.LibpathFuzzifiED.__bs_MOD_generate_bs_grel(cfs.ncf :: Ref{Int64}, szz :: Ref{Int64}, dim :: Ref{Int64}, cfgr :: Ref{Int64}, grel :: Ref{Int64}, grsz :: Ref{Int64}, num_th :: Ref{Int64}, disp_std :: Ref{Bool}) :: Nothing
     return Basis(cfs, dim, szz, cfgr, cffac, grel, grsz)
 end 
 
