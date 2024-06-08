@@ -48,20 +48,26 @@ A dictionary whose keys are named tuples that specify the sector containing entr
 function GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, qnu_s_lst :: Vector{Any}, qnz_s_lst :: Vector{Any} ; qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)], cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any}, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oa .^ 2)))
     no = bs0.cfs.no 
     nor = bs0.cfs.nor
+    dictlock = ReentrantLock()
     EntSpec = Dict{@NamedTuple{qnu_sa :: Vector{<:Number}, qnz_sa :: Vector{<:Number}, qnu_sb :: Vector{<:Number}, qnz_sb :: Vector{<:Number}}, Vector{Float64}}()
-    for qnu_s in qnu_s_lst 
-        cfsa = Confs(no, qnu_s[1], qnu_o ; nor, modul)
+    Threads.@threads for qnu_s in qnu_s_lst 
+        cfsa = Confs(no, qnu_s[1], qnu_o ; nor, modul, num_th = 1, disp_std = false)
         if (cfsa.ncf == 0) continue end 
-        cfsb = Confs(no, qnu_s[2], qnu_o ; nor, modul)
+        cfsb = Confs(no, qnu_s[2], qnu_o ; nor, modul, num_th = 1, disp_std = false)
         if (cfsb.ncf == 0) continue end 
         for qnz_s in qnz_s_lst 
-            bsa = Basis(cfsa, ComplexF64.(qnz_s[1]) ; cyc, perm_o, ph_o, fac_o)
+            bsa = Basis(cfsa, ComplexF64.(qnz_s[1]) ; cyc, perm_o, ph_o, fac_o, num_th = 1, disp_std = false)
             if (bsa.dim == 0) continue end 
-            bsb = Basis(cfsb, ComplexF64.(qnz_s[2]) ; cyc, perm_o, ph_o, fac_o)
+            bsb = Basis(cfsb, ComplexF64.(qnz_s[2]) ; cyc, perm_o, ph_o, fac_o, num_th = 1, disp_std = false)
             if (bsb.dim == 0) continue end 
             st_dcp = StateDecompMat(st, bs0, bsa, bsb, amp_oa, amp_ob) 
             ent_spec = abs.(svdvals(st_dcp)) .^ 2
-            EntSpec[(qnu_sa = qnu_s[1], qnz_sa = qnz_s[1], qnu_sb = qnu_s[2], qnz_sb = qnz_s[2])] = ent_spec
+            Threads.lock(dictlock) 
+            try
+                EntSpec[(qnu_sa = qnu_s[1], qnz_sa = qnz_s[1], qnu_sb = qnu_s[2], qnz_sb = qnz_s[2])] = ent_spec
+            finally
+                Threads.unlock(dictlock)
+            end
         end
     end
     return EntSpec
