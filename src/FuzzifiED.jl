@@ -13,8 +13,15 @@ import Base.:/
 import Base.zero
 import Base.adjoint
 
-include("core/silent.jl")
+"""
+    SilentStd :: bool = false 
+
+a flag to determine whether logs of the FuzzifiED functions should be turned off. False by default. If you want to evaluate without log, put `FuzzifiED.SilentStd = true`
+"""
+SilentStd = false
+NumThreads = Threads.nthreads() 
 export SilentStd
+export NumThreads
 
 include("core/confs.jl")
 export Confs
