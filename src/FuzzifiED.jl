@@ -19,9 +19,11 @@ import Base.adjoint
 a flag to determine whether logs of the FuzzifiED functions should be turned off. False by default. If you want to evaluate without log, put `FuzzifiED.SilentStd = true`
 """
 SilentStd = false
-NumThreads = Threads.nthreads()
 export SilentStd
+NumThreads = Threads.nthreads()
 export NumThreads
+Libpath = FuzzifiED_jll.LibpathFuzzifiED
+export Libpath
 
 include("core/confs.jl")
 export Confs
@@ -96,6 +98,7 @@ export GetIsingDefIntTerms
 export GetDefXPolTerms
 
 function __init__()
+    NumThreads = Threads.nthreads()
 
     @require ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5" begin
         using ITensors

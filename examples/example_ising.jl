@@ -1,4 +1,7 @@
-using FuzzifiED
+include("../src/FuzzifiED.jl")
+using .FuzzifiED
+
+FuzzifiED.SilentStd = true
 
 nm = 12
 cfs = GetLzConfs(nm, 2, nm)

@@ -19,7 +19,7 @@ A complex matrix of dimension `bsb.dim * bsa.dim` that corresponds to the state 
 """
 function StateDecompMat(st :: Vector{<:Number}, bs0 :: Basis, bsa :: Basis, bsb :: Basis, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number})
     st_dcp = Matrix{ComplexF64}(undef, bsb.dim, bsa.dim) ;
-    @ccall FuzzifiED_jll.LibpathFuzzifiED.__ent_MOD_decomp_basis(bs0.cfs.no :: Ref{Int64}, bs0.cfs.nor :: Ref{Int64}, 
+    @ccall Libpath.__ent_MOD_decomp_basis(bs0.cfs.no :: Ref{Int64}, bs0.cfs.nor :: Ref{Int64}, 
         bs0.cfs.ncf :: Ref{Int64}, bs0.dim :: Ref{Int64}, bs0.cfs.conf :: Ref{Int64}, bs0.cfs.lid :: Ref{Int64}, bs0.cfs.rid :: Ref{Int64}, bs0.szz :: Ref{Int64}, bs0.cfgr :: Ref{Int64}, bs0.cffac :: Ref{ComplexF64}, bs0.grel :: Ref{Int64}, bs0.grsz :: Ref{Int64}, 
         bsa.cfs.ncf :: Ref{Int64}, bsa.dim :: Ref{Int64}, bsa.cfs.conf :: Ref{Int64}, bsa.cfs.lid :: Ref{Int64}, bsa.cfs.rid :: Ref{Int64}, bsa.szz :: Ref{Int64}, bsa.cfgr :: Ref{Int64}, bsa.cffac :: Ref{ComplexF64}, bsa.grel :: Ref{Int64}, bsa.grsz :: Ref{Int64}, 
         bsb.cfs.ncf :: Ref{Int64}, bsb.dim :: Ref{Int64}, bsb.cfs.conf :: Ref{Int64}, bsb.cfs.lid :: Ref{Int64}, bsb.cfs.rid :: Ref{Int64}, bsb.szz :: Ref{Int64}, bsb.cfgr :: Ref{Int64}, bsb.cffac :: Ref{ComplexF64}, bsb.grel :: Ref{Int64}, bsb.grsz :: Ref{Int64}, 
