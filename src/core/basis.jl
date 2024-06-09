@@ -28,7 +28,7 @@ end
 
 
 """
-    function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}}) :: Basis
+    function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}} ; num_th :: Int64, disp_std :: Bool) :: Basis
 
 generates the basis that respects the off-diagonal ``ℤ_n`` quantum numbers (QNZ) from the diagonal QN–preserving configurations. The discrete ``ℤ_n`` symmetries are in the form of 
 
@@ -46,6 +46,8 @@ where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_
 * `perm_o :: Vector{Vector{Int64}}` records the permutation ``π_o``. It has ``N_Z`` elements and each of its elements is a vector of length ``N_o``. 
 * `ph_o :: Vector{Vector{Int64}}` records ``p_o`` to determine whether or not to perform a particle-hole transformation. It has ``N_Z`` elements and each of its elements is a vector of length ``N_o``. 
 * `fac_o :: Vector{Vector{ComplexF64}}` records the factor ``α_o`` in the transformation. Each of its elements is a vector of length ``N_o``. 
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output
 

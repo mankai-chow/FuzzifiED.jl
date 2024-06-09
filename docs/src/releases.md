@@ -7,6 +7,12 @@
 
 ## June 2024
 
+### 8 June, 2024 (Version 0.6.3)
+
+- Add support for calculating entanglement spectrum. 
+- Add global parameters to control the number of threads, the output and the path of the dynamic library. 
+- Fix bugs. 
+
 ### 5 June, 2024 (Version 0.6.0)
 
 - Add support for full diagonalisation. 

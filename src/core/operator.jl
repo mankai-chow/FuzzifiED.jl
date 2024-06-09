@@ -26,7 +26,7 @@ end
 
 
 """
-    function Operator(bsd :: Basis, bsf :: Basis, terms :: Vector{Term} ; red_q :: Int64, sym_q :: Int64) :: Operator
+    function Operator(bsd :: Basis, bsf :: Basis, terms :: Vector{Term} ; red_q :: Int64, sym_q :: Int64, num_th :: Int64, disp_std :: Bool) :: Operator
 
 generates an operator object from a series of terms. 
 
@@ -36,6 +36,9 @@ generates an operator object from a series of terms.
 * `terms :: Vector{Term}` records the terms ; 
 * `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same quantum numbers, and the operator fully respects the symmetries, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0` ; 
 * `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0`. 
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
+
 """
 function Operator(bsd :: Basis, bsf :: Basis, terms :: Vector{Term} ; red_q :: Int64 = 0, sym_q :: Int64 = 0)
     ntm = length(terms)
@@ -48,10 +51,15 @@ end
 
 
 """
-    function *(op :: Operator, st_d :: Vector{ComplexF64}) :: Vector{ComplexF64}
-    function *(op :: Operator, st_d :: Vector{Float64}) :: Vector{Float64}
+    function *(op :: Operator, st_d :: Vector{ComplexF64} ; num_th :: Int64, disp_std :: Bool) :: Vector{ComplexF64}
+    function *(op :: Operator, st_d :: Vector{Float64} ; num_th :: Int64, disp_std :: Bool) :: Vector{Float64}
 
-Measure the action of an operator on a state. `st_d` must be of length `op.bsd.dim`. Returns a vector of length `op.bsf.dim` that represents the final state. 
+Measure the action of an operator on a state. `st_d` must be of length `op.bsd.dim`. Returns a vector of length `op.bsf.dim` that represents the final state.
+
+# Facultative arguments
+
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 """
 function *(op :: Operator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, disp_std = !SilentStd)
@@ -73,10 +81,15 @@ end
 
 
 """
-    function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op :: Operator, st_d :: Vector{ComplexF64}) :: ComplexF64
-    function *(st_fp :: LinearAlgebra.Adjoint{Float64, Vector{Float64}}, op :: Operator, st_d :: Vector{Float64}) :: Float64
+    function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op :: Operator, st_d :: Vector{ComplexF64} ; num_th :: Int64, disp_std :: Bool) :: ComplexF64
+    function *(st_fp :: LinearAlgebra.Adjoint{Float64, Vector{Float64}}, op :: Operator, st_d :: Vector{Float64} ; num_th :: Int64, disp_std :: Bool) :: Float64
 
 Measuring the inner product between two states and an operator. `st_d` must be of length `op.bsd.dim` and `st_fp` must be of length `op.bsf.dim`, and `st_fp` must be an adjoint. 
+
+# Facultative arguments
+
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
 function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op :: Operator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, disp_std = !SilentStd)
     ovl_ref = Ref{ComplexF64}(0)

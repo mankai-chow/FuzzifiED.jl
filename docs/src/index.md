@@ -21,8 +21,9 @@ using FuzzifiED
 
 - Download Julia at [this link](https://julialang.org/downloads/). 
 - To Apple Silicon (Mac M1, M2, etc.) users : The support for AArch64 architecture is not guarenteed. You may want to use Julia for x86 (Intel or Rosetta) instead of macOS (Apple Silicon).
-- Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook. To use Julia in Jupyter Notebook, the package `IJulia` is needed. 
+- Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook. _N.b._, you may need to install the package `IJulia` by hand to use Jupyter notebook ; in Jupyter notebooks, you may need to define how many threads OpenMP uses by hand in `FuzzifiED.NumThreads` 
 - We are currently trying to train our own GPT ['Getting FuzzifiED'](https://chatgpt.com/g/g-WvSuxsXus-getting-fuzzified), but the performance is not ideal. Please help us out. 
+- The package is under active development, so certain interfaces may get changed, superceded or obsolete. We are sorry for any possible inconvenience. 
 
 ## Outline 
 

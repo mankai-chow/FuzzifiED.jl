@@ -10,8 +10,10 @@ Return the basis where the ``π``-rotation along ``y``-axis ``\\mathscr{R}`` and
 - `qn_r :: Int64` is the quantum number for  ``π`` rotation along ``y``-axis compared with the ground state. Facultative, 0 by default.
 - `perm :: Vector{Vector{Int64}}` is a list where each element specifies a permutation of flavour indices (from 1 to ``N_f``) in the format of a cycle. Facultative, empty by default.
 - `qn_z :: Vector{<:Number}` is a list where each element specifies the quantum number under the flavour permutation. Facultative, empty by default. 
+- `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+- `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
-function GetSnBasis(cfs :: Confs, nf :: Int64 ; qn_r :: Int64 = 0, perm :: Vector = [], qn_z :: Vector{<:Number} = Number[]) 
+function GetSnBasis(cfs :: Confs, nf :: Int64 ; qn_r :: Int64 = 0, perm :: Vector = [], qn_z :: Vector{<:Number} = Number[], num_th = NumThreads, disp_std = !SilentStd) 
     no = cfs.no
     nm = no ÷ nf
     qn_r1 = qn_r
@@ -48,7 +50,7 @@ function GetSnBasis(cfs :: Confs, nf :: Int64 ; qn_r :: Int64 = 0, perm :: Vecto
         push!(cyc, length(perm[i]))
     end
     # Generate the basis and print the dimension
-    return Basis(cfs, qnz_s ; cyc, perm_o, ph_o, fac_o)
+    return Basis(cfs, qnz_s ; cyc, perm_o, ph_o, fac_o, num_th, disp_std)
 end
 
 

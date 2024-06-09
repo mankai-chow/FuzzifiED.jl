@@ -72,7 +72,7 @@ end
 
 
 """
-    function GetLzConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64) :: Confs
+    function GetLzConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 ; num_th :: Int64, disp_std :: Bool) :: Confs
 
 Return the configurations with conserved particle number ``N_e`` and angular momentum ``L_z``.
         
@@ -82,6 +82,8 @@ Return the configurations with conserved particle number ``N_e`` and angular mom
 - `nf :: Int64` is the number of flavours ; 
 - `ne :: Int64` is the number of electrons.
 - `lz :: Float64` is the angular momentum. Facultative, 0 by default. 
+- `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+- `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
 function GetLzConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, num_th = NumThreads, disp_std = !SilentStd)
     no = nf * nm
@@ -94,7 +96,7 @@ end
 
 
 """
-    function GetLzZnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64, zn :: Int64 = 0) :: Confs
+    function GetLzZnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64, zn :: Int64 = 0 ; num_th :: Int64, disp_std :: Bool) :: Confs
 
 Return the configurations with conserved particle number ``N_e``, angular momentum ``L_z`` and flavour charge ``Z_{N_f}``.
         
@@ -105,6 +107,8 @@ Return the configurations with conserved particle number ``N_e``, angular moment
 - `ne :: Int64` is the number of electrons.
 - `lz :: Float64` is the angular momentum. Facultative, 0 by default. 
 - `zn :: Float64` is the flavour charge. Facultative, 0 by default. 
+- `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+- `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
 function GetLzZnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, zn :: Int64 = 0, num_th = NumThreads, disp_std = !SilentStd)
     no = nf * nm
@@ -156,7 +160,7 @@ function GetIsingQnz(nm :: Int64 ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r ::
 end
 
 """
-    function GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0) :: Basis
+    function GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0, num_th :: Int64, disp_std :: Bool) :: Basis
 
 Return the basis with conserved parity ``\\mathscr{P}``, flavour symmetry ``𝒵`` and ``π``-rotation along ``y``-axis ``\\mathscr{R}`` from the configurations already generated. Quantum numbers set to zero signify that they are not conserved. 
 
@@ -166,6 +170,8 @@ Return the basis with conserved parity ``\\mathscr{P}``, flavour symmetry ``𝒵
 - `qn_p :: Int64` is quantum number for parity transformation. Facultative, 0 by default.
 - `qn_z :: Int64` is the particle quantum number for ``ℤ_2``-flavour transformation. Facultative, 0 by default.
 - `qn_r :: Int64` is the quantum number for  ``π`` rotation along ``y``-axis compared with the ground state. Facultative, 0 by default.
+- `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+- `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
 function GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0, num_th = NumThreads, disp_std = !SilentStd)
     nm = cfs.no ÷ 2
