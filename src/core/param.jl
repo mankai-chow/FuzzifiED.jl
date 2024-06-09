@@ -1,6 +1,6 @@
 
 """
-    SilentStd :: bool = false 
+    SilentStd :: Bool = false 
 
 a flag to determine whether logs of the FuzzifiED functions should be turned off. False by default. If you want to evaluate without log, put `FuzzifiED.SilentStd = true`. This parameter can be defined for each process separately. 
 """
@@ -14,7 +14,7 @@ an integer to define how many threads OpenMP uses. By default, it is the same as
 NumThreads = Threads.nthreads()
 
 """
-    Libpath :: Int = FuzzifiED_jll.LibpathFuzzifiED
+    Libpath :: String = FuzzifiED_jll.LibpathFuzzifiED
 
 define where the Fortran library are compiled. You do not need to modify that by yourself. However, if you compile the Fortran codes by yourself, you need to point this to your compiled library. 
 """
