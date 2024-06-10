@@ -1,13 +1,23 @@
 using FuzzifiED
 using ITensors
+const σx = [  0  1 ;  1  0 ]
+const σz = [  1  0 ;  0 -1 ]
 
 nm = 12
 nf = 2
 no = nm * nf
 
-sites = SitesFromQnu(; GetLzZnQnu(nm, 2)...)
-sigma_x = [ 0 1 ; 1 0 ]
-tms_hmt = SimplifyTerms(GetDenIntTerms(nm, 2 ; ps_pot = [4.75, 1.]) - GetDenIntTerms(nm, 2 ; ps_pot = [4.75, 1.], mat_a = sigma_x) - 3.16 * GetZPolTerms(nm))
+sites = SitesFromQNDiag([
+    GetNeQNDiag(nm * nf), 
+    GetLz2QNDiag(nm, nf),
+    GetZnfChargeQNDiag(nm, nf)
+])
+ps_pot = [4.75, 1.] ./ 2
+tms_hmt = SimplifyTerms(
+    GetDenIntTerms(nm, 2 ; ps_pot) - 
+    GetDenIntTerms(nm, 2 ; ps_pot, mat_a = σx) - 
+    3.16 * GetPolTerms(nm, nf ; mat = σz)
+)
 @time mpo_hmt = MPO(OpSumFromTerms(tms_hmt), sites)
 
 cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]

@@ -28,46 +28,48 @@ end
 
 
 """
-    function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}} ; num_th :: Int64, disp_std :: Bool) :: Basis
+    function Basis(cfs :: Confs, secf :: Vector{ComplexF64}, qnf :: Vector{QNOffd} ; num_th :: Int64, disp_std :: Bool) :: Basis
 
-generates the basis that respects the off-diagonal ``ℤ_n`` quantum numbers (QNZ) from the diagonal QN–preserving configurations. The discrete ``ℤ_n`` symmetries are in the form of 
-
-```math
-𝒵:\\ c_o↦ α_o^* c^{(p_o)}_{π_o},  c_o^†↦ α_o c^{(1-p_o)}_{π_o}
-```
-
-where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_o`` is a permutation of ``1,…,N_o``, ``α_o`` is a coefficient, and ``p_o`` specified whether or not particle-hole transformation is performed for the orbital. Note that one must guarentee that all these transformations commute with each other and also commute with the diagonal QNs. 
+generates the basis that respects the off-diagonal ``ℤ_p`` quantum numbers (QNOffd)
 
 # Arguments 
 
 * `cfs :: Confs` is the diagonal QN–preserving configurations ;
-* `qnz_s :: Vector{ComplexF64}` is a vector of length the same as the number of discrete symmetries that records the eigenvalue of each transformation ;
-* `cyc :: Vector{Int64}` records the cycle of each transformation. For ``ℤ_n`` symmetry, record ``n`` ;
-* `perm_o :: Vector{Vector{Int64}}` records the permutation ``π_o``. It has ``N_Z`` elements and each of its elements is a vector of length ``N_o``. 
-* `ph_o :: Vector{Vector{Int64}}` records ``p_o`` to determine whether or not to perform a particle-hole transformation. It has ``N_Z`` elements and each of its elements is a vector of length ``N_o``. 
-* `fac_o :: Vector{Vector{ComplexF64}}` records the factor ``α_o`` in the transformation. Each of its elements is a vector of length ``N_o``. 
+* `secf :: Vector{ComplexF64}` is a vector of length the same as the number of discrete symmetries that records the eigenvalue of each transformation in the sector ;
+* `qnf :: Vector{QNOffd}` is a vector of off-diagonal quantum numbers. 
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output
 
-* `bs :: Basis` is the resulting `Basis` object
+* `bs :: Basis` is the resulting [Basis](@ref Basis) object
 """
-function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any}, num_th = NumThreads, disp_std = !SilentStd)
-    if (length(qnz_s) == 0) return Basis(cfs) end
-    nqnz = length(qnz_s)
-    perm_o_mat = reduce(hcat, perm_o)
-    ph_o_mat = reduce(hcat, ph_o)
-    fac_o_mat = ComplexF64.(reduce(hcat, fac_o))
+function Basis(cfs :: Confs, secf :: Vector{<:Number}, qnf :: Vector{QNOffd} ; num_th = NumThreads, disp_std = !SilentStd)
+    if (length(secf) == 0) return Basis(cfs) end
+    nqnf = length(secf)
+    cyc = [ qnfi.cyc for qnfi in qnf ]
+    perm_o_mat = reduce(hcat, [ qnfi.perm for qnfi in qnf ])
+    ph_o_mat = reduce(hcat, [ qnfi.ph for qnfi in qnf ])
+    fac_o_mat = reduce(hcat, [ qnfi.fac for qnfi in qnf ])
     dim_ref = Ref{Int64}(0)
     cfgr = Array{Int64, 1}(undef, cfs.ncf)
     cffac = Array{ComplexF64, 1}(undef, cfs.ncf)
-    szz = prod([ abs(qnz_s[i]) < 1E-8 ? 1 : cyc[i] for i = 1 : nqnz ])
-    @ccall Libpath.__bs_MOD_generate_bs_cfgr(cfs.no :: Ref{Int64}, cfs.nor :: Ref{Int64}, cfs.ncf :: Ref{Int64}, cfs.lid :: Ref{Int64}, cfs.rid :: Ref{Int64}, cfs.conf :: Ref{Int64}, nqnz :: Ref{Int64}, qnz_s :: Ref{ComplexF64}, cyc :: Ref{Int64}, perm_o_mat :: Ref{Int64}, ph_o_mat :: Ref{Int64}, fac_o_mat :: Ref{ComplexF64}, szz :: Ref{Int64}, dim_ref :: Ref{Int64}, cfgr :: Ref{Int64}, cffac :: Ref{ComplexF64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
+    szz = prod([ abs(secf[i]) < 1E-8 ? 1 : cyc[i] for i = 1 : nqnf ])
+    @ccall Libpath.__bs_MOD_generate_bs_cfgr(
+        cfs.no :: Ref{Int64}, cfs.nor :: Ref{Int64}, cfs.ncf :: Ref{Int64}, cfs.lid :: Ref{Int64}, cfs.rid :: Ref{Int64}, cfs.conf :: Ref{Int64}, 
+        nqnf :: Ref{Int64}, ComplexF64.(secf) :: Ref{ComplexF64}, 
+        cyc :: Ref{Int64}, perm_o_mat :: Ref{Int64}, ph_o_mat :: Ref{Int64}, fac_o_mat :: Ref{ComplexF64}, 
+        szz :: Ref{Int64}, dim_ref :: Ref{Int64}, cfgr :: Ref{Int64}, cffac :: Ref{ComplexF64}, 
+        num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}
+    ) :: Nothing
     dim = dim_ref[]
     grel = Array{Int64, 2}(undef, szz, dim)
     grsz = Array{Int64, 1}(undef, dim)
-    @ccall Libpath.__bs_MOD_generate_bs_grel(cfs.ncf :: Ref{Int64}, szz :: Ref{Int64}, dim :: Ref{Int64}, cfgr :: Ref{Int64}, grel :: Ref{Int64}, grsz :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
+    @ccall Libpath.__bs_MOD_generate_bs_grel(
+        cfs.ncf :: Ref{Int64}, szz :: Ref{Int64}, dim :: Ref{Int64}, 
+        cfgr :: Ref{Int64}, grel :: Ref{Int64}, grsz :: Ref{Int64}, 
+        (disp_std ? 1 : 0) :: Ref{Int64}
+    ) :: Nothing
     return Basis(cfs, dim, szz, cfgr, cffac, grel, grsz)
 end 
 

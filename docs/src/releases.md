@@ -7,6 +7,10 @@
 
 ## June 2024
 
+### 9 June, 2024 (Version 0.7.0)
+
+- Revise the implementation of diagonal and off-diagonal quantum number. 
+
 ### 8 June, 2024 (Version 0.6.3)
 
 - Add support for calculating entanglement spectrum. 

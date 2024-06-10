@@ -142,7 +142,7 @@ TermsOrOpSum(tms :: Vector{Term}) = OpSumFromTerms(tms)
 TermsOrOpSum(os :: Sum{Scaled{ComplexF64, Prod{Op}}}) = os
 
 """
-    function GetMpoSites(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}} ; path :: String, qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}, mpo_method :: Function) :: Tuple{MPO, Vector{<:Index}}
+    function GetMPOSites(id :: String, tms, qnd :: Vector{QNDiag} ; path :: String, qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}, mpo_method :: Function) :: Tuple{MPO, Vector{<:Index}}
 
 # Function 
 
@@ -152,14 +152,12 @@ This function returns the MPO and sites for a given operator and a Hilbert space
 
 - `id :: String` is a string identifying the file to which the results will be accessed and written.
 - `tms :: Vector{Term}` or `tms :: Sum{Scaled{ComplexF64, Prod{Op}}}` is either an array of terms or a `OpSum` objects that specifies the expression of the operator. 
+- `qnd :: Vector{QNDiag}` is a list of diagonal quantum numbers. 
 - `path :: String` identifies the path where the results will be accessed and stored. Facultative, `./` by default. 
-- `qnu_o :: Vector{Vector{Int64}}` is a list where each element specifies a quantum number. Each element is a list that specifies the charges of each orbital under the quantum number. Obligatory. 
-- `qnu_name :: Vector{String}` specifies the name of each quantum number. Facultative, QN1, QN2, ... by default. 
-- `module :: Vector{Int64}` specifies the modulus of each quantum number. Facultative, all 1 by default.
 - `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultative, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. 
 
 """
-function GetMpoSites(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}} ; path :: String = "./", qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)], mpo_method :: Function = MPO)
+function GetMPOSites(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}}, qnd :: Vector{QNDiag} ; path :: String = "./", mpo_method :: Function = MPO)
     if (isfile("$(path)op_$(id).h5"))
         f = h5open("$(path)op_$(id).h5","r")
         mpo = read(f, "mpo", MPO)
@@ -167,7 +165,7 @@ function GetMpoSites(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{Complex
         close(f)
         println("FINISHED READING OPERATOR $(id)")
     else
-        sites = SitesFromQnu(; qnu_o, qnu_name, modul)
+        sites = SitesFromQNDiag(qnd)
         os = TermsOrOpSum(tms)
 
         @time "GENERATE OPERATOR $(id) MPO" mpo = mpo_method(os, sites)
@@ -182,7 +180,7 @@ end
 
 
 """
-    function GetMpo(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}} ; path :: String, qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}, mpo_method :: Function) :: Tuple{MPO, Vector{<:Index}}
+    function GetMPO(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}} ; path :: String, mpo_method :: Function) :: MPO
 
 # Function 
 
@@ -197,7 +195,7 @@ This function returns the MPO for a given operator and a given set of sites. It 
 - `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultative, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. 
 
 """
-function GetMpo(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}}, sites :: Vector{<:Index} ; path :: String = "./", mpo_method :: Function = MPO)
+function GetMPO(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}}, sites :: Vector{<:Index} ; path :: String = "./", mpo_method :: Function = MPO)
     if (isfile("$(path)op_$(id).h5"))
         f = h5open("$(path)op_$(id).h5","r")
         mpo = read(f, "mpo", MPO)

@@ -32,7 +32,8 @@ Pages = [
     "example.md",
     "core.md",
     "itensors.md",
-    "models.md"
+    "models.md",
+    "archieve.md"
 ]
 Depth = 2
 ```
@@ -43,6 +44,7 @@ Depth = 2
 Pages = [
     "core.md",
     "itensors.md",
-    "models.md"
+    "models.md",
+    "archieve.md"
 ]
 ```

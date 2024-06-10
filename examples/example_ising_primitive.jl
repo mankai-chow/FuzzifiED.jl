@@ -1,8 +1,8 @@
 using FuzzifiED
 
-#========================================================
-IMPLEMENT THE CONSERVED QUANTITIES AND GENERATE THE CONFS
-========================================================#
+#================================================
+IMPLEMENT THE DIAGONAL QNS AND GENERATE THE CONFS
+================================================#
 
 # Inputing the basic setups
 nf = 2
@@ -10,50 +10,37 @@ nm = 8
 no = nf * nm
 s = .5 * (nm - 1)
 ne = div(no, 2)
-# Initialise the arrays
-qnu_s = Vector{Int64}(undef, 0)
-qnu_o = []
-# Record the number of electrons
-push!(qnu_o, fill(1, no)) # qnu_o[1] = [1,1,...,1]
-push!(qnu_s, ne) 
-# Record the angular momentum
-push!(qnu_o, [ div(o - 1, nf) for o = 1 : no ]) # qnu_o[2] = [0,0,1,1,...,7,7] to qnu_o
-push!(qnu_s, ne * s) 
-# Generate the configurations and print the number
-@time "Initialise configurations" cfs = Confs(no, qnu_s, qnu_o)
+# Record the QNDiag
+qnd = [ 
+    # Number of electrons Ne
+    QNDiag(fill(1, no)), 
+    # Twice angular momentum 2Lz
+    QNDiag([ (o - 1) ÷ nf * 2 - (nm - 1) for o = 1 : no ])
+]
+cfs = Confs(no, [ne, 0], qnd)
 @show cfs.ncf
 
 
-#=========================================================
-IMPLEMENT THE DISCRETE SYMMETRIES AND INITIALISE THE BASIS
-=========================================================#
+#======================================================
+IMPLEMENT THE OFF-DIAGONAL QNS AND INITIALISE THE BASIS
+======================================================#
 
-cyc = [ 2, 2, 2 ] # Input three Z_2 symmetries 
-qnz_s = ComplexF64[ 1, 1, 1 ] # Quantum numbers are all positive 
-# Initialise the vectors
-perm_o = []
-ph_o = []
-fac_o = []
-# Record the parity
-push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no]) # perm_o[1] = [2,1,4,3,...,16,15]
-push!(ph_o, fill(1, no)) # ph_o[1] = [1,1,...,1] meaning PH
-push!(fac_o, [ isodd(o) ? -1 : 1 for o = 1 : no]) # fac_o[1] = [1,-1,1,-1,...,1,-1]
-# Record the flavour symmetry
-push!(perm_o, [ isodd(o) ? o + 1 : o - 1 for o = 1 : no]) # perm_o[3] = [2,1,4,3,...,16,15]
-push!(ph_o, fill(0, no)) # ph_o[3] = [0,0,...,0] meaning no PH
-push!(fac_o, fill(ComplexF64(1), no)) # fac_o[3] = [1,1,...,1]
-# Record the pi-rotation
-push!(perm_o, [ isodd(o) ? no - o : no + 2 - o for o = 1 : no]) # perm_o[2] = [15,16,13,14,...,1,2]
-push!(ph_o, fill(0, no)) # ph_o[2] = [0,0,...,0] meaning no PH
-push!(fac_o, fill(ComplexF64(1), no)) # fac_o[2] = [1,1,...,1]
-# Generate the basis and print the dimension
-@time "Initialise basis" bs = Basis(cfs, qnz_s ; cyc, perm_o, ph_o, fac_o)
+# Record a QNOffd by orbital permutation (and facultatives particle-hole, factor, cycle)
+qnf = [ 
+    # Parity (Particle-hole)
+    QNOffd([ isodd(o) ? o + 1 : o - 1 for o = 1 : no], true, ComplexF64[ isodd(o) ? -1 : 1 for o = 1 : no]),
+    # Flavour symmetry
+    QNOffd([ isodd(o) ? o + 1 : o - 1 for o = 1 : no]),
+    # Y-axis pi-rotation
+    QNOffd([ isodd(o) ? no - o : no + 2 - o for o = 1 : no], ComplexF64(-1) .^ (collect(0 : nm * nf - 1) .÷ nf))
+]
+bs = Basis(cfs, [1, 1, 1], qnf) 
 @show bs.dim 
 
 
-#==============================
-RECORD THE HAMILTONIAN OPERATOR
-===============================#
+#===========================
+RECORD THE HAMILTONIAN TERMS
+===========================#
 
 using WignerSymbols
 # Input the parameters of the Hamiltonian
@@ -93,17 +80,15 @@ for m1 = 0 : nm - 1
     push!(tms_hmt, Term(-h, [1, o1, 0, o1x]))
     push!(tms_hmt, Term(-h, [1, o1x, 0, o1]))
 end
-# Generate the Hamiltonian operator
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
 
 
 #=========================================
 GENERATE THE SPARSE MATRIX AND DIAGONALISE
 =========================================#
 
-@time "Initialise the Hamiltonian matrix" hmt_mat = OpMat(hmt)
-@show hmt_mat.nel
-@time "Diagonalise Hamiltonian" enrg, st = GetEigensystem(hmt_mat, 10)
+hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt_mat = OpMat(hmt)
+enrg, st = GetEigensystem(hmt_mat, 10)
 @show real(enrg)
 
 
@@ -120,7 +105,7 @@ tms_lp =
         Term(sqrt(m * (nm - m)), [1, o, 0, o - nf])
     end for o = nf + 1 : no ]
 tms_lm = tms_lp' 
-tms_l2 = tms_lz * tms_lz - tms_lz + tms_lp * tms_lm
+tms_l2 = SimplifyTerms(tms_lz * tms_lz - tms_lz + tms_lp * tms_lm)
 # Initialise the L2 operator
 l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
 @time "Initialise L2" l2_mat = OpMat(l2)
@@ -138,8 +123,8 @@ MEASURE THE DENSITY OPERATOR OBSERVABLE
 ======================================#
 
 # Repeat the calculation for the Z_2 odd sector (with subscript 1)
-qnz_s1 = ComplexF64[ 1, -1, 1 ] # Change only the discrete quantum numbers and generate the basis
-@time "Initialise Basis Z" bs1 = Basis(cfs, qnz_s1 ; cyc, perm_o, ph_o, fac_o) 
+qnz_s1 =  # Change only the discrete quantum numbers and generate the basis
+@time "Initialise Basis Z" bs1 = Basis(cfs, [ 1, -1, 1 ], qnf) 
 @show bs1.dim 
 hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
 @time "Initialise Hamiltonian" hmt_mat = OpMat(hmt)

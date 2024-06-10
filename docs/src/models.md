@@ -1,6 +1,28 @@
 # Built-in models
 
-## General models on fuzzy sphere
+## Diagonal quantum numbers on fuzzy sphere
+
+The following diagonal quantum numbers (symmetry charges) on fuzzy sphere are built in in FuzzifiED.
+
+```@docs
+GetNeQNDiag(no :: Int64)
+GetLz2QNDiag(nm :: Int64, nf :: Int64)
+GetFlavQNDiag(nm :: Int64, nf :: Int64, qf :: Union{Dict{Int64, Int64}, Vector{Int64}}, id :: Int64 = 1, modul :: Int64 = 1)
+GetZnfChargeQNDiag(nm :: Int64, nf :: Int64)
+GetPinOrbQNDiag(no :: Int64, pin_o :: Vector{Int64}, id :: Int64 = 1) 
+```
+
+## Off-diagonal quantum numbers on fuzzy sphere
+
+The following off-diagonal quantum numbers (transformations) on fuzzy sphere are built in in FuzzifiED.
+
+```@docs
+GetParityQNOffd(nm :: Int64, nf :: Int64, permf :: Union{Dict{Int64, Int64}, Vector{Vector{Int64}}, Vector{Int64}} = Dict{Int64, Int64}(), fac :: Union{Dict{Int64, <: Number}, Vector{<: Number}} = Dict{Int64, ComplexF64}()) 
+GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf :: Union{Dict{Int64, Int64}, Vector{Vector{Int64}}, Vector{Int64}}, fac :: Union{Dict{Int64, <: Number}, Vector{<: Number}} = Dict{Int64, ComplexF64}())
+GetRotyQNOffd(nm :: Int64, nf :: Int64)
+```
+
+## Operators on fuzzy sphere
 
 ```@docs 
 GetIntMatrix(nm :: Int64, ps_pot :: Vector{Number})
@@ -43,20 +65,4 @@ Two types of operators, _viz._ electrons and density operators are built-in.
 ```@docs
 Electron(nm :: Int64, nf :: Int64, f :: Int64)
 Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
-```
-
-## Ising model
-
-The following methods is especially helpful for Ising model.
-
-```@docs
-GetLzQnu(nm :: Int64, nf :: Int64)
-GetLzConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0)
-GetLzZnQnu(nm :: Int64, nf :: Int64)
-GetLzZnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 = 0.0, zn :: Int64 = 0)
-GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0)
-GetSnBasis(cfs :: Confs, nf :: Int64 ; qn_r :: Int64 = 0, perm :: Vector = [], qn_z :: Vector{<:Number} = Number[]) 
-GetIsingIntTerms(nm :: Int64 ; ps_pot :: Vector = [1.])
-GetXPolTerms(nm :: Int64)
-GetZPolTerms(nm :: Int64)
 ```
