@@ -18,4 +18,4 @@ Libpath = FuzzifiED_jll.LibpathFuzzifiED
 
 an integer to define how many threads OpenMP uses. By default, it is the same as the number of threads in Julia. If you use Jupyter notebooks, which by default uses one core only, you may need to define this by hand, _e.g._, `FuzzifiED.NumThreads = 8`. This parameter can be defined for each process separately. 
 """
-NumThreads = Threads.nthreads()
+global NumThreads = Threads.nthreads()

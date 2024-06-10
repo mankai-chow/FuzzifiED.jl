@@ -93,6 +93,7 @@ export GetIsingBasis
 export GetSnBasis
 
 function __init__()
+    global NumThreads
     NumThreads = Threads.nthreads()
 
     @require ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5" begin
