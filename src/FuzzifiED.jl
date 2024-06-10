@@ -15,8 +15,8 @@ import Base.zero
 import Base.adjoint
 
 include("core/param.jl")
-export SilentStd
 export NumThreads
+export SilentStd
 export Libpath
 
 include("core/qn.jl")
