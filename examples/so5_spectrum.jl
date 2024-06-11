@@ -1,3 +1,6 @@
+# This example calculates the spectrum of SO(5) DQCP on fuzzy sphere.
+# On my table computer, this calculation takes 22.489 s
+
 using FuzzifiED
 ≊(x, y) = abs(x - y) < eps(Float32)
 
@@ -61,6 +64,3 @@ enrg_0 = result[1][1]
 enrg_T = filter(st -> st[2] ≊ 6 && st[3] ≊ 0 && st[4] ≊ 1, result)[1][1]
 result_dim = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
 display(permutedims(hcat(result_dim...)))
-# For better output, change the last line to 
-# using PrettyTables
-# pretty_table(result_display)

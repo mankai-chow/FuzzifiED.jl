@@ -1,3 +1,7 @@
+# In this tutorial, we use the primitive interfaces to do the same calculation of Ising model on fuzzy sphere as the `tutorial_ising.jl` example. 
+# We show how to construct diagonal and off-diagonal quantum numbers on your own, 
+# and construct Hamiltonian, total angular momentum and density operators. 
+
 using FuzzifiED
 
 #================================================
