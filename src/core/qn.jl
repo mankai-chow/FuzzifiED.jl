@@ -127,7 +127,6 @@ returns the composition of two QNOffd transformations. The cycle is set to be th
 """
 function *(qnf1 :: QNOffd, qnf2 :: QNOffd)
     perm1 = [ qnf1.perm[qnf2.perm[o]] for o in eachindex(qnf1.perm)]
-    @show perm1
     ph1 = [ qnf1.ph[qnf2.perm[o]] ⊻ qnf2.ph[o] for o in eachindex(qnf1.perm) ]
     fac1 = [ (qnf2.ph[o] == 0 ? qnf1.fac[qnf2.perm[o]] : conj(qnf1.fac[qnf2.perm[o]])) * qnf2.fac[o] for o in eachindex(qnf1.perm) ]
     cyc1 = lcm(qnf1.cyc, qnf2.cyc)
