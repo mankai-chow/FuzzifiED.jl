@@ -245,7 +245,7 @@ end
 
 
 """
-    function Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number}) :: SphereObs
+    function Density(nm :: Int64, nf :: Int64[, mat :: Matrix{<:Number}]) :: SphereObs
 
 returns the density operator ``n=∑_{ff'}ψ^†_{f}M_{ff'}ψ_{f'}``
 
@@ -255,7 +255,7 @@ returns the density operator ``n=∑_{ff'}ψ^†_{f}M_{ff'}ψ_{f'}``
 - `nm :: Int64` is the number of orbitals.
 - `mat :: Int64` is the matrix ``M_{ff'}``. Facultative, identity matrix ``\\mathbb{I}`` by default.
 """
-function Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
+function Density(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     el = [ StoreComps(Electron(nm, nf, f)) for f = 1 : nf ]
     obs = SphereObs(0, 0, Dict{Tuple{Int64, Int64}, Vector{Term}}())
     for f1 = 1 : nf, f2 = 1 : nf
@@ -264,3 +264,4 @@ function Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Flo
     end
     return obs
 end
+Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf)) = Density(nm, nf, mat)

@@ -353,7 +353,7 @@ end
 
 **We have improved the interface for the function. Please consider using the function [`GetPolTerms`](@ref) in the future**
 ```julia
-    GetPolTerms(nm, 2 ; mat = [ 0 1 ; 1 0 ])
+    GetPolTerms(nm, 2, [ 0 1 ; 1 0 ])
 ```
 
 Returns the terms for the density operator ``n^x_{l=0,m=0}``
@@ -366,11 +366,11 @@ function GetXPolTerms(nm :: Int64)
     if (!SilentStd)
         @info """
         We have improved the interface for the function `GetXPolTerms`. Please consider using in the future
-            GetPolTerms(nm, 2 ; mat = [ 0 1 ; 1 0 ])
+            GetPolTerms(nm, 2, [ 0 1 ; 1 0 ])
         For detail please visit http://docs.fuzzified.world/core/#Operators-on-fuzzy-sphere. This function may be superceded in the future version. 
         """
     end
-    return GetPolTerms(nm, 2 ; mat = [ 0 1 ; 1 0 ])
+    return GetPolTerms(nm, 2, [ 0 1 ; 1 0 ])
 end
 
 
@@ -379,7 +379,7 @@ end
 
 **We have improved the interface for the function. Please consider using the function [`GetPolTerms`](@ref) in the future**
 ```julia
-    GetPolTerms(nm, 2 ; mat = [ 1 0 ; 0 -1 ])
+    GetPolTerms(nm, 2, [ 1 0 ; 0 -1 ])
 ```
 
 Returns the terms for the density operator ``n^z_{l=0,m=0}``
@@ -392,9 +392,9 @@ function GetZPolTerms(nm :: Int64)
     if (!SilentStd)
         @info """
         We have improved the interface for the function `GetZPolTerms`. Please consider using in the future
-            GetPolTerms(nm, 2 ; mat = [ 1 0 ; 0 -1 ])
+            GetPolTerms(nm, 2, [ 1 0 ; 0 -1 ])
         For detail please visit http://docs.fuzzified.world/core/#Operators-on-fuzzy-sphere. This function may be superceded in the future version. 
         """
     end
-    return GetPolTerms(nm, 2 ; mat = [ 1 0 ; 0 -1 ])
+    return GetPolTerms(nm, 2, [ 1 0 ; 0 -1 ])
 end
