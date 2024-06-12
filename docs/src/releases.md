@@ -7,6 +7,12 @@
 
 ## June 2024
 
+### 11 June, 2024 (Version 0.7.1)
+
+- Add some new interfaces for built-in operators. 
+- Add new examples. 
+- Fix bugs
+
 ### 9 June, 2024 (Version 0.7.0)
 
 - Revise the implementation of diagonal and off-diagonal quantum number. 

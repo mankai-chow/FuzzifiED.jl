@@ -2,9 +2,9 @@
 
 In this example, we will illustrate how to use `FuzzifiED` to calculate the spectrum of Ising model on fuzzy sphere and how to calculate the OPE coefficient ``\lambda_{\sigma\sigma\epsilon}`` by measuring the expectation value of the density operator ``n^z``. 
 
-The examples can be found in the directory [`examples`](https://github.com/mankai-chow/FuzzifiED.jl/tree/main/examples). Two versions of this example is provided. The first uses the built-in functions for quantum numbers and operators to calculate the observables and is stored in [`example_ising.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising.jl). The second calculates the full spectrum in all ``\mathbb{Z}_2``-sectors and is stored in [`example_ising_spec.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_spec.jl). The last does not use the built-in example and is stored in [`example_ising_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_primitive.jl). 
+The examples can be found in the directory [`examples`](https://github.com/mankai-chow/FuzzifiED.jl/tree/main/examples). Two versions of this example is provided. The first uses the built-in functions for quantum numbers and operators to calculate the observables and is stored in [`tutorial_ising.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising.jl). The second does not use the built-in example and is stored in [`tutorial_ising_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_primitive.jl). 
 
-In addition, an example of how `FuzzifiED` can facilitate DMRG calculation is given. Two versions of the DMRG example is provided. The first uses `MPO` and `dmrg` functions of the ITensors package and is stored in [`example_ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg.jl). The second uses the [`EasySweep`](@ref) function in the package which further wraps the `dmrg` function to facilitate the management of sweeps and is stored in [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl). 
+In addition, an example of how `FuzzifiED` can facilitate DMRG calculation is given. Two versions of the DMRG example is provided. The first uses `MPO` and `dmrg` functions of the ITensors package and is stored in [`tutorial_ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg.jl). The second uses the [`EasySweep`](@ref) function in the package which further wraps the `dmrg` function to facilitate the management of sweeps and is stored in [`tutorial_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg_easysweep.jl). 
 
 We also append in the end [a list of given examples](#List-of-examples) at the end of the page.
 
@@ -426,14 +426,26 @@ Es, sts = EasySweep("s", hmt, st1 ; path)
 
 ## List of examples
 
-The following examples of FuzzifiED can be found in the repository [`examples`](https://github.com/mankai-chow/FuzzifiED.jl/tree/main/examples).
+The examples of FuzzifiED can be found in the repository [`examples`](https://github.com/mankai-chow/FuzzifiED.jl/tree/main/examples). Apart from the tutorials that we have introduced above 
 
-* [`example_ising.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising.jl) does the ED calculation of Ising model through the built-in models. 
-* [`example_ising_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_primitive.jl) does the ED calculation of Ising model through the primitive functions.
-* [`example_ising_spec.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_spec.jl) does the ED calculation of Ising model in all sectors and calculate the operator sepctrum.
-* [`example_ising_full.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_full.jl) does the full diagonalisation by converting the Hamiltonian into a full matrix and call functions in LinearAlgebra package. 
-* [`example_ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg.jl) does the DMRG calculation of Ising model through the `dmrg` function in ITensors.
-* [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) does the DMRG calculation of Ising model through the `EasySweep` function which wraps ITensors.
-* [`example_ising_def.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_def.jl) does the ED calculation of Ising model with magnetic line defect or defect creation or changing operators.
-* [`example_ising_def_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_def_dmrg.jl) does the DMRG calculation of Ising model with magnetic line defect or defect changing operators. 
-* [`example_so5_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_so5_primitive.jl) does the ED calculation of the ``\mathrm{SO}(5)`` DQCP model.
+* [`tutorial_ising.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising.jl) does the ED calculation of Ising model through the built-in models. 
+* [`tutorial_ising_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_primitive.jl) does the ED calculation of Ising model through the primitive functions.
+* [`tutorial_ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg.jl) does the DMRG calculation of Ising model through the `dmrg` function in ITensors.
+* [`tutorial_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg_easysweep.jl) does the DMRG calculation of Ising model through the `EasySweep` function which wraps ITensors.
+
+We offer a series of other examples that reproduces various achievements of fuzzy sphere 
+
+* [`ising_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_spectrum.jl) calculates the spectrum of 3d Ising model on fuzzy sphere at nm = 12. For each (P,Z,R) sector, 20 states are calculated.
+* [`ising_phase_diagram.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_phase_diagram.jl) calculates the phase diagram of fuzzy sphere Ising modelby calculating the order parameter ``\langle M^2\rangle``. 
+* [`ising_ope.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_ope.jl)calculates various OPE coefficients at ``N_m = 12`` by taking overlaps between CFT states and density operators and composite.
+* [`ising_correlator.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_correlator.jl) calculates the ``σσ`` two-point function on sphere and the ``σσσσ`` four-point function on sphere, 0 and ``∞``. 
+* [`ising_optimisation.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_optimisation.jl) defines a cost function as the square sum of the deviations of descendants and stress tensor to evaluate the conformal symmetry for Ising model and minimises this cost function to find the best parameter.
+* [`ising_full_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_full_spectrum.jl) calculates the full spectrum of 3d Ising model on fuzzy sphere at ``N_m = 10`` for sector ``(P,Z,R) = (1,1,1)``.
+* [`ising_space_entangle.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_space_entangle.jl) calculates the entanglement entropy of the Ising ground state # along the real space cut of ``\cos θ = 0`` and ``0.002`` respectively.
+* [`ising_orbital_entangle.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_space_entangle.jl) calculates the entanglement entropy of the Ising ground state along the orbital space cut at ``m = 0``, and also the entanglement spectrum in the half-filled ``l_z = 0, 1`` and  both ``\mathbb{Z}_2`` sectors.
+* [`defect_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/defect_spectrum.jl) calculates the spectrum of magnetic line defect in 3d Ising model in ``l_z = 0, P = ±1`` and ``lz = 1`` sectors, calibrated by bulk ``T``.
+* [`defect_correlator.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/defect_correlator.jl) calculates the 1-pt function ``σ`` and 2-pt function ``σϕ`` of magnetic line defect in 3d Ising model. The normalisation of the correlators require extra bulk data.
+* [`defect_changing.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/defect_changing.jl) calculates the spectrum of the defect creation and changing operators of the magnetic line defect in 3d Ising model.
+* [`defect_overlap.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/defect_overlap.jl) calculates the ``g``-function of magnetic line defect in 3d Ising model using the ovelaps between the bulk, defect ground state and the lowest defect-creation state.
+* [`o3_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/o3_spectrum.jl) calculates the spectrum of ``\mathrm{O}(3)`` Wilson-Fisher CFT using the bilayer Heisenberg model.
+* [`so5_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/o3_spectrum.jl) calculates the spectrum of SO(5) DQCP on fuzzy sphere.

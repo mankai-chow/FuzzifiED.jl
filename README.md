@@ -1,4 +1,4 @@
-# FuzzifiED.jl Version 0.7.0
+# FuzzifiED.jl Version 0.7.1
 
 The package `FuzzifiED` is designed to do exact diagonalisation (ED) calculation on the fuzzy sphere, and also facilitates the DMRG calculations by ITensors. It can also be used for generic fermion models. 
 
