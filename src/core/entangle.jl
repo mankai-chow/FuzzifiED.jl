@@ -44,26 +44,26 @@ end
 A dictionary whose keys are named tuples that specify the sector containing entries `secd_a`, `secf_a`, `secd_b`, `secf_b` and values are lists of eigenvalues of the density matrix in those sectors. 
 
 """
-function GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, secd_lst :: Vector{Vector{Vector{Int64}}}, secf_lst :: Union{ Vector{Vector{Vector{Int64}}}, Vector{Vector{Vector{Float64}}}, Vector{Vector{Vector{ComplexF64}}} } ; qnd_a :: Vector{QNDiag}, qnd_b :: Vector{QNDiag} = qnd_a, qnf_a :: Vector{QNOffd}, qnf_b :: Vector{QNOffd} = qnf_a, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oa .^ 2)))
+function GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, secd_lst :: Vector{Vector{Vector{Int64}}}, secf_lst :: Union{ Vector{Vector{Vector{Int64}}}, Vector{Vector{Vector{Float64}}}, Vector{Vector{Vector{ComplexF64}}} } ; qnd_a :: Vector{QNDiag}, qnd_b :: Vector{QNDiag} = qnd_a, qnf_a :: Vector{QNOffd}, qnf_b :: Vector{QNOffd} = qnf_a, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oa .^ 2)), disp_std = false)
     no = bs0.cfs.no 
     nor = bs0.cfs.nor
     dictlock = ReentrantLock()
     EntSpec = Dict{@NamedTuple{secd_a :: Vector{<:Number}, secf_a :: Vector{<:Number}, secd_b :: Vector{<:Number}, secf_b :: Vector{<:Number}}, Vector{Float64}}()
     Threads.@threads for secd in secd_lst Confs
-        cfsa = Confs(no, secd[1], qnd_a ; nor, num_th = 1, disp_std = false)
+        cfsa = Confs(no, secd[1], qnd_a ; nor, num_th = 1, disp_std)
         if (cfsa.ncf == 0) continue end 
-        cfsb = Confs(no, secd[2], qnd_b ; nor, num_th = 1, disp_std = false)
+        cfsb = Confs(no, secd[2], qnd_b ; nor, num_th = 1, disp_std)
         if (cfsb.ncf == 0) continue end 
         for secf in secf_lst 
-            bsa = Basis(cfsa, secf[1], qnf_a ; num_th = 1, disp_std = false)
+            bsa = Basis(cfsa, secf[1], qnf_a ; num_th = 1, disp_std)
             if (bsa.dim == 0) continue end 
-            bsb = Basis(cfsb, secf[2], qnf_b ; num_th = 1, disp_std = false)
+            bsb = Basis(cfsb, secf[2], qnf_b ; num_th = 1, disp_std)
             if (bsb.dim == 0) continue end 
             st_dcp = StateDecompMat(st, bs0, bsa, bsb, amp_oa, amp_ob) 
             ent_spec = abs.(svdvals(st_dcp)) .^ 2
             Threads.lock(dictlock) 
             try
-                EntSpec[(secd_a = secd_[1], secf_a = secf_[1], secd_b = secd_[2], secf_b = secf_[2])] = ent_spec
+                EntSpec[(secd_a = secd[1], secf_a = secf[1], secd_b = secd[2], secf_b = secf[2])] = ent_spec
             finally
                 Threads.unlock(dictlock)
             end
