@@ -48,7 +48,7 @@ function Operator(bsd :: Basis, bsf :: Basis, terms :: Vector{Term} ; red_q :: I
     coeffs = [ tm.coeff for tm in terms ]
     return Operator(bsd, bsf, red_q, sym_q, ntm, nc, cstrs, coeffs)
 end
-Operator(bsd :: Basis, terms :: Vector{Term} ; red_q :: Int64 = 1, sym_q :: Int64 = 1) = Operator(bsd, bsd, terms, red_q, sym_q)
+Operator(bsd :: Basis, terms :: Vector{Term} ; red_q :: Int64 = 1, sym_q :: Int64 = 1) = Operator(bsd, bsd, terms ; red_q, sym_q)
 
 
 """
