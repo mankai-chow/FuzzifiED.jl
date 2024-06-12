@@ -38,7 +38,7 @@ end
 
 
 """
-    GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}[, mat_a :: Matrix{<:Number}[, mat_b :: Matrix{<:Number}]]) :: Vector{Term}
+    GetDenIntTerms(nm :: Int64, nf :: Int64[, ps_pot :: Vector{<:Number}][, mat_a :: Matrix{<:Number}[, mat_b :: Matrix{<:Number}]]) :: Vector{Term}
 
 Return the normal-ordered density-density term in the Hamiltonian 
 ```math 
@@ -49,7 +49,7 @@ Return the normal-ordered density-density term in the Hamiltonian
 
 - `nm :: Int64` is the number of orbitals.
 - `nf :: Int64` is the number of flavours.
-- `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``.
+- `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``. Facultative, `[1.0]` by default. 
 - `mat_a :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^A_{ff'}``. Facultative, ``I_{N_f}`` by default. 
 - `mat_b :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^B_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
 
@@ -87,7 +87,8 @@ function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, ma
     end
     return SimplifyTerms(tms)
 end
-GetDenIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetDenIntTerms(nm, nf, ps_pot, mat_a, mat_b)
+GetDenIntTerms(nm :: Int64, nf :: Int64, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetDenIntTerms(nm, nf, [1.0], mat_a, mat_b)
+GetDenIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.0], mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetDenIntTerms(nm, nf, ps_pot, mat_a, mat_b)
 
 
 """
@@ -163,6 +164,7 @@ function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, m
     end
     return SimplifyTerms(tms)
 end
+GetPairIntTerms(nm :: Int64, nf :: Int64, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetPairIntTerms(nm, nf, [1.0], mat_a, mat_b)
 GetPairIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetPairIntTerms(nm, nf, ps_pot, mat_a, mat_b)
 
 """
@@ -180,7 +182,7 @@ Return the polarisation term in the Hamiltonian
 - `mat :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M_{ff'}``. Facultative, ``I_{N_f}`` by default. 
 
 """
-function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
+function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     no = nm * nf
     tms = Vector{Term}(undef, 0)
     for o1 = 1 : no
@@ -194,7 +196,7 @@ function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number} = Matrix{
     end
     return SimplifyTerms(tms)
 end
-GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number}) = GetPolTerms(nm, nf, mat)
+GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf)) = GetPolTerms(nm, nf, mat)
 
 
 """
