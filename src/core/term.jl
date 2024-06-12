@@ -58,12 +58,20 @@ end
 
 """
     function *(tms1 :: Vector{Term}, tms2 :: Vector{Term}) :: Vector{Term}
+    function ^(tms :: Vector{Term}, pow :: Int64) :: Vector{Term}
 
-Return the naive product of two series of terms. The number of terms equals the product of the number of terms in `tms1` and `tms2`. For each term in `tms1` ``Uc^{(p_1)}_{o_1}…`` and `tms2` ``U'c^{(p'_1)}_{o'_1}…``, a new term is formed by taking ``UU'c^{(p_1)}_{o_1}… c^{(p'_1)}_{o'_1}…``
+Return the naive product of two series of terms or the power of one terms. The number of terms equals the product of the number of terms in `tms1` and `tms2`. For each term in `tms1` ``Uc^{(p_1)}_{o_1}…`` and `tms2` ``U'c^{(p'_1)}_{o'_1}…``, a new term is formed by taking ``UU'c^{(p_1)}_{o_1}… c^{(p'_1)}_{o'_1}…``
 """
 function *(tms1 :: Vector{Term}, tms2 :: Vector{Term})
     return vcat([ Term(tm1.coeff * tm2.coeff, [tm1.cstr ; tm2.cstr])
         for tm1 in tms1, tm2 in tms2 ]...)
+end
+function ^(tms :: Vector{Term}, pow :: Int64)
+    if pow == 1
+        return tms
+    else
+        return tms * tms ^ (pow - 1)
+    end
 end
 
 function adjoint(tm :: Term)

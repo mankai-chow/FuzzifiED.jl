@@ -11,6 +11,7 @@ import Base.:-
 import Base.:*
 import Base.:/
 import Base.:÷
+import Base.:^
 import Base.zero
 import Base.adjoint
 
@@ -66,10 +67,9 @@ export GetIntMatrix
 export GetDenIntTerms
 export GetPairIntTerms
 export GetPolTerms
-export GetL2Terms
 export GetIsingIntTerms
-export GetXPolTerms
-export GetZPolTerms
+export GetL2Terms
+export GetC2Terms
 
 include("models/sphere_obs.jl")
 export SphereObs
@@ -91,6 +91,8 @@ export GetLzZnConfs
 export GetIsingQnz
 export GetIsingBasis
 export GetSnBasis
+export GetXPolTerms
+export GetZPolTerms
 
 function __init__()
     global NumThreads
