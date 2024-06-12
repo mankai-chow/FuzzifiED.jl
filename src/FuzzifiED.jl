@@ -95,8 +95,7 @@ export GetXPolTerms
 export GetZPolTerms
 
 function __init__()
-    global NumThreads
-    NumThreads = Threads.nthreads()
+    FuzzifiED.NumThreads = Threads.nthreads()
 
     @require ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5" begin
         using ITensors

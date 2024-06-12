@@ -1,5 +1,5 @@
 """
-    mutable struct OpMat{Complex64}
+    mutable struct OpMat{ComplexF64}
     mutable struct OpMat{Float64}
 
 This type stores a sparse matrix in the same form as `SparseMatrixCSC` in `SparseArrays`. If the matrix is Hermitian or symmetric, only the lower triangle is stored. 
@@ -28,11 +28,11 @@ Generates the sparse matrix from the operator
 # Arguments 
 
 * `op :: Operator` is the operator ;
-* `type :: DataType` specifies the type of the matrix. It can either be `ComplexF64` or `Float64`. Facultative, `ComplexF64` by default
+* `type :: DataType` specifies the type of the matrix. It can either be `ComplexF64` or `Float64`. Facultative, the same as `ElementType` by default
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
-function OpMat(op :: Operator ; type :: DataType = ComplexF64, num_th = NumThreads, disp_std = !SilentStd)
+function OpMat(op :: Operator ; type :: DataType = ElementType, num_th = NumThreads, disp_std = !SilentStd)
     colptr = Array{Int64, 1}(undef, op.bsd.dim + 1)
     nel_ref = Ref{Int64}(0)
     @ccall Libpath.__op_MOD_count_op(op.bsd.cfs.no :: Ref{Int64}, op.bsd.cfs.nor :: Ref{Int64}, 
