@@ -33,17 +33,17 @@ secf_lst = [
 
 function cost(ps_pot)
     tms_hmt = SimplifyTerms(
-        GetDenIntTerms(nm, 2 ; ps_pot, mat_a = σ1, mat_b = σ2) - 
-        GetPolTerms(nm, 2 ; mat = σx) 
+        GetDenIntTerms(nm, 2, ps_pot, σ1, σ2) - 
+        GetPolTerms(nm, 2, σx) 
     )
     result = []
     for (P, Z, R, nst) in secf_lst
         bs = Basis(cfs, [P, Z, R], qnf)
-        hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+        hmt = Operator(bs, tms_hmt)
         hmt_mat = OpMat(hmt ; type = Float64)
         enrg, st = GetEigensystem(hmt_mat, nst)
 
-        l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
+        l2 = Operator(bs, tms_l2)
         l2_mat = OpMat(l2 ; type = Float64)
         l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 

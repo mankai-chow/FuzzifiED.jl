@@ -1,5 +1,6 @@
 # This example calculates the spectrum of magnetic line defect in 3d Ising model
 # in lz = 0, P = ±1 and lz = 1 sectors, calibrated by bulk T.
+# This example reproduces Table I in Nat. Commun. 15, 3659 (2024)
 # On my table computer, this calculation takes 2.246 s
 
 using FuzzifiED
@@ -11,8 +12,8 @@ const σx = [  0  1 ;  1  0 ]
 nm = 12
 no = nm * 2
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot = 2 .* [4.75, 1.], mat_a = σ1, mat_b = σ2) - 
-    3.16 * GetPolTerms(nm, 2 ; mat = σx) )
+    GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], σ1, σ2) - 
+    3.16 * GetPolTerms(nm, 2, σx) )
     
 qnd = [ 
     GetNeQNDiag(2 * nm), 
@@ -25,7 +26,7 @@ qnf = [
 ]
 cfs = Confs(2 * nm, [nm, 0], qnd)
 bs = Basis(cfs, [1, 1, 1], qnf)
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 6)
 enrg_0 = enrg[1]
@@ -50,7 +51,7 @@ cfs = Confs(no, [nm, 0, 2, 0], qnd)
 global enrg_d = 0
 for P in (1, -1), R in (1, -1)
     bs = Basis(cfs, [P, R], qnf)
-    hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+    hmt = Operator(bs, tms_hmt)
     hmt_mat = OpMat(hmt ; type = Float64)
     enrg, st = GetEigensystem(hmt_mat, 10)
     if (P == 1 && R == 1) global enrg_d = enrg[1] end
@@ -63,7 +64,7 @@ end
 cfs = Confs(no, [nm, 2, 2, 0], qnd)
 for PR in (1, -1)
     bs = Basis(cfs, [PR], qnf1)
-    hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+    hmt = Operator(bs, tms_hmt)
     hmt_mat = OpMat(hmt ; type = Float64)
     enrg, st = GetEigensystem(hmt_mat, 10)
     dim = (enrg .- enrg_d) ./ (enrg_T - enrg_0) * 3

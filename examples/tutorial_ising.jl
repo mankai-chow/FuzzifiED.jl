@@ -30,19 +30,19 @@ bs = Basis(cfs, [1, 1, 1], qnf)
 
 # Record the Hamiltonian terms
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot = 2 .* [4.75, 1.], mat_a = σ1, mat_b = σ2) - 
-    3.16 * GetPolTerms(nm, 2 ; mat = σx) 
+    GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], σ1, σ2) - 
+    3.16 * GetPolTerms(nm, 2, σx) 
 )
 
 # Generate the sparse matrix and diagonalise 
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 10)
 @show enrg
 
 # Measure the total angular momentum
 tms_l2 = GetL2Terms(nm, 2)
-l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
+l2 = Operator(bs, tms_l2)
 l2_mat = OpMat(l2 ; type = Float64)
 l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 @show l2_val
@@ -61,7 +61,7 @@ st_e = st[:, 2]
 st_s = st1[:, 1]
 
 # Measure the density operator
-obs_nz = Density(nm, 2 ; mat = σz)
+obs_nz = Density(nm, 2, σz)
 tms_nz = SimplifyTerms(GetComponent(obs_nz, 0.0, 0.0))
 nz = Operator(bs, bs1, tms_nz ; red_q = 1) 
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))

@@ -138,8 +138,8 @@ const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot = 2 .* [4.75, 1.], mat_a = σ1, mat_b = σ2) - 
-    3.16 * GetPolTerms(nm, 2 ; mat = σx) )
+    GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], σ1, σ2) - 
+    3.16 * GetPolTerms(nm, 2, σx) )
 ```
 
 #### Primitive version
@@ -184,14 +184,14 @@ for m1 = 0 : nm - 1
     push!(tms_hmt, Term(-h, [1, o1x, 0, o1]))
 end
 # Generate the Hamiltonian operator
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, tms_hmt)
 ```
 
 ### Generate the sparse matrix and diagonalise
 
 After specifying the Hamiltonian, we then use [Operator](@ref Operator(bsd :: Basis, bsf :: Basis, terms :: Vector{Term} ; red_q :: Int64 = 0, sym_q :: Int64 = 0)) to record also the basis and use [`OpMat`](@ref) to generate a sparse matrix from the operator. To get the 10 lowest eigenstates and their energies
 ```julia
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 10)
 ```
@@ -203,7 +203,7 @@ Matrices with real elements can be generated with the option `type = Float64` in
 We can measure the inner product of a final state, an operator or its matrix and an initial state or the action of an operator or its matrix on a state by directly using the [`*`](@ref) operator. The total angular momentum ``L^2`` is built-in with function [`GetL2Terms`](@ref). The following code measures the angular momentum of each eigenstate and verify whether ``|T\rangle`` is an eigenstate of ``L^2`` by measuring 
 ```julia
 tms_l2 = GetL2Terms(nm, 2)
-l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
+l2 = Operator(bs, tms_l2)
 l2_mat = OpMat(l2 ; type = Float64)
 l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 @show l2_val
@@ -250,11 +250,11 @@ One can repeat the calculation for all the sectors and records the results
 result = []
 for P in [1, -1], Z in [1, -1], R in [1, -1]
     bs = Basis(cfs, [P, Z, R], qnf)
-    hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+    hmt = Operator(bs, tms_hmt)
     hmt_mat = OpMat(hmt ; type = Float64)
     enrg, st = GetEigensystem(hmt_mat, 10)
 
-    l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
+    l2 = Operator(bs, tms_l2)
     l2_mat = OpMat(l2 ; type = Float64)
     l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 
@@ -297,7 +297,7 @@ st_s = st1[:, 1]
 
 The [`SphereObs`](@ref) type stores the information of a local observable on the sphere. In particular, the [electron](@ref Electron) and [density operators](@ref Density) are built-in. The addition and multiplication of observables are enabled. It can be evaluated at a certain point [GetPointValue](@ref) or angular component with [`GetComponent`](@ref). 
 ```julia
-obs_nz = Density(nm, 2 ; mat = [ 1 0 ; 0 -1 ])
+obs_nz = Density(nm, 2, [ 1 0 ; 0 -1 ])
 tms_nz = SimplifyTerms(GetComponent(obs_nz, 0.0, 0.0))
 nz = Operator(bs, bs1, tms_nz ; red_q = 1) 
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
@@ -342,9 +342,9 @@ We then generate the terms of the Hamiltonian using the built-in functions, conv
 ```julia
 ps_pot = [4.75, 1.] ./ 2
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot) - 
-    GetDenIntTerms(nm, 2 ; ps_pot, mat_a = σx) - 
-    3.16 * GetPolTerms(nm, nf ; mat = σz)
+    GetDenIntTerms(nm, 2, ps_pot) - 
+    GetDenIntTerms(nm, 2, ps_pot, σx) - 
+    3.16 * GetPolTerms(nm, nf, σz)
 )
 @time mpo_hmt = MPO(OpSumFromTerms(tms_hmt), sites)
 ```
@@ -362,7 +362,7 @@ We then convert these objects for the ED calculate. The configurations can be ge
 ```julia
 cfs = ConfsFromSites(sites, cf0)
 bs = Basis(cfs)
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 10)
 @show enrg
@@ -391,9 +391,9 @@ The Hamiltonian MPO and the sites can be either generated or read from file by t
 ```julia
 ps_pot = [4.75, 1.] ./ 2
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot) - 
-    GetDenIntTerms(nm, 2 ; ps_pot, mat_a = σx) - 
-    3.16 * GetPolTerms(nm, 2 ; mat = σz)
+    GetDenIntTerms(nm, 2, ps_pot) - 
+    GetDenIntTerms(nm, 2, ps_pot, σx) - 
+    3.16 * GetPolTerms(nm, 2, σz)
 )
 qnd = [ 
     GetNeQNDiag(no), 
@@ -433,19 +433,19 @@ The examples of FuzzifiED can be found in the repository [`examples`](https://gi
 * [`tutorial_ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg.jl) does the DMRG calculation of Ising model through the `dmrg` function in ITensors.
 * [`tutorial_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg_easysweep.jl) does the DMRG calculation of Ising model through the `EasySweep` function which wraps ITensors.
 
-We offer a series of other examples that reproduces various achievements of fuzzy sphere 
+We offer a series of other examples that reproduces various achievements of fuzzy sphere. For a more detailed summary of the background, please visit [« The fuzzified world »](https://www.fuzzified.world/fuzzified-world). 
 
-* [`ising_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_spectrum.jl) calculates the spectrum of 3d Ising model on fuzzy sphere at nm = 12. For each (P,Z,R) sector, 20 states are calculated.
-* [`ising_phase_diagram.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_phase_diagram.jl) calculates the phase diagram of fuzzy sphere Ising modelby calculating the order parameter ``\langle M^2\rangle``. 
-* [`ising_ope.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_ope.jl)calculates various OPE coefficients at ``N_m = 12`` by taking overlaps between CFT states and density operators and composite.
-* [`ising_correlator.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_correlator.jl) calculates the ``σσ`` two-point function on sphere and the ``σσσσ`` four-point function on sphere, 0 and ``∞``. 
+* [`ising_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_spectrum.jl) calculates the spectrum of 3d Ising model on fuzzy sphere at ``N_m = 12``. For each ``(P,Z,R)`` sector, 20 states are calculated. This example reproduces Table I and Figure 4 in [Phys. Rev. X 13, 021009 (2023)](https://doi.org/10.1103/PhysRevX.13.021009).
+* [`ising_phase_diagram.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_phase_diagram.jl) calculates the phase diagram of fuzzy sphere Ising modelby calculating the order parameter ``\langle M^2\rangle``. This example reproduces Figure 3 in [Phys. Rev. X 13, 021009 (2023)](https://doi.org/10.1103/PhysRevX.13.021009).
+* [`ising_ope.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_ope.jl)c alculates various OPE coefficients at ``N_m = 12`` by taking overlaps between CFT states and density operators and composite. This example reproduces Figure 2 and Table I in [Phys. Rev. Lett 131, 031601 (2023)](https://doi.org/10.1103/PhysRevLett.131.031601). 
+* [`ising_correlator.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_correlator.jl) calculates the ``σσ`` two-point function on sphere and the ``σσσσ`` four-point function on sphere, 0 and ``∞``. This example reproduces Figures 1c and 2a in [Phys. Rev. B 108, 235123 (2023)](https://doi.org/10.1103/PhysRevB.108.235123)
 * [`ising_optimisation.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_optimisation.jl) defines a cost function as the square sum of the deviations of descendants and stress tensor to evaluate the conformal symmetry for Ising model and minimises this cost function to find the best parameter.
 * [`ising_full_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_full_spectrum.jl) calculates the full spectrum of 3d Ising model on fuzzy sphere at ``N_m = 10`` for sector ``(P,Z,R) = (1,1,1)``.
-* [`ising_space_entangle.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_space_entangle.jl) calculates the entanglement entropy of the Ising ground state # along the real space cut of ``\cos θ = 0`` and ``0.002`` respectively.
+* [`ising_space_entangle.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_space_entangle.jl) calculates the entanglement entropy of the Ising ground state along the real space cut of ``θ = 0.500π`` and ``0.499π`` respectively, and use these two data to extract finite size ``F``-function without sustracting the IQHE contribution. This example reproduces Figures 3 in [arXiv : 2401.17362](https://arxiv.org/abs/2401.17362).
 * [`ising_orbital_entangle.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_space_entangle.jl) calculates the entanglement entropy of the Ising ground state along the orbital space cut at ``m = 0``, and also the entanglement spectrum in the half-filled ``l_z = 0, 1`` and  both ``\mathbb{Z}_2`` sectors.
-* [`defect_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/defect_spectrum.jl) calculates the spectrum of magnetic line defect in 3d Ising model in ``l_z = 0, P = ±1`` and ``lz = 1`` sectors, calibrated by bulk ``T``.
-* [`defect_correlator.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/defect_correlator.jl) calculates the 1-pt function ``σ`` and 2-pt function ``σϕ`` of magnetic line defect in 3d Ising model. The normalisation of the correlators require extra bulk data.
-* [`defect_changing.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/defect_changing.jl) calculates the spectrum of the defect creation and changing operators of the magnetic line defect in 3d Ising model.
-* [`defect_overlap.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/defect_overlap.jl) calculates the ``g``-function of magnetic line defect in 3d Ising model using the ovelaps between the bulk, defect ground state and the lowest defect-creation state.
-* [`o3_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/o3_spectrum.jl) calculates the spectrum of ``\mathrm{O}(3)`` Wilson-Fisher CFT using the bilayer Heisenberg model.
-* [`so5_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/o3_spectrum.jl) calculates the spectrum of SO(5) DQCP on fuzzy sphere.
+* [`defect_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/defect_spectrum.jl) calculates the spectrum of magnetic line defect in 3d Ising model in ``l_z = 0, P = ±1`` and ``l_z = 1`` sectors, calibrated by bulk ``T``. This example reproduces Table I in [Nat. Commun. 15, 3659 (2024)](https://doi.org/10.1038/s41467-024-47978-y).
+* [`defect_correlator.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/defect_correlator.jl) calculates the 1-pt function ``σ`` and 2-pt function ``σϕ`` of magnetic line defect in 3d Ising model. The normalisation of the correlators require extra bulk data. This example reproduces Figure 4 in [Nat. Commun. 15, 3659 (2024)](https://doi.org/10.1038/s41467-024-47978-y).
+* [`defect_changing.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/defect_changing.jl) calculates the spectrum of the defect creation and changing operators of the magnetic line defect in 3d Ising model. This example reproduces Table 2 and Figure 5 in [arXiv : 2401.00039](https://arxiv.org/abs/2401.00039).
+* [`defect_overlap.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/defect_overlap.jl) calculates the ``g``-function of magnetic line defect in 3d Ising model using the ovelaps between the bulk, defect ground state and the lowest defect-creation state. This example reproduces Figure 6 in [arXiv : 2401.00039](https://arxiv.org/abs/2401.00039).
+* [`o3_wf_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/o3_wf_spectrum.jl) calculates the spectrum of ``\mathrm{O}(3)`` Wilson-Fisher CFT using the bilayer Heisenberg model. This example reproduces Table I and Figure 2 in [arXiv : 2312.04047](https://arxiv.org/abs/2312.04047).
+* [`so5_spectrum.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/o3_spectrum.jl) calculates the spectrum of SO(5) DQCP on fuzzy sphere. This example reproduces Table II in [arXiv : 2306.16435](https://arxiv.org/abs/2306.16435).

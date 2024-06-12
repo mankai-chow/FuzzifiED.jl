@@ -27,9 +27,9 @@ mkpath(path)
 
 ps_pot = [4.75, 1.] ./ 2
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot) - 
-    GetDenIntTerms(nm, 2 ; ps_pot, mat_a = σx) - 
-    3.16 * GetPolTerms(nm, 2 ; mat = σz)
+    GetDenIntTerms(nm, 2, ps_pot) - 
+    GetDenIntTerms(nm, 2, ps_pot, σx) - 
+    3.16 * GetPolTerms(nm, 2, σz)
 )
 qnd = [ 
     GetNeQNDiag(no), 

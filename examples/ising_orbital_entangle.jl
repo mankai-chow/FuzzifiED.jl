@@ -20,12 +20,12 @@ qnf = [
     GetRotyQNOffd(nm, 2) ]
 
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot = 2 .* [4.75, 1.], mat_a = σ1, mat_b = σ2) - 
-    3.16 * GetPolTerms(nm, 2 ; mat = σx) )
+    GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], σ1, σ2) - 
+    3.16 * GetPolTerms(nm, 2, σx) )
 
 cfs = Confs(2 * nm, [nm, 0], qnd)
 bs = Basis(cfs, [1, 1, 1], qnf)
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 3)
 st_g = st[:, 1]

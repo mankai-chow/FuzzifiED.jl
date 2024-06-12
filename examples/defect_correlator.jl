@@ -1,5 +1,6 @@
 # This example calculates the 1-pt function σ and 2-pt function σϕ of magnetic line defect in 3d Ising model.
 # The normalisation of the correlators require bulk data ovl_σzI in `ising_ope.jl`.
+# This example reproduces Figure 4 in Nat. Commun. 15, 3659 (2024)
 # On my table computer, this calculation takes 0.598 s
 
 using FuzzifiED
@@ -23,21 +24,21 @@ qnf = [
     GetParityQNOffd(nm, 2, [2,1], [-1,1])
 ]
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot = 2 .* [4.75, 1.], mat_a = σ1, mat_b = σ2) - 
-    3.16 * GetPolTerms(nm, 2 ; mat = σx) )
+    GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], σ1, σ2) - 
+    3.16 * GetPolTerms(nm, 2, σx) )
     
 cfs = Confs(no, [nm, 0, 2, 0], qnd)
 bs = Basis(cfs, [1,1], qnf)
 
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 3)
 stI = st[:, 1]
 stϕ = st[:, 2]
 
-obs_nz = StoreComps(Density(nm, 2 ; mat = σz))
+obs_nz = StoreComps(Density(nm, 2, σz))
 nzl0p = Dict([ l => 
-    Operator(bs, bs, GetComponent(obs_nz, l, 0.0)) 
+    Operator(bs, GetComponent(obs_nz, l, 0.0)) 
 for l = 0 : 2 : nm - 1])
 ovl_IzI = stI' * nzl0p[0] * stI
 cor_IzI_l = [ stI' * nzl0p[l] * stI for l = 0 : 2 : nm - 1]

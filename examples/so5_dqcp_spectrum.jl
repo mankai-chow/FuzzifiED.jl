@@ -1,4 +1,5 @@
 # This example calculates the spectrum of SO(5) DQCP on fuzzy sphere.
+# This example reproduces Table II in arXiv : 2306.16435
 # On my table computer, this calculation takes 22.489 s
 
 using FuzzifiED
@@ -42,15 +43,15 @@ tms_c2 = SimplifyTerms(tms_c2)
 result = []
 for P in (1,-1), (Z1, Z2, X) in ((1, 1, 1), (1, 1,-1), (1,-1, 0), (-1,-1, 1), (-1,-1,-1)), R in (1,-1)
     bs = Basis(cfs, [P, Z1, Z2, X, R], qnf)
-    hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+    hmt = Operator(bs, tms_hmt)
     hmt_mat = OpMat(hmt ; type = Float64)
     enrg, st = GetEigensystem(hmt_mat, 10)
 
-    l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
+    l2 = Operator(bs, tms_l2)
     l2_mat = OpMat(l2 ; type = Float64)
     l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
     
-    c2 = Operator(bs, bs, tms_c2 ; red_q = 1, sym_q = 1)
+    c2 = Operator(bs, tms_c2)
     c2_mat = OpMat(c2 ; type = Float64)
     c2_val = [ st[:, i]' * c2_mat * st[:, i] for i in eachindex(enrg)]
     

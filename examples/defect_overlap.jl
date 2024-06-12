@@ -1,5 +1,6 @@
 # This example calculates the g-function of magnetic line defect in 3d Ising model
 # using the ovelaps between the bulk, defect ground state and the lowest defect-creation state.
+# This example reproduces Figure 6 in arXiv : 2401.00039
 # On my table computer, this calculation takes 1.128 s
 
 using FuzzifiED
@@ -11,8 +12,8 @@ const σx = [  0  1 ;  1  0 ]
 nm = 12
 no = nm * 2
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot = 2 .* [4.75, 1.], mat_a = σ1, mat_b = σ2) - 
-    3.16 * GetPolTerms(nm, 2 ; mat = σx) )
+    GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], σ1, σ2) - 
+    3.16 * GetPolTerms(nm, 2, σx) )
     
 qnd = [ 
     GetNeQNDiag(2 * nm), 
@@ -25,7 +26,7 @@ qnf = [
 ]
 cfs_00 = Confs(2 * nm, [nm, 0], qnd)
 bs_00 = Basis(cfs_00, [1, 1, 1], qnf)
-hmt = Operator(bs_00, bs_00, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs_00, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 3)
 st_00 = st[:, 1]
@@ -43,7 +44,7 @@ qnf_pp = [
 cfs_pp = Confs(no, [nm, 0, 2, 0], qnd_pp)
 bs_pp = Basis(cfs_pp, [1,1], qnf_pp)
 
-hmt = Operator(bs_pp, bs_pp, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs_pp, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 3)
 st_pp = st[:, 1]
@@ -60,7 +61,7 @@ qnf_p0 = [
 cfs_p0 = Confs(no, [nm, 0, 1, 0], qnd_p0)
 bs_p0 = Basis(cfs_p0, [1], qnf_p0)
 
-hmt = Operator(bs_p0, bs_p0, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs_p0, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 3)
 st_p0 = st[:, 1]

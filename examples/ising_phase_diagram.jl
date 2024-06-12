@@ -1,5 +1,6 @@
 # This example calculates the phase diagram of fuzzy sphere Ising model
 # by calculating the order parameter <M^2>. 
+# This example reproduces Figure 3 in Phys. Rev. X 13, 021009 (2023)
 # On my table computer, this calculation takes 5.089 s
 
 using FuzzifiED
@@ -23,16 +24,16 @@ bs = Basis(cfs, [1, 1, 1], qnf)
 hm2_lst = Vector{Float64}[]
 for h = 2.0 : 0.2 : 4.0
     tms_hmt = SimplifyTerms(
-        GetDenIntTerms(nm, 2 ; ps_pot = 2 .* [4.75, 1.], mat_a = σ1, mat_b = σ2) - 
-        h * GetPolTerms(nm, 2 ; mat = σx) )
-    hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+        GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], σ1, σ2) - 
+        h * GetPolTerms(nm, 2, σx) )
+    hmt = Operator(bs, tms_hmt)
     hmt_mat = OpMat(hmt ; type = Float64)
     enrg, st = GetEigensystem(hmt_mat, 5)
     st_g = st[:, 1]
 
-    tms_m = GetPolTerms(nm, 2 ; mat = σz)
+    tms_m = GetPolTerms(nm, 2, σz)
     tms_m2 = SimplifyTerms(tms_m * tms_m)
-    m2 = Operator(bs, bs, tms_m2 ; red_q = 1, sym_q = 1)
+    m2 = Operator(bs, tms_m2)
 
     m2_val = st_g' * m2 * st_g
     push!(hm2_lst, [h, m2_val])

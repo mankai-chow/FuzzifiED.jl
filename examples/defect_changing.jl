@@ -1,5 +1,6 @@
 # This example calculates the spectrum of the defect creation and changing operators 
 # of the magnetic line defect in 3d Ising model.
+# This example reproduces Table 2 and Figure 5 in arXiv : 2401.00039
 # On my table computer, this calculation takes 6.368 s
 
 using FuzzifiED
@@ -11,8 +12,8 @@ const σx = [  0  1 ;  1  0 ]
 nm = 12
 no = nm * 2
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot = 2 .* [4.75, 1.], mat_a = σ1, mat_b = σ2) - 
-    3.16 * GetPolTerms(nm, 2 ; mat = σx) )
+    GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], σ1, σ2) - 
+    3.16 * GetPolTerms(nm, 2, σx) )
     
 qnd = [ 
     GetNeQNDiag(2 * nm), 
@@ -25,7 +26,7 @@ qnf = [
 ]
 cfs = Confs(2 * nm, [nm, 0], qnd)
 bs = Basis(cfs, [1, 1, 1], qnf)
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 5)
 enrg_0 = enrg[1]
@@ -43,7 +44,7 @@ qnf = [
 ]
 cfs = Confs(no, [nm, 0, 2, 0], qnd)
 bs = Basis(cfs, [1, 1], qnf)
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 3)
 enrg_d = enrg[1]
@@ -61,7 +62,7 @@ cfs = Confs(no, [nm, 0, 1, 0], qnd)
 result_p0 = []
 for P in (1, -1)
     bs = Basis(cfs, [P], qnf)
-    hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+    hmt = Operator(bs, tms_hmt)
     hmt_mat = OpMat(hmt ; type = Float64)
     enrg, st = GetEigensystem(hmt_mat, 10)
     dim = (enrg .- (enrg_d + enrg_0) / 2) ./ (enrg_T - enrg_0) * 3
@@ -85,7 +86,7 @@ cfs = Confs(no, [nm, 0, 2, 0], qnd)
 result_pm = []
 for P in (1, -1), RZ in (1, -1)
     bs = Basis(cfs, [P, RZ], qnf)
-    hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+    hmt = Operator(bs, tms_hmt)
     hmt_mat = OpMat(hmt ; type = Float64)
     enrg, st = GetEigensystem(hmt_mat, 10)
     dim = (enrg .- enrg_d) ./ (enrg_T - enrg_0) * 3

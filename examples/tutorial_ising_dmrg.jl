@@ -19,9 +19,9 @@ sites = SitesFromQNDiag([
 ])
 ps_pot = [4.75, 1.] ./ 2
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot) - 
-    GetDenIntTerms(nm, 2 ; ps_pot, mat_a = σx) - 
-    3.16 * GetPolTerms(nm, nf ; mat = σz)
+    GetDenIntTerms(nm, 2, ps_pot) - 
+    GetDenIntTerms(nm, 2, ps_pot, σx) - 
+    3.16 * GetPolTerms(nm, nf, σz)
 )
 os = OpSumFromTerms(tms_hmt)
 @time mpo_hmt = MPO(os, sites)
@@ -37,7 +37,7 @@ Eg, stg = dmrg(mpo_hmt, st0 ; nsweeps = 10, maxdim = [10,20,50,100,200,500], noi
 cfs = ConfsFromSites(sites, cf0)
 bs = Basis(cfs)
 tms_hmt1 = TermsFromOpSum(os)
-hmt = Operator(bs, bs, tms_hmt1 ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, tms_hmt1)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 10)
 @show enrg

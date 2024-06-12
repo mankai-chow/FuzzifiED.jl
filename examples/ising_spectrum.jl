@@ -1,5 +1,6 @@
 # This example calculates the spectrum of 3d Ising model on fuzzy sphere at nm = 12.
 # For each (P,Z,R) sector, 20 states are calculated.
+# This example reproduces Table I and Figure 4 in Phys. Rev. X 13, 021009 (2023)
 # On my table computer, this calculation takes 7.549 s
 
 using FuzzifiED
@@ -18,8 +19,8 @@ qnf = [
     GetRotyQNOffd(nm, 2) ]
 
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot = 2 .* [4.75, 1.], mat_a = σ1, mat_b = σ2) - 
-    3.16 * GetPolTerms(nm, 2 ; mat = σx) )
+    GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], σ1, σ2) - 
+    3.16 * GetPolTerms(nm, 2, σx) )
 tms_l2 = GetL2Terms(nm, 2)
 
 cfs = Confs(2 * nm, [nm, 0], qnd)
@@ -27,11 +28,11 @@ cfs = Confs(2 * nm, [nm, 0], qnd)
 result = []
 for P in [1, -1], Z in [1, -1], R in [1, -1]
     bs = Basis(cfs, [P, Z, R], qnf)
-    hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+    hmt = Operator(bs, tms_hmt)
     hmt_mat = OpMat(hmt ; type = Float64)
     enrg, st = GetEigensystem(hmt_mat, 20)
 
-    l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
+    l2 = Operator(bs, tms_l2)
     l2_mat = OpMat(l2 ; type = Float64)
     l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 

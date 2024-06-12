@@ -1,5 +1,6 @@
 # This example calculates various OPE coefficients at nm = 12
 # by taking overlaps between CFT states and density operators and composite.
+# This example reproduces Figure 2 and Table I in Phys. Rev. Lett 131, 031601 (2023)
 # On my table computer, this calculation takes 2.434 s
 
 using FuzzifiED
@@ -19,18 +20,18 @@ qnf = [
     GetRotyQNOffd(nm, 2) ]
 
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot = 2 .* [4.75, 1.], mat_a = σ1, mat_b = σ2) - 
-    3.16 * GetPolTerms(nm, 2 ; mat = σx) )
+    GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], σ1, σ2) - 
+    3.16 * GetPolTerms(nm, 2, σx) )
 tms_l2 = GetL2Terms(nm, 2)
 
 cfs = Confs(2 * nm, [nm, 0], qnd)
 bsp = Basis(cfs, [1, 1, 1], qnf)
 bsm = Basis(cfs, [1,-1, 1], qnf)
 
-hmt = Operator(bsp, bsp, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bsp, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 20)
-l2 = Operator(bsp, bsp, tms_l2 ; red_q = 1, sym_q = 1)
+l2 = Operator(bsp, tms_l2)
 l2_mat = OpMat(l2 ; type = Float64)
 l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 idl0 = [ i for i in eachindex(enrg) if l2_val[i] ≊ 0 ]
@@ -40,10 +41,10 @@ stϵ = st[:, idl0[2]]
 stT = st[:, idl2[1]]
 stϵ1 = st[:, idl0[4]]
 
-hmt = Operator(bsm, bsm, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bsm, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 20)
-l2 = Operator(bsm, bsm, tms_l2 ; red_q = 1, sym_q = 1)
+l2 = Operator(bsm, tms_l2)
 l2_mat = OpMat(l2 ; type = Float64)
 l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 idl0 = [ i for i in eachindex(enrg) if l2_val[i] ≊ 0 ]
@@ -52,15 +53,15 @@ stσ = st[:, idl0[1]]
 stσ2 = st[:, idl2[2]]
 stσ1 = st[:, idl0[4]]
 
-obs_nz = Density(nm, 2 ; mat = σz)
-obs_nx = Density(nm, 2 ; mat = σx)
+obs_nz = Density(nm, 2, σz)
+obs_nx = Density(nm, 2, σx)
 tms_nz00 = SimplifyTerms(GetComponent(obs_nz, 0.0, 0.0))
 tms_nz20 = SimplifyTerms(GetComponent(obs_nz, 2.0, 0.0))
 tms_nx00 = SimplifyTerms(GetComponent(obs_nx, 0.0, 0.0))
 tms_nx20 = SimplifyTerms(GetComponent(obs_nx, 2.0, 0.0))
 tms_Oϵ = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot = 2 .* [4.75, 1.], mat_a = σ1, mat_b = σ2) +
-    3.16 * GetPolTerms(nm, 2 ; mat = σx) )
+    GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], σ1, σ2) +
+    3.16 * GetPolTerms(nm, 2, σx) )
 
 nz00 = Operator(bsp, bsm, tms_nz00 ; red_q = 1) 
 nz20 = Operator(bsp, bsm, tms_nz20 ; red_q = 1) 

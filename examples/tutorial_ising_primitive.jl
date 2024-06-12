@@ -90,7 +90,7 @@ end
 GENERATE THE SPARSE MATRIX AND DIAGONALISE
 =========================================#
 
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 10)
 @show real(enrg)
@@ -111,7 +111,7 @@ tms_lp =
 tms_lm = tms_lp' 
 tms_l2 = SimplifyTerms(tms_lz * tms_lz - tms_lz + tms_lp * tms_lm)
 # Initialise the L2 operator
-l2 = Operator(bs, bs, tms_l2 ; red_q = 1, sym_q = 1)
+l2 = Operator(bs, tms_l2)
 @time "Initialise L2" l2_mat = OpMat(l2)
 # Calculate the inner product for each eigenstate
 @time "Measure L2" l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]

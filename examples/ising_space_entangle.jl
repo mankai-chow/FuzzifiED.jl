@@ -1,5 +1,7 @@
 # This example calculates the entanglement entropy of the Ising ground state
-# along the real space cut of cosθ = 0 and 0.002 respectively.
+# along the real space cut of θ = 0.500π and 0.499π respectively,
+# and use these two data to extract finite size F-function without sustracting the IQHE contribution. 
+# This example reproduces Figures 3 in arXiv : 2401.17362.
 # On my table computer, this calculation takes 5.670 s
 
 using FuzzifiED
@@ -19,12 +21,12 @@ qnf = [
     GetRotyQNOffd(nm, 2) ]
 
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2 ; ps_pot = 2 .* [4.75, 1.], mat_a = σ1, mat_b = σ2) - 
-    3.16 * GetPolTerms(nm, 2 ; mat = σx) )
+    GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], σ1, σ2) - 
+    3.16 * GetPolTerms(nm, 2, σx) )
 
 cfs = Confs(2 * nm, [nm, 0], qnd)
 bs = Basis(cfs, [1, 1, 1], qnf)
-hmt = Operator(bs, bs, tms_hmt ; red_q = 1, sym_q = 1)
+hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt ; type = Float64)
 enrg, st = GetEigensystem(hmt_mat, 3)
 st_g = st[:, 1]
@@ -39,14 +41,18 @@ for nea = 0 : nm
     end
 end
 
-for z in (0.5, 0.499)
-    amp_oa = vcat([ sqrt(beta_inc(1 + m, nm - m, z)[1]) for f = 1 : 2, m = 0 : nm - 1]...) ;
-    amp_ob = vcat([ sqrt(beta_inc(1 + m, nm - m, z)[2]) for f = 1 : 2, m = 0 : nm - 1]...) ;
+ent_entropy = Dict{Float64, Float64}()
+θ1 = 0.500 * π
+θ2 = 0.499 * π
+for θ in (θ1, θ2)
+    amp_oa = vcat([ sqrt(beta_inc(1 + m, nm - m, (cos(θ) + 1) / 2)[1]) for f = 1 : 2, m = 0 : nm - 1]...) ;
+    amp_ob = vcat([ sqrt(beta_inc(1 + m, nm - m, (cos(θ) + 1) / 2)[2]) for f = 1 : 2, m = 0 : nm - 1]...) ;
     ent_spec = GetEntSpec(st_g, bs, secd_lst, secf_lst ; qnd_a = qnd, qnf_a = [GetFlavPermQNOffd(nm, 2, [2, 1])], amp_oa, amp_ob)
 
     eig_rho = vcat(values(ent_spec)...)
     tr_rho = sum(eig_rho)
-    @show z, tr_rho
-    ent_entropy = -sum(eig_rho .* log.(eig_rho))
-    @show z, ent_entropy
+    @show θ, tr_rho
+    ent_entropy[θ] = -sum(eig_rho .* log.(eig_rho))
+    @show θ, ent_entropy[θ]
 end
+F = (ent_entropy[θ1] * sin(θ2) - ent_entropy[θ2] * sin(θ1)) / (sin(θ1) - sin(θ2))
