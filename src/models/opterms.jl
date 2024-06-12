@@ -88,7 +88,7 @@ function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number} = [
     return SimplifyTerms(tms)
 end
 GetDenIntTerms(nm :: Int64, nf :: Int64, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetDenIntTerms(nm, nf, [1.0], mat_a, mat_b)
-GetDenIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.0], mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetDenIntTerms(nm, nf, ps_pot, mat_a, mat_b)
+GetDenIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetDenIntTerms(nm, nf, ps_pot, mat_a, mat_b)
 
 
 """
@@ -165,7 +165,7 @@ function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, m
     return SimplifyTerms(tms)
 end
 GetPairIntTerms(nm :: Int64, nf :: Int64, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetPairIntTerms(nm, nf, mat_a, mat_b)
-GetPairIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.0], mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetPairIntTerms(nm, nf, ps_pot, mat_a, mat_b)
+GetPairIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetPairIntTerms(nm, nf, ps_pot, mat_a, mat_b)
 
 """
     GetPolTerms(nm :: Int64, nf :: Int64[, mat :: Matrix{<:Number}]) :: Vector{Term}
