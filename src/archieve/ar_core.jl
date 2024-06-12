@@ -1,6 +1,11 @@
 """
     function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Vector{Int64}} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64}, num_th :: Int64, disp_std :: Bool) :: Confs
 
+**We have improved the interface for this function. Please consider using in the future**
+```julia
+Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag}) :: Confs
+```
+
 generates the configurations that has the diagonal quantum numbers given by `qnu_s` of certain conserved quantities specified by `qnu_o :: Vector{Vector{Int64}}`
 ```math
 Q_i=∑_{o=1}^{N_o}q_{io}n_o
@@ -28,7 +33,7 @@ where ``i=1,…,N_U`` is the index of quantum number, ``o`` is the index of orbi
 function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Any} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64} = fill(1, length(qnu_s)), num_th = NumThreads, disp_std = !SilentStd)
     if (disp_std)
         @info """
-        We have improved the interface for this function. Please consider using in the future
+        We have improved the interface for the function `Confs`. Please consider using in the future
             Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag}) :: Confs
         For detail please visit http://docs.fuzzified.world/core/#Confs. This function may be superceded in the future version. 
         """
@@ -49,6 +54,11 @@ end
 """
     function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}} ; num_th :: Int64, disp_std :: Bool) :: Basis
 
+**We have improved the interface for this function. Please consider using in the future**
+```julia
+Basis(cfs :: Confs, secf :: Vector{ComplexF64}, qnf :: Vector{QNOffd}) :: Basis
+```
+        
 generates the basis that respects the off-diagonal ``ℤ_n`` quantum numbers (QNZ) from the diagonal QN–preserving configurations. The discrete ``ℤ_n`` symmetries are in the form of 
 
 ```math
@@ -75,7 +85,7 @@ where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_
 function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any}, num_th = NumThreads, disp_std = !SilentStd)
     if (disp_std)
         @info """
-        We have improved the interface for this function. Please consider using in the future
+        We have improved the interface for the function `Basis`. Please consider using in the future
             Basis(cfs :: Confs, secf :: Vector{ComplexF64}, qnf :: Vector{QNOffd}) :: Basis
         For detail please visit http://docs.fuzzified.world/core/#Basis. This function may be superceded in the future version. 
         """
@@ -100,6 +110,11 @@ end
 """
     function GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, qnu_s_lst :: Vector{Vector{Vector{Int64}}}, qnz_s_lst :: Vector{Vector{Vector{ComplexF64}}} ; qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}, cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}}, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oa .^ 2))) :: Dict{@NamedTuple{qnu_sa, qnz_sa, qnu_sb, qnz_sb}, Vector{Float64}}
 
+**We have improved the interface for this function. Please consider using in the future**
+```julia
+GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, secd_lst :: Vector{Vector{Vector{Int64}}}, secf_lst :: Vector{Vector{Vector{<:Number}}} ; qnd_a :: Vector{QNDiag} qnf_a :: Vector{QNOffd}, amp_oa :: Vector{<:Number})
+```
+
 # Arguments 
 
 - `st :: Vector{<:Number}` is the state to be decomposed into direct-product basis of two subsystems.
@@ -118,7 +133,7 @@ A dictionary whose keys are named tuples that specify the sector containing entr
 function GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, qnu_s_lst :: Vector{Any}, qnz_s_lst :: Vector{Any} ; qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN" * string(qn) for qn in eachindex(qnu_o)], modul :: Vector{Int64} = [1 for qn in eachindex(qnu_o)], cyc :: Vector{Int64}, perm_o :: Vector{Any}, ph_o :: Vector{Any}, fac_o :: Vector{Any}, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oa .^ 2)))
     if (disp_std)
         @info """
-        We have improved the interface for this function. Please consider using in the future
+        We have improved the interface for the function `GetEntSpec`. Please consider using in the future
             GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, secd_lst :: Vector{Vector{Vector{Int64}}}, secf_lst :: Vector{Vector{Vector{<:Number}}} ; qnd_a :: Vector{QNDiag} qnf_a :: Vector{QNOffd}, amp_oa :: Vector{<:Number})
         For detail please visit http://docs.fuzzified.world/core/#Entanglement. This function may be superceded in the future version. 
         """

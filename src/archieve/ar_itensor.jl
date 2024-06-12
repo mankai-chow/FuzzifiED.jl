@@ -1,7 +1,7 @@
 """
     TruncateQnu(; qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}, trunc_lth :: Int64, trunc_wt :: Vector{Int64}) 
 
-We have improved the interface for this function. Please consider using in the future [`TruncateQNDiag`](@ref)
+**We have improved the interface for this function. Please consider using in the future [`TruncateQNDiag`](@ref)**
 ```julia 
 TruncateQNDiag(qnd ; trunc_lth, trunc_wt)
 ```
@@ -46,7 +46,7 @@ end
 """
     function SitesFromQnu(; qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64})
 
-*We have improved the interface for the function. Please consider using in the future [`SitesFromQNDiag`](@ref)*
+**We have improved the interface for the function. Please consider using in the future [`SitesFromQNDiag`](@ref)**
 ```Julia
 SitesFromQNDiag(qnd)
 ```
@@ -76,7 +76,7 @@ end
 """
     function GetMPOSites(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}} ; path :: String, qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}, mpo_method :: Function) :: Tuple{MPO, Vector{<:Index}}
 
-*We have improved the interface for the function. Please consider using in the future*
+**We have improved the interface for the function. Please consider using in the future**
 ```Julia
 GetMPOSites(id, tms, qnd)
 ```

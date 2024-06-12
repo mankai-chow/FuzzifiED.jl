@@ -1,7 +1,7 @@
 """
     function GetSnBasis(cfs :: Confs, nf :: Int64 ; qn_r :: Int64 = 0, perm :: Vector, qn_z :: Vector{<:Number}) :: Basis
 
-*We have improved the interface for the function. Please consider using in the future [the built-in QNOffds](http://docs.fuzzified.world/models/#Off-diagonal-quantum-numbers-on-fuzzy-sphere)*
+**We have improved the interface for the function. Please consider using in the future [the built-in QNOffds](http://docs.fuzzified.world/models/#Off-diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
 bs = Basis(cfs, [qn_r, qn_z...], [
     GetRotyQNOffd(nm, nf)
@@ -44,7 +44,7 @@ end
 """
     function GetLzQnu(nm :: Int64, nf :: Int64) :: @NamedTuple{qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}}
 
-*We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)*
+**We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
 [ GetNeQNDiag(nm * nf), GetLz2QNDiag(nm, nf) ]
 ```
@@ -92,7 +92,7 @@ end
     function GetLzZnQnu(nm :: Int64, nf :: Int64) :: @NamedTuple{qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}}
 
 
-*We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)*
+**We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
 [ GetNeQNDiag(nm * nf), GetLz2QNDiag(nm, nf), GetZnfChargeQNDiag(nm, nf) ]
 ```
@@ -142,7 +142,7 @@ end
 """
     function GetLzConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 ; num_th :: Int64, disp_std :: Bool) :: Confs
 
-*We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)*
+**We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
 Confs(nm * nf, [ne, Int(lz * 2), zn], [ 
     GetNeQNDiag(nm * nf), 
@@ -176,7 +176,7 @@ end
 """
     function GetLzZnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64, zn :: Int64 = 0 ; num_th :: Int64, disp_std :: Bool) :: Confs
 
-*We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)*
+**We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
 Confs(nm * nf, [ne, Int(lz * 2), zn], [ 
     GetNeQNDiag(nm * nf), 
@@ -212,7 +212,7 @@ end
 """
     function GetIsingQnz(nm :: Int64 ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0) :: @NamedTuple{cyc, perm_o, ph_o, fac_o}
 
-*We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)*
+**We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
 [
     GetParityQNOffd(nm, 2, [2, 1], [1, -1]), 
@@ -272,7 +272,7 @@ end
 """
     function GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0, num_th :: Int64, disp_std :: Bool) :: Basis
 
-*We have improved the interface for the function. Please consider using in the future [the built-in QNOffds](http://docs.fuzzified.world/models/#Off-diagonal-quantum-numbers-on-fuzzy-sphere)*
+**We have improved the interface for the function. Please consider using in the future [the built-in QNOffds](http://docs.fuzzified.world/models/#Off-diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
 bs = Basis(cfs, [qn_p, qn_z, qn_r], [
     GetParityQNOffd(nm, 2, [2, 1], [1, -1]), 
@@ -318,7 +318,7 @@ end
 """
     function GetIsingIntTerms(nm :: Int64 ; ps_pot :: Vector) :: Vector{Term}
 
-*We have improved the interface for the function. Please consider using the function [`GetDenIntTerms`](@ref) in the future*
+**We have improved the interface for the function. Please consider using the function [`GetDenIntTerms`](@ref) in the future**
 ```julia
     GetDenIntTerms(nm, 2 ; ps_pot = 2 .* ps_pot, mat_a = diagm([1, 0]), mat_b = diagm([0, 1]))
 ```
@@ -351,7 +351,7 @@ end
 """
     function GetXPolTerms(nm :: Int64)
 
-*We have improved the interface for the function. Please consider using the function [`GetPolTerms`](@ref) in the future*
+**We have improved the interface for the function. Please consider using the function [`GetPolTerms`](@ref) in the future**
 ```julia
     GetPolTerms(nm, 2 ; mat = [ 0 1 ; 1 0 ])
 ```
@@ -377,7 +377,7 @@ end
 """
     function GetZPolTerms(nm :: Int64)
 
-*We have improved the interface for the function. Please consider using the function [`GetPolTerms`](@ref) in the future*
+**We have improved the interface for the function. Please consider using the function [`GetPolTerms`](@ref) in the future**
 ```julia
     GetPolTerms(nm, 2 ; mat = [ 1 0 ; 0 -1 ])
 ```
