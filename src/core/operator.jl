@@ -26,16 +26,16 @@ end
 
 
 """
-    function Operator(bsd :: Basis, bsf :: Basis, terms :: Vector{Term} ; red_q :: Int64, sym_q :: Int64, num_th :: Int64, disp_std :: Bool) :: Operator
+    function Operator(bsd :: Basis[, bsf :: Basis], terms :: Vector{Term} ; red_q :: Int64, sym_q :: Int64, num_th :: Int64, disp_std :: Bool) :: Operator
 
 generates an operator object from a series of terms. 
 
 # Arguments
 * `bsd :: Basis` is the basis of the initial state ;
-* `bsf :: Basis` is the basis of the final state ;
+* `bsf :: Basis` is the basis of the final state. Facultative, the same as `bsd` by default. 
 * `terms :: Vector{Term}` records the terms ; 
-* `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same quantum numbers, and the operator fully respects the symmetries, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0` ; 
-* `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0`. 
+* `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same quantum numbers, and the operator fully respects the symmetries, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0` ; Facultative, if `bsf` is not given, 1 by default, otherwise 0 by default.
+* `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0`. Facultative, if `bsf` is not given, 1 by default, otherwise 0 by default.
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
@@ -48,6 +48,7 @@ function Operator(bsd :: Basis, bsf :: Basis, terms :: Vector{Term} ; red_q :: I
     coeffs = [ tm.coeff for tm in terms ]
     return Operator(bsd, bsf, red_q, sym_q, ntm, nc, cstrs, coeffs)
 end
+Operator(bsd :: Basis, terms :: Vector{Term} ; red_q :: Int64 = 1, sym_q :: Int64 = 1) = Operator(bsd, bsd, terms, red_q, sym_q)
 
 
 """
