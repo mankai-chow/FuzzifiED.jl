@@ -55,6 +55,10 @@ end
 function -(tms1 :: Vector{Term}, tms2 :: Vector{Term})
     return tms1 + (-tms2)
 end
+function +(tms1 :: Vector{Term}, tms2 :: Vararg{Vector{Term}})
+    return tms1 + +(tms2...)
+end
+
 
 """
     function *(tms1 :: Vector{Term}, tms2 :: Vector{Term}) :: Vector{Term}
@@ -65,6 +69,9 @@ Return the naive product of two series of terms or the power of one terms. The n
 function *(tms1 :: Vector{Term}, tms2 :: Vector{Term})
     return vcat([ Term(tm1.coeff * tm2.coeff, [tm1.cstr ; tm2.cstr])
         for tm1 in tms1, tm2 in tms2 ]...)
+end
+function *(tms1 :: Vector{Term}, tms2 :: Vararg{Vector{Term}})
+    return tms1 * *(tms2...)
 end
 function ^(tms :: Vector{Term}, pow :: Int64)
     if pow == 1

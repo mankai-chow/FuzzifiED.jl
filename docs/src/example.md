@@ -195,7 +195,7 @@ hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 10)
 ```
-Matrices with real elements can be generated with the option `type = Float64` in the `OpMat` function. 
+Matrices with real elements can be generated with the option `type = Float64` in the `OpMat` function or setting `FuzzifiED.ElementType = Float64`. 
 
 
 ### Measuring the angular momentum
@@ -204,7 +204,7 @@ We can measure the inner product of a final state, an operator or its matrix and
 ```julia
 tms_l2 = GetL2Terms(nm, 2)
 l2 = Operator(bs, tms_l2)
-l2_mat = OpMat(l2 ; type = Float64)
+l2_mat = OpMat(l2)
 l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 @show l2_val
 
@@ -251,11 +251,11 @@ result = []
 for P in [1, -1], Z in [1, -1], R in [1, -1]
     bs = Basis(cfs, [P, Z, R], qnf)
     hmt = Operator(bs, tms_hmt)
-    hmt_mat = OpMat(hmt ; type = Float64)
+    hmt_mat = OpMat(hmt)
     enrg, st = GetEigensystem(hmt_mat, 10)
 
     l2 = Operator(bs, tms_l2)
-    l2_mat = OpMat(l2 ; type = Float64)
+    l2_mat = OpMat(l2)
     l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 
     for i in eachindex(enrg)
@@ -288,7 +288,7 @@ To do that, we need to first repeat the calculation in the ``\mathbb{Z}_2``-odd 
 ```julia
 bs1 = Basis(cfs, [1, -1, 1], qnf)
 hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) 
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 enrg1, st1 = GetEigensystem(hmt_mat, 10)
 st_I = st[:, 1] 
 st_e = st[:, 2] 
@@ -363,7 +363,7 @@ We then convert these objects for the ED calculate. The configurations can be ge
 cfs = ConfsFromSites(sites, cf0)
 bs = Basis(cfs)
 hmt = Operator(bs, tms_hmt)
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 10)
 @show enrg
 ```
