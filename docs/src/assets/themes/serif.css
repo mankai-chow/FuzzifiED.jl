@@ -1,0 +1,11 @@
+@font-face {
+    font-family: Xenon ; src: url('MonaspaceXenon-Light.woff2');
+}
+
+body {
+    font-family : 'Times New Roman', Times, serif
+}
+
+code, tt {
+    font-family: Xenon;
+}

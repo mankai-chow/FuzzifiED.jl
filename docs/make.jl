@@ -15,5 +15,5 @@ makedocs(sitename = "FuzzifiED.jl",
         "ITensors support" => "itensors.md",
         "Built-in models" => "models.md",
         "Archieved interfaces" => "archieve.md",
-        "Releases" => "releases.md"], 
-    format = Documenter.HTML(assets = ["assets/font.css"])) 
+        "Releases" => "releases.md"],
+    format = Documenter.HTML(assets = ["assets/themes/serif.css"])) 
