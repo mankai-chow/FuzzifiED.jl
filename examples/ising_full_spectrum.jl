@@ -1,12 +1,13 @@
 # This example calculates the full spectrum of 3d Ising model on fuzzy sphere
 # at nm = 10 for sector (P,Z,R) = (1,1,1)
-# On my table computer, this calculation takes 0.789 s
+# On my table computer, this calculation takes 0.672 s
 
 using FuzzifiED
 using LinearAlgebra
 const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
+FuzzifiED.ElementType = Float64
 
 nm = 10
 qnd = [ 
@@ -23,7 +24,7 @@ tms_hmt = SimplifyTerms(
 cfs = Confs(2 * nm, [nm, 0], qnd)
 bs = Basis(cfs, [1, 1, 1], qnf)
 hmt = Operator(bs, tms_hmt)
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 hmt_mat_full = MatrixFromOpMat(hmt_mat)
 enrg, st = eigen(hmt_mat_full)
 @show enrg

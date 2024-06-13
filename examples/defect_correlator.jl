@@ -1,7 +1,7 @@
 # This example calculates the 1-pt function σ and 2-pt function σϕ of magnetic line defect in 3d Ising model.
 # The normalisation of the correlators require bulk data ovl_σzI in `ising_ope.jl`.
 # This example reproduces Figure 4 in Nat. Commun. 15, 3659 (2024)
-# On my table computer, this calculation takes 0.598 s
+# On my table computer, this calculation takes 0.332 s
 
 using FuzzifiED
 using SphericalHarmonics
@@ -9,6 +9,7 @@ const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
 const σz = [  1  0 ;  0 -1 ]
+FuzzifiED.ElementType = Float64
 ≊(x, y) = abs(x - y) < eps(Float32)
 
 nm = 12
@@ -31,7 +32,7 @@ cfs = Confs(no, [nm, 0, 2, 0], qnd)
 bs = Basis(cfs, [1,1], qnf)
 
 hmt = Operator(bs, tms_hmt)
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 3)
 stI = st[:, 1]
 stϕ = st[:, 2]
@@ -47,3 +48,8 @@ Cor_IzI(θ :: Float64) = [ real(computeYlm(θ, 0, lmax = nm - 1)[(l, 0)]) for l 
 Cor_ϕzϕ(θ :: Float64) = [ real(computeYlm(θ, 0, lmax = nm - 1)[(l, 0)]) for l = 0 : 2 : nm - 1]' * cor_ϕzϕ_l
 
 display(permutedims(hcat([[θ / π, Cor_IzI(θ), Cor_ϕzϕ(θ)] for θ = 0 : π / 20 : π]...)))
+# To plot the correlation functions, uncomment the following lines 
+# using Plots 
+# θs = 0 : π / 20 : π
+# plot_IzI = plot(θs, Cor_IzI.(θs))
+# plot_ϕzϕ = plot(θs, Cor_ϕzϕ.(θs))

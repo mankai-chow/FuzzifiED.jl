@@ -2,13 +2,14 @@
 # along the real space cut of θ = 0.500π and 0.499π respectively,
 # and use these two data to extract finite size F-function without sustracting the IQHE contribution. 
 # This example reproduces Figures 3 in arXiv : 2401.17362.
-# On my table computer, this calculation takes 5.670 s
+# On my table computer, this calculation takes 14.246 s
 
 using FuzzifiED
 using SpecialFunctions
 const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
+FuzzifiED.ElementType = Float64
 ≊(x, y) = abs(x - y) < eps(Float32)
 
 nm = 10
@@ -27,7 +28,7 @@ tms_hmt = SimplifyTerms(
 cfs = Confs(2 * nm, [nm, 0], qnd)
 bs = Basis(cfs, [1, 1, 1], qnf)
 hmt = Operator(bs, tms_hmt)
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 3)
 st_g = st[:, 1]
 
@@ -56,3 +57,4 @@ for θ in (θ1, θ2)
     @show θ, ent_entropy[θ]
 end
 F = (ent_entropy[θ1] * sin(θ2) - ent_entropy[θ2] * sin(θ1)) / (sin(θ1) - sin(θ2))
+@show F

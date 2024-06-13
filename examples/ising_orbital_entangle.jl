@@ -1,13 +1,14 @@
 # This example calculates the entanglement entropy of the Ising ground state
 # along the orbital space cut at m = 0, and also the entanglement spectrum 
 # in the half-filled lz = 0, 1 and  both Z_2 sectors
-# On my table computer, this calculation takes 0.538 s
+# On my table computer, this calculation takes 0.557 s
 
 using FuzzifiED
 using SpecialFunctions
 const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
+FuzzifiED.ElementType = Float64
 ≊(x, y) = abs(x - y) < eps(Float32)
 
 nm = 12
@@ -26,7 +27,7 @@ tms_hmt = SimplifyTerms(
 cfs = Confs(2 * nm, [nm, 0], qnd)
 bs = Basis(cfs, [1, 1, 1], qnf)
 hmt = Operator(bs, tms_hmt)
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 3)
 st_g = st[:, 1]
 

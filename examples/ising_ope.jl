@@ -1,13 +1,14 @@
 # This example calculates various OPE coefficients at nm = 12
 # by taking overlaps between CFT states and density operators and composite.
 # This example reproduces Figure 2 and Table I in Phys. Rev. Lett 131, 031601 (2023)
-# On my table computer, this calculation takes 2.434 s
+# On my table computer, this calculation takes 2.138 s
 
 using FuzzifiED
 const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
 const σz = [  1  0 ;  0 -1 ]
+FuzzifiED.ElementType = Float64
 ≊(x, y) = abs(x - y) < eps(Float32)
 
 nm = 12
@@ -29,10 +30,10 @@ bsp = Basis(cfs, [1, 1, 1], qnf)
 bsm = Basis(cfs, [1,-1, 1], qnf)
 
 hmt = Operator(bsp, tms_hmt)
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 20)
 l2 = Operator(bsp, tms_l2)
-l2_mat = OpMat(l2 ; type = Float64)
+l2_mat = OpMat(l2)
 l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 idl0 = [ i for i in eachindex(enrg) if l2_val[i] ≊ 0 ]
 idl2 = [ i for i in eachindex(enrg) if l2_val[i] ≊ 6 ]
@@ -42,10 +43,10 @@ stT = st[:, idl2[1]]
 stϵ1 = st[:, idl0[4]]
 
 hmt = Operator(bsm, tms_hmt)
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 20)
 l2 = Operator(bsm, tms_l2)
-l2_mat = OpMat(l2 ; type = Float64)
+l2_mat = OpMat(l2)
 l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 idl0 = [ i for i in eachindex(enrg) if l2_val[i] ≊ 0 ]
 idl2 = [ i for i in eachindex(enrg) if l2_val[i] ≊ 6 ]

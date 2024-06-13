@@ -4,6 +4,7 @@
 
 using FuzzifiED
 using ITensors
+FuzzifiED.ElementType = Float64
 const σx = [  0  1 ;  1  0 ]
 const σz = [  1  0 ;  0 -1 ]
 
@@ -38,6 +39,6 @@ cfs = ConfsFromSites(sites, cf0)
 bs = Basis(cfs)
 tms_hmt1 = TermsFromOpSum(os)
 hmt = Operator(bs, tms_hmt1)
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 10)
 @show enrg

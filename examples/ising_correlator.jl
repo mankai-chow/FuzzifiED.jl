@@ -1,7 +1,7 @@
 # This example calculates the σσ two-point function on sphere
 # and the σσσσ four-point function on sphere, 0 and ∞. 
 # This example reproduces Figures 1c and 2a in Phys. Rev. B 108, 235123 (2023)
-# On my table computer, this calculation takes 4.601 s
+# On my table computer, this calculation takes 2.472 s
 
 using FuzzifiED
 using LegendrePolynomials
@@ -9,6 +9,7 @@ const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
 const σz = [  1  0 ;  0 -1 ]
+FuzzifiED.ElementType = Float64
 ≊(x, y) = abs(x - y) < eps(Float32)
 
 nm = 12
@@ -32,12 +33,12 @@ bsm  = Basis(cfs, [1,-1, 1], qnf)
 bsm1 = Basis(cfs, [1,-1,-1], qnf)
 
 hmt = Operator(bsp, tms_hmt)
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 20)
 stg = st[:, 1]
 
 hmt = Operator(bsm, tms_hmt)
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 20)
 stσ = st[:, 1]
 
@@ -63,3 +64,8 @@ Cor_gzzg(θ :: Float64) = [Pl(cos(θ), l) * (2 * l + 1) for l in 0 : nm - 1]' * 
 Cor_σzzσ(θ :: Float64) = [Pl(cos(θ), l) * (2 * l + 1) for l in 0 : nm - 1]' * cor_σzzσ_l
 
 display(permutedims(hcat([[θ / π, Cor_gzzg(θ), Cor_σzzσ(θ)] for θ = 0 : π / 10 : 2 * π]...)))
+# To plot the correlation functions, uncomment the following lines 
+# using Plots 
+# θs = 0 : π / 10 : 2 * π
+# plot_gzzg = plot(θs, Cor_gzzg.(θs))
+# plot_σzzσ = plot(θs, Cor_σzzσ.(θs))

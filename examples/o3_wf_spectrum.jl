@@ -1,7 +1,7 @@
 # This example calculates the spectrum of O(3) Wilson-Fisher CFT
 # using the bilayer Heisenberg model.
 # This example reproduces Table I and Figure 2 in arXiv : 2312.04047
-# On my table computer, this calculation takes 5.440 s
+# On my table computer, this calculation takes 3.826 s
 
 using FuzzifiED
 const ⊗ = kron
@@ -11,6 +11,7 @@ const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
 const σy = [  0 im ;-im  0 ]
 const σz = [  1  0 ;  0 -1 ]
+FuzzifiED.ElementType = Float64
 ≊(x, y) = abs(x - y) < eps(Float32)
 
 nm = 6
@@ -34,12 +35,12 @@ cfs = Confs(no, [ne, 0, 0], qnd)
 ps_pot_u0 = [ 1.0 ]
 ps_pot_u1 = [ 0.55 ]
 ps_pot_u2 = [ 0, 0.19 ]
-tms_hmt = SimplifyTerms(sum([
-    GetDenIntTerms(nm, nf, ps_pot_u0),
-    GetDenIntTerms(nm, nf, ps_pot_u2, [σ1⊗σx,σ1⊗σy,σ1⊗σz],[σ2⊗σx,σ2⊗σy,σ2⊗σz]),
-    -GetDenIntTerms(nm, nf, ps_pot_u1, [σ1⊗σx,σ1⊗σy,σ1⊗σz,σ2⊗σx,σ2⊗σy,σ2⊗σz]),
-    -4 * π * 0.225 * GetPolTerms(nm, nf, σx⊗σ0)
-]))
+tms_hmt = SimplifyTerms(
+    GetDenIntTerms(nm, nf, ps_pot_u0) +
+    GetDenIntTerms(nm, nf, ps_pot_u2, [σ1⊗σx,σ1⊗σy,σ1⊗σz],[σ2⊗σx,σ2⊗σy,σ2⊗σz]) -
+    GetDenIntTerms(nm, nf, ps_pot_u1, [σ1⊗σx,σ1⊗σy,σ1⊗σz,σ2⊗σx,σ2⊗σy,σ2⊗σz]) -
+    4 * π * 0.225 * GetPolTerms(nm, nf, σx⊗σ0)
+)
 tms_l2 = GetL2Terms(nm, nf)
 tms_c2 = GetC2Terms(nm, nf, [σ0⊗σx,σ0⊗σy,σ0⊗σz])
 
@@ -47,15 +48,15 @@ result = []
 for P in (1,-1), Z in (1,-1), X in (1,-1), R in (1,-1)
     bs = Basis(cfs, [P, Z, X, R], qnf)
     hmt = Operator(bs, tms_hmt)
-    hmt_mat = OpMat(hmt ; type = Float64)
+    hmt_mat = OpMat(hmt)
     enrg, st = GetEigensystem(hmt_mat, 10)
 
     l2 = Operator(bs, tms_l2)
-    l2_mat = OpMat(l2 ; type = Float64)
+    l2_mat = OpMat(l2)
     l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
     
     c2 = Operator(bs, tms_c2)
-    c2_mat = OpMat(c2 ; type = Float64)
+    c2_mat = OpMat(c2)
     c2_val = [ st[:, i]' * c2_mat * st[:, i] for i in eachindex(enrg)]
     
     for i in eachindex(enrg)

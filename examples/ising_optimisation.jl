@@ -1,11 +1,12 @@
 # This example defines a cost function as the square sum of the deviations of 
 # ∂^nσ, ∂^nϵ and T to evaluate the conformal symmetry for Ising model 
 # and minimises this cost function to find the best parameter.
-# On my table computer, this calculation takes 21.726 s
+# On my table computer, this calculation takes 6.472 s
 
 using FuzzifiED
 using Optim
 FuzzifiED.SilentStd = true
+FuzzifiED.ElementType = Float64
 const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
@@ -40,11 +41,11 @@ function cost(ps_pot)
     for (P, Z, R, nst) in secf_lst
         bs = Basis(cfs, [P, Z, R], qnf)
         hmt = Operator(bs, tms_hmt)
-        hmt_mat = OpMat(hmt ; type = Float64)
+        hmt_mat = OpMat(hmt)
         enrg, st = GetEigensystem(hmt_mat, nst)
 
         l2 = Operator(bs, tms_l2)
-        l2_mat = OpMat(l2 ; type = Float64)
+        l2_mat = OpMat(l2)
         l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 
         for i in eachindex(enrg)

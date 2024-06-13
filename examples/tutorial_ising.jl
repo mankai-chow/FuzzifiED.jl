@@ -36,14 +36,14 @@ tms_hmt = SimplifyTerms(
 
 # Generate the sparse matrix and diagonalise 
 hmt = Operator(bs, tms_hmt)
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 10)
 @show enrg
 
 # Measure the total angular momentum
 tms_l2 = GetL2Terms(nm, 2)
 l2 = Operator(bs, tms_l2)
-l2_mat = OpMat(l2 ; type = Float64)
+l2_mat = OpMat(l2)
 l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 @show l2_val
 
@@ -54,7 +54,7 @@ st_L2T = l2_mat * st[:, 3]
 # Repeat the calculation for the Z_2-odd sector
 bs1 = Basis(cfs, [1, -1, 1], qnf)
 hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) 
-hmt_mat = OpMat(hmt ; type = Float64)
+hmt_mat = OpMat(hmt)
 enrg1, st1 = GetEigensystem(hmt_mat, 10)
 st_I = st[:, 1] 
 st_e = st[:, 2] 
