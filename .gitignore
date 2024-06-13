@@ -3,4 +3,5 @@
 .vscode/
 docs/build
 docs/publish
+docs/src/assets/
 **offsync**

@@ -53,9 +53,9 @@ mutable struct OpMat{T <: Union{Float64, ComplexF64}}
     end
 end 
 """
-    function OpMat[{T}](op :: Operator ; num_th :: Int64, disp_std :: Bool) :: OpMat{T}
+    function OpMat[{type}](op :: Operator ; num_th :: Int64, disp_std :: Bool) :: OpMat{type}
 
-Generates the sparse matrix from the operator. The parameter `T` is either `Float64` or `ComplexF64` ; it is facultative, given by `ElementType` by default. 
+Generates the sparse matrix from the operator. The parameter `type` is either `Float64` or `ComplexF64` ; it is facultative, given by `ElementType` by default. 
 
 # Arguments 
 

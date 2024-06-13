@@ -23,6 +23,6 @@ NumThreads :: Int = Threads.nthreads()
 """
     ElementType :: DataType = ComplexF64
 
-set the default type of the operator elements. `ComplexF64` by default. 
+set the default type of the operator elements, either `ComplexF64` or `Float64`. `ComplexF64` by default. 
 """
 ElementType :: DataType = ComplexF64
