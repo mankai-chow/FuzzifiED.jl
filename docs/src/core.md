@@ -1,5 +1,15 @@
 # Core functions
 
+## Global parameters
+
+The following parameters globally defines how FuzzifiED works, _viz._ whether it outputs logs, how many threads it uses and where it reads its libraries. In general, you can keep it at default. 
+```@docs
+SilentStd
+NumThreads
+Libpath
+ElementType
+```
+
 ## Quantum numbers
 
 FuzzifiED implements diagonal and off-diagonal quantum numbers. They are defined as
@@ -112,14 +122,4 @@ OpMat(matcsc :: SparseMatrixCSC)
 ```@docs
 StateDecompMat(st :: Vector{<:Number}, bs0 :: Basis, bsa :: Basis, bsb :: Basis, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number})
 GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, secd_lst :: Vector{Vector{Vector{Int64}}}, secf_lst :: Vector{Vector{Vector{Int64}}} ; qnd_a :: Vector{QNDiag}, qnd_b :: Vector{QNDiag} = qnd_a, qnf_a :: Vector{QNOffd}, qnf_b :: Vector{QNOffd} = qnf_a, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oa .^ 2)))
-```
-
-## Global parameters
-
-The following parameters globally defines how FuzzifiED works, _viz._ whether it outputs logs, how many threads it uses and where it reads its libraries. In general, you can keep it at default. 
-```@docs
-SilentStd
-NumThreads
-Libpath
-ElementType
 ```
