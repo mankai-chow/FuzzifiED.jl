@@ -19,6 +19,7 @@ include("core/param.jl")
 export NumThreads
 export SilentStd
 export Libpath
+export ElementType
 
 include("core/qn.jl")
 export QNDiag

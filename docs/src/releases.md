@@ -1,10 +1,5 @@
 # Release notes 
 
-## On-going constructions 
-
-- Add support for ``\mathrm{O}(3)`` model. 
-- Add calculation for entanglement. 
-
 ## June 2024
 
 ### 11 June, 2024 (Version 0.7.1)
