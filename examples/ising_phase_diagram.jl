@@ -9,7 +9,7 @@ const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
 const σz = [  1  0 ;  0 -1 ]
 FuzzifiED.ElementType = Float64
-≊(x, y) = abs(x - y) < eps(Float32)
+≈(x, y) = abs(x - y) < eps(Float32)
 
 nm = 12
 qnd = [ 

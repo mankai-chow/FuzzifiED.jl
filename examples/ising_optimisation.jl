@@ -10,7 +10,7 @@ FuzzifiED.ElementType = Float64
 const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
-≊(x, y) = abs(x - y) < eps(Float32)
+≈(x, y) = abs(x - y) < eps(Float32)
 
 nm = 10
 qnd = [ 
@@ -55,14 +55,14 @@ function cost(ps_pot)
 
     sort!(result, by = st -> real(st[1]))
     enrg_0 = result[1][1]
-    enrg_T = filter(st -> st[2] ≊ 6 && st[3] ≊ 1 && st[4] ≊ 1, result)[1][1]
+    enrg_T = filter(st -> st[2] ≈ 6 && st[3] ≈ 1 && st[4] ≈ 1, result)[1][1]
     result_dim = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
-    Δσ   = filter(st -> st[3] ≊ 0 && st[5] ≊ -1, result_dim)[1][1]
-    Δ∂σ  = filter(st -> st[3] ≊ 2 && st[5] ≊ -1, result_dim)[1][1]
-    Δ∂∂σ = filter(st -> st[3] ≊ 6 && st[5] ≊ -1, result_dim)[1][1]
-    Δ□σ  = filter(st -> st[3] ≊ 0 && st[5] ≊ -1, result_dim)[2][1]
-    Δϵ   = filter(st -> st[3] ≊ 0 && st[5] ≊  1, result_dim)[2][1]
-    Δ∂ϵ  = filter(st -> st[3] ≊ 2 && st[5] ≊  1, result_dim)[1][1]
+    Δσ   = filter(st -> st[3] ≈ 0 && st[5] ≈ -1, result_dim)[1][1]
+    Δ∂σ  = filter(st -> st[3] ≈ 2 && st[5] ≈ -1, result_dim)[1][1]
+    Δ∂∂σ = filter(st -> st[3] ≈ 6 && st[5] ≈ -1, result_dim)[1][1]
+    Δ□σ  = filter(st -> st[3] ≈ 0 && st[5] ≈ -1, result_dim)[2][1]
+    Δϵ   = filter(st -> st[3] ≈ 0 && st[5] ≈  1, result_dim)[2][1]
+    Δ∂ϵ  = filter(st -> st[3] ≈ 2 && st[5] ≈  1, result_dim)[1][1]
 
     dim_1 = [Δ∂σ - Δσ, Δ∂∂σ - Δσ, Δ□σ - Δσ, Δ∂ϵ - Δϵ, 3.0]
     dim_0 = Float64[1, 2, 2, 1, 3]

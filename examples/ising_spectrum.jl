@@ -8,7 +8,7 @@ const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
 FuzzifiED.ElementType = Float64
-≊(x, y) = abs(x - y) < eps(Float32)
+≈(x, y) = abs(x - y) < eps(Float32)
 
 nm = 12
 qnd = [ 
@@ -44,10 +44,10 @@ end
 
 sort!(result, by = st -> real(st[1]))
 enrg_0 = result[1][1]
-enrg_T = filter(st -> st[2] ≊ 6 && st[3] ≊ 1 && st[4] ≊ 1, result)[1][1]
+enrg_T = filter(st -> st[2] ≈ 6 && st[3] ≈ 1 && st[4] ≈ 1, result)[1][1]
 result_dim = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
 for P in (1, -1), Z in (1, -1)
     display(permutedims(hcat(
-        filter(st -> st[4] ≊ P && st[5] ≊ Z, result_dim)...
+        filter(st -> st[4] ≈ P && st[5] ≈ Z, result_dim)...
     )))
 end

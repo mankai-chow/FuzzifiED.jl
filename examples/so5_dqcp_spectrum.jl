@@ -4,7 +4,7 @@
 
 using FuzzifiED
 FuzzifiED.ElementType = Float64
-≊(x, y) = abs(x - y) < eps(Float32)
+≈(x, y) = abs(x - y) < eps(Float32)
 
 nm = 7
 nf = 4
@@ -63,6 +63,6 @@ end
 
 sort!(result, by = st -> real(st[1]))
 enrg_0 = result[1][1]
-enrg_T = filter(st -> st[2] ≊ 6 && st[3] ≊ 0 && st[4] ≊ 1, result)[1][1]
+enrg_T = filter(st -> st[2] ≈ 6 && st[3] ≈ 0 && st[4] ≈ 1, result)[1][1]
 result_dim = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
 display(permutedims(hcat(result_dim...)))
