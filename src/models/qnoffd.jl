@@ -36,7 +36,7 @@ Return the particle-hole transformation
 # Arguments 
 
 - `nm :: Int64` and `nf :: Int64` are the number of orbitals and the flavours.
-- `permf :: Dict{Int64, Int64}`, `permf :: Vector{Vector{Int64}}` or `Vector{Int64}` gives the flavour permutation ``π_f``. It is either a vector of the cycles, a vector of the target flavours, or a dictionary of the changed elements. _E.g., a permutation ``1↦4,2↦5,3↦3,4↦1,5↦6,6↦2`` can be expressed as `[4,5,3,1,6,2]`, `[[1,4],[2,5,6]]` or `Dict(1=>4,2=>5,4=>1,5=>6,6=>2)`. Facultative, identity by default. 
+- `permf :: Dict{Int64, Int64}`, `permf :: Vector{Vector{Int64}}` or `Vector{Int64}` gives the flavour permutation ``π_f``. It is either a vector of the cycles, a vector of the target flavours, or a dictionary of the changed elements. _E.g._, a permutation ``1↦4,2↦5,3↦3,4↦1,5↦6,6↦2`` can be expressed as `[4,5,3,1,6,2]`, `[[1,4],[2,5,6]]` or `Dict(1=>4,2=>5,4=>1,5=>6,6=>2)`. Facultative, identity by default. 
 - `fac :: Dict{Int64, <: Number}` or `Vector{<: Number}` gives the factor ``α_f``. It is either a vector of all vectors, or a dictionary of all non-unity elements. Facultative, all unity by default. 
 """
 function GetParityQNOffd(nm :: Int64, nf :: Int64, permf :: Union{Dict{Int64, Int64}, Vector{Vector{Int64}}, Vector{Int64}} = Dict{Int64, Int64}(), fac :: Union{Dict{Int64, <: Number}, Vector{<: Number}} = Dict{Int64, ComplexF64}()) 
@@ -51,7 +51,7 @@ end
 
 
 """
-    function GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf[, fac, cyc])
+    function GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf , fac][, cyc])
     
 Return the flavour permutaiton transformation 
 ```math
@@ -60,7 +60,7 @@ Return the flavour permutaiton transformation
 # Arguments 
 
 - `nm :: Int64` and `nf :: Int64` are the number of orbitals and the flavours.
-- `permf :: Dict{Int64, Int64}`, `permf :: Vector{Vector{Int64}}` or `Vector{Int64}` gives the flavour permutation ``π_f``. It is either a vector of the cycles, a vector of the target flavours, or a dictionary of the changed elements. _E.g., a permutation ``1↦4,2↦5,3↦3,4↦1,5↦6,6↦2`` can be expressed as `[4,5,3,1,6,2]`, `[[1,4],[2,5,6]]` or `Dict(1=>4,2=>5,4=>1,5=>6,6=>2)`. Facultative, identity by default. 
+- `permf :: Dict{Int64, Int64}`, `permf :: Vector{Vector{Int64}}` or `Vector{Int64}` gives the flavour permutation ``π_f``. It is either a vector of the cycles, a vector of the target flavours, or a dictionary of the changed elements. _E.g._, a permutation ``1↦4,2↦5,3↦3,4↦1,5↦6,6↦2`` can be expressed as `[4,5,3,1,6,2]`, `[[1,4],[2,5,6]]` or `Dict(1=>4,2=>5,4=>1,5=>6,6=>2)`. Facultative, identity by default. 
 - `fac :: Dict{Int64, <: Number}` or `Vector{<: Number}` gives the factor ``α_f``. It is either a vector of all vectors, or a dictionary of all non-unity elements. Facultative, all unity by default. 
 - `cyc :: Int64` is the period of the permutation. 
 """

@@ -78,7 +78,7 @@ calls the Arpack package to calculate the lowest eigenstates of sparse matrix.
 * `mat :: OpMat{ComplexF64}` is the matrix ;
 * `nst :: Int64` is the number of eigenstates to be calculated ;
 * `tol :: Float64` is the tolerence for the Arpack process. The default value is `1E-8` ;
-* `ncv :: Int64` is an euxiliary parameter needed in the Arpack process. The default value is `max(2 * nst, nst + 10)`
+* `ncv :: Int64` is an auxiliary parameter needed in the Arpack process. The default value is `max(2 * nst, nst + 10)`
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 

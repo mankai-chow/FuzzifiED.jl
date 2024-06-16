@@ -8,7 +8,7 @@ This type stores the information of the basis that respects both diagonal and of
 where ``|i⟩`` is a direct product state, _i.e._, the configurations ``|i_{Ik}⟩`` are grouped into a state ``|I⟩``. 
 
 # Fields
-* `cfs :: Confs` stores the configurations that respect the conserved quantities ;
+* `cfs :: Confs` stores the configurations that respect the QNDiags ;
 * `dim :: Int64` is the dimension of the basis ;
 * `szz :: Int64` records the maximum size ``\\max m_g`` of groups;
 * `cfgr :: Vector{Int64}` is a vector of length `cfs.ncf` and records which group ``|I⟩`` each configuration ``|i⟩`` belong to ;
@@ -99,8 +99,7 @@ end
 
 
 """
-    GetConfWeight(bs :: Basis, st :: Vector{ComplexF64}, cf :: Int64) :: ComplexF64
-    GetConfWeight(bs :: Basis, st :: Vector{Float}, cf :: Int64) :: ComplexF64
+    GetConfWeight(bs :: Basis, st :: Vector{<:Number}, cf :: Int64) :: ComplexF64
 
 looks up a the weight of a configuration in a state. 
 
@@ -115,7 +114,7 @@ looks up a the weight of a configuration in a state.
 * The weight of the configuration in the state 
 
 """
-function GetConfWeight(bs :: Basis, st :: Vector, cf :: Int64)
+function GetConfWeight(bs :: Basis, st :: Union{Vector{ComplexF64}, Vector{Float64}}, cf :: Int64)
     id = GetConfId(bs.cfs, cf)
     return st[bs.cfgr[id]] * bs.cffac[id]
 end

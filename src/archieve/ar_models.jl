@@ -5,8 +5,8 @@
 ```julia
 bs = Basis(cfs, [qn_r, qn_z...], [
     GetRotyQNOffd(nm, nf)
-    GetFlavPermQNOffd(nm, nf, [ perm1 ]),
-    GetFlavPermQNOffd(nm, nf, [ perm2 ])...
+    GetFlavPermQNOffd(nm, nf, [ perm1 ], cyc1),
+    GetFlavPermQNOffd(nm, nf, [ perm2 ], cyc2)...
 ])
 ```
 
@@ -29,8 +29,8 @@ function GetSnBasis(cfs :: Confs, nf :: Int64 ; qn_r :: Int64 = 0, perm :: Vecto
         We have improved the interface for the function `GetSnBasis`. Please consider using in the future
             bs = Basis(cfs, [qn_r, qn_z...], [
                 GetRotyQNOffd(nm, nf)
-                GetFlavPermQNOffd(nm, nf, [ perm1 ]),
-                GetFlavPermQNOffd(nm, nf, [ perm2 ])...
+                GetFlavPermQNOffd(nm, nf, [ perm1 ], cyc1),
+                GetFlavPermQNOffd(nm, nf, [ perm2 ], cyc2)...
             ])
         For detail please visit http://docs.fuzzified.world/models/#Off-diagonal-quantum-numbers-on-fuzzy-sphere. This function may be superceded in the future version. 
         """

@@ -31,17 +31,16 @@ generates the configurations from the list of QNDiags.
 * `secd :: Vector{Int64}` is the set of ``Q_i`` for the selected configurations in the sector.
 * `qnd :: Vector{QNDiag}` is the set of [QNDiags](@ref QNDiag). 
 * `nor :: Int64` is the number of less significant bits used to generate the Lin table. Facultative, ``N_o/2`` by default.
-* `modul :: Vector{Int64}` is the modulus of each quantum number. Setting it to 1 means there is no modulus. Facultative, all 1 by default. 
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output
 
-* `cfs :: Confs` is a [Confs](@ref Confs) object
+* `cfs :: Confs` is a [Confs](@ref Confs) object.
 
 # Note 
 
-If your qnd has negative entries, the first QNDiag must be the number of electrons
+If your `qnd` has negative entries, QNDiags must contain the number of electrons.
 """
 function Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag} ; nor :: Int64 = div(no, 2), num_th :: Int64 = NumThreads, disp_std :: Bool = !SilentStd)
     nqnd = length(secd)

@@ -96,6 +96,22 @@ function adjoint(tms :: Vector{Term})
     return adjoint.(tms)
 end
 
+function ParticleHole(tm :: Term)
+    nc = length(tm.cstr)
+    cstr1 = [ isodd(i) ? 1 - tm.cstr[i] : tm.cstr[i] for i = 1 : nc]
+    return Term(tm.coeff, cstr1)
+end
+"""
+    function ParticleHole(tm :: Term) :: Term
+    function ParticleHole(tms :: Vector{Term}) :: Vector{Term}
+
+Return the particle-hole transformation of a series of terms. For each term ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}… c^{(p_l)}_{o_l}``, the transformation results in ``Uc^{(1-p_1)}_{o_1}c^{(1-p_2)}_{o_2}…c^{(1-p_l)}_{o_l}``
+"""
+function ParticleHole(tms :: Vector{Term})
+    return ParticleHole.(tms)
+end
+
+
 
 """
     function NormalOrder(tm :: Term) :: Vector{Term}

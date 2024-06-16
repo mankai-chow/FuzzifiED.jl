@@ -1,8 +1,8 @@
 # Core functions
 
-## Global parameters
+## Environment parameters
 
-The following parameters globally defines how FuzzifiED works, _viz._ whether it outputs logs, how many threads it uses and where it reads its libraries. In general, you can keep it at default. 
+The following environment parameters defines how FuzzifiED works, _viz._ whether it outputs logs, how many threads it uses and where it reads its libraries. In general, you can keep it at default. 
 ```@docs
 SilentStd
 NumThreads
@@ -51,7 +51,7 @@ Basis(cfs :: Confs)
 ```
 The look-back of the weight of a configuration in a state can be done by 
 ```@docs
-GetConfWeight(bs :: Basis, st :: Vector, cf :: Int64)
+GetConfWeight(bs :: Basis, st :: Union{Vector{ComplexF64}, Vector{Float64}}, cf :: Int64)
 ```
 
 ## Term
@@ -59,12 +59,13 @@ GetConfWeight(bs :: Basis, st :: Vector, cf :: Int64)
 ```@docs
 Term
 ```
-The product of terms with a number, the sum and product of terms and the adjoint is defined
+The product of terms with a number, the sum and product of terms, adjoint and particle-hole transformation are defined
 ```@docs
 *(fac :: Number, tms :: Vector{Term})
 +(tms1 :: Vector{Term}, tms2 :: Vector{Term})
 *(tms1 :: Vector{Term}, tms2 :: Vector{Term})
 adjoint(tms :: Vector{Term})
+ParticleHole(tms :: Vector{Term})
 ```
 The terms can be simplified by 
 ```@docs

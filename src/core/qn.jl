@@ -21,9 +21,9 @@ where ``i=1,…,N_U`` is the index of quantum number, ``o`` is the index of orbi
 
 It can be initialised by the following method
 ```julia
-QNDiag(name :: String, charge :: Vector{Int64}[, modul :: Int64]) :: QNDiag
+QNDiag([name :: String, ]charge :: Vector{Int64}[, modul :: Int64]) :: QNDiag
 ```
-The argument `modul` is facultative. By default `modul` is set to 1. 
+The arguments `name` and `modul` is facultative. By default `name` is set to `\"QN\"` and `modul` is set to 1. 
 """
 mutable struct QNDiag
     name :: String
@@ -64,7 +64,7 @@ end
     function +(qnd1 :: QNDiag, qnd2 :: QNDiag) :: QNDiag 
     function -(qnd1 :: QNDiag, qnd2 :: QNDiag) :: QNDiag 
 
-returns the sum or substraction of two QNDiags, whose name is the samea as `qnd1`, charge is the same as `qnd1` and `qnd2`, and modulus is the GCD of `qnd1` and `qnd2`. If `qnd1` and `qnd2` are both ``ℤ_p`` quantum numbers and their modulus are coprime, a trivial QNDiag will be returned. 
+returns the sum or substraction of two QNDiags, whose name is the samea as `qnd1`, charge is the same as `qnd1 ± qnd2`, and modulus is the GCD of `qnd1` and `qnd2`. If `qnd1` and `qnd2` are both ``ℤ_p`` quantum numbers and their modulus are coprime, a trivial QNDiag will be returned. 
 """
 function +(qnd1 :: QNDiag, qnd2 :: QNDiag)
     if (qnd1.modul == 1)
