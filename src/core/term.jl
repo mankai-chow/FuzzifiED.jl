@@ -164,7 +164,7 @@ simplifies the sum of terms such that
 - each term is normal ordered,
 - like terms are combined, and terms with zero coefficients are removed.
 """
-function SimplifyTerms(tms :: Vector{Term})
+function SimplifyTerms(tms :: Vector{Term}) :: Vector{Term}
     tms1 = vcat(NormalOrder.(tms)...)
     sort!(tms1, by = tm -> sum([(tm.cstr[i] + π) * exp(i) for i in eachindex(tm.cstr)]))
     i = 1
