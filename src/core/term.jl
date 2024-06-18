@@ -122,9 +122,7 @@ rearrange a term such that
 return a list of terms whose result is equal to the original term. 
 """
 function NormalOrder(tm_t :: Term)
-    # 
-    tm = deepcopy(tm_t)
-    #
+
     coeff0 = tm.coeff
     cstr0 = tm.cstr
     for i = 1 : 2 : length(cstr0) - 3
