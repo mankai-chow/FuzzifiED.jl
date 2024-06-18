@@ -121,7 +121,10 @@ rearrange a term such that
 - the orbital index of the creation operators are in ascending order and the annihilation operators in descending order. 
 return a list of terms whose result is equal to the original term. 
 """
-function NormalOrder(tm :: Term)
+function NormalOrder(tm_t :: Term)
+    # 
+    tm = deepcopy(tm_t)
+    #
     coeff0 = tm.coeff
     cstr0 = tm.cstr
     for i = 1 : 2 : length(cstr0) - 3
@@ -164,7 +167,11 @@ simplifies the sum of terms such that
 - each term is normal ordered,
 - like terms are combined, and terms with zero coefficients are removed.
 """
-function SimplifyTerms(tms :: Vector{Term}) :: Vector{Term}
+function SimplifyTerms(tms_t :: Vector{Term}) :: Vector{Term}
+    # 
+    tms = deepcopy(tms_t)
+    #
+    
     tms1 = vcat(NormalOrder.(tms)...)
     sort!(tms1, by = tm -> sum([(tm.cstr[i] + π) * exp(i) for i in eachindex(tm.cstr)]))
     i = 1
