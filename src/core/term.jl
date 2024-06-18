@@ -121,7 +121,7 @@ rearrange a term such that
 - the orbital index of the creation operators are in ascending order and the annihilation operators in descending order. 
 return a list of terms whose result is equal to the original term. 
 """
-function NormalOrder(tm_t :: Term)
+function NormalOrder(tm :: Term)
 
     coeff0 = tm.coeff
     cstr0 = tm.cstr
