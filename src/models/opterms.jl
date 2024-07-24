@@ -38,7 +38,7 @@ end
 
 
 """
-    GetDenIntTerms(nm :: Int64, nf :: Int64[, ps_pot :: Vector{<:Number}][, mat_a :: Matrix{<:Number}[, mat_b :: Matrix{<:Number}]]) :: Vector{Term}
+    GetDenIntTerms(nm :: Int64, nf :: Int64[, ps_pot :: Vector{<:Number}][, mat_a :: Matrix{<:Number}[, mat_b :: Matrix{<:Number}]][ ; m_kept :: Vector{Int64}]) :: Vector{Term}
 
 Return the normal-ordered density-density term in the Hamiltonian 
 ```math 
@@ -52,9 +52,10 @@ Return the normal-ordered density-density term in the Hamiltonian
 - `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``. Facultative, `[1.0]` by default. 
 - `mat_a :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^A_{ff'}``. Facultative, ``I_{N_f}`` by default. 
 - `mat_b :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^B_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
+- `m_kept :: Vector{Int64}` is a list of orbitals that range from 1 to `nm`. Facultative, if specified, only terms for which all ``m_i`` are in the list are kept. 
 
 """
-function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a'))
+function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm))
     no = nm * nf
     int_el = GetIntMatrix(nm, ps_pot)
     tms = Vector{Term}(undef, 0)
@@ -62,18 +63,22 @@ function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, ma
     for o1 = 1 : no
         m1 = div(o1 - 1, nf) + 1
         f1 = mod(o1 - 1, nf) + 1
+        if (m1 ∉ m_kept) continue end
         for o2 = 1 : no 
             m2 = div(o2 - 1, nf) + 1
             f2 = mod(o2 - 1, nf) + 1
             if (o1 == o2) continue end
+            if (m2 ∉ m_kept) continue end
             # if (f1 < f2) continue end # f1 >= f2
             # if (f1 == f2 && m1 <= m2) continue end 
             for o3 = 1 : no
                 m3 = div(o3 - 1, nf) + 1
                 f3 = mod(o3 - 1, nf) + 1
+                if (m3 ∉ m_kept) continue end
                 if (abs(mat_b[f2, f3]) < 1E-13) continue end 
                 m4 = m1 + m2 - m3 
                 if (m4 <= 0 || m4 > nm) continue end
+                if (m4 ∉ m_kept) continue end
                 for f4 = 1 : nf 
                     if (abs(mat_a[f1, f4]) < 1E-13) continue end
                     o4 = (m4 - 1) * nf + f4
@@ -87,12 +92,12 @@ function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, ma
     end
     return SimplifyTerms(tms)
 end
-GetDenIntTerms(nm :: Int64, nf :: Int64, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetDenIntTerms(nm, nf, [1.0], mat_a, mat_b)
-GetDenIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.0], mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetDenIntTerms(nm, nf, ps_pot, mat_a, mat_b)
+GetDenIntTerms(nm :: Int64, nf :: Int64, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm)) = GetDenIntTerms(nm, nf, [1.0], mat_a, mat_b ; m_kept)
+GetDenIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.0], mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a'), m_kept :: Vector{Int64} = collect(1 : nm)) = GetDenIntTerms(nm, nf, ps_pot, mat_a, mat_b ; m_kept)
 
 
 """
-    GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Vector{<:AbstractMatrix{<:Number}}[, mat_b :: Vector{<:AbstractMatrix{<:Number}}]) :: Vector{Term}
+    GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Vector{<:AbstractMatrix{<:Number}}[, mat_b :: Vector{<:AbstractMatrix{<:Number}}][ ; m_kept :: Vector{Int64}]) :: Vector{Term}
 
 Return the sum of a series of normal-ordered density-density term in the Hamiltonian 
 ```math 
@@ -106,16 +111,17 @@ Return the sum of a series of normal-ordered density-density term in the Hamilto
 - `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``. Facultative, `[1.0]` by default.
 - `mat_a :: Vector{<:AbstractMatrix{<:Number}}` is a vector of `nf`\\*`nf` matrix specifying ``(M^A_{α})_{ff'}``. Facultative, ``I_{N_f}`` by default. 
 - `mat_b :: Vector{<:AbstractMatrix{<:Number}}` is a vector of `nf`\\*`nf` matrix specifying ``(M^B_{α})_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
+- `m_kept :: Vector{Int64}` is a list of orbitals that range from 1 to `nm`. Facultative, if specified, only terms for which all ``m_i`` are in the list are kept. 
 
 """
-function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mats_a :: Vector{<:AbstractMatrix{<:Number}}, mats_b :: Vector{<:AbstractMatrix{<:Number}} = [Matrix(mat_a') for mat_a in mats_a])
-    return sum([GetDenIntTerms(nm, nf, ps_pot, mats_a[i], mats_b[i]) for i in eachindex(mats_a)])
+function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mats_a :: Vector{<:AbstractMatrix{<:Number}}, mats_b :: Vector{<:AbstractMatrix{<:Number}} = [Matrix(mat_a') for mat_a in mats_a] ; m_kept :: Vector{Int64} = collect(1 : nm))
+    return sum([GetDenIntTerms(nm, nf, ps_pot, mats_a[i], mats_b[i]) for i in eachindex(mats_a)] ; m_kept)
 end
-GetDenIntTerms(nm :: Int64, nf :: Int64, mats_a :: Vector{<:AbstractMatrix{<:Number}}, mats_b :: Vector{<:AbstractMatrix{<:Number}} = [Matrix(mat_a') for mat_a in mats_a]) = GetDenIntTerms(nm, nf, [1.0], mats_a, mats_b)
+GetDenIntTerms(nm :: Int64, nf :: Int64, mats_a :: Vector{<:AbstractMatrix{<:Number}}, mats_b :: Vector{<:AbstractMatrix{<:Number}} = [Matrix(mat_a') for mat_a in mats_a] ; m_kept :: Vector{Int64} = collect(1 : nm)) = GetDenIntTerms(nm, nf, [1.0], mats_a, mats_b ; m_kept)
 
 
 """
-    GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}[, mat_b :: Matrix{<:Number}]) :: Vector{Term}
+    GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}[, mat_b :: Matrix{<:Number}][ ; m_kept :: Vector{Int64}]) :: Vector{Term}
 
 Return the normal-ordered pair-pair interaction term in the Hamiltonian 
 ```math 
@@ -129,9 +135,10 @@ Return the normal-ordered pair-pair interaction term in the Hamiltonian
 - `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``. 
 - `mat_a :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^A_{ff'}``. Facultative, ``I_{N_f}`` by default. 
 - `mat_b :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^B_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
+- `m_kept :: Vector{Int64}` is a list of orbitals that range from 1 to `nm`. Facultative, if specified, only terms for which all ``m_i`` are in the list are kept. 
 
 """
-function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a'))
+function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm))
     no = nm * nf
     int_el = GetIntMatrix(nm, ps_pot)
     tms = Vector{Term}(undef, 0)
@@ -139,9 +146,11 @@ function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, m
     for o1 = 1 : no
         m1 = div(o1 - 1, nf) + 1
         f1 = mod(o1 - 1, nf) + 1
+        if (m1 ∉ m_kept) continue end
         for o2 = 1 : no 
             m2 = div(o2 - 1, nf) + 1
             f2 = mod(o2 - 1, nf) + 1
+            if (m2 ∉ m_kept) continue end
             if (o1 == o2) continue end
             if (abs(mat_a[f1, f2]) < 1E-13) continue end 
             # if (f1 < f2) continue end # f1 >= f2
@@ -149,8 +158,10 @@ function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, m
             for o3 = 1 : no
                 m3 = div(o3 - 1, nf) + 1
                 f3 = mod(o3 - 1, nf) + 1
+                if (m3 ∉ m_kept) continue end
                 m4 = m1 + m2 - m3 
                 if (m4 <= 0 || m4 > nm) continue end
+                if (m4 ∉ m_kept) continue end
                 for f4 = 1 : nf 
                     if (abs(mat_b[f3, f4]) < 1E-13) continue end
                     o4 = (m4 - 1) * nf + f4
@@ -164,11 +175,11 @@ function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, m
     end
     return SimplifyTerms(tms)
 end
-GetPairIntTerms(nm :: Int64, nf :: Int64, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetPairIntTerms(nm, nf, [1.0], mat_a, mat_b)
-GetPairIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a')) = GetPairIntTerms(nm, nf, ps_pot, mat_a, mat_b)
+GetPairIntTerms(nm :: Int64, nf :: Int64, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm)) = GetPairIntTerms(nm, nf, [1.0], mat_a, mat_b ; m_kept)
+GetPairIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a'), m_kept :: Vector{Int64} = collect(1 : nm)) = GetPairIntTerms(nm, nf, ps_pot, mat_a, mat_b ; m_kept)
 
 """
-    GetPolTerms(nm :: Int64, nf :: Int64[, mat :: Matrix{<:Number}]) :: Vector{Term}
+    GetPolTerms(nm :: Int64, nf :: Int64[, mat :: Matrix{<:Number}][ ; fld_m :: Vector{<:Number}]) :: Vector{Term}
 
 Return the polarisation term in the Hamiltonian 
 ```math 
@@ -180,9 +191,14 @@ Return the polarisation term in the Hamiltonian
 - `nm :: Int64` is the number of orbitals ;
 - `nf :: Int64` is the number of flavours ; 
 - `mat :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M_{ff'}``. Facultative, ``I_{N_f}`` by default. 
+- `fld_m :: Vector{<:Number}` gives an orbital dependent polarisation
+```math 
+∑_{mff'}h_mc^{†}_{mf}M_{ff'}c_{mf'}
+```
+Facultative. 
 
 """
-function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number} ; fld_m :: Vector{<:Number} = fill(1, nm))
     no = nm * nf
     tms = Vector{Term}(undef, 0)
     for o1 = 1 : no
@@ -191,12 +207,12 @@ function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
         for f2 = 1 : nf 
             if abs(mat[f1, f2]) < 1E-13 continue end
             o2 = (m1 - 1) * nf + f2
-            push!(tms, Term(mat[f1, f2], [1, o1, 0, o2]))
+            push!(tms, Term(mat[f1, f2] * fld_m[m1], [1, o1, 0, o2]))
         end
     end
     return SimplifyTerms(tms)
 end
-GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf)) = GetPolTerms(nm, nf, mat)
+GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), fld_m :: Vector{<:Number}) = GetPolTerms(nm, nf, mat ; fld_m)
 
 
 """

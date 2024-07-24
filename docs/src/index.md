@@ -51,6 +51,8 @@ For a more detailed summary of the background, please visit [« The fuzzified wo
 * Conformal Operator Content of the Wilson-Fisher Transition on Fuzzy Sphere Bilayers, Chao Han, Liangdong Hu, W. Zhu, [arXiv : 2312.04047](https://arxiv.org/abs/2312.04047).
 * The ``g``-function and Defect Changing Operators from Wavefunction Overlap on a Fuzzy Sphere, Zheng Zhou, Davide Gaiotto, Yin-Chen He, Yijian Zou [arXiv : 2401.00039](https://arxiv.org/abs/2401.00039).
 * Entropic ``F``-function of 3D Ising conformal field theory via the fuzzy sphere regularization, Liangdong Hu, W. Zhu, Yin-Chen He, [arXiv : 2401.17362](https://arxiv.org/abs/2401.17362).
+* Studying the 3d Ising surface CFTs on the fuzzy sphere, Zheng Zhou, Yijian Zou [arXiv : 2407.15914](https://arxiv.org/abs/2407.15914).
+* Ising BCFTs from the fuzzy hemisphere, Mykola Dedushenko [arXiv : 2407.15948](https://arxiv.org/abs/2407.15948).
 
 ## Index 
 

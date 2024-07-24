@@ -1,5 +1,11 @@
 # Release notes 
 
+## July 2024
+
+### 24 July, 2024 (Version 0.7.2)
+
+- Add example and support for surface CFTs. 
+
 ## June 2024
 
 ### 11 June, 2024 (Version 0.7.1)
