@@ -5,6 +5,7 @@
 ### 24 July, 2024 (Version 0.7.2)
 
 - Add example and support for surface CFTs. 
+- Add example of Ising cusp.
 
 ## June 2024
 
