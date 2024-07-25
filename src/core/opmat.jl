@@ -20,15 +20,15 @@ mutable struct OpMat{T <: Union{Float64, ComplexF64}}
     elval :: Vector{T}
 
     function OpMat{ComplexF64}(op :: Operator ; num_th = NumThreads, disp_std = !SilentStd)
-        colptr = Array{Int64, 1}(undef, op.bsd.dim + 1)
+        colptr = Vector{Int64}(undef, op.bsd.dim + 1)
         nel_ref = Ref{Int64}(0)
         @ccall Libpath.__op_MOD_count_op(op.bsd.cfs.no :: Ref{Int64}, op.bsd.cfs.nor :: Ref{Int64}, 
             op.bsd.cfs.ncf :: Ref{Int64}, op.bsd.dim :: Ref{Int64}, op.bsd.cfs.conf :: Ref{Int64}, op.bsd.cfs.lid :: Ref{Int64}, op.bsd.cfs.rid :: Ref{Int64}, op.bsd.szz :: Ref{Int64}, op.bsd.cfgr :: Ref{Int64}, op.bsd.cffac :: Ref{ComplexF64}, op.bsd.grel :: Ref{Int64}, op.bsd.grsz :: Ref{Int64}, 
             op.bsf.cfs.ncf :: Ref{Int64}, op.bsf.dim :: Ref{Int64}, op.bsf.cfs.conf :: Ref{Int64}, op.bsf.cfs.lid :: Ref{Int64}, op.bsf.cfs.rid :: Ref{Int64}, op.bsf.szz :: Ref{Int64}, op.bsf.cfgr :: Ref{Int64}, op.bsf.cffac :: Ref{ComplexF64}, op.bsf.grel :: Ref{Int64}, op.bsf.grsz :: Ref{Int64}, 
             op.ntm :: Ref{Int64}, op.nc :: Ref{Int64}, op.cstrs :: Ref{Int64}, op.coeffs :: Ref{ComplexF64}, op.red_q :: Ref{Int64}, op.sym_q :: Ref{Int64}, nel_ref :: Ref{Int64}, colptr :: Ref{Int64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
         nel = nel_ref[]
-        rowid = Array{Int64, 1}(undef, nel)
-        elval = Array{ComplexF64, 1}(undef, nel)
+        rowid = Vector{Int64}(undef, nel)
+        elval = Vector{ComplexF64}(undef, nel)
         @ccall Libpath.__op_MOD_generate_op(op.bsd.cfs.no :: Ref{Int64}, op.bsd.cfs.nor :: Ref{Int64}, 
             op.bsd.cfs.ncf :: Ref{Int64}, op.bsd.dim :: Ref{Int64}, op.bsd.cfs.conf :: Ref{Int64}, op.bsd.cfs.lid :: Ref{Int64}, op.bsd.cfs.rid :: Ref{Int64}, op.bsd.szz :: Ref{Int64}, op.bsd.cfgr :: Ref{Int64}, op.bsd.cffac :: Ref{ComplexF64}, op.bsd.grel :: Ref{Int64}, op.bsd.grsz :: Ref{Int64}, 
             op.bsf.cfs.ncf :: Ref{Int64}, op.bsf.dim :: Ref{Int64}, op.bsf.cfs.conf :: Ref{Int64}, op.bsf.cfs.lid :: Ref{Int64}, op.bsf.cfs.rid :: Ref{Int64}, op.bsf.szz :: Ref{Int64}, op.bsf.cfgr :: Ref{Int64}, op.bsf.cffac :: Ref{ComplexF64}, op.bsf.grel :: Ref{Int64}, op.bsf.grsz :: Ref{Int64}, 
@@ -36,15 +36,15 @@ mutable struct OpMat{T <: Union{Float64, ComplexF64}}
         return new(op.bsd.dim, op.bsf.dim, op.sym_q, nel, colptr, rowid, elval)
     end
     function OpMat{Float64}(op :: Operator ; num_th = NumThreads, disp_std = !SilentStd)
-        colptr = Array{Int64, 1}(undef, op.bsd.dim + 1)
+        colptr = Vector{Int64}(undef, op.bsd.dim + 1)
         nel_ref = Ref{Int64}(0)
         @ccall Libpath.__op_MOD_count_op(op.bsd.cfs.no :: Ref{Int64}, op.bsd.cfs.nor :: Ref{Int64}, 
             op.bsd.cfs.ncf :: Ref{Int64}, op.bsd.dim :: Ref{Int64}, op.bsd.cfs.conf :: Ref{Int64}, op.bsd.cfs.lid :: Ref{Int64}, op.bsd.cfs.rid :: Ref{Int64}, op.bsd.szz :: Ref{Int64}, op.bsd.cfgr :: Ref{Int64}, op.bsd.cffac :: Ref{ComplexF64}, op.bsd.grel :: Ref{Int64}, op.bsd.grsz :: Ref{Int64}, 
             op.bsf.cfs.ncf :: Ref{Int64}, op.bsf.dim :: Ref{Int64}, op.bsf.cfs.conf :: Ref{Int64}, op.bsf.cfs.lid :: Ref{Int64}, op.bsf.cfs.rid :: Ref{Int64}, op.bsf.szz :: Ref{Int64}, op.bsf.cfgr :: Ref{Int64}, op.bsf.cffac :: Ref{ComplexF64}, op.bsf.grel :: Ref{Int64}, op.bsf.grsz :: Ref{Int64}, 
             op.ntm :: Ref{Int64}, op.nc :: Ref{Int64}, op.cstrs :: Ref{Int64}, op.coeffs :: Ref{ComplexF64}, op.red_q :: Ref{Int64}, op.sym_q :: Ref{Int64}, nel_ref :: Ref{Int64}, colptr :: Ref{Int64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
         nel = nel_ref[]
-        rowid = Array{Int64, 1}(undef, nel)
-        elval = Array{Float64, 1}(undef, nel)
+        rowid = Vector{Int64}(undef, nel)
+        elval = Vector{Float64}(undef, nel)
         @ccall Libpath.__op_MOD_generate_op_re(op.bsd.cfs.no :: Ref{Int64}, op.bsd.cfs.nor :: Ref{Int64}, 
             op.bsd.cfs.ncf :: Ref{Int64}, op.bsd.dim :: Ref{Int64}, op.bsd.cfs.conf :: Ref{Int64}, op.bsd.cfs.lid :: Ref{Int64}, op.bsd.cfs.rid :: Ref{Int64}, op.bsd.szz :: Ref{Int64}, op.bsd.cfgr :: Ref{Int64}, op.bsd.cffac :: Ref{ComplexF64}, op.bsd.grel :: Ref{Int64}, op.bsd.grsz :: Ref{Int64}, 
             op.bsf.cfs.ncf :: Ref{Int64}, op.bsf.dim :: Ref{Int64}, op.bsf.cfs.conf :: Ref{Int64}, op.bsf.cfs.lid :: Ref{Int64}, op.bsf.cfs.rid :: Ref{Int64}, op.bsf.szz :: Ref{Int64}, op.bsf.cfgr :: Ref{Int64}, op.bsf.cffac :: Ref{ComplexF64}, op.bsf.grel :: Ref{Int64}, op.bsf.grsz :: Ref{Int64}, 
@@ -88,14 +88,14 @@ calls the Arpack package to calculate the lowest eigenstates of sparse matrix.
 * A `dimd`\\*`nst` matrix that has the same type as `mat` where every column records an eigenstate. 
 """
 function GetEigensystem(mat :: OpMat{ComplexF64}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), num_th = NumThreads, disp_std = !SilentStd)
-    eigval = Array{ComplexF64, 1}(undef, nst + 1)
-    eigvec = Array{ComplexF64, 2}(undef, mat.dimd, nst)
+    eigval = Vector{ComplexF64}(undef, nst + 1)
+    eigvec = Matrix{ComplexF64}(undef, mat.dimd, nst)
     @ccall Libpath.__diag_MOD_diagonalisation(mat.dimd :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{ComplexF64}, nst :: Ref{Int64}, tol :: Ref{Float64}, ncv :: Ref{Int64}, eigval :: Ref{ComplexF64}, eigvec :: Ref{ComplexF64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
     return eigval[1 : end - 1], eigvec
 end 
 function GetEigensystem(mat :: OpMat{Float64}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), num_th = NumThreads, disp_std = !SilentStd)
-    eigval = Array{Float64, 1}(undef, nst + 1)
-    eigvec = Array{Float64, 2}(undef, mat.dimd, nst)
+    eigval = Vector{Float64}(undef, nst + 1)
+    eigvec = Matrix{Float64}(undef, mat.dimd, nst)
     @ccall Libpath.__diag_re_MOD_diagonalisation_re(mat.dimd :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{Float64}, nst :: Ref{Int64}, tol :: Ref{Float64}, ncv :: Ref{Int64}, eigval :: Ref{Float64}, eigvec :: Ref{Float64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
     return eigval[1 : end - 1], eigvec
 end 
@@ -111,12 +111,12 @@ Measure the action of a sparse matrix on a state. `st_d` must be of length `mat.
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 """
 function *(mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
-    st_f = Array{ComplexF64, 1}(undef, mat.dimf)
+    st_f = Vector{ComplexF64}(undef, mat.dimf)
     @ccall Libpath.__diag_MOD_vec_prod(mat.dimd :: Ref{Int64}, mat.dimf :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{ComplexF64}, st_d :: Ref{ComplexF64}, st_f :: Ref{ComplexF64}, num_th :: Ref{Int64}) :: Nothing
     return st_f
 end
 function *(mat :: OpMat{Float64}, st_d :: Vector{Float64} ; num_th = NumThreads)
-    st_f = Array{Float64, 1}(undef, mat.dimf)
+    st_f = Vector{Float64}(undef, mat.dimf)
     @ccall Libpath.__diag_re_MOD_vec_prod_re(mat.dimd :: Ref{Int64}, mat.dimf :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{Float64}, real.(st_d) :: Ref{Float64}, st_f :: Ref{Float64}, num_th :: Ref{Int64}) :: Nothing
     return st_f
 end

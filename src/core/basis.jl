@@ -22,7 +22,7 @@ mutable struct Basis
     szz :: Int64
     cfgr :: Vector{Int64}
     cffac :: Vector{ComplexF64}
-    grel :: Array{Int64, 2}
+    grel :: Matrix{Int64}
     grsz :: Vector{Int64}
 end 
 
@@ -52,8 +52,8 @@ function Basis(cfs :: Confs, secf :: Vector{<:Number}, qnf :: Vector{QNOffd} ; n
     ph_o_mat = reduce(hcat, [ qnfi.ph for qnfi in qnf ])
     fac_o_mat = reduce(hcat, [ qnfi.fac for qnfi in qnf ])
     dim_ref = Ref{Int64}(0)
-    cfgr = Array{Int64, 1}(undef, cfs.ncf)
-    cffac = Array{ComplexF64, 1}(undef, cfs.ncf)
+    cfgr = Vector{Int64}(undef, cfs.ncf)
+    cffac = Vector{ComplexF64}(undef, cfs.ncf)
     szz = prod([ abs(secf[i]) < 1E-8 ? 1 : cyc[i] for i = 1 : nqnf ])
     @ccall Libpath.__bs_MOD_generate_bs_cfgr(
         cfs.no :: Ref{Int64}, cfs.nor :: Ref{Int64}, cfs.ncf :: Ref{Int64}, cfs.lid :: Ref{Int64}, cfs.rid :: Ref{Int64}, cfs.conf :: Ref{Int64}, 
@@ -63,8 +63,8 @@ function Basis(cfs :: Confs, secf :: Vector{<:Number}, qnf :: Vector{QNOffd} ; n
         num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}
     ) :: Nothing
     dim = dim_ref[]
-    grel = Array{Int64, 2}(undef, szz, dim)
-    grsz = Array{Int64, 1}(undef, dim)
+    grel = Matrix{Int64}(undef, szz, dim)
+    grsz = Vector{Int64}(undef, dim)
     @ccall Libpath.__bs_MOD_generate_bs_grel(
         cfs.ncf :: Ref{Int64}, szz :: Ref{Int64}, dim :: Ref{Int64}, 
         cfgr :: Ref{Int64}, grel :: Ref{Int64}, grsz :: Ref{Int64}, 

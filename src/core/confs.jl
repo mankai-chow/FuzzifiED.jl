@@ -14,9 +14,9 @@ mutable struct Confs
     no :: Int64 
     nor :: Int64
     ncf :: Int64
-    conf :: Array{Int64,1} 
-    lid :: Array{Int64,1}
-    rid :: Array{Int64,1}
+    conf :: Vector{Int64} 
+    lid :: Vector{Int64}
+    rid :: Vector{Int64}
 end 
 
 
@@ -44,7 +44,7 @@ If your `qnd` has negative entries, QNDiags must contain the number of electrons
 """
 function Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag} ; nor :: Int64 = div(no, 2), num_th :: Int64 = NumThreads, disp_std :: Bool = !SilentStd)
     nqnd = length(secd)
-    lid = Array{Int64, 1}(undef, 2 ^ (no - nor) + 1)
+    lid = Vector{Int64}(undef, 2 ^ (no - nor) + 1)
     ref_ncf = Ref{Int64}(0)
     secd1 = Int64[]
     qnd1 = Vector{Int64}[]
@@ -76,8 +76,8 @@ function Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag} ; nor :
         num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}
     ) :: Nothing
     ncf = ref_ncf[]
-    rid = Array{Int64, 1}(undef, 2 ^ nor + 1)
-    conf = Array{Int64, 1}(undef, ncf)
+    rid = Vector{Int64}(undef, 2 ^ nor + 1)
+    conf = Vector{Int64}(undef, ncf)
     @ccall Libpath.__cfs_MOD_generate_cfs(
         no :: Ref{Int64}, nor :: Ref{Int64}, 
         nqnd :: Ref{Int64}, secd1 :: Ref{Int64}, 
