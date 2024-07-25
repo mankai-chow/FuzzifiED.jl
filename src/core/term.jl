@@ -165,7 +165,26 @@ simplifies the sum of terms such that
 - each term is normal ordered,
 - like terms are combined, and terms with zero coefficients are removed.
 """
-function SimplifyTerms(tms_t :: Vector{Term}) :: Vector{Term}
+function SimplifyTerms(tms :: Vector{Term}) :: Vector{Term}
+    dict_tms = Dict{Vector{Int64}, ComplexF64}()
+    for tm in tms 
+        tm1 = NormalOrder(tm)
+        for tmi in tm1 
+            if haskey(dict_tms, tmi.cstr) 
+                dict_tms[tmi.cstr] += tmi.coeff
+            else
+                dict_tms[tmi.cstr] = tmi.coeff
+            end
+        end
+    end
+    tms_f = [ 
+        Term(coeff_i, cstr_i)
+        for (cstr_i, coeff_i) in dict_tms if abs(coeff_i) > 1E-13
+    ]
+    return tms_f
+end
+
+function SimplifyTermsOld(tms_t :: Vector{Term}) :: Vector{Term}
     # 
     tms = deepcopy(tms_t)
     #

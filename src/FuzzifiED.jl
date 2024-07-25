@@ -38,6 +38,7 @@ export Term
 export ParticleHole
 export NormalOrder
 export SimplifyTerms
+export SimplifyTermsOld
 
 include("core/operator.jl")
 export Operator
