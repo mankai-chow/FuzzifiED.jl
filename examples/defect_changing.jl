@@ -1,6 +1,6 @@
 # This example calculates the spectrum of the defect creation and changing operators 
 # of the magnetic line defect in 3d Ising model.
-# This example reproduces Table 2 and Figure 5 in arXiv : 2401.00039
+# This example reproduces Table 2 and Figure 5 in SciPost Phys. 17, 021 (2024).
 # On my table computer, this calculation takes 6.378 s
 
 using FuzzifiED
