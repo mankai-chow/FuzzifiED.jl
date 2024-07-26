@@ -6,6 +6,7 @@ using Requires
 using WignerSymbols
 using SphericalHarmonics
 using FuzzifiED_jll
+using HDF5
 import Base.:+
 import Base.:-
 import Base.:*
@@ -102,7 +103,6 @@ function __init__()
 
     @require ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5" begin
         using ITensors
-        using HDF5
 
         include("itensors_support/itensors_format.jl")
         export QNDiagFromSites

@@ -107,3 +107,26 @@ function GetConfId(cfs :: Confs, cf :: Int64)
     cf_r = cf & (1 << cfs.nor - 1)
     return cfs.lid[cf_l + 1] + cfs.rid[cf_r + 1]
 end 
+
+function HDF5.write(parent :: Union{HDF5.File, HDF5.Group}, name :: String, cfs :: Confs)
+    grp = create_group(parent, name)
+    write(grp, "no", cfs.no)
+    write(grp, "nor", cfs.nor)
+    write(grp, "ncf", cfs.ncf)
+    write(grp, "conf", cfs.conf)
+    write(grp, "lid", cfs.lid)
+    write(grp, "rid", cfs.rid)
+    close(grp)
+end
+
+function HDF5.read(parent :: Union{HDF5.File, HDF5.Group}, name :: String, :: Type{Confs})
+    grp = open_group(parent, name)
+    no = read(grp, "no")
+    nor = read(grp, "nor")
+    ncf = read(grp, "ncf")
+    conf = read(grp, "conf")
+    lid = read(grp, "lid")
+    rid = read(grp, "rid")
+    close(grp)
+    return Confs(no, nor, ncf, conf, lid, rid)
+end
