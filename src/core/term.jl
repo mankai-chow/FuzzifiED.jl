@@ -154,7 +154,7 @@ function NormalOrder(tm :: Term)
         end
     end
     if length(cstr0) == 0 return Term[Term(coeff0, [-1, -1])] end
-    if (cstr0[end - 1] == -1) return Term[Term(coeff0, cstr0[1 : end - 2])] end
+    if (cstr0[end - 1] == -1 && length(cstr0) > 2) return Term[Term(coeff0, cstr0[1 : end - 2])] end
     return Term[tm]
 end
 
