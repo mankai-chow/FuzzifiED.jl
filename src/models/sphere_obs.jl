@@ -243,7 +243,6 @@ function Electron(nm :: Int64, nf :: Int64, f :: Int64)
 end
 
 
-
 """
     function Density(nm :: Int64, nf :: Int64[, mat :: Matrix{<:Number}]) :: SphereObs
 
@@ -265,3 +264,24 @@ function Density(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     return obs
 end
 Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf)) = Density(nm, nf, mat)
+
+
+"""
+    function PairObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: SphereObs
+
+returns the pair operator ``Δ=∑_{ff'}ψ_{f}M_{ff'}ψ_{f'}``
+
+# Arguments
+
+- `nf :: Int64` is the number of flavours.
+- `nm :: Int64` is the number of orbitals.
+- `mat :: Int64` is the matrix ``M_{ff'}``.
+"""
+function PairObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+    el = [ StoreComps(Electron(nm, nf, f)) for f = 1 : nf ]
+    obs = SphereObs(0, 0, Dict{Tuple{Int64, Int64}, Vector{Term}}())
+    for f1 = 1 : nf, f2 = 1 : nf
+        if abs(mat[f1, f2]) < 1E-13 continue end 
+        obs += mat[f1, f2] * el[f1] * el[f2]
+    end
+end

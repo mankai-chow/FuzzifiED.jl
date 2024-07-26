@@ -84,6 +84,7 @@ export GetComponent
 export GetPointValue
 export Electron
 export Density
+export PairObs
 
 include("archieve/ar_core.jl")
 
