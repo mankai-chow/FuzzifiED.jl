@@ -284,4 +284,5 @@ function PairObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
         if abs(mat[f1, f2]) < 1E-13 continue end 
         obs += mat[f1, f2] * el[f1] * el[f2]
     end
+    return obs
 end
