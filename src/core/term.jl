@@ -167,20 +167,29 @@ simplifies the sum of terms such that
 - like terms are combined, and terms with zero coefficients are removed.
 """
 function SimplifyTerms(tms :: Vector{Term}) :: Vector{Term}
-    dict_tms = Dict{Vector{Int64}, ComplexF64}()
-    for tm in tms 
+    dictlock = [ ReentrantLock() for i = 1 : 64 ]
+    dict_tms = [ Dict{Vector{Int64}, ComplexF64}() for i = 1 : 64 ]
+    
+    Threads.@threads for tm in tms 
         tm1 = NormalOrder(tm)
         for tmi in tm1 
-            if haskey(dict_tms, tmi.cstr) 
-                dict_tms[tmi.cstr] += tmi.coeff
-            else
-                dict_tms[tmi.cstr] = tmi.coeff
+            id = 1 + tmi.cstr[2] & 63
+            Threads.lock(dictlock[id]) 
+            try
+                if haskey(dict_tms[id], tmi.cstr) 
+                    dict_tms[id][tmi.cstr] += tmi.coeff
+                else
+                    dict_tms[id][tmi.cstr] = tmi.coeff
+                end
+            finally
+                Threads.unlock(dictlock[id])
             end
         end
     end
     tms_f = [ 
         Term(coeff_i, cstr_i)
-        for (cstr_i, coeff_i) in dict_tms if abs(coeff_i) > 1E-13
+        for dict_tms_i in dict_tms 
+        for (cstr_i, coeff_i) in dict_tms_i if abs(coeff_i) > eps(Float64)
     ]
     return tms_f
 end
