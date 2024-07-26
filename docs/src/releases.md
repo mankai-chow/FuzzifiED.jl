@@ -2,6 +2,11 @@
 
 ## July 2024
 
+### 26 July, 2024 (Version 0.8.0)
+
+- Improve the performance of SimplifyTerms. 
+- Add file operation. 
+
 ### 24 July, 2024 (Version 0.7.2)
 
 - Add example and support for surface CFTs. 

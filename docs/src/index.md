@@ -38,6 +38,13 @@ Pages = [
 Depth = 2
 ```
 
+## What is new
+
+- Improve the performance of SimplifyTerms. 
+- Add file operation with HDF5. 
+- Add example and support for surface CFTs. 
+- Add example of Ising cusp.
+
 ## References
 
 For a more detailed summary of the background, please visit [« The fuzzified world »](https://www.fuzzified.world/fuzzified-world)

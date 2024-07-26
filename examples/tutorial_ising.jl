@@ -40,6 +40,15 @@ hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 10)
 @show enrg
 
+# Write the sparse matrix into HDF5 file
+using HDF5 
+f = h5open("data.h5", "cw")
+write(f, "hmt_mat", hmt_mat)
+close(f)
+f = h5open("data.h5", "r") 
+hmt_mat1 = read(f, "hmt_mat", OpMat{ComplexF64})
+close(f)
+
 # Measure the total angular momentum
 tms_l2 = GetL2Terms(nm, 2)
 l2 = Operator(bs, tms_l2)
