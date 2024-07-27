@@ -87,7 +87,7 @@ function StoreComps(obs :: SphereObs)
     l2m = obs.l2m
     for l2 = abs(s2) : 2 : l2m
         for m2 = -l2 : 2 : l2 
-            cmps[(l2, m2)] = obs.get_comp(l2, m2)
+            cmps[(l2, m2)] = SimplifyTerms(obs.get_comp(l2, m2))
         end
     end
     obs.stored_q = true 
