@@ -170,7 +170,7 @@ function *(obs1 :: SphereObs, obs2 :: SphereObs)
     l2m2 = obs2.l2m
     l2m = l2m1 + l2m2
     gc = ((l2, m2) -> sum(Vector{Term}[sum(Vector{Term}[sum(Vector{Term}[
-            (iseven(s2 + m2) ? 1 : -1) *
+            (iseven((s2 + m2) ÷ 2) ? 1 : -1) *
             sqrt((l21 + 1) * (l22 + 1) * (l2 + 1) / (4 * π)) *
             wigner3j(l21/2, l22/2, l2/2, -s21/2, -s22/2, s2/2) *
             wigner3j(l21/2, l22/2, l2/2, m21/2, (m2-m21)/2, -m2/2) *
