@@ -2,6 +2,10 @@
 
 ## July 2024
 
+### 28 July, 2024 (Version 0.8.2)
+
+- Fix bugs in GetDenIntTerms and multiplication in SphereObs. 
+
 ### 26 July, 2024 (Version 0.8.0)
 
 - Improve the performance of SimplifyTerms. 

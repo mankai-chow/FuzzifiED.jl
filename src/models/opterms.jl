@@ -115,7 +115,7 @@ Return the sum of a series of normal-ordered density-density term in the Hamilto
 
 """
 function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mats_a :: Vector{<:AbstractMatrix{<:Number}}, mats_b :: Vector{<:AbstractMatrix{<:Number}} = [Matrix(mat_a') for mat_a in mats_a] ; m_kept :: Vector{Int64} = collect(1 : nm))
-    return sum([GetDenIntTerms(nm, nf, ps_pot, mats_a[i], mats_b[i]) for i in eachindex(mats_a)] ; m_kept)
+    return sum([GetDenIntTerms(nm, nf, ps_pot, mats_a[i], mats_b[i] ; m_kept) for i in eachindex(mats_a)])
 end
 GetDenIntTerms(nm :: Int64, nf :: Int64, mats_a :: Vector{<:AbstractMatrix{<:Number}}, mats_b :: Vector{<:AbstractMatrix{<:Number}} = [Matrix(mat_a') for mat_a in mats_a] ; m_kept :: Vector{Int64} = collect(1 : nm)) = GetDenIntTerms(nm, nf, [1.0], mats_a, mats_b ; m_kept)
 
