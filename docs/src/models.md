@@ -63,8 +63,9 @@ The observables can be evaluated either at an angular component or at a real-spa
 GetComponent(obs :: SphereObs, l :: Number, m :: Number)
 GetPointValue(obs :: SphereObs, θ :: Float64, ϕ :: Float64)
 ```
-Two types of operators, _viz._ electrons and density operators are built-in.
+Three types of operators, _viz._ electrons and density operators, and pairing operators are built-in.
 ```@docs
 Electron(nm :: Int64, nf :: Int64, f :: Int64)
 Density(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+Pairing(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
 ```

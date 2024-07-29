@@ -267,7 +267,7 @@ Density(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, 
 
 
 """
-    function PairObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: SphereObs
+    function Pairing(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: SphereObs
 
 returns the pair operator ``Δ=∑_{ff'}ψ_{f}M_{ff'}ψ_{f'}``
 
@@ -277,7 +277,7 @@ returns the pair operator ``Δ=∑_{ff'}ψ_{f}M_{ff'}ψ_{f'}``
 - `nm :: Int64` is the number of orbitals.
 - `mat :: Int64` is the matrix ``M_{ff'}``.
 """
-function PairObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+function Pairing(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     el = [ StoreComps(Electron(nm, nf, f)) for f = 1 : nf ]
     obs = SphereObs(2 * (nm - 1), 2 * (nm - 1), Dict{Tuple{Int64, Int64}, Vector{Term}}())
     for f1 = 1 : nf, f2 = 1 : nf
@@ -286,3 +286,4 @@ function PairObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     end
     return obs
 end
+PairObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) = Pairing(nm, nf, mat)
