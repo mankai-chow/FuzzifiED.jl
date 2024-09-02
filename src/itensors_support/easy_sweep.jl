@@ -100,7 +100,7 @@ This function automatically performs several rounds of DMRG sweeps with increasi
 - `e_tol1 :: Float64` specifies the energy tolerence as a criteria to end the round of sweeps for each round of sweeps. Facultative, `1E-6` by default. 
 - `e_tol :: Float64` specifies the energy tolerence as a criteria to end the entire process. Facultative, `1E-7` by default. 
 - `cutoff :: Vector{Float64}` is the cutoff that will be sent into DMRG. Facultative, `[1.E-9]` by default. 
-- `maxdim0 :: Vector{Int64}` specifies the maximal bond dimensions of the first round of sweeps. Facultative, `[1E-4,3E-5,1E-5,3E-6,1E-6,3E-7]` by default. 
+- `maxdim0 :: Vector{Int64}` specifies the maximal bond dimensions of the first round of sweeps. Facultative, `[10,20,50,100,200,500]` by default. 
 - `noise0 :: Vector{Float64}` specifies the noise of each sweep in the initial round and will be sent into DMRG. Facultative, `[1E-4,3E-5,1E-5,3E-6,1E-6,3E-7]` by default. 
 - `noise :: Vector{Float64}` specifies the noise of each sweep from the second round and will be sent into DMRG. Facultative, `[1E-6,1E-7,0]` by default. 
 - `nsweeps :: Int64` specifies the number of sweeps in each round from the second rounds. Facultative, 10 by default. 
