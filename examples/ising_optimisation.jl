@@ -1,7 +1,8 @@
 # This example defines a cost function as the square sum of the deviations of 
 # ∂^nσ, ∂^nϵ and T to evaluate the conformal symmetry for Ising model 
 # and minimises this cost function to find the best parameter.
-# On my table computer, this calculation takes 6.472 s
+# On my table computer, this calculation takes 7.881 s
+# We acknowlege Wenhan Guo for his help in optimising this example. 
 
 using FuzzifiED
 using Optim
@@ -54,33 +55,35 @@ function cost(ps_pot)
     end
 
     sort!(result, by = st -> real(st[1]))
-    enrg_0 = result[1][1]
-    enrg_T = filter(st -> st[2] ≈ 6 && st[3] ≈ 1 && st[4] ≈ 1, result)[1][1]
-    result_dim = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
-    Δσ   = filter(st -> st[3] ≈ 0 && st[5] ≈ -1, result_dim)[1][1]
-    Δ∂σ  = filter(st -> st[3] ≈ 2 && st[5] ≈ -1, result_dim)[1][1]
-    Δ∂∂σ = filter(st -> st[3] ≈ 6 && st[5] ≈ -1, result_dim)[1][1]
-    Δ□σ  = filter(st -> st[3] ≈ 0 && st[5] ≈ -1, result_dim)[2][1]
-    Δϵ   = filter(st -> st[3] ≈ 0 && st[5] ≈  1, result_dim)[2][1]
-    Δ∂ϵ  = filter(st -> st[3] ≈ 2 && st[5] ≈  1, result_dim)[1][1]
+    try
+        enrg_0 = result[1][1]
+        enrg_T = filter(st -> st[2] ≈ 6 && st[3] ≈ 1 && st[4] ≈ 1, result)[1][1]
+        result_dim = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
+        Δσ   = filter(st -> st[3] ≈ 0 && st[5] ≈ -1, result_dim)[1][1]
+        Δ∂σ  = filter(st -> st[3] ≈ 2 && st[5] ≈ -1, result_dim)[1][1]
+        Δ∂∂σ = filter(st -> st[3] ≈ 6 && st[5] ≈ -1, result_dim)[1][1]
+        Δ□σ  = filter(st -> st[3] ≈ 0 && st[5] ≈ -1, result_dim)[2][1]
+        Δϵ   = filter(st -> st[3] ≈ 0 && st[5] ≈  1, result_dim)[2][1]
+        Δ∂ϵ  = filter(st -> st[3] ≈ 2 && st[5] ≈  1, result_dim)[1][1]
 
-    dim_1 = [Δ∂σ - Δσ, Δ∂∂σ - Δσ, Δ□σ - Δσ, Δ∂ϵ - Δϵ, 3.0]
-    dim_0 = Float64[1, 2, 2, 1, 3]
-    coeff_2 = sum(abs.(dim_1) .^ 2)
-    coeff_1 = sum(conj(dim_1) .* dim_0)
-    coeff_0 = sum(dim_0 .^ 2)
-    renorm = coeff_1 / coeff_2 
-    cost = coeff_0 - abs(coeff_1) ^ 2 / coeff_2
-    lin_cost = sqrt(cost / 5)
-    @show ps_pot
-    @show renorm, lin_cost
-    return cost
+        dim_1 = [Δ∂σ - Δσ, Δ∂∂σ - Δσ, Δ□σ - Δσ, Δ∂ϵ - Δϵ, 3.0]
+        dim_0 = Float64[1, 2, 2, 1, 3]
+        coeff_2 = sum(abs.(dim_1) .^ 2)
+        coeff_1 = sum(conj(dim_1) .* dim_0)
+        coeff_0 = sum(dim_0 .^ 2)
+        renorm = coeff_1 / coeff_2 
+        cost = coeff_0 - abs(coeff_1) ^ 2 / coeff_2
+        lin_cost = sqrt(cost / 5)
+        @show ps_pot
+        @show renorm, lin_cost
+        return cost
+    catch
+        return 100.0
+    end
 end
 
 optimize(cost, 
-    [2.0, 0.40 ], 
-    [4.0, 0.85 ], 
-    [3.0, 0.63], 
-    Fminbox(LBFGS()), 
-    Optim.Options(g_tol = 1e-3, f_tol = 1e-5)
+    [3.0, 0.6], 
+    NelderMead(), 
+    Optim.Options(g_tol = 1e-6)
 )
