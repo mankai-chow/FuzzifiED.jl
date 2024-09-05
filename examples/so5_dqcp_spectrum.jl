@@ -30,13 +30,13 @@ ps_pot_u = [ 1.0]
 ps_pot_v = [-0.9]
 Ω = [ i - j == nf / 2 ? 1 : 0 for i = 1 : nf, j = 1 : nf ]
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, nf ; ps_pot = ps_pot_u) + 
-    GetPairIntTerms(nm, nf ; ps_pot = ps_pot_v, mat_a = Ω)
+    GetDenIntTerms(nm, nf, ps_pot_u) + 
+    GetPairIntTerms(nm, nf, ps_pot_v, Ω)
 )
 tms_l2 = GetL2Terms(nm, nf)
 tms_c2 = SimplifyTerms(
-    GetDenIntTerms(nm, 4 ; ps_pot = [isodd(m) ? -.5 : 0 for m = 1 : nm]) + 
-    GetPairIntTerms(nm, 4 ; ps_pot = [isodd(m) ? -1.0 : 0 for m = 1 : nm], mat_a = Ω)
+    GetDenIntTerms(nm, 4, [isodd(m) ? -.5 : 0 for m = 1 : nm]) + 
+    GetPairIntTerms(nm, 4, [isodd(m) ? -1.0 : 0 for m = 1 : nm], Ω)
 )
 push!(tms_c2, Term(ne + .25 * ne ^ 2, [-1, -1]))
 tms_c2 = SimplifyTerms(tms_c2)
