@@ -160,13 +160,18 @@ end
 
 
 """
-    function SimplifyTerms(tms :: Vector{Term}) :: Vector{Term}
+    function SimplifyTerms(tms :: Vector{Term} ; cutoff :: Float64 = eps(Float64)) :: Vector{Term}
 
 simplifies the sum of terms such that 
 - each term is normal ordered,
 - like terms are combined, and terms with zero coefficients are removed.
+
+# Argument 
+
+- `cutoff :: Float64` is the cutoff such that terms with smaller absolute value of coefficients will be neglected. Facultative, `eps(Float64)` by default. 
+
 """
-function SimplifyTerms(tms :: Vector{Term}) :: Vector{Term}
+function SimplifyTerms(tms :: Vector{Term} ; cutoff :: Float64 = eps(Float64)) :: Vector{Term}
     dictlock = [ ReentrantLock() for i = 1 : 64 ]
     dict_tms = [ Dict{Vector{Int64}, ComplexF64}() for i = 1 : 64 ]
     
@@ -189,7 +194,7 @@ function SimplifyTerms(tms :: Vector{Term}) :: Vector{Term}
     tms_f = [ 
         Term(coeff_i, cstr_i)
         for dict_tms_i in dict_tms 
-        for (cstr_i, coeff_i) in dict_tms_i if abs(coeff_i) > eps(Float64)
+        for (cstr_i, coeff_i) in dict_tms_i if abs(coeff_i) > cutoff
     ]
     return tms_f
 end
