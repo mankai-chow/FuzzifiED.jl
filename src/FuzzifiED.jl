@@ -87,6 +87,13 @@ export Density
 export Pairing
 export PairObs
 
+include("models/ang_modes.jl")
+export AngModes 
+export ElecMod
+export PairMod
+export DenMod
+export FilterComponent
+
 include("archieve/ar_core.jl")
 
 include("archieve/ar_models.jl")
