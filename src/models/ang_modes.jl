@@ -21,7 +21,7 @@ end
 """
     function AngModes(l2m :: Int64, get_comp :: Function) :: AngModes
 
-initialises the modes object from ``2s``, ``2l_{\\max}`` and the function ``(l,m)↦\\Phi_{lm}``
+initialises the modes object from ``2l_{\\max}`` and the function ``(l,m)↦\\Phi_{lm}``
 
 # Arguments
 
@@ -36,7 +36,7 @@ end
 """
     function AngModes(l2m :: Int64, get_comp :: Function) :: AngModes
 
-initialises the modes object from ``2s``, ``2l_{\\max}`` and a list of ``\\Phi_{lm}`` specified by a dictionary. 
+initialises the modes object from ``2l_{\\max}`` and a list of ``\\Phi_{lm}`` specified by a dictionary. 
 
 # Arguments
 
@@ -185,8 +185,8 @@ returns an angular modes object with certain modes filtered out.
 
 # Arguments 
 
-- ``amd :: AngModes`` is the original angular modes
-- ``flt`` is the filter function whose input is the pair ``(l,m)`` and output is a logical that indicates whether this mode is chosen. E.g., if one wants to filter out the modes with angular momentum `l0`, one should put `(l, m) -> l == l0`.
+- `amd :: AngModes` is the original angular modes
+- `flt` is the filter function whose input is the pair ``(l,m)`` and output is a logical that indicates whether this mode is chosen. E.g., if one wants to filter out the modes with angular momentum `l0`, one should put `(l, m) -> l == l0`.
 """
 function FilterComponent(amd :: AngModes, flt) 
     l2m = amd.l2m
