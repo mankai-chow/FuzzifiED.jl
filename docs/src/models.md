@@ -96,6 +96,7 @@ adjoint(amd :: AngModes)
 One can take out either one or a set of components
 ```@docs
 GetComponent(amd :: AngModes, l :: Number, m :: Number)
+FilterL2(amd :: AngModes, l :: Number) 
 FilterComponent(amd :: AngModes, flt) 
 ```
 Three types of operators, _viz._ electrons and density operators, and pairing operators are built-in.
