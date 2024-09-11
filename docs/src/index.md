@@ -38,12 +38,9 @@ Pages = [
 Depth = 2
 ```
 
-## What is new
+## What is new (0.9.0)
 
-- Improve the performance of SimplifyTerms. 
-- Add file operation with HDF5. 
-- Add example and support for surface CFTs. 
-- Add example of Ising cusp.
+- Add angular modes observables.
 
 ## References
 
@@ -61,6 +58,7 @@ For a more detailed summary of the background, please visit [« The fuzzified wo
 * Impurities with a cusp: general theory and 3d Ising, Gabriel Cuomo, Yin-Chen He, Zohar Komargodski, [arXiv : 2406.10186](https://arxiv.org/abs/2406.10186). 
 * Studying the 3d Ising surface CFTs on the fuzzy sphere, Zheng Zhou, and Yijian Zou, [arXiv : 2407.15914](https://arxiv.org/abs/2407.15914).
 * Ising BCFTs from the fuzzy hemisphere, Mykola Dedushenko, [arXiv : 2407.15948](https://arxiv.org/abs/2407.15948).
+* Constructing the Infrared Conformal Generators on the Fuzzy Sphere, Giulia Fardelli, A. Liam Fitzpatrick and Emanuel Katz, [arXiv : 2409.02998](https://arxiv.org/abs/2409.02998).
 
 ## Index 
 

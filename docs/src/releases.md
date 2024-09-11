@@ -1,5 +1,12 @@
 # Release notes 
 
+## September 2024
+
+### 11 September, 2024 (Version 0.9.0)
+
+- Add feature of angular modes observables.
+- Fix typos and bugs.
+
 ## July 2024
 
 ### 28 July, 2024 (Version 0.8.2)

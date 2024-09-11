@@ -69,3 +69,38 @@ Electron(nm :: Int64, nf :: Int64, f :: Int64)
 Density(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
 Pairing(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
 ```
+
+## Angular modes
+
+An angular modes object is similar to spherical observables except that it superposes in the rule of Clebsch-Gordan coefficients and does not have the notion of locality.
+```@docs
+AngModes
+```
+It can be initialised with the following methods 
+```@docs
+AngModes(l2m :: Int64, get_comp :: Function)
+AngModes(l2m :: Int64, cmps :: Dict{Tuple{Int64, Int64}, Vector{Term}})
+```
+The following methods explicitly calculates and stores each component
+```@docs
+StoreComps!(amd :: AngModes)
+StoreComps(amd :: AngModes)
+```
+The multiplication, addition and conjugate of an observable is supported 
+```@docs
+*(fac :: Number, amd :: AngModes) 
++(obs1 :: AngModes, obs2 :: AngModes) 
+adjoint(amd :: AngModes)
+*(obs1 :: AngModes, obs2 :: AngModes)
+```
+One can take out either one or a set of components
+```@docs
+GetComponent(amd :: AngModes, l :: Number, m :: Number)
+FilterComponent(amd :: AngModes, flt) 
+```
+Three types of operators, _viz._ electrons and density operators, and pairing operators are built-in.
+```@docs
+ElecMod(nm :: Int64, nf :: Int64, f :: Int64)
+PairMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+DenMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+```
