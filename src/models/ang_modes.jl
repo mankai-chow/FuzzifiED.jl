@@ -171,7 +171,7 @@ end
 """
     function GetComponent(amd :: AngModes, l :: Number, m :: Number) :: Vector{Term}
 
-returns an angular component ``Φ_{lm}`` of a modes in the format of a list of terms.
+returns an angular component ``Φ_{lm}`` of a modes object in the format of a list of terms.
 """
 function GetComponent(amd :: AngModes, l :: Number, m :: Number)
     return amd.get_comp(Int64(2 * l), Int64(2 * m))
@@ -181,7 +181,7 @@ end
 """
     function FilterComponent(amd :: AngModes, flt) :: AngModes 
 
-returns an angular modes with certain modes filtered out.
+returns an angular modes object with certain modes filtered out.
 
 # Arguments 
 
@@ -191,6 +191,16 @@ returns an angular modes with certain modes filtered out.
 function FilterComponent(amd :: AngModes, flt) 
     l2m = amd.l2m
     return AngModes(l2m, (l2, m2) -> flt(l2 / 2, m2 / 2) ? amd.get_comp(l2, m2) : Term[])
+end
+
+"""
+    function FilterL2(amd :: AngModes, l :: Number) :: AngModes 
+
+returns an angular modes object with modes of a certain total angular momentum filtered out.
+"""
+function FilterL2(amd :: AngModes, l :: Number) 
+    l2m = amd.l2m
+    return AngModes(l2m, (l2, m2) -> l2 == Int64(l * 2) ? amd.get_comp(l2, m2) : Term[])
 end
 
 

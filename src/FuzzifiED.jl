@@ -93,6 +93,7 @@ export ElecMod
 export PairMod
 export DenMod
 export FilterComponent
+export FilterL2
 
 include("archieve/ar_core.jl")
 
