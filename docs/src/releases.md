@@ -2,6 +2,10 @@
 
 ## September 2024
 
+### 13 September, 2024 (Version 0.9.1)
+
+- Allow input of initial vectors for diagonalisation. (We acknowledge Andrew Fitzpatrick for the suggestion.)
+
 ### 11 September, 2024 (Version 0.9.0)
 
 - Add feature of angular modes observables.

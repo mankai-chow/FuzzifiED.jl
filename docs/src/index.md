@@ -2,7 +2,7 @@
 
 The package `FuzzifiED` is designed to do exact diagonalisation (ED) calculation on the fuzzy sphere, and also facilitates the DMRG calculations by ITensors. It can also be used for generic fermion models. Using this package, you can reproduce almost all the ED results in fuzzy sphere works ; for detail, see [« The fuzzified world »](https://www.fuzzified.world/fuzzified-world).
 
-If this package is helpful in your research, we would appreciate it if you mention in the acknowledgement. If you have any questions, please contact Zheng Zhou (周正) at [zzhou@pitp.ca](mailto:zzhou@pitp.ca).
+If this package is helpful in your research, we would appreciate it if you mention in the acknowledgement. If you have any questions, please contact Zheng Zhou (周正) at [physics@zhengzhou.page](mailto:physics@zhengzhou.page).
 
 ## Install
 
@@ -38,9 +38,10 @@ Pages = [
 Depth = 2
 ```
 
-## What is new (0.9.0)
+## What is new (0.9.1)
 
 - Add angular modes observables.
+- Allow input of initial vectors for diagonalisation. (We acknowledge Andrew Fitzpatrick for the suggestion.)
 
 ## References
 

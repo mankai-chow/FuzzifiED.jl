@@ -71,17 +71,18 @@ OpMat(op :: Operator ; type :: DataType = ElementType, num_th = NumThreads, disp
 
 
 """
-    function GetEigensystem(mat :: OpMat{ComplexF64}, nst :: Int64 ; tol :: Float64, ncv :: Int64 ; num_th :: Int64, disp_std :: Bool) :: Tuple{Vector{ComplexF64}, Matrix{ComplexF64}}
-    function GetEigensystem(mat :: OpMat{Float64}, nst :: Int64 ; tol :: Float64, ncv :: Int64 ; num_th :: Int64, disp_std :: Bool) :: Tuple{Vector{Float64}, Matrix{Float64}}
+    function GetEigensystem(mat :: OpMat{ComplexF64}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{ComplexF64}, num_th :: Int64, disp_std :: Bool) :: Tuple{Vector{ComplexF64}, Matrix{ComplexF64}}
+    function GetEigensystem(mat :: OpMat{Float64}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{Float64}, num_th :: Int64, disp_std :: Bool) :: Tuple{Vector{Float64}, Matrix{Float64}}
 
 calls the Arpack package to calculate the lowest eigenstates of sparse matrix. 
 
 # Arguments 
 
-* `mat :: OpMat{ComplexF64}` is the matrix ;
+* `mat :: OpMat{ComplexF64}` or `mat :: OpMat{Float64}` is the matrix ;
 * `nst :: Int64` is the number of eigenstates to be calculated ;
 * `tol :: Float64` is the tolerence for the Arpack process. The default value is `1E-8` ;
 * `ncv :: Int64` is an auxiliary parameter needed in the Arpack process. The default value is `max(2 * nst, nst + 10)`
+* `initvec :: Vector{ComplexF64}` or `initvec :: Vector{Float64}` is the initial vector. If empty, a random initialisation shall be used. Facultative, empty by default. 
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
@@ -90,16 +91,24 @@ calls the Arpack package to calculate the lowest eigenstates of sparse matrix.
 * A length-`nst` array that has the same type as `mat` recording the eigenvalues, and 
 * A `dimd`\\*`nst` matrix that has the same type as `mat` where every column records an eigenstate. 
 """
-function GetEigensystem(mat :: OpMat{ComplexF64}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), num_th = NumThreads, disp_std = !SilentStd)
+function GetEigensystem(mat :: OpMat{ComplexF64}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), initvec :: Vector{ComplexF64} = ComplexF64[], num_th = NumThreads, disp_std = !SilentStd)
     eigval = Vector{ComplexF64}(undef, nst + 1)
     eigvec = Matrix{ComplexF64}(undef, mat.dimd, nst)
-    @ccall Libpath.__diag_MOD_diagonalisation(mat.dimd :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{ComplexF64}, nst :: Ref{Int64}, tol :: Ref{Float64}, ncv :: Ref{Int64}, eigval :: Ref{ComplexF64}, eigvec :: Ref{ComplexF64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
+    if isempty(initvec)
+        @ccall Libpath.__diag_MOD_diagonalisation(mat.dimd :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{ComplexF64}, nst :: Ref{Int64}, tol :: Ref{Float64}, ncv :: Ref{Int64}, eigval :: Ref{ComplexF64}, eigvec :: Ref{ComplexF64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
+    else
+        @ccall Libpath.__diag_MOD_diagonalisation_init(mat.dimd :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{ComplexF64}, nst :: Ref{Int64}, tol :: Ref{Float64}, ncv :: Ref{Int64}, initvec :: Ref{ComplexF64}, eigval :: Ref{ComplexF64}, eigvec :: Ref{ComplexF64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
+    end
     return eigval[1 : end - 1], eigvec
 end 
-function GetEigensystem(mat :: OpMat{Float64}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), num_th = NumThreads, disp_std = !SilentStd)
+function GetEigensystem(mat :: OpMat{Float64}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), initvec :: Vector{Float64} = Float64[], num_th = NumThreads, disp_std = !SilentStd)
     eigval = Vector{Float64}(undef, nst + 1)
     eigvec = Matrix{Float64}(undef, mat.dimd, nst)
-    @ccall Libpath.__diag_re_MOD_diagonalisation_re(mat.dimd :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{Float64}, nst :: Ref{Int64}, tol :: Ref{Float64}, ncv :: Ref{Int64}, eigval :: Ref{Float64}, eigvec :: Ref{Float64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
+    if isempty(initvec)
+        @ccall Libpath.__diag_re_MOD_diagonalisation_re(mat.dimd :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{Float64}, nst :: Ref{Int64}, tol :: Ref{Float64}, ncv :: Ref{Int64}, eigval :: Ref{Float64}, eigvec :: Ref{Float64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
+    else
+        @ccall Libpath.__diag_re_MOD_diagonalisation_init_re(mat.dimd :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{Float64}, nst :: Ref{Int64}, tol :: Ref{Float64}, ncv :: Ref{Int64}, initvec :: Ref{Float64}, eigval :: Ref{Float64}, eigvec :: Ref{Float64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
+    end
     return eigval[1 : end - 1], eigvec
 end 
 
