@@ -5,6 +5,7 @@
 # On my table computer, this calculation takes 3.587 s
 
 using FuzzifiED
+using LinearAlgebra
 const σ1 = [  1  0 ;  0  0 ]
 const σp = [  0  1 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
