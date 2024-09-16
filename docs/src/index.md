@@ -38,10 +38,11 @@ Pages = [
 Depth = 2
 ```
 
-## What is new (0.9.1)
+## What is new (0.9)
 
 - Add angular modes observables.
 - Allow input of initial vectors for diagonalisation. (We acknowledge Andrew Fitzpatrick for the suggestion.)
+- Add the example of Ising generators and Sp(3) CFT.
 
 ## References
 

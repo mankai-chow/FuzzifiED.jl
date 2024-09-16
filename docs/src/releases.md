@@ -2,6 +2,10 @@
 
 ## September 2024
 
+### 16 September, 2024 (Version 0.9.2)
+
+- Add the example of Ising generators and Sp(3) CFT.
+
 ### 13 September, 2024 (Version 0.9.1)
 
 - Allow input of initial vectors for diagonalisation. (We acknowledge Andrew Fitzpatrick for the suggestion.)
