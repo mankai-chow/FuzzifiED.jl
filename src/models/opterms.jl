@@ -212,7 +212,7 @@ function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number} ; fld_m :
     end
     return SimplifyTerms(tms)
 end
-GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), fld_m :: Vector{<:Number}) = GetPolTerms(nm, nf, mat ; fld_m)
+GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), fld_m :: Vector{<:Number} = fill(1, nm)) = GetPolTerms(nm, nf, mat ; fld_m)
 
 
 """
