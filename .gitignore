@@ -1,5 +1,3 @@
-**/*.mod
-**/*.i90
 .vscode/
 docs/build
 docs/publish
