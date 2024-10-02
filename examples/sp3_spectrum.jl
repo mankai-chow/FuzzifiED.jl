@@ -1,5 +1,5 @@
 # This example calculates the spectrum of Sp(3) CFT on fuzzy sphere.
-# This example reproduces Table I in arXiv : 2409.*****
+# This example reproduces Table I in arXiv : 2410.00087
 # On my table computer, this calculation takes 5.626 s
 
 using FuzzifiED

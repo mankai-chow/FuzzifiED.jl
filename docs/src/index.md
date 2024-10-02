@@ -61,6 +61,8 @@ For a more detailed summary of the background, please visit [« The fuzzified wo
 * Studying the 3d Ising surface CFTs on the fuzzy sphere, Zheng Zhou, and Yijian Zou, [arXiv : 2407.15914](https://arxiv.org/abs/2407.15914).
 * Ising BCFTs from the fuzzy hemisphere, Mykola Dedushenko, [arXiv : 2407.15948](https://arxiv.org/abs/2407.15948).
 * Constructing the Infrared Conformal Generators on the Fuzzy Sphere, Giulia Fardelli, A. Liam Fitzpatrick and Emanuel Katz, [arXiv : 2409.02998](https://arxiv.org/abs/2409.02998).
+* Note on explicit construction of conformal generators on the fuzzy sphere, Ruihua Fan, [arXiv : 2409.08257](https://arxiv.org/abs/2409.08257).
+* A new series of 3D CFTs with ``\mathrm{Sp}(N)`` global symmetry on fuzzy sphere, Zheng Zhou, Yin-Chen He, [arXiv : 2410.00087](https://arxiv.org/abs/2410.00087).
 
 ## Index 
 
