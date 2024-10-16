@@ -1,11 +1,10 @@
 # This example calculates the spectrum of Sp(3) CFT on fuzzy sphere.
 # This example reproduces Table I in arXiv : 2410.00087
-# On my table computer, this calculation takes 5.626 s
+# On my table computer, this calculation takes 5.003 s
 
 using FuzzifiED
 using LinearAlgebra
 FuzzifiED.ElementType = Float64
-FuzzifiED.SilentStd = true
 ≈(x, y) = abs(x - y) < eps(Float32)
 
 nm = 5
@@ -46,7 +45,8 @@ for R in (1, -1), (Z1, Z2, Z3) in ((1,1,1), (1,1,-1), (-1,-1,1), (-1,-1,-1)), X 
     bs = Basis(cfs, [R, Z1, Z2, Z3, X], qnf)
     hmt = Operator(bs, tms_hmt)
     hmt_mat = OpMat(hmt)
-    enrg, st = GetEigensystem(hmt_mat, 20)
+    nst = ((R, Z1, Z2, Z3, X) == (1, 1, 1, 1, 1)) ? 20 : 10
+    enrg, st = GetEigensystem(hmt_mat, nst)
 
     l2 = Operator(bs, tms_l2)
     l2_mat = OpMat(l2)
@@ -57,7 +57,7 @@ for R in (1, -1), (Z1, Z2, Z3) in ((1,1,1), (1,1,-1), (-1,-1,1), (-1,-1,-1)), X 
     c2_val = [ st[:, i]' * c2_mat * st[:, i] for i in eachindex(enrg)]
     
     for i in eachindex(enrg)
-        push!(result, round.([enrg[i], l2_val[i], c2_val[i], R, Z1, Z2, Z3, X], digits = 6))
+        push!(result, round.([enrg[i], l2_val[i], c2_val[i]], digits = 6))
     end
 end
 
