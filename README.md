@@ -6,8 +6,6 @@ Documentations can be found at [http://docs.fuzzified.world/](http://docs.fuzzif
 
 Download Julia at [this link](https://julialang.org/downloads/). 
 
-To Apple Silicon (Mac M1, M2, etc.) users : The support for AArch64 architecture is not guarenteed. You may want to use Julia for x86 (Intel or Rosetta) instead of macOS (Apple Silicon).
-
 To install the package, please enter the following commands in Julia :
 ```julia
 using Pkg ;
