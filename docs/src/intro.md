@@ -20,43 +20,43 @@ The study of 3d CFTs on fuzzy sphere can mainly be devided into four catagories 
 
 The first direction is to develop methods to calculate as many data and quantities of 3d CFTs on fuzzy sphere. Typically, these methods are tested on the simplest example of 3d Ising CFT. For many of those CFT data, fuzzy sphere is the first non-perturbative method to access them ; for the others, fuzzy sphere has achieved great consistency with previous methods such as quantum Monte Carlo and conformal bootstrap. So far, the accessible CFT data include operator spectrum, OPE coefficients, correlation functions, entropic $F$-function and conformal generators. 
 
-1. __Operator spectrum__ (Under construction)
+1. __Operator spectrum__ [[Zhu 2022](#References)] This seminal paper opens a new avenue for studying 3d conformal field theories. It calculates and analyses the energy spectra at the 3d Ising transition, and explicitly demonstrate the state-operator correspondence as a fingerprint of conformal field theory, thus directly elucidates the emergent conformal symmetry of the 3d Ising transition.
 
-2. __OPE coefficients__ (Under construction)
+2. __OPE coefficients__ [[Hu 2023Mar](#References)] This paper computes 17 OPE coefficients of low-lying CFT primary fields with high accuracy, including 4 that has not being reported before.
 
-3. __Correlation functions__ (Under construction)
+3. __Correlation functions__ [[Han 2023Jun](#References)] This paper computes the four-point correlators and verify the crossing symmetry. 
 
-4. __Entropic $F$-function__ (Under construction)
+4. __Entropic $F$-function__ [[Hu 2024](#References)] This paper have performed the first non-perturbative computation of the $F$-function for the paradigmatic 3d Ising conformal field theory through entanglement entropy. 
 
-5. __Conformal generators__ (Under construction)
+5. __Conformal generators__ [[Fardelli 2024](#References), [Fan 2024](#References)] These papers investigate the conformal generators of translations and special conformal transformations which are emergent in the infrared and construct these generators using the energy momentum tensor.
 
 ### Realising various 3d CFTs
 
 The second direction is study various other CFTs beyond 3d Ising. Fuzzy sphere has revealed many new information about these theories ; the previously known data are also consistent with fuzzy sphere results. So far, the accessible CFTs include $\mathrm{SO}(5)$ deconfined criticality, $\mathrm{O}(3)$ Wilson-Fisher and a series of new theories with $\mathrm{Sp}(N)$ symmetry. 
 
-1. __The $\mathrm{SO}(5)$ deconfined criticality__ (Under construction)
+1. __The $\mathrm{SO}(5)$ deconfined criticality__ [[Zhou 2023](#References)] This paper provides clear evidence that the DQCP exhibits approximate conformal symmetry, and demonstrate that the DQCP is more likely pseudo-critical.
 
-2. __The $\mathrm{O}(3)$ Wilson-Fisher__ (Under construction)
+2. __The $\mathrm{O}(3)$ Wilson-Fisher__ [[Han 2023Dec](#References)] This paper design a microscopic model of Heisenberg magnet bilayer and study the underlying Wilson-Fisher $\mathrm{O}(3)$ transition through the lens of fuzzy sphere regularization. 
 
-3. __A series of new $\mathrm{Sp}(N)$-symmetric CFTs__ (Under construction)
+3. __A series of new $\mathrm{Sp}(N)$-symmetric CFTs__ [[Zhou 2024Oct](#References)] This paper discovers a series of new CFTs with global symmetry $\mathrm{Sp}(N)$ in the fuzzy sphere models that are closely related to the SO(5) deconfined phase transition, and are related to non-linear sigma model with a Wess-Zumino-Witten term and Chern-Simons-matter theories. The emergent conformal symmetry is numerically verified by observing the integer-spaced conformal multiplets and the quality of conformal generators. 
 
 ### Studying conformal defects and boundaries
 
 Apart from the bulk CFTs, fuzzy sphere can also be used to study their conformal defects and boundaries. So far, the accessible defects/boundaries include the magnetic line defect of 3d Ising CFT, including its defect operator spectrum, correlators, $g$-function, defect changing operators, and its cusp, and the conformal boundaries of 3d Ising CFT.
 
-1. __Conformal magnetic line defect__ (Under construction)
+1. __Conformal magnetic line defect__ [[Hu 2023Aug](#References)] This paper studies the magnetic line defect of 3D Ising CFT and clearly demonstrates that it flows to a conformal defect fixed point. The authors have identified 6 low-lying defect primary operators and extract their scaling dimensions, as well as computing one-point bulk correlators and two-point bulk-defect correlators.
 
-2. __The $g$-function and defect changing operators__ (Under construction)
+2. __The $g$-function and defect changing operators__ [[Zhou 2024Jan](#References)] This paper have performed the non-perturbative computations of the scaling dimensions of defect-changing, creation operators and the $g$-function for the pinning defect in 3d Ising model. 
 
-3. __Cusp__ (Under construction)
+3. __Cusp__ [[Cuomo 2024](#References)] This paper study the general properties of the cusp anomalous dimension and in particular calculates the pinning field defects in the 3d Ising model on fuzzy sphere.
 
-4. __Conformal boundaries of 3d Ising CFT__ (Under construction)
+4. __Conformal boundaries of 3d Ising CFT__ [[Zhou 2024Jul](#References), [Dedushenko 2024](#References)] These papers demonstrates that conformal field theory (CFT) with a boundary, known as surface CFT in three dimensions, can be studied with the setup of fuzzy sphere, and in particular in the example of surface criticality, proposes two schemes by cutting a boundary in the orbital space or the real space to realise the ordinary and the normal surface CFTs on the fuzzy sphere.
 
 ### Exploring applicable numerical techniques
 
 So far, the numerical methods that has been applied to fuzzy sphere to include exact diagonalisation (ED), density matrix renormalisation group (DMRG) and determinant quantum Monte Carlo (DQMC). The former two has been reviewed in previous sections.
 
-1. __Quantum Monte Carlo on fuzzy sphere__ (Under construction)
+1. __Quantum Monte Carlo on fuzzy sphere__ [[Hofmann 2023](#References)] This paper presents a numerical quantum Monte Carlo (QMC) method for simulating the 3D phase transition on the recently proposed fuzzy sphere.
 
 ## Model construction 
 
@@ -164,22 +164,26 @@ By expanding the density operators into the orbital space and completing the int
 
 (under construction)
 
+## Numerical methods
+
+(under construction)
+
 ## References
 
 For a more detailed summary of the background, please visit [« The fuzzified world »](https://www.fuzzified.world/fuzzified-world)
 
-* Uncovering Conformal Symmetry in the 3D Ising Transition: State-Operator Correspondence from a Quantum Fuzzy Sphere Regularization, Wei Zhu, Chao Han, Emilie Huffman, Johannes S. Hofmann, and Yin-Chen He, [Phys. Rev. X 13, 021009 (2023)](https://doi.org/10.1103/PhysRevX.13.021009).
-* Operator Product Expansion Coefficients of the 3D Ising Criticality via Quantum Fuzzy Sphere, Liangdong Hu, Yin-Chen He, and Wei Zhu, [Phys. Rev. Lett 131, 031601 (2023)](https://doi.org/10.1103/PhysRevLett.131.031601).
-* Conformal four-point correlators of the 3D Ising transition via the quantum fuzzy sphere, Chao Han, Liangdong Hu, Wei Zhu, and Yin-Chen He, [Phys. Rev. B 108, 235123 (2023)](https://doi.org/10.1103/PhysRevB.108.235123).
-* The ``\mathrm{SO}(5)`` Deconfined Phase Transition under the Fuzzy Sphere Microscope: Approximate Conformal Symmetry, Pseudo-Criticality, and Operator Spectrum, Zheng Zhou, Liangdong Hu, Wei Zhu, and Yin-Chen He, [Phys. Rev. X 14, 021044 (2024)](https://doi.org/10.1103/PhysRevX.14.021044).
-* Solving Conformal Defects in 3D Conformal Field Theory using Fuzzy Sphere Regularization, Liangdong Hu, Yin-Chen He, and Wei Zhu, [Nat. Commun. 15, 3659 (2024)](https://doi.org/10.1038/s41467-024-47978-y).
-* Quantum Monte Carlo Simulation of the 3D Ising Transition on the Fuzzy Sphere, Johannes S. Hofmann, Florian Goth, Wei Zhu, Yin-Chen He, and Emilie Huffman, [SciPost Phys. Core 7, 028 (2024)](https://doi.org/10.21468/SciPostPhysCore.7.2.028).
-* Conformal Operator Content of the Wilson-Fisher Transition on Fuzzy Sphere Bilayers, Chao Han, Liangdong Hu, and Wei Zhu, [Phys. Rev. B 110, 115113 (2024)](https://doi.org/10.1103/PhysRevB.110.115113).
-* The ``g``-function and Defect Changing Operators from Wavefunction Overlap on a Fuzzy Sphere, Zheng Zhou, Davide Gaiotto, Yin-Chen He, Yijian Zou, [SciPost Phys. 17, 021 (2024)](https://doi.org/10.21468/SciPostPhys.17.1.021).
-* Entropic ``F``-function of 3D Ising conformal field theory via the fuzzy sphere regularization, Liangdong Hu, Wei Zhu, and Yin-Chen He, [arXiv : 2401.17362](https://arxiv.org/abs/2401.17362).
-* Impurities with a cusp: general theory and 3d Ising, Gabriel Cuomo, Yin-Chen He, Zohar Komargodski, [arXiv : 2406.10186](https://arxiv.org/abs/2406.10186). 
-* Studying the 3d Ising surface CFTs on the fuzzy sphere, Zheng Zhou, and Yijian Zou, [arXiv : 2407.15914](https://arxiv.org/abs/2407.15914).
-* Ising BCFTs from the fuzzy hemisphere, Mykola Dedushenko, [arXiv : 2407.15948](https://arxiv.org/abs/2407.15948).
-* Constructing the Infrared Conformal Generators on the Fuzzy Sphere, Giulia Fardelli, A. Liam Fitzpatrick, and Emanuel Katz, [arXiv : 2409.02998](https://arxiv.org/abs/2409.02998).
-* Note on explicit construction of conformal generators on the fuzzy sphere, Ruihua Fan, [arXiv : 2409.08257](https://arxiv.org/abs/2409.08257).
-* A new series of 3D CFTs with ``\mathrm{Sp}(N)`` global symmetry on fuzzy sphere, Zheng Zhou, and Yin-Chen He, [arXiv : 2410.00087](https://arxiv.org/abs/2410.00087).
+* __[Zhu 2022]__ Uncovering Conformal Symmetry in the 3D Ising Transition: State-Operator Correspondence from a Quantum Fuzzy Sphere Regularization, Wei Zhu, Chao Han, Emilie Huffman, Johannes S. Hofmann, and Yin-Chen He, [Phys. Rev. X 13, 021009 (2023)](https://doi.org/10.1103/PhysRevX.13.021009).
+* __[Hu 2023Mar]__ Operator Product Expansion Coefficients of the 3D Ising Criticality via Quantum Fuzzy Sphere, Liangdong Hu, Yin-Chen He, and Wei Zhu, [Phys. Rev. Lett 131, 031601 (2023)](https://doi.org/10.1103/PhysRevLett.131.031601).
+* __[Han 2023Jun]__ Conformal four-point correlators of the 3D Ising transition via the quantum fuzzy sphere, Chao Han, Liangdong Hu, Wei Zhu, and Yin-Chen He, [Phys. Rev. B 108, 235123 (2023)](https://doi.org/10.1103/PhysRevB.108.235123).
+* __[Zhou 2023]__ The ``\mathrm{SO}(5)`` Deconfined Phase Transition under the Fuzzy Sphere Microscope: Approximate Conformal Symmetry, Pseudo-Criticality, and Operator Spectrum, Zheng Zhou, Liangdong Hu, Wei Zhu, and Yin-Chen He, [Phys. Rev. X 14, 021044 (2024)](https://doi.org/10.1103/PhysRevX.14.021044).
+* __[Hu 2023Aug]__ Solving Conformal Defects in 3D Conformal Field Theory using Fuzzy Sphere Regularization, Liangdong Hu, Yin-Chen He, and Wei Zhu, [Nat. Commun. 15, 3659 (2024)](https://doi.org/10.1038/s41467-024-47978-y).
+* __[Hofmann 2024]__ Quantum Monte Carlo Simulation of the 3D Ising Transition on the Fuzzy Sphere, Johannes S. Hofmann, Florian Goth, Wei Zhu, Yin-Chen He, and Emilie Huffman, [SciPost Phys. Core 7, 028 (2024)](https://doi.org/10.21468/SciPostPhysCore.7.2.028).
+* __[Han 2023Dec]__ Conformal Operator Content of the Wilson-Fisher Transition on Fuzzy Sphere Bilayers, Chao Han, Liangdong Hu, and Wei Zhu, [Phys. Rev. B 110, 115113 (2024)](https://doi.org/10.1103/PhysRevB.110.115113).
+* __[Zhou 2024Jan]__ The ``g``-function and Defect Changing Operators from Wavefunction Overlap on a Fuzzy Sphere, Zheng Zhou, Davide Gaiotto, Yin-Chen He, Yijian Zou, [SciPost Phys. 17, 021 (2024)](https://doi.org/10.21468/SciPostPhys.17.1.021).
+* __[Hu 2024]__ Entropic ``F``-function of 3D Ising conformal field theory via the fuzzy sphere regularization, Liangdong Hu, Wei Zhu, and Yin-Chen He, [arXiv : 2401.17362](https://arxiv.org/abs/2401.17362).
+* __[Cuomo 2024]__ Impurities with a cusp: general theory and 3d Ising, Gabriel Cuomo, Yin-Chen He, Zohar Komargodski, [arXiv : 2406.10186](https://arxiv.org/abs/2406.10186). 
+* __[Zhou 2024Jul]__ Studying the 3d Ising surface CFTs on the fuzzy sphere, Zheng Zhou, and Yijian Zou, [arXiv : 2407.15914](https://arxiv.org/abs/2407.15914).
+* __[Dedushenko 2024]__ Ising BCFTs from the fuzzy hemisphere, Mykola Dedushenko, [arXiv : 2407.15948](https://arxiv.org/abs/2407.15948).
+* __[Fardelli 2024]__ Constructing the Infrared Conformal Generators on the Fuzzy Sphere, Giulia Fardelli, A. Liam Fitzpatrick, and Emanuel Katz, [arXiv : 2409.02998](https://arxiv.org/abs/2409.02998).
+* __[Fan 2024]__ Note on explicit construction of conformal generators on the fuzzy sphere, Ruihua Fan, [arXiv : 2409.08257](https://arxiv.org/abs/2409.08257).
+* __[Zhou 2024Oct]__ A new series of 3D CFTs with ``\mathrm{Sp}(N)`` global symmetry on fuzzy sphere, Zheng Zhou, and Yin-Chen He, [arXiv : 2410.00087](https://arxiv.org/abs/2410.00087).
