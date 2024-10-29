@@ -10,7 +10,7 @@ using .FuzzifiED
 
 makedocs(sitename = "FuzzifiED.jl", 
     pages = ["Home" => "index.md", 
-        "Introduction" => "intro.md"
+        "Introduction" => "intro.md",
         "Example" => "example.md",
         "Core functions" => "core.md",
         "ITensors support" => "itensors.md",
