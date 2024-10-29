@@ -153,12 +153,46 @@ Specifically, for local and super-local interactions
 ```
 By expanding the density operators into the orbital space and completing the integrals,
 ```math
-    H_\mathrm{int}=\sum_{lm}\frac{4\pi U_l}{2l+1}n^\dagger_{lm}n_{lm}
+    H_\mathrm{int}=\sum_{lm}\frac{4\pi U_l}{2l+1}n^\dagger_{M,lm}n_{M,lm}
 ```
+
+For example, for the 3d Ising CFT, we take two flavours of fermions and write down an interaction 
+```math
+    H_\mathrm{int}=\int\mathrm{d}^2\hat{\mathbf{r}}_1\,\mathrm{d}^2\hat{\mathbf{r}}_2\,U(|\hat{\mathbf{r}}_1-\hat{\mathbf{r}}_2|)(n_0(\hat{\mathbf{r}}_1)n_0(\hat{\mathbf{r}}_2)-n_z(\hat{\mathbf{r}}_1)n_z(\hat{\mathbf{r}}_2))-h\int\mathrm{d}^2\hat{\mathbf{r}}\,n_x(\hat{\mathbf{r}})
+```
+where the density operators are defined as 
+```math
+    n_i(\hat{\mathbf{r}})=\psi^\dagger_{f'}(\hat{\mathbf{r}})(\sigma_i)_{f'f}\psi_f(\hat{\mathbf{r}})
+```
+and the potentials are taken as a combination of local and super-local interactions.
 
 ### Interaction in terms of pseudopotentials
 
-(under construction)
+Another way that is much more convenient to construct the interactions is through Haldane pseudopotential. To explain the idea, we take the 3d Ising model as an example. We first classify all the fermion bilinears $\lambda_{mm'ff'}c_{mf}c_{m'f'}$. To simplify the discussion, we can take a specific pseudo-spin index $\lambda_{mm'}c_{m\uparrow}c_{m'\downarrow}$. The fermion bilinears can be classified into irreducible representations of $\mathrm{SO}(3)$ rotation symmetry. Since $c_{mf}$ carries the spin-$s$ representation, the spin of its bilinear ranges from $0$ to $2s$ and takes integer values. The spin-$(2s-l)$ combination reads
+```math
+    \Delta_{lm}=\sqrt{2s-2l+1}\sum_{m_1}\begin{pmatrix}s&s&2s-l\\m_1&m-m_1&-m\end{pmatrix}c_{m_1,\uparrow}c_{m-m_1,\downarrow}
+```
+where $m=-(2s-l),\dots,(2s-l)$. A four-fermion interaction term can be formed by contracting these paring operators with its conjugate. 
+
+```math
+    H=\sum_lU_lH_l,\quad H_l=\sum_m\Delta_{lm}^\dagger\Delta_{lm}
+```
+
+The coupling strength $U_l$ of the spin-$(2s-l)$ channel is called the Haldane pseudopotentials. 
+
+We need also to consider the constraint that the two fermions must be anti-symmetrised : for even $l$, the orbital index is symmetrised, so the spin index must be antisymmetrised, so the two fermions form a spin-singlet which is invariant under the $\mathrm{SU}(2)$ transformation ; for odd $l$, the orbital index is anti-symmetrised, so the spin index is symmetrised, breaking the flavour symmetry from $\mathrm{SU}(2)$ to $\mathbb{Z}_2$. 
+
+The fermion bilinears with other pseudo-spin configurations $\lambda_{mm',\pm}(c_{m\uparrow}c_{m'\uparrow}\pm c_{m\downarrow}c_{m'\downarrow})$ can be analysed in a similar way. After that, we have enumerated all possible four-fermion interaction terms. 
+
+For systems with more complicated continuous symmetries, classification in terms of representation of flavour symmetry must also be considered, and the indices must be overall antisymmetrised. For an example with $\mathrm{Sp}(N)$ symmetry, see [Zhou 2024Oct](#References).
+
+We also note that each pseudopotential can correspond to a profile of interaction potential functions. Specifically, $U_0$ corresponds to a local interaction ; $U_l$ corresponds to a super-local interaction $\nabla^{2l}\delta(\mathbf{r}_{12})$ in the thermodynamic limit. For a more detailed expression at finite system size, see [Fan 2024](#References).
+
+One can keep only terms with the smallest $l$. For Ising model, we can keep up to $l=1$. Note that at lease one term with odd $l$ must be kept to break the $\mathrm{SU}(2)$ symmetry. 
+
+```math
+    H=U_0\sum_m\Delta_{0m}^\dagger\Delta_{0m}+U_1\sum_m\Delta_{1m}^\dagger\Delta_{1m}-hn_{x,00}
+```
 
 ### Conformal generators
 
@@ -170,7 +204,7 @@ By expanding the density operators into the orbital space and completing the int
 
 ## References
 
-For a more detailed summary of the background, please visit [« The fuzzified world »](https://www.fuzzified.world/fuzzified-world)
+### Fuzzy sphere
 
 * __[Zhu 2022]__ Uncovering Conformal Symmetry in the 3D Ising Transition: State-Operator Correspondence from a Quantum Fuzzy Sphere Regularization, Wei Zhu, Chao Han, Emilie Huffman, Johannes S. Hofmann, and Yin-Chen He, [Phys. Rev. X 13, 021009 (2023)](https://doi.org/10.1103/PhysRevX.13.021009).
 * __[Hu 2023Mar]__ Operator Product Expansion Coefficients of the 3D Ising Criticality via Quantum Fuzzy Sphere, Liangdong Hu, Yin-Chen He, and Wei Zhu, [Phys. Rev. Lett 131, 031601 (2023)](https://doi.org/10.1103/PhysRevLett.131.031601).
