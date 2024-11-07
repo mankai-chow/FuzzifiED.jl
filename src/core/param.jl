@@ -35,10 +35,10 @@ A shortcut to open the link for documentation [http://docs.fuzzified.world](http
 function OpenHelp!()
     url = "http://docs.fuzzified.world"
     if Sys.iswindows()
-        run(`start $url`)
+        run(`start $url` ; wait = false)
     elseif Sys.isapple()
-        run(`open $url`)   # macOS
+        run(`open $url` ; wait = false)   # macOS
     elseif Sys.isunix()
-        run(`xdg-open $url`)  # Linux
+        run(`xdg-open $url` ; wait = false)  # Linux
     end
 end
