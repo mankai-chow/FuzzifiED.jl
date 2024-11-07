@@ -8,6 +8,7 @@ SilentStd
 NumThreads
 Libpath
 ElementType
+OpenHelp!()
 ```
 
 ## Quantum numbers

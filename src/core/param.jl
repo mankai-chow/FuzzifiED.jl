@@ -26,3 +26,19 @@ NumThreads :: Int = Threads.nthreads()
 set the default type of the operator elements, either `ComplexF64` or `Float64`. `ComplexF64` by default. 
 """
 ElementType :: DataType = ComplexF64
+
+"""
+    function OpenHelp!()
+
+A shortcut to open the link for documentation [http://docs.fuzzified.world](http://docs.fuzzified.world) in the system browser. 
+"""
+function OpenHelp!()
+    url = "http://docs.fuzzified.world"
+    if Sys.iswindows()
+        run(`start $url`)
+    elseif Sys.isapple()
+        run(`open $url`)   # macOS
+    elseif Sys.isunix()
+        run(`xdg-open $url`)  # Linux
+    end
+end

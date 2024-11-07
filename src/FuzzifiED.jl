@@ -21,6 +21,7 @@ export NumThreads
 export SilentStd
 export Libpath
 export ElementType
+export OpenHelp!
 
 include("core/qn.jl")
 export QNDiag
