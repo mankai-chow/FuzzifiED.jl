@@ -244,7 +244,11 @@ end
 """
     function GetC2Terms(nm :: Int64, nf :: Int64, mat_gen :: Vector{<:AbstractMatrix{<:Number}}[, mat_tr :: Vector{<:AbstractMatrix{<:Number}}]) :: Vector{Term}
 
-Return the terms for the quadratic Casimir of the flavour symmetry
+Return the terms for the quadratic Casimir of the flavour symmetry.
+```math
+    C_2=∑_{imm'}\\frac{(c^†_{mf_1}G_{i,f_1f_2}c_{mf_2})(c^†_{m'f_3}G^†_{i,f_3f_4}c_{m'f_4})}{\\operatorname{tr}G_i^†G_i}-∑_{imm'}\\frac{(c^†_{mf_1}T_{i,f_1f_2}c_{mf_2})(c^†_{m'f_3}T^†_{i,f_3f_4}c_{m'f_4})}{\\operatorname{tr}T_i^†T_i}
+```
+where ``G_i`` are the generator matrices, and ``T_i`` are the trace matrices. 
 
 # Arguments
 - `nm :: Int64` is the number of orbitals.
@@ -253,9 +257,7 @@ Return the terms for the quadratic Casimir of the flavour symmetry
 - `mat_tr :: Vector{Matrix{Number}})` is a list of trace matrices that will be normalised automatically and substracted. Facultative.
 """
 function GetC2Terms(nm :: Int64, nf :: Int64, mat_gen :: Vector{<:AbstractMatrix{<:Number}}, mat_tr :: Vector{<:AbstractMatrix{<:Number}} = Matrix{Float64}[])
-    mat_gen1 = [ mat ./ sqrt(tr(mat' * mat)) for mat in mat_gen ]
-    mat_tr1 = [ mat ./ sqrt(tr(mat' * mat)) for mat in mat_tr ]
     return SimplifyTerms(
-        sum([GetPolTerms(nm, nf, Matrix(mati')) * GetPolTerms(nm, nf, mati) for mati in mat_gen1])
-         - (isempty(mat_tr1) ? Term[] : sum([GetPolTerms(nm, nf, Matrix(mati')) * GetPolTerms(nm, nf, mati) for mati in mat_tr1])))
+        sum([GetPolTerms(nm, nf, Matrix(mati')) * GetPolTerms(nm, nf, mati) / tr(mati' * mati) for mati in mat_gen])
+         - (isempty(mat_tr1) ? Term[] : sum([GetPolTerms(nm, nf, Matrix(mati')) * GetPolTerms(nm, nf, mati) / tr(mati' * mati) for mati in mat_tr])))
 end 
