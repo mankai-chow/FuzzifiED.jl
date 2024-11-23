@@ -4,7 +4,7 @@ mutable struct EasySweepObserver <: AbstractObserver
     EasySweepObserver(e_tol = 0.0) = new(e_tol, 1000.0)
 end
 
-function ITensors.checkdone!(o :: EasySweepObserver; kwargs...)
+function ITensorMPS.checkdone!(o :: EasySweepObserver; kwargs...)
     sw = kwargs[:sweep]
     energy = kwargs[:energy]
     if abs(energy - o.e_last) < o.e_tol
