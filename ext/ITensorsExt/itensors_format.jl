@@ -55,13 +55,6 @@ function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, cf_ref 
     return Confs(no, secd, qnd)
 end 
 
-function ITensorMPS.space( :: SiteType"Fermion"; o :: Int, qnd :: Vector{QNDiag})
-    return [
-        QN(
-            [ (qndi.name, qndi.charge[o] * n, qndi.modul) for qndi in qnd ]...
-        ) => 1 for n = 0 : 1
-    ]
-end
 
 """
     TruncateQNDiag(qnd :: Vector{QNDiag} ; trunc_lth :: Int64, trunc_wt :: Vector{Int64}) :: Vector{QNDiag}

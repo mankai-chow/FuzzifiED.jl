@@ -1,10 +1,8 @@
-module ITensorsExt 
+module ITensorsExt
 
 using FuzzifiED
 using ITensors 
 using ITensorMPS
-import ITensorMPS.SiteTypes:space
-
 include("itensors_format.jl")
 export QNDiagFromSites
 export ConfsFromSites
@@ -20,5 +18,14 @@ export GetMPO
 include("ar_itensor.jl")
 export TruncateQnu
 export SitesFromQnu
+
+function __init__()
+    # Define the space method at runtime
+    @eval ITensorMPS.space( :: SiteType"Fermion"; o :: Int, qnd :: Vector{QNDiag}) = [
+        QN(
+            [ (qndi.name, qndi.charge[o] * n, qndi.modul) for qndi in qnd ]...
+        ) => 1 for n = 0 : 1
+    ]
+end
 
 end 
