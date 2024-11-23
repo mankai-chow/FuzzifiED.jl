@@ -109,3 +109,30 @@ function *(st_fp :: LinearAlgebra.Adjoint{Float64, Vector{Float64}}, op :: Opera
     return real(ovl_ref[])
 end
 
+
+function HDF5.write(parent :: Union{HDF5.File, HDF5.Group}, name :: String, op :: Operator)
+    grp = create_group(parent, name)
+    write(grp, "red_q", op.red_q)
+    write(grp, "sym_q", op.sym_q)
+    write(grp, "bsd", op.bsd)
+    if (op.sym_q == 0) write(grp, "bsf", op.bsf) end
+    write(grp, "ntm", op.ntm)
+    write(grp, "nc", op.nc)
+    write(grp, "cstrs", op.cstrs)
+    write(grp, "coeffs", op.coeffs)
+    close(grp)
+end
+
+function HDF5.read(parent :: Union{HDF5.File, HDF5.Group}, name :: String, :: Type{Operator})
+    grp = open_group(parent, name)
+    red_q = read(grp, "red_q")
+    sym_q = read(grp, "sym_q")
+    bsd = read(grp, "bsd", Basis)
+    bsf = (sym_q == 0) ? read(grp, "bsf", Basis) : bsd
+    ntm = read(grp, "ntm")
+    nc = read(grp, "nc")
+    cstrs = read(grp, "cstrs")
+    coeffs = read(grp, "coeffs")
+    close(grp)
+    return Operator(bsd, bsf, red_q, sym_q, ntm, nc, cstrs, coeffs)
+end

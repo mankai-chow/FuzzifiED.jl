@@ -194,3 +194,29 @@ converts the `OpMat` objects to a full matrix.
 function MatrixFromOpMat(mat :: OpMat)
     return Matrix(SparseMatrixCSCFromOpMat(mat))
 end
+
+
+function HDF5.write(parent :: Union{HDF5.File, HDF5.Group}, name :: String, mat :: OpMat{T}) where T <: Union{Float64, ComplexF64}
+    grp = create_group(parent, name)
+    write(grp, "dimd", mat.dimd)
+    write(grp, "dimf", mat.dimf)
+    write(grp, "sym_q", mat.sym_q)
+    write(grp, "nel", mat.nel)
+    write(grp, "colptr", mat.colptr)
+    write(grp, "rowid", mat.rowid)
+    write(grp, "elval", mat.elval)
+    close(grp)
+end
+
+function HDF5.read(parent :: Union{HDF5.File, HDF5.Group}, name :: String, :: Type{OpMat{T}}) where T <: Union{Float64, ComplexF64}
+    grp = open_group(parent, name)
+    dimd = read(grp, "dimd")
+    dimf = read(grp, "dimf")
+    sym_q = read(grp, "sym_q")
+    nel = read(grp, "nel")
+    colptr = read(grp, "colptr")
+    rowid = read(grp, "rowid")
+    elval = read(grp, "elval")
+    close(grp)
+    return OpMat{T}(dimd, dimf, sym_q, nel, colptr, rowid, elval)
+end
