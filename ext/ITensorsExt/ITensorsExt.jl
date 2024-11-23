@@ -1,7 +1,7 @@
 module ITensorsExt
 
-using ITensors
 using FuzzifiED
+using ITensors
 
 import ITensors.SiteType
 
