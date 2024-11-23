@@ -1,7 +1,7 @@
 module ITensorsExt
 
 using FuzzifiED
-import ITensors
+using ITensors
 
 include("itensors_format.jl")
 export QNDiagFromSites
