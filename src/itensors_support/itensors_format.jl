@@ -55,6 +55,13 @@ function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, cf_ref 
     return Confs(no, secd, qnd)
 end 
 
+function ITensors.space( :: SiteType"Fermion"; o :: Int, qnd :: Vector{QNDiag})
+    return [
+        QN(
+            [ (qndi.name, qndi.charge[o] * n, qndi.modul) for qndi in qnd ]...
+        ) => 1 for n = 0 : 1
+    ]
+end
 
 """
     TruncateQNDiag(qnd :: Vector{QNDiag} ; trunc_lth :: Int64, trunc_wt :: Vector{Int64}) :: Vector{QNDiag}
@@ -96,7 +103,7 @@ end
 Converts a `OpSum` object in `ITensors` to a series of terms. Note that the only operators supported are `"C"`, `"Cdag"` `"N"` and `"I"`.
 
 """
-function TermsFromOpSum(opsum :: OpSum{ComplexF64})
+function TermsFromOpSum(opsum :: Sum{Scaled{ComplexF64, Prod{Op}}})
     tms = Vector{Term}(undef,0)
     for i in eachindex(opsum)
         cstr = []
