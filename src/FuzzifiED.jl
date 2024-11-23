@@ -2,11 +2,9 @@ module FuzzifiED
 
 using LinearAlgebra
 using SparseArrays
-using Requires
 using WignerSymbols
 using SphericalHarmonics
 using FuzzifiED_jll
-using HDF5
 import Base.:+
 import Base.:-
 import Base.:*
@@ -111,28 +109,6 @@ export GetZPolTerms
 
 function __init__()
     FuzzifiED.NumThreads = Threads.nthreads()
-
-    @require ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5" begin
-        using ITensors
-
-        include("itensors_support/itensors_format.jl")
-        export QNDiagFromSites
-        export ConfsFromSites
-        export TermsFromOpSum
-        export OpSumFromTerms
-        export SitesFromQNDiag
-        export TruncateQNDiag
-
-        include("itensors_support/easy_sweep.jl")
-        export SweepOne
-        export EasySweep
-        export GetMPOSites
-        export GetMPO
-
-        include("archieve/ar_itensor.jl")
-        export TruncateQnu
-        export SitesFromQnu
-    end
 end
 
 end

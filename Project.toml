@@ -1,15 +1,20 @@
 name = "FuzzifiED"
 uuid = "b45b6d2d-92f2-400f-a7df-d2d897927e5f"
 authors = ["Zheng Zhou"]
-version = "0.9.2"
+version = "0.9.3"
 
 [deps]
 FuzzifiED_jll = "0fc6ce7e-a225-5ad5-93a0-97260cfa1513"
-ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Optim = "429524aa-4258-5aef-a3af-852621145aeb"
-Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 SphericalHarmonics = "c489a379-e885-57ff-9236-bd896d33c250"
 WignerSymbols = "9f57e263-0b3d-5e2e-b1be-24f2bb48858b"
+
+[weakdeps]
 HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
+ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5"
+
+[extensions]
+HDF5Ext = "HDF5"
+ITensorsExt = "ITensors"
