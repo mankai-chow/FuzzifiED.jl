@@ -113,7 +113,9 @@ function __init__()
     FuzzifiED.NumThreads = Threads.nthreads()
 
     @require ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5" begin
+    @require ITensorMPS = "0d1a4710-d33b-49a5-8f18-73bdf49b47e2" begin
         using ITensors
+        using ITensorMPS
 
         include("itensors_support/itensors_format.jl")
         export QNDiagFromSites
@@ -132,7 +134,7 @@ function __init__()
         include("archieve/ar_itensor.jl")
         export TruncateQnu
         export SitesFromQnu
-    end
+    end end
 end
 
 end
