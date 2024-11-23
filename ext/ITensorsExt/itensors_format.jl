@@ -55,7 +55,7 @@ function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, cf_ref 
     return Confs(no, secd, qnd)
 end 
 
-function ITensors.space( :: ITensors.SiteType"Fermion"; o :: Int, qnd :: Vector{QNDiag})
+function ITensors.space( :: SiteType"Fermion"; o :: Int, qnd :: Vector{QNDiag})
     return [
         QN(
             [ (qndi.name, qndi.charge[o] * n, qndi.modul) for qndi in qnd ]...

@@ -3,6 +3,8 @@ module ITensorsExt
 using ITensors
 using FuzzifiED
 
+import ITensors.SiteType
+
 include("itensors_format.jl")
 export QNDiagFromSites
 export ConfsFromSites
