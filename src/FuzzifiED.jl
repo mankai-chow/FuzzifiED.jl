@@ -109,4 +109,8 @@ export GetSnBasis
 export GetXPolTerms
 export GetZPolTerms
 
+function __init__()
+    FuzzifiED.NumThreads = Threads.nthreads()
+end
+
 end
