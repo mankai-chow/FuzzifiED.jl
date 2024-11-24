@@ -109,6 +109,32 @@ export GetSnBasis
 export GetXPolTerms
 export GetZPolTerms
 
+export QNDiagFromSites
+export ConfsFromSites
+export TermsFromOpSum
+export OpSumFromTerms
+export SitesFromQNDiag
+export TruncateQNDiag
+export SweepOne
+export EasySweep
+export GetMPOSites
+export GetMPO
+export TruncateQnu
+export SitesFromQnu
+
+function QNDiagFromSites end
+function ConfsFromSites end
+function TermsFromOpSum end
+function OpSumFromTerms end
+function SitesFromQNDiag end
+function TruncateQNDiag end
+function SweepOne end
+function EasySweep end
+function GetMPOSites end
+function GetMPO end
+function TruncateQnu end
+function SitesFromQnu end
+
 function __init__()
     FuzzifiED.NumThreads = Threads.nthreads()
 end

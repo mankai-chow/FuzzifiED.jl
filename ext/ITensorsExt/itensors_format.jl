@@ -8,7 +8,7 @@ Converts a `Sites` object in the `ITensors` package to a set of QNDiags.
 * `sites :: Vector{Index{Vector{Pair{QN, Int64}}}}` is a `Sites` object. Only `Fermion` site type is supported, and the quantum numbers of the `0` state must be all zero. Note that this will subject to the limitation in ITensors that the number of conserved quantities must be less than 4.
 
 """
-function FuzzifiED.QNDiagFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}})
+function QNDiagFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}})
     names = []
     moduls = Int64[]
     for site in sites 
@@ -42,13 +42,13 @@ Converts a `Sites` object in the `ITensors` package to the `Confs` object
 * `sec_qn :: QN` is a `QN` object that specifies the the quantum number of the selected configuration. Alternatively, `cf_ref :: Vector{Int64})` is a reference configuration composed of `0` and `1`.
 
 """
-function FuzzifiED.ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, sec_qn :: QN)
+function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, sec_qn :: QN)
     no = length(sites)
     qnd = QNDiagFromSites(sites)
     secd = [ val(sec_qn, qndi.name) for qndi in qnd ]
     return Confs(no, secd, qnd)
 end 
-function FuzzifiED.ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, cf_ref :: Vector{Int64})
+function ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, cf_ref :: Vector{Int64})
     no = length(sites)
     qnd = QNDiagFromSites(sites)
     secd = [ cf_ref' * qndi.charge for qndi in qnd ]
@@ -74,7 +74,7 @@ truncates the list of ``N_U`` QNDiags from to a number ``N'_U`` acceptable by IT
 - `trunc_wt :: Vecotr{Int64}` stores the ``N_U-N'_U+1`` coefficients ``λ``. Facultative, ``1,10,100,1000,…`` by default. 
 
 """
-function FuzzifiED.TruncateQNDiag(qnd :: Vector{QNDiag} ; trunc_lth :: Int64 = 3, trunc_wt :: Vector{Int64} = [ 10 ^ (i - trunc_lth) for i = trunc_lth : length(qnd)]) 
+function TruncateQNDiag(qnd :: Vector{QNDiag} ; trunc_lth :: Int64 = 3, trunc_wt :: Vector{Int64} = [ 10 ^ (i - trunc_lth) for i = trunc_lth : length(qnd)]) 
     return [ qnd[1 : trunc_lth - 1]..., sum(qnd[trunc_lth : end]) .* trunc_wt ]
 end
 
@@ -85,7 +85,7 @@ end
 returns the ITensors Sites object from a set of QNDiags. 
 
 """
-function FuzzifiED.SitesFromQNDiag(qnd :: Vector{QNDiag})
+function SitesFromQNDiag(qnd :: Vector{QNDiag})
     no = length(qnd[1].charge)
     return [ siteind("Fermion" ; o, qnd) for o = 1 : no ]
 end
@@ -96,7 +96,7 @@ end
 Converts a `OpSum` object in `ITensors` to a series of terms. Note that the only operators supported are `"C"`, `"Cdag"` `"N"` and `"I"`.
 
 """
-function FuzzifiED.TermsFromOpSum(opsum :: Sum{Scaled{ComplexF64, Prod{Op}}})
+function TermsFromOpSum(opsum :: Sum{Scaled{ComplexF64, Prod{Op}}})
     tms = Vector{Term}(undef,0)
     for i in eachindex(opsum)
         cstr = []
@@ -130,7 +130,7 @@ end
 Converts a series of terms to `OpSum` object in `ITensors`.
 
 """
-function FuzzifiED.OpSumFromTerms(tms :: Vector{Term})
+function OpSumFromTerms(tms :: Vector{Term})
     opsum = OpSum()
     for tm in tms
         optm = Any[tm.coeff]

@@ -4,7 +4,7 @@ mutable struct EasySweepObserver <: AbstractObserver
     EasySweepObserver(e_tol = 0.0) = new(e_tol, 1000.0)
 end
 
-function FuzzifiED.ITensorMPS.checkdone!(o :: EasySweepObserver; kwargs...)
+function ITensorMPS.checkdone!(o :: EasySweepObserver; kwargs...)
     sw = kwargs[:sweep]
     energy = kwargs[:energy]
     if abs(energy - o.e_last) < o.e_tol
@@ -41,7 +41,7 @@ This function performs one round of `nsweeps` sweeps. It first checks the file `
 - `observer :: AbstractObserver` specifies the measurement and cutoff condition for each sweep. Facultative, by default the observer will print the energy and cutoff once the energy difference is less than `e_tol` at each sweep. 
 
 """
-function FuzzifiED.SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: String = "./", cutoff :: Vector{Float64} = [1E-9], maxdim :: Vector{Int64} = [dim1], nsweeps :: Int64 = 10, noise :: Vector{Float64} = [1E-6,1E-7,0], proj :: Vector{String} = String[], e_tol :: Float64 = 1E-6, weight :: Float64 = 100.0, observer :: AbstractObserver = EasySweepObserver(e_tol))
+function SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: String = "./", cutoff :: Vector{Float64} = [1E-9], maxdim :: Vector{Int64} = [dim1], nsweeps :: Int64 = 10, noise :: Vector{Float64} = [1E-6,1E-7,0], proj :: Vector{String} = String[], e_tol :: Float64 = 1E-6, weight :: Float64 = 100.0, observer :: AbstractObserver = EasySweepObserver(e_tol))
     if (isfile("$(path)st_$(id).h5"))
         f = h5open("$(path)st_$(id).h5","r")
         if (haskey(f, "st_d$(dim1)"))
@@ -108,7 +108,7 @@ This function automatically performs several rounds of DMRG sweeps with increasi
 - `observer :: AbstractObserver` specifies the measurement and cutoff condition for each sweep starting from the second round. Facultative, by default the observer will print the energy and cutoff once the energy difference is less than `e_tol` at each sweep. 
 
 """
-function FuzzifiED.EasySweep(id :: String, hmt :: MPO, st00 :: MPS ; path :: String = "./", dim_list :: Vector{Int64} = [1000,2000,3000,4000,5000,6000], proj :: Vector{String} = String[], e_tol1 :: Float64 = 1E-6, e_tol :: Float64 = 1E-7, cutoff :: Vector{Float64} = [1E-9], maxdim0 :: Vector{Int64} = [10,20,50,100,200,500], noise0 :: Vector{Float64} = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], noise :: Vector{Float64} = [1E-6,2E-7,5E-8,1E-8,0], nsweeps :: Int64 = 10, weight :: Float64 = 100.0, observer :: AbstractObserver = EasySweepObserver(e_tol1))
+function EasySweep(id :: String, hmt :: MPO, st00 :: MPS ; path :: String = "./", dim_list :: Vector{Int64} = [1000,2000,3000,4000,5000,6000], proj :: Vector{String} = String[], e_tol1 :: Float64 = 1E-6, e_tol :: Float64 = 1E-7, cutoff :: Vector{Float64} = [1E-9], maxdim0 :: Vector{Int64} = [10,20,50,100,200,500], noise0 :: Vector{Float64} = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], noise :: Vector{Float64} = [1E-6,2E-7,5E-8,1E-8,0], nsweeps :: Int64 = 10, weight :: Float64 = 100.0, observer :: AbstractObserver = EasySweepObserver(e_tol1))
     if (isfile("$(path)st_$(id).h5"))
         f = h5open("$(path)st_$(id).h5","r")
         if (haskey(f, "st_fin"))
@@ -157,7 +157,7 @@ This function returns the MPO and sites for a given operator and a Hilbert space
 - `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultative, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. 
 
 """
-function FuzzifiED.GetMPOSites(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}}, qnd :: Vector{QNDiag} ; path :: String = "./", mpo_method :: Function = MPO)
+function GetMPOSites(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}}, qnd :: Vector{QNDiag} ; path :: String = "./", mpo_method :: Function = MPO)
     if (isfile("$(path)op_$(id).h5"))
         f = h5open("$(path)op_$(id).h5","r")
         mpo = read(f, "mpo", MPO)
@@ -195,7 +195,7 @@ This function returns the MPO for a given operator and a given set of sites. It 
 - `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultative, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. 
 
 """
-function FuzzifiED.GetMPO(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}}, sites :: Vector{<:Index} ; path :: String = "./", mpo_method :: Function = MPO)
+function GetMPO(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}}, sites :: Vector{<:Index} ; path :: String = "./", mpo_method :: Function = MPO)
     if (isfile("$(path)op_$(id).h5"))
         f = h5open("$(path)op_$(id).h5","r")
         mpo = read(f, "mpo", MPO)
