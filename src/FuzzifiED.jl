@@ -2,7 +2,6 @@ module FuzzifiED
 
 using LinearAlgebra
 using SparseArrays
-using Requires
 using WignerSymbols
 using SphericalHarmonics
 using FuzzifiED_jll
