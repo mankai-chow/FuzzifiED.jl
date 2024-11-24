@@ -4,19 +4,6 @@ using FuzzifiED
 using ITensors 
 using ITensorMPS
 
-import FuzzifiED:QNDiagFromSites
-import FuzzifiED:ConfsFromSites
-import FuzzifiED:TermsFromOpSum
-import FuzzifiED:OpSumFromTerms
-import FuzzifiED:SitesFromQNDiag
-import FuzzifiED:TruncateQNDiag
-import FuzzifiED:SweepOne
-import FuzzifiED:EasySweep
-import FuzzifiED:GetMPOSites
-import FuzzifiED:GetMPO
-import FuzzifiED:TruncateQnu
-import FuzzifiED:SitesFromQnu
-
 include("itensors_format.jl")
 include("easy_sweep.jl")
 include("ar_itensor.jl")
