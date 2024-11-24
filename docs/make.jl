@@ -1,12 +1,13 @@
 # julia --color=yes --project make.jl && rm -r publish/*/* ; mv -f build/* publish
 push!(LOAD_PATH,"../src/")
+push!(LOAD_PATH,"../ext/")
 
-include("../src/FuzzifiED.jl")
 using Documenter
-using ITensors
 using WignerSymbols
 using SparseArrays
-using .FuzzifiED
+using ITensors
+using ITensorMPS
+using FuzzifiED
 
 makedocs(sitename = "FuzzifiED.jl", 
     pages = ["Home" => "index.md", 
@@ -17,4 +18,5 @@ makedocs(sitename = "FuzzifiED.jl",
         "Built-in models" => "models.md",
         "Archieved interfaces" => "archieve.md",
         "Releases" => "releases.md"],
-    format = Documenter.HTML(assets = ["assets/themes/serif.css"])) 
+    format = Documenter.HTML(assets = ["assets/themes/serif.css"], repolink = "https://github.com/mankai-chow/FuzzifiED.jl")
+) 
