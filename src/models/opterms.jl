@@ -259,5 +259,5 @@ where ``G_i`` are the generator matrices, and ``T_i`` are the trace matrices.
 function GetC2Terms(nm :: Int64, nf :: Int64, mat_gen :: Vector{<:AbstractMatrix{<:Number}}, mat_tr :: Vector{<:AbstractMatrix{<:Number}} = Matrix{Float64}[])
     return SimplifyTerms(
         sum([GetPolTerms(nm, nf, Matrix(mati')) * GetPolTerms(nm, nf, mati) / tr(mati' * mati) for mati in mat_gen])
-         - (isempty(mat_tr1) ? Term[] : sum([GetPolTerms(nm, nf, Matrix(mati')) * GetPolTerms(nm, nf, mati) / tr(mati' * mati) for mati in mat_tr])))
+         - (isempty(mat_tr) ? Term[] : sum([GetPolTerms(nm, nf, Matrix(mati')) * GetPolTerms(nm, nf, mati) / tr(mati' * mati) for mati in mat_tr])))
 end 
