@@ -7,7 +7,7 @@
 #     using Pkg; Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.git")
 
 using FuzzifiED
-using ITensors
+using ITensors, ITensorMPS
 using ITensorMPOConstruction
 const σx = [  0  1 ;  1  0 ]
 const σz = [  1  0 ;  0 -1 ]

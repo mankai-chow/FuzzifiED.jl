@@ -3,7 +3,7 @@
 # and how to convert ITensor objects back to Confs and Terms to benchmark DMRG results with ED. 
 
 using FuzzifiED
-using ITensors
+using ITensors, ITensorMPS
 FuzzifiED.ElementType = Float64
 const σx = [  0  1 ;  1  0 ]
 const σz = [  1  0 ;  0 -1 ]

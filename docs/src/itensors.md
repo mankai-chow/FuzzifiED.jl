@@ -2,7 +2,7 @@
 
 This package also supports convertion with the `Site` and `OpSum` objects from `ITensors` library and management of DMRG sweeping process. To use these functions, include
 ```julia
-using ITensors
+using ITensors, ITensorMPS
 ```
 at the heading of the Julia script.
 
