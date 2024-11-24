@@ -4,6 +4,7 @@
 # and verify the eigenstates of Hamiltonian are also their eigenstates. 
 # We also show how to construct a density operator and measure the inner products. 
 
+using HDF5
 using FuzzifiED
 const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]

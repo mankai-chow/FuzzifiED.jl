@@ -6,7 +6,6 @@ using Requires
 using WignerSymbols
 using SphericalHarmonics
 using FuzzifiED_jll
-using HDF5
 import Base.:+
 import Base.:-
 import Base.:*

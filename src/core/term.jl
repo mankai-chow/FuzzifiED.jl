@@ -217,23 +217,3 @@ function SimplifyTermsOld(tms_t :: Vector{Term}) :: Vector{Term}
     end
     return filter(tm -> abs(tm.coeff) > 1E-13, tms1)
 end
-
-
-function HDF5.write(parent :: Union{HDF5.File, HDF5.Group}, name :: String, tms :: Vector{Term})
-    grp = create_group(parent, name)
-    coeffs = [ tm.coeff for tm in tms ]
-    nc = maximum([length(tm.cstr) for tm in tms]) ÷ 2
-    cstrs = hcat([ [tm.cstr ; fill(-1, 2 * nc - length(tm.cstr))] for tm in tms]...)
-    write(grp, "coeffs", coeffs)
-    write(grp, "cstrs", cstrs)
-    close(grp)
-end
-
-function HDF5.read(parent :: Union{HDF5.File, HDF5.Group}, name :: String, :: Type{Vector{Term}})
-    grp = open_group(parent, name)
-    coeffs = read(grp, "coeffs")
-    cstrs = read(grp, "cstrs")
-    close(grp)
-    tms = [ Term(coeffs[i], cstrs[:, i]) for i in eachindex(coeffs) ]
-    return tms
-end

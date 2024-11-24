@@ -118,28 +118,3 @@ function GetConfWeight(bs :: Basis, st :: Union{Vector{ComplexF64}, Vector{Float
     id = GetConfId(bs.cfs, cf)
     return st[bs.cfgr[id]] * bs.cffac[id]
 end
-
-function HDF5.write(parent :: Union{HDF5.File, HDF5.Group}, name :: String, bs :: Basis)
-    grp = create_group(parent, name)
-    write(grp, "cfs", bs.cfs)
-    write(grp, "dim", bs.dim)
-    write(grp, "szz", bs.szz)
-    write(grp, "cfgr", bs.cfgr)
-    write(grp, "cffac", bs.cffac)
-    write(grp, "grel", bs.grel)
-    write(grp, "grsz", bs.grsz)
-    close(grp)
-end
-
-function HDF5.read(parent :: Union{HDF5.File, HDF5.Group}, name :: String, :: Type{Basis})
-    grp = open_group(parent, name)
-    cfs = read(grp, "cfs", Confs)
-    dim = read(grp, "dim")
-    szz = read(grp, "szz")
-    cfgr = read(grp, "cfgr")
-    cffac = read(grp, "cffac")
-    grel = read(grp, "grel")
-    grsz = read(grp, "grsz")
-    close(grp)
-    return Basis(cfs, dim, szz, cfgr, cffac, grel, grsz)
-end
