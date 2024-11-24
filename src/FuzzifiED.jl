@@ -108,6 +108,9 @@ export GetSnBasis
 export GetXPolTerms
 export GetZPolTerms
 
+include("fuzzifino/fuzzifino.jl")
+export Fuzzifino
+
 export QNDiagFromSites
 export ConfsFromSites
 export TermsFromOpSum
