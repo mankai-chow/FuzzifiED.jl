@@ -1,5 +1,16 @@
 # Release notes 
 
+## November 2024
+
+### 24 November, 2024 (Version 0.10.0)
+
+- Add module Fuzzifino for boson-fermion systems.
+
+### 23 November, 2024 (Version 0.9.3)
+
+- Move HDF5 and ITensors to extensions
+- Modify ITensors extension interfaces in alignment with the update of ITensors.
+
 ## September 2024
 
 ### 16 September, 2024 (Version 0.9.2)
