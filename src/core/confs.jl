@@ -21,7 +21,7 @@ end
 
 
 """
-    function Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64}, num_th :: Int64, disp_std :: Bool) :: Confs
+    function Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag} ; nor :: Int64 = div(no, 2), num_th :: Int64, disp_std :: Bool) :: Confs
 
 generates the configurations from the list of QNDiags. 
 

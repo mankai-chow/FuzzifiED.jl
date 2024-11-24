@@ -4,7 +4,7 @@
 
 a flag to determine whether logs of the FuzzifiED functions should be turned off. False by default. If you want to evaluate without log, put `FuzzifiED.SilentStd = true`. This parameter can be defined for each process separately. 
 """
-SilentStd :: Bool= false
+SilentStd :: Bool = false
 
 """
     Libpath :: String = FuzzifiED_jll.LibpathFuzzifiED

@@ -23,7 +23,7 @@ It can be initialised by the following method
 ```julia
 QNDiag([name :: String, ]charge :: Vector{Int64}[, modul :: Int64]) :: QNDiag
 ```
-The arguments `name` and `modul` is facultative. By default `name` is set to `\"QN\"` and `modul` is set to 1. 
+The arguments `name` and `modul` are facultative. By default `name` is set to `\"QN\"` and `modul` is set to 1. 
 """
 mutable struct QNDiag
     name :: String
