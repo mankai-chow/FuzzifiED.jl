@@ -114,9 +114,9 @@ end
 
 """
     function GetEigensystemKrylov(mat :: OpMat{ComplexF64}, nst :: Int64 ; initvec :: Vector{ComplexF64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{ComplexF64}, Matrix{ComplexF64}}
-    function GetEigensystemKrylov(mat :: OpMat{Float64}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{Float64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{Float64}, Matrix{Float64}}
+    function GetEigensystemKrylov(mat :: OpMat{Float64}, nst :: Int64 ; initvec :: Vector{Float64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{Float64}, Matrix{Float64}}
 
-This method calls the `eigsolve` from Julia `KrylovKit.jl` package instead of Arpack from Fortran to calculate the lowest eigenstates of sparse matrix. Apple Silicon users who experience trouble calling `GetEigensystem` function may use this function instead. The performance should be similar.
+This method calls the `eigsolve` from Julia `KrylovKit.jl` package instead of Arpack from Fortran to calculate the lowest eigenstates of sparse matrix. Apple Silicon users who experience trouble calling `GetEigensystem` function may use this function instead. The performance should be similar. For an example, refer to [`ising_spectrum_krylov.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_spectrum_krylov.jl).
 
 # Arguments 
 
