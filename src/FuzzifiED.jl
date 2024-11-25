@@ -47,6 +47,7 @@ export Operator
 include("core/opmat.jl")
 export OpMat
 export GetEigensystem
+export GetEigensystemKrylov
 export SparseMatrixCSCFromOpMat
 export MatrixFromOpMat
 
@@ -123,6 +124,7 @@ export GetMPOSites
 export GetMPO
 export TruncateQnu
 export SitesFromQnu
+export GetEigensystemCuda
 
 function QNDiagFromSites end
 function ConfsFromSites end
@@ -136,6 +138,7 @@ function GetMPOSites end
 function GetMPO end
 function TruncateQnu end
 function SitesFromQnu end
+function GetEigensystemCuda end
 
 function __init__()
     FuzzifiED.NumThreads = Threads.nthreads()
