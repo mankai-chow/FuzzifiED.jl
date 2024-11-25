@@ -1,4 +1,4 @@
-# ITensors extensions
+# ITensors extension
 
 FuzzifiED also supports an ITensors extension, including convertion with the `Site` and `OpSum` objects from `ITensors` library and management of DMRG sweeping process. To use the extension, make sure the packages `ITensors` and `ITensorMPS` are properly installed, and include
 ```julia

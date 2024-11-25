@@ -102,6 +102,11 @@ The lowest eigenstates of the sparse matrix can be calculated by
 ```@docs
 GetEigensystem(mat :: OpMat{ComplexF64}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10))
 ```
+Besides Arpack in Fortran, we also provide an interface calling KrylovKit in Julia.
+```@docs
+GetEigensystemKrylov(mat :: OpMat{ComplexF64}, nst :: Int64)
+```
+
 The product of an operator on a state and the inner product of a final state, an operator and an initial state can be calculated by
 ```@docs
 *(mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64})
@@ -114,8 +119,8 @@ stf = Operator(bsd, bsf, [Term(1., [-1, -1])]) * std
 
 The `OpMat` object can be converted into a full matrix or converted with the `SparseMatrixCSC` object in the `SparseArrays` package. This will allow, _e.g._, full diagonalisation using the linear algebra package of julia. 
 ```@docs
-SparseMatrixCSCFromOpMat(mat :: OpMat)
-MatrixFromOpMat(mat :: OpMat)
+SparseMatrixCSC(mat :: OpMat)
+Matrix(mat :: OpMat)
 OpMat(matcsc :: SparseMatrixCSC)
 ```
 

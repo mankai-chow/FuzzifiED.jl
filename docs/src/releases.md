@@ -2,6 +2,11 @@
 
 ## November 2024
 
+### 25 November, 2024 (Version 0.10.1)
+
+- Add CUDA extension. 
+- Add interface with KrylovKit.
+
 ### 24 November, 2024 (Version 0.10.0)
 
 - Add module Fuzzifino for boson-fermion systems.

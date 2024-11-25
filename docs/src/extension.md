@@ -32,3 +32,10 @@ op  = read(f, group_name :: String, Operator)
 mat = read(f, group_name :: String, OpMat{ComplexF64})
 mat = read(f, group_name :: String, OpMat{Float64})
 ```
+
+### CUDA extension
+
+```@docs
+CUSPARSE.CuSparseMatrixCSC(mat :: OpMat{ComplexF64})
+GetEigensystemCuda(mat :: OpMat{ComplexF64}, nst :: Int64)
+```

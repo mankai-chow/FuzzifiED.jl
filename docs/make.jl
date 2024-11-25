@@ -9,6 +9,7 @@ using WignerSymbols
 using SparseArrays
 using ITensors
 using ITensorMPS
+using CUDA
 using FuzzifiED
 using FuzzifiED.Fuzzifino
 
