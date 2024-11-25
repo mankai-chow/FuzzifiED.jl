@@ -1,6 +1,6 @@
 # This example calculates the spectrum of SO(5) DQCP on fuzzy sphere.
 # This example reproduces Table II in arXiv : 2306.16435
-# On my table computer, this calculation takes 14.118 s
+# On my table computer, this calculation takes 9.852 s
 
 using FuzzifiED
 FuzzifiED.ElementType = Float64

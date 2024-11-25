@@ -1,7 +1,7 @@
 # This example calculates the spectrum of O(3) Wilson-Fisher CFT
 # using the bilayer Heisenberg model.
 # This example reproduces Table I and Figure 2 in Phys. Rev. B 110, 115113 (2024).
-# On my table computer, this calculation takes 3.826 s
+# On my table computer, this calculation takes 2.742 s
 
 using FuzzifiED
 const ⊗ = kron

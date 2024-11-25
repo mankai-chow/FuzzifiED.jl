@@ -1,7 +1,7 @@
 # This example calculates the spectrum of magnetic line defect in 3d Ising model
 # in lz = 0, P = ±1 and lz = 1 sectors, calibrated by bulk T.
 # This example reproduces Table I in Nat. Commun. 15, 3659 (2024)
-# On my table computer, this calculation takes 1.293 s
+# On my table computer, this calculation takes 0.962 s
 
 using FuzzifiED
 const σ1 = [  1  0 ;  0  0 ]

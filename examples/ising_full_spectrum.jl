@@ -1,6 +1,6 @@
 # This example calculates the full spectrum of 3d Ising model on fuzzy sphere
 # at nm = 10 for sector (P,Z,R) = (1,1,1)
-# On my table computer, this calculation takes 0.672 s
+# On my table computer, this calculation takes 0.637 s
 
 using FuzzifiED
 using LinearAlgebra

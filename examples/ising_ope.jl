@@ -1,7 +1,7 @@
 # This example calculates various OPE coefficients at nm = 12
 # by taking overlaps between CFT states and density operators and composite.
 # This example reproduces Figure 2 and Table I in Phys. Rev. Lett 131, 031601 (2023)
-# On my table computer, this calculation takes 2.138 s
+# On my table computer, this calculation takes 1.594 s
 
 using FuzzifiED
 const σ1 = [  1  0 ;  0  0 ]

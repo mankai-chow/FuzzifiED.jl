@@ -1,7 +1,7 @@
 # This example defines a cost function as the square sum of the deviations of 
 # ∂^nσ, ∂^nϵ and T to evaluate the conformal symmetry for Ising model 
 # and minimises this cost function to find the best parameter.
-# On my table computer, this calculation takes 7.881 s
+# On my table computer, this calculation takes 5.061 s
 # We acknowlege Wenhan Guo for his help in optimising this example. 
 
 using FuzzifiED

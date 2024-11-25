@@ -2,7 +2,7 @@
 # by examining the matrix elements of conformal generators P^z + K^z
 # and compare the states (P^z + K^z)|Φ⟩ with the CFT expectations. 
 # This example reproduces Figure 7 in arXiv : 2409.02998.
-# On my table computer, this calculation takes 3.587 s
+# On my table computer, this calculation takes 2.490 s
 
 using FuzzifiED
 using LinearAlgebra

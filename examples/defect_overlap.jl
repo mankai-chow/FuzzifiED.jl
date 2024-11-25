@@ -1,7 +1,7 @@
 # This example calculates the g-function of magnetic line defect in 3d Ising model
 # using the ovelaps between the bulk, defect ground state and the lowest defect-creation state.
 # This example reproduces Figure 6 in SciPost Phys. 17, 021 (2024).
-# On my table computer, this calculation takes 3.011 s
+# On my table computer, this calculation takes 0.737 s
 
 using FuzzifiED
 const σ1 = [  1  0 ;  0  0 ]

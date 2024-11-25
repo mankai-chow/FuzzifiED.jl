@@ -1,7 +1,7 @@
 # This example calculates the spectrum of 3d Ising model on fuzzy sphere at nm = 12.
 # For each (P,Z,R) sector, 20 states are calculated.
 # This example reproduces Table I and Figure 4 in Phys. Rev. X 13, 021009 (2023)
-# On my table computer, this calculation takes 6.407 s
+# On my table computer, this calculation takes 4.171 s
 
 using FuzzifiED
 const σ1 = [  1  0 ;  0  0 ]

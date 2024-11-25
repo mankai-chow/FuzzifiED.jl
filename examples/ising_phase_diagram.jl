@@ -1,7 +1,7 @@
 # This example calculates the phase diagram of fuzzy sphere Ising model
 # by calculating the order parameter <M^2>. 
 # This example reproduces Figure 3 in Phys. Rev. X 13, 021009 (2023)
-# On my table computer, this calculation takes 4.257 s
+# On my table computer, this calculation takes 2.925 s
 
 using FuzzifiED
 const σ1 = [  1  0 ;  0  0 ]

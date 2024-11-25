@@ -2,7 +2,7 @@
 # along the real space cut of θ = 0.500π and 0.499π respectively,
 # and use these two data to extract finite size F-function without sustracting the IQHE contribution. 
 # This example reproduces Figures 3 in arXiv : 2401.17362.
-# On my table computer, this calculation takes 14.246 s
+# On my table computer, this calculation takes 4.197 s
 
 using FuzzifiED
 using SpecialFunctions

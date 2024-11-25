@@ -1,10 +1,9 @@
 # This example calculates the entanglement entropy of the Ising ground state
 # along the orbital space cut at m = 0, and also the entanglement spectrum 
 # in the half-filled lz = 0, 1 and  both Z_2 sectors
-# On my table computer, this calculation takes 0.557 s
+# On my table computer, this calculation takes 0.506 s
 
 using FuzzifiED
-using SpecialFunctions
 const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]

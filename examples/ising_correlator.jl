@@ -1,7 +1,7 @@
 # This example calculates the σσ two-point function on sphere
 # and the σσσσ four-point function on sphere, 0 and ∞. 
 # This example reproduces Figures 1c and 2a in Phys. Rev. B 108, 235123 (2023)
-# On my table computer, this calculation takes 2.472 s
+# On my table computer, this calculation takes 1.650 s
 
 using FuzzifiED
 using LegendrePolynomials
