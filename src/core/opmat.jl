@@ -113,6 +113,32 @@ function GetEigensystem(mat :: OpMat{Float64}, nst :: Int64 ; tol :: Float64 = 1
 end 
 
 """
+    function GetEigensystemKrylov(mat :: OpMat{ComplexF64}, nst :: Int64 ; initvec :: Vector{ComplexF64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{ComplexF64}, Matrix{ComplexF64}}
+    function GetEigensystemKrylov(mat :: OpMat{Float64}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{Float64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{Float64}, Matrix{Float64}}
+
+This method calls the `eigsolve` from Julia `KrylovKit.jl` package instead of Arpack from Fortran to calculate the lowest eigenstates of sparse matrix. Apple Silicon users who experience trouble calling `GetEigensystem` function may use this function instead. The performance should be similar.
+
+# Arguments 
+
+* `mat :: OpMat{ComplexF64}` or `mat :: OpMat{Float64}` is the matrix ;
+* `nst :: Int64` is the number of eigenstates to be calculated ;
+* `initvec :: Vector{ComplexF64}` or `initvec :: Vector{Float64}` is the initial vector. Facultative, a random initialisation by default ;
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
+* `kwargs...` is the options that will directly sent into `eigsolve`, this includes `tol :: Float64` and `krylovdim`, see its [documentation](https://jutho.github.io/KrylovKit.jl/stable/man/eig/#KrylovKit.eigsolve) for detail.
+
+# Output
+
+* A length-`nst` array that has the same type as `mat` recording the eigenvalues, and 
+* A `dimd`\\*`nst` matrix that has the same type as `mat` where every column records an eigenstate. 
+"""
+function GetEigensystemKrylov(mat :: OpMat{T}, nst :: Int64 ; initvec = rand(T, mat.dimd), num_th = NumThreads, disp_std = !SilentStd, kwargs...) where T <: Union{ComplexF64,Float64}
+    eigval, eigvec, info = eigsolve(x -> *(mat, x ; num_th), initvec, nst, :SR ; kwargs...)
+    if (disp_std) print(info) end
+    return Vector{T}(eigval), Matrix{T}(hcat(eigvec...))
+end
+
+"""
     function *(mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64} ; num_th :: Int64) :: Vector{ComplexF64}
     function *(mat :: OpMat{Float64}, st_d :: Vector{Float64} ; num_th :: Int64) :: Vector{Float64}
 
@@ -157,12 +183,12 @@ end
 
 
 """
-    SparseMatrixCSCFromOpMat(mat :: OpMat{ComplexF64}) :: SparseMatrixCSC{Int64,ComplexF64}
-    SparseMatrixCSCFromOpMat(mat :: OpMat{Float64}) :: SparseMatrixCSC{Int64,Float64}
+    SparseMatrixCSC(mat :: OpMat{ComplexF64}) :: SparseMatrixCSC{Int64,ComplexF64}
+    SparseMatrixCSC(mat :: OpMat{Float64}) :: SparseMatrixCSC{Int64,Float64}
 
 converts the `OpMat` objects to a `SparseMatrixCSC` object in the `SparseArrays` package.
 """
-function SparseMatrixCSCFromOpMat(mat :: OpMat)
+function SparseArrays.SparseMatrixCSC(mat :: OpMat)
     matcsc1 = SparseMatrixCSC(mat.dimf, mat.dimd, mat.colptr, mat.rowid, mat.elval)
     if (mat.sym_q == 0) 
         return matcsc1
@@ -172,6 +198,7 @@ function SparseMatrixCSCFromOpMat(mat :: OpMat)
         return matcsc1 + transpose(matcsc1) - spdiagm(diag(matcsc1))
     end
 end
+SparseMatrixCSCFromOpMat(mat :: OpMat) = SparseMatrixCSC(mat)
 
 
 """
@@ -186,11 +213,12 @@ end
 
 
 """
-    MatrixFromOpMat(mat :: OpMat{ComplexF64}) :: Matrix{ComplexF64}
-    MatrixFromOpMat(mat :: OpMat{Float64}) :: Matrix{Int64,Float64}
+    Matrix(mat :: OpMat{ComplexF64}) :: Matrix{ComplexF64}
+    Matrix(mat :: OpMat{Float64}) :: Matrix{Float64}
 
 converts the `OpMat` objects to a full matrix.
 """
-function MatrixFromOpMat(mat :: OpMat)
+function LinearAlgebra.Matrix(mat :: OpMat)
     return Matrix(SparseMatrixCSCFromOpMat(mat))
 end
+MatrixFromOpMat(mat :: OpMat) = Matrix(mat)

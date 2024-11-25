@@ -5,6 +5,7 @@ using SparseArrays
 using WignerSymbols
 using SphericalHarmonics
 using FuzzifiED_jll
+using KrylovKit
 import Base.:+
 import Base.:-
 import Base.:*
