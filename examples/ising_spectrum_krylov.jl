@@ -30,7 +30,7 @@ for P in [1, -1], Z in [1, -1], R in [1, -1]
     bs = Basis(cfs, [P, Z, R], qnf)
     hmt = Operator(bs, tms_hmt)
     hmt_mat = OpMat(hmt)
-    enrg, st = GetEigensystemKrylov(hmt_mat, 20 ; krylovdim = 50, tol = 1E-8)
+    enrg, st = GetEigensystemKrylov(hmt_mat, 20)
 
     l2 = Operator(bs, tms_l2)
     l2_mat = OpMat(l2)

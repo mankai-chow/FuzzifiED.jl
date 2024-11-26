@@ -122,18 +122,21 @@ This method calls the `eigsolve` from Julia `KrylovKit.jl` package instead of Ar
 
 * `mat :: OpMat{ComplexF64}` or `mat :: OpMat{Float64}` is the matrix ;
 * `nst :: Int64` is the number of eigenstates to be calculated ;
+* `tol :: Float64` is the tolerence for the KrylovKit process. The default value is `1E-8` ;
+* `ncv :: Int64` is the maximum dimension of the Krylov subspace. The default value is `max(2 * nst, nst + 10)`. If `krylovdim` is also given, `ncv` will not be used.
 * `initvec :: Vector{ComplexF64}` or `initvec :: Vector{Float64}` is the initial vector. Facultative, a random initialisation by default ;
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
-* `kwargs...` is the options that will directly sent into `eigsolve`, this includes `tol :: Float64` and `krylovdim`, see its [documentation](https://jutho.github.io/KrylovKit.jl/stable/man/eig/#KrylovKit.eigsolve) for detail.
+* `kwargs...` is the options that will directly sent into `eigsolve`, see its [documentation](https://jutho.github.io/KrylovKit.jl/stable/man/eig/#KrylovKit.eigsolve) for detail.
 
 # Output
 
 * A length-`nst` array that has the same type as `mat` recording the eigenvalues, and 
 * A `dimd`\\*`nst` matrix that has the same type as `mat` where every column records an eigenstate. 
 """
-function GetEigensystemKrylov(mat :: OpMat{T}, nst :: Int64 ; initvec = rand(T, mat.dimd), num_th = NumThreads, disp_std = !SilentStd, kwargs...) where T <: Union{ComplexF64,Float64}
-    eigval, eigvec, info = eigsolve(x -> *(mat, x ; num_th), initvec, nst, :SR ; kwargs...)
+function GetEigensystemKrylov(mat :: OpMat{T}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), initvec = rand(T, mat.dimd), num_th = NumThreads, disp_std = !SilentStd, kwargs...) where T <: Union{ComplexF64,Float64}
+    kwargs1 = haskey(kwargs, :krylovdim) ? kwargs : (kwargs..., krylovdim = ncv)
+    eigval, eigvec, info = eigsolve(x -> *(mat, x ; num_th), initvec, nst, :SR ; tol, kwargs1...)
     if (disp_std) print(info) end
     return Vector{T}(eigval), Matrix{T}(hcat(eigvec...))
 end
