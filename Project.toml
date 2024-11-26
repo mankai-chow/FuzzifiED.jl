@@ -1,7 +1,7 @@
 name = "FuzzifiED"
 uuid = "b45b6d2d-92f2-400f-a7df-d2d897927e5f"
 authors = ["Zheng Zhou"]
-version = "0.10.1"
+version = "0.10.2"
 
 [deps]
 FuzzifiED_jll = "0fc6ce7e-a225-5ad5-93a0-97260cfa1513"
@@ -19,6 +19,6 @@ HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 
 [extensions]
-ITensorsExt = ["ITensors", "ITensorMPS"]
+ITensorsExt = ["ITensors", "ITensorMPS", "HDF5"]
 HDF5Ext = ["HDF5"]
 CudaExt = ["CUDA"]
