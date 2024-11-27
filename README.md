@@ -1,4 +1,4 @@
-# FuzzifiED.jl Version 0.10.1
+# FuzzifiED.jl Version 0.10.2
 
 The package `FuzzifiED` is designed to do exact diagonalisation (ED) calculations on the fuzzy sphere, and also facilitates the DMRG calculations by ITensors. It can also be used for generic fermion models. Using this package, you can reproduce almost all the ED results in fuzzy sphere works.
 
@@ -8,9 +8,9 @@ Download Julia at [this link](https://julialang.org/downloads/).
 
 To install the package, please enter the following commands in Julia :
 ```julia
-using Pkg ;
-Pkg.add(url="https://github.com/mankai-chow/FuzzifiED_jll.jl.git") ;
-Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git") ;
+using Pkg
+Pkg.add(url="https://github.com/mankai-chow/FuzzifiED_jll.jl.git")
+Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
 ```
 Include at the start of your Julia script
 ```julia

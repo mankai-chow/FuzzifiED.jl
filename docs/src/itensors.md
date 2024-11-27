@@ -6,6 +6,13 @@ using ITensors, ITensorMPS
 ```
 at the heading of the Julia script.
 
+During intialisation, the optimal configuration for parallelisation is already automatically set.
+```julia
+BLAS.set_num_threads(1);
+NDTensors.Strided.disable_threads();
+ITensors.enable_threaded_blocksparse();
+```
+
 ## Format conversion
 
 The `Sites` objects in `ITensors` can be converted to a QNDiags and Confs with the QNs extracted. 
@@ -32,7 +39,7 @@ OpSumFromTerms(tms :: Vector{Term})
 
 This tool kit facilitates the management of DMRG process. It automatically records the intermediate results and recover these results if a job is stopped and run again on HPC. It also manages the gradual increase of maximal bond dimensions and the determination of convergence by the criteria of energy. These functions require the package [`ITensorMPOConstruction`](https://github.com/ITensor/ITensorMPOConstruction.jl), which can be installed by 
 ```julia
-julia> using Pkg; Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.git")
+using Pkg ; Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.git")
 ```
 
 ```@docs

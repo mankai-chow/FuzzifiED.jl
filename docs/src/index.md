@@ -8,9 +8,9 @@ If this package is helpful in your research, we would appreciate it if you menti
 
 To install the package, please first enter Julia by entering in the command line `julia`, and then enter the commands
 ```julia
-using Pkg ;
-Pkg.add(url="https://github.com/mankai-chow/FuzzifiED_jll.jl.git") ;
-Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git") ;
+using Pkg
+Pkg.add(url="https://github.com/mankai-chow/FuzzifiED_jll.jl.git")
+Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
 ```
 Include at the start of your Julia script
 ```julia
