@@ -22,7 +22,7 @@ nm = 12
 nf = 2
 no = nm * nf
 
-path = "nm_$(nm)/"
+path = "nm_$(nm)_tmp/"
 mkpath(path)
 
 ps_pot = [4.75, 1.] ./ 2

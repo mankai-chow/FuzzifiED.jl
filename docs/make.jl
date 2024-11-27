@@ -10,6 +10,8 @@ using SparseArrays
 using ITensors
 using ITensorMPS
 using CUDA
+using LinearAlgebra
+using HDF5
 using FuzzifiED
 using FuzzifiED.Fuzzifino
 
