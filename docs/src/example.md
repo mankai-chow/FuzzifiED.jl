@@ -395,7 +395,7 @@ enrg, st = GetEigensystem(hmt_mat, 10)
 
 EasySweep facilitates the management of DMRG process by automatically recording the intermediate results and recovering these results if a job is stopped and run again on HPC. It also manages the gradual increase of maximal bond dimensions and the determination of convergence by the criteria of energy. Before the calculation, we need to define a method to generate MPO from OpSum and Sites. We suggest using `MPO_new` from package `ITensorMPOConstruction`, which can be installed through 
 ```julia
-julia> Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.git"); 
+using Pkg ; Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.git"); 
 ```
 ```julia
 using ITensorMPOConstruction
