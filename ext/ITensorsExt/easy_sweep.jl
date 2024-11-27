@@ -18,7 +18,7 @@ end
 
 
 """
-    function SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: String, cutoff :: Vector{Float64}, maxdim :: Vector{Int64}, nsweeps :: Int64, noise :: Vector{Float64}, proj :: Vector{String}, e_tol :: Float64, weight :: Float64, observer :: AbstractObserver) :: Tuple{Float64, MPS}
+    function SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: String, cutoff :: Vector{Float64}, maxdim :: Vector{Int64}, nsweeps :: Int64, noise :: Vector{Float64}, proj :: Vector{String}, e_tol :: Float64, weight :: Float64, observer :: AbstractObserver, dmrg_options :: Dict, dmrg_options :: Dict) :: Tuple{Float64, MPS}
 
 # Function 
 
@@ -39,9 +39,10 @@ This function performs one round of `nsweeps` sweeps. It first checks the file `
 - `e_tol :: Float64` specifies the energy tolerence as a criteria to end the sweeps. Facultative, `1E-6` by default. 
 - `weight :: Float64` specifies the weight of projected states and will be sent into DMRG. Facultative, 100.0 by default.
 - `observer :: AbstractObserver` specifies the measurement and cutoff condition for each sweep. Facultative, by default the observer will print the energy and cutoff once the energy difference is less than `e_tol` at each sweep. 
+- `dmrg_options :: Dict` specifies other options to be sent into DMRG. _E.g._, to specify `write_when_maxdim_exceeds = 1000`, one can put `dmrg_options = Dict(:write_when_maxdim_exceeds => 1000)`.
 
 """
-function SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: String = "./", cutoff :: Vector{Float64} = [1E-9], maxdim :: Vector{Int64} = [dim1], nsweeps :: Int64 = 10, noise :: Vector{Float64} = [1E-6,1E-7,0], proj :: Vector{String} = String[], e_tol :: Float64 = 1E-6, weight :: Float64 = 100.0, observer :: AbstractObserver = EasySweepObserver(e_tol))
+function SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: String = "./", cutoff :: Vector{Float64} = [1E-9], maxdim :: Vector{Int64} = [dim1], nsweeps :: Int64 = 10, noise :: Vector{Float64} = [1E-6,1E-7,0], proj :: Vector{String} = String[], e_tol :: Float64 = 1E-6, weight :: Float64 = 100.0, observer :: AbstractObserver = EasySweepObserver(e_tol), dmrg_options :: Dict = Dict())
     if (isfile("$(path)st_$(id).h5"))
         f = h5open("$(path)st_$(id).h5","r")
         if (haskey(f, "st_d$(dim1)"))
@@ -54,8 +55,9 @@ function SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: 
         close(f)
     end
 
+    dmrg_kwargs = NamedTuple(dmrg_options)
     if (isempty(proj))
-        E1, st1 = dmrg(hmt, st0 ; nsweeps, maxdim, cutoff, noise, observer, outputlevel = 1)  # ground state
+        E1, st1 = dmrg(hmt, st0 ; nsweeps, maxdim, cutoff, noise, observer, outputlevel = 1, dmrg_kwargs...)  # ground state
     else
         fs = [ h5open("$(path)st_$(fi).h5", "r") for fi in proj ]
         grs = [ "st_d$(dim1)" for fi in proj ]
@@ -70,7 +72,7 @@ function SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: 
         # strategy for reading excited states : 
         # first try to read the same bond dimension
         # if not exist, read the final
-        E1, st1 = dmrg(hmt, sts, st0 ; nsweeps, maxdim, cutoff, noise, observer, outputlevel = 1, weight)  # ground state
+        E1, st1 = dmrg(hmt, sts, st0 ; nsweeps, maxdim, cutoff, noise, observer, outputlevel = 1, weight, dmrg_kwargs...)
     end
 
     f = h5open("$(path)st_$(id).h5","cw")
@@ -106,9 +108,10 @@ This function automatically performs several rounds of DMRG sweeps with increasi
 - `nsweeps :: Int64` specifies the number of sweeps in each round from the second rounds. Facultative, 10 by default. 
 - `weight :: Float64` specifies the weight of projected states and will be sent into DMRG. Facultative, 100.0 by default.
 - `observer :: AbstractObserver` specifies the measurement and cutoff condition for each sweep starting from the second round. Facultative, by default the observer will print the energy and cutoff once the energy difference is less than `e_tol` at each sweep. 
+- `dmrg_options :: Dict` specifies other options to be sent into DMRG. _E.g._, to specify `write_when_maxdim_exceeds = 1000`, one can put `dmrg_options = Dict(:write_when_maxdim_exceeds => 1000)`.
 
 """
-function EasySweep(id :: String, hmt :: MPO, st00 :: MPS ; path :: String = "./", dim_list :: Vector{Int64} = [1000,2000,3000,4000,5000,6000], proj :: Vector{String} = String[], e_tol1 :: Float64 = 1E-6, e_tol :: Float64 = 1E-7, cutoff :: Vector{Float64} = [1E-9], maxdim0 :: Vector{Int64} = [10,20,50,100,200,500], noise0 :: Vector{Float64} = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], noise :: Vector{Float64} = [1E-6,2E-7,5E-8,1E-8,0], nsweeps :: Int64 = 10, weight :: Float64 = 100.0, observer :: AbstractObserver = EasySweepObserver(e_tol1))
+function EasySweep(id :: String, hmt :: MPO, st00 :: MPS ; path :: String = "./", dim_list :: Vector{Int64} = [1000,2000,3000,4000,5000,6000], proj :: Vector{String} = String[], e_tol1 :: Float64 = 1E-6, e_tol :: Float64 = 1E-7, cutoff :: Vector{Float64} = [1E-9], maxdim0 :: Vector{Int64} = [10,20,50,100,200,500], noise0 :: Vector{Float64} = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], noise :: Vector{Float64} = [1E-6,2E-7,5E-8,1E-8,0], nsweeps :: Int64 = 10, weight :: Float64 = 100.0, observer :: AbstractObserver = EasySweepObserver(e_tol1), dmrg_options :: Dict = Dict())
     if (isfile("$(path)st_$(id).h5"))
         f = h5open("$(path)st_$(id).h5","r")
         if (haskey(f, "st_fin"))
@@ -120,10 +123,10 @@ function EasySweep(id :: String, hmt :: MPO, st00 :: MPS ; path :: String = "./"
         end
         close(f)
     end
-
-    E0, st0 = SweepOne(id, hmt, st00, 0 ; path, proj, cutoff, maxdim = maxdim0, nsweeps = length(maxdim0), noise = noise0, e_tol = 0., weight)
+    
+    E0, st0 = SweepOne(id, hmt, st00, 0 ; path, proj, cutoff, maxdim = maxdim0, nsweeps = length(maxdim0), noise = noise0, e_tol = 0., weight, dmrg_options)
     for dim_i in dim_list
-        E1, st1 = SweepOne(id, hmt, st0, dim_i ; path, proj, e_tol = e_tol1, cutoff, noise, nsweeps, weight, observer)
+        E1, st1 = SweepOne(id, hmt, st0, dim_i ; path, proj, e_tol = e_tol1, cutoff, noise, nsweeps, weight, observer, dmrg_options)
         if (abs(E1 - E0) < e_tol || maxlinkdim(st1) < .9 * dim_i) break end
         E0 = E1 
         st0 = st1
