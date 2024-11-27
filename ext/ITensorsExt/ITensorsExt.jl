@@ -4,6 +4,7 @@ using ITensors
 using ITensorMPS
 using FuzzifiED
 using HDF5
+using LinearAlgebra
 
 import FuzzifiED.QNDiagFromSites
 import FuzzifiED.ConfsFromSites
@@ -29,6 +30,9 @@ function __init__()
             [ (qndi.name, qndi.charge[o] * n, qndi.modul) for qndi in qnd ]...
         ) => 1 for n = 0 : 1
     ]
+    BLAS.set_num_threads(1);
+    NDTensors.Strided.disable_threads();
+    ITensors.enable_threaded_blocksparse();
 end
 
 end 
