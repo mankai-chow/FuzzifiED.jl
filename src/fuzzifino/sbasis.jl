@@ -57,11 +57,13 @@ function SBasis(cfs :: SConfs, secf :: Vector{<:Number}, qnf :: Vector{SQNOffd} 
     cfgr = Vector{Int64}(undef, cfs.ncf)
     cffac = Vector{ComplexF64}(undef, cfs.ncf)
     szz = prod([ abs(secf[i]) < 1E-8 ? 1 : cyc[i] for i = 1 : nqnf ])
+    binom = [ binomial(i + j, i) for i = 0 : cfs.nebm, j = 0 : cfs.nob]
     @ccall Libpathino.__sbs_MOD_generate_sbs_cfgr(
-        cfs.nof :: Ref{Int64}, cfs.nob :: Ref{Int64}, cfs.ncf :: Ref{Int64}, cfs.lid :: Ref{Int64}, cfs.rid :: Ref{Int64}, cfs.conff :: Ref{Int64}, cfs.confb :: Ref{Int64}, 
+        cfs.nof :: Ref{Int64}, cfs.nob :: Ref{Int64}, cfs.norf :: Ref{Int64}, cfs.norb :: Ref{Int64}, cfs.nebm :: Ref{Int64},
+        cfs.ncf :: Ref{Int64}, cfs.lid :: Ref{Int64}, cfs.rid :: Ref{Int64}, cfs.conff :: Ref{Int64}, cfs.confb :: Ref{Int64}, 
         nqnf :: Ref{Int64}, ComplexF64.(secf) :: Ref{ComplexF64}, 
         cyc :: Ref{Int64}, permf_o_mat :: Ref{Int64}, permb_o_mat :: Ref{Int64}, phf_o_mat :: Ref{Int64}, facf_o_mat :: Ref{ComplexF64}, facb_o_mat :: Ref{ComplexF64}, 
-        szz :: Ref{Int64}, dim_ref :: Ref{Int64}, cfgr :: Ref{Int64}, cffac :: Ref{ComplexF64}, 
+        szz :: Ref{Int64}, dim_ref :: Ref{Int64}, cfgr :: Ref{Int64}, cffac :: Ref{ComplexF64}, binom :: Ref{Int64}, 
         num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}
     ) :: Nothing
     dim = dim_ref[]
