@@ -1,6 +1,7 @@
 # julia --color=yes --project make.jl && rm -r publish/*/* ; mv -f build/* publish
 using Pkg
 
+Pkg.develop(path="..")
 push!(LOAD_PATH,"../src/")
 push!(LOAD_PATH,"../ext/")
 

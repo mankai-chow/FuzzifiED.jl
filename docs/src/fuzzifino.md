@@ -1,6 +1,6 @@
 # Fuzzifino
 
-Fuzzifino is a module for exact diagonalisation (ED) calculation on the fuzzy sphere for systems with both bosons and fermions and similar number of boson and fermion orbitals. The usage is similar to FuzzifiED, with new types `SQNDiag`, `SQNOffd`, `SConf`, `SBasis`, `STerm` and `SOperator` defined. To use the module, include also at the start of your Julia script
+Fuzzifino is a module for exact diagonalisation (ED) calculation on the fuzzy sphere for systems with both bosons and fermions. The usage is similar to FuzzifiED, with new types `SQNDiag`, `SQNOffd`, `SConf`, `SBasis`, `STerm` and `SOperator` defined. To use the module, include also at the start of your Julia script
 ```julia
 using FuzzifiED.Fuzzifino
 ```
