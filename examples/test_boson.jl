@@ -6,6 +6,7 @@
 
 using FuzzifiED
 using FuzzifiED.Fuzzifino
+FuzzifiED.ElementType = Float64
 
 nof = 8
 nob = nof
@@ -26,7 +27,7 @@ tms_hmt = SimplifyTerms(sum([
 
 bs = SBasis(cfs, [1], qnf)
 hmt = SOperator(bs, tms_hmt)
-hmt_mat = OpMat{Float64}(hmt)
+hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 20)
 display(sort(enrg))
 
