@@ -15,7 +15,7 @@ qnd = [
     SQNDiag(fill(1, nof), fill(0, nob))
 ]
 qnf = [
-    SQNOffd(collect(nob : -1 : 1), collect(nob : -1 : 1))
+    SQNOffd(collect(nof : -1 : 1), collect(nob : -1 : 1))
 ]
 cfs = SConfs(nof, nob, nof ÷ 2, [nof, nof ÷ 2], qnd)
 
