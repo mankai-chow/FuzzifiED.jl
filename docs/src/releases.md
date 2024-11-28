@@ -8,6 +8,7 @@
 
 - Add options for DMRG. 
 - Optimise the implementation of confs in Fuzzifino.
+- Add the examples of fractional filling.
 
 #### Version 0.10.1 (25 November, 2024)
 
