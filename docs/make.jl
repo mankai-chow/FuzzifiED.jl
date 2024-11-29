@@ -24,5 +24,9 @@ makedocs(sitename = "FuzzifiED.jl",
         "Fuzzifino" => "fuzzifino.md",
         "Archieved interfaces" => "archieve.md",
         "Releases" => "releases.md"],
-    format = Documenter.HTML(assets = ["assets/themes/serif.css"], repolink = "https://github.com/mankai-chow/FuzzifiED.jl")
+    format = Documenter.HTML(
+        assets = ["assets/serif.css", "assets/favicon.ico"], 
+        repolink = "https://github.com/mankai-chow/FuzzifiED.jl",
+        footer = "Copyright (c) 2024 Zheng Zhou (周正) and FuzzifiED.jl contributors."
+    )
 ) 
