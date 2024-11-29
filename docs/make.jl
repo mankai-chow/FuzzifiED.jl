@@ -29,7 +29,4 @@ makedocs(sitename = "FuzzifiED.jl",
         repolink = "https://github.com/mankai-chow/FuzzifiED.jl",
         footer = "Copyright (c) 2024 Zheng Zhou (周正) and FuzzifiED.jl contributors."
     )
-) 
-deploydocs(
-    repo = "github.com/mankai-chow/FuzzifiED.jl"
 )
