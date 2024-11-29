@@ -23,8 +23,8 @@
 
 #### Version 0.9.3 (23 November, 2024)
 
-- Move HDF5 and ITensors to extensions
-- Modify ITensors extension interfaces in alignment with the update of ITensors.
+- Move HDF5 and ITensor to extensions
+- Modify ITensor extension interfaces in alignment with the update of ITensor.
 
 #### Version 0.9.2 (16 September, 2024)
 
@@ -98,7 +98,7 @@
 
 #### Version 0.4.3 (29 May, 2024)
 
-- Add QNU truncation for ITensors use.
+- Add QNU truncation for ITensor use.
 - Change the Fortran code to be robust against QNU breaking terms
 - Add built-in density-density interaction. 
 - Add built-in 3-state Potts model.

@@ -4,7 +4,7 @@ In this example, we will illustrate how to use `FuzzifiED` to calculate the spec
 
 The examples can be found in the directory [`examples`](https://github.com/mankai-chow/FuzzifiED.jl/tree/main/examples). Two versions of this example is provided. The first uses the built-in functions for quantum numbers and operators to calculate the observables and is stored in [`tutorial_ising.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising.jl). The second does not use the built-in example and is stored in [`tutorial_ising_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_primitive.jl). 
 
-In addition, an example of how `FuzzifiED` can facilitate DMRG calculation is given. The example contains two versions. The first uses `MPO` and `dmrg` functions of the ITensors package and is stored in [`tutorial_ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg.jl). The second uses the [`EasySweep`](@ref) function in the package which further wraps the `dmrg` function to facilitate the management of sweeps and is stored in [`tutorial_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg_easysweep.jl). 
+In addition, an example of how `FuzzifiED` can facilitate DMRG calculation is given. The example contains two versions. The first uses `MPO` and `dmrg` functions of the ITensor package and is stored in [`tutorial_ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg.jl). The second uses the [`EasySweep`](@ref) function in the package which further wraps the `dmrg` function to facilitate the management of sweeps and is stored in [`tutorial_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg_easysweep.jl). 
 
 We also append in the end [a list of given examples](#List-of-examples) at the end of the page.
 
@@ -340,7 +340,7 @@ nz = Operator(bs, bs1, tms_nz ; red_q = 1)
 
 ## DMRG calculations with FuzzifiED
 
-In this example, we calculate the ground state MPS of the fuzzy sphere Ising model by DMRG in ITensors, and use the same objects to do ED calculation and compare the result. 
+In this example, we calculate the ground state MPS of the fuzzy sphere Ising model by DMRG in ITensor, and use the same objects to do ED calculation and compare the result. 
 
 We first set-up the calculation by
 ```julia
@@ -361,7 +361,7 @@ sites = SitesFromQNDiag([
     GetZnfChargeQNDiag(nm, nf)
 ])
 ```
-We then generate the terms of the Hamiltonian using the built-in functions, convert it to `OpSum` type in by the [`OpSumFromTerms`](@ref), and convert it to MPO using the `MPO` function in ITensors
+We then generate the terms of the Hamiltonian using the built-in functions, convert it to `OpSum` type in by the [`OpSumFromTerms`](@ref), and convert it to MPO using the `MPO` function in ITensor.
 ```julia
 ps_pot = [4.75, 1.] ./ 2
 tms_hmt = SimplifyTerms(
@@ -371,7 +371,7 @@ tms_hmt = SimplifyTerms(
 )
 @time mpo_hmt = MPO(OpSumFromTerms(tms_hmt), sites)
 ```
-We then use the all-up state as the initial state. In FuzzifiED, the occupied and empty sites are expressed by 0 and 1, while they are expressed by `"0"` and `"1"` in ITensors, so a conversion to string is needed. 
+We then use the all-up state as the initial state. In FuzzifiED, the occupied and empty sites are expressed by 0 and 1, while they are expressed by `"0"` and `"1"` in ITensor, so a conversion to string is needed. 
 ```julia
 cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
 st0 = MPS(sites, string.(cf0))
@@ -402,7 +402,7 @@ using ITensorMPOConstruction
 function MyMPO(os, sites)
     operatorNames = [ "I", "C", "Cdag", "N" ]
     opCacheVec = [ [OpInfo(ITensors.Op(name, n), sites[n]) for name in operatorNames] for n in eachindex(sites)  ]
-    return MPO_new(os, sites ; basisOpCacheVec = opCacheVec)
+    return MPO_new(os, sites ; basis_op_cache_vec = opCacheVec)
 end
 ```
 We also need to specify a path where the results are stored. 
@@ -453,8 +453,8 @@ The examples of FuzzifiED can be found in the repository [`examples`](https://gi
 
 * [`tutorial_ising.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising.jl) does the ED calculation of Ising model through the built-in models. 
 * [`tutorial_ising_primitive.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_primitive.jl) does the ED calculation of Ising model through the primitive functions.
-* [`tutorial_ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg.jl) does the DMRG calculation of Ising model through the `dmrg` function in ITensors.
-* [`tutorial_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg_easysweep.jl) does the DMRG calculation of Ising model through the `EasySweep` function which wraps ITensors.
+* [`tutorial_ising_dmrg.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg.jl) does the DMRG calculation of Ising model through the `dmrg` function in ITensor.
+* [`tutorial_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg_easysweep.jl) does the DMRG calculation of Ising model through the `EasySweep` function which wraps ITensor.
 
 We offer a series of other examples that reproduces various achievements of fuzzy sphere. For a more detailed summary of the background, see the [Review of existing work](@ref). 
 

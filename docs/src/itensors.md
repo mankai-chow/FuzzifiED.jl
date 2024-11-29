@@ -1,6 +1,6 @@
 # ITensor extension
 
-FuzzifiED also supports an ITensors extension, including convertion with the `Site` and `OpSum` objects from `ITensors` library and management of DMRG sweeping process. To use the extension, make sure the packages `ITensors`, `ITensorMPS` and `HDF5` are properly installed, and include
+FuzzifiED also supports an ITensor extension, including convertion with the `Site` and `OpSum` objects from ITensor library and management of DMRG sweeping process. To use the extension, make sure the packages `ITensors`, `ITensorMPS` and `HDF5` are properly installed, and include
 ```julia
 using ITensors, ITensorMPS, HDF5
 ```
@@ -15,12 +15,12 @@ ITensors.enable_threaded_blocksparse();
 
 ## Format conversion
 
-The `Sites` objects in `ITensors` can be converted to a QNDiags and Confs with the QNs extracted. 
+The `Sites` objects in ITensor can be converted to a QNDiags and Confs with the QNs extracted. 
 ```@docs
 QNDiagFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}})
 ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, sec_qn :: QN)
 ```
-Conversely, the  `Sites` objects in `ITensors` can also be generated from a set of diagonal quantum numbers 
+Conversely, the  `Sites` objects in ITensors can also be generated from a set of diagonal quantum numbers 
 ```@docs
 SitesFromQNDiag(qnd :: Vector{QNDiag})
 ```
@@ -29,7 +29,7 @@ If the number of quantum numbers are too many, it can be truncated by
 TruncateQNDiag(qnd :: Vector{QNDiag} ; trunc_lth :: Int64 = 3, trunc_wt :: Vector{Int64} = [ 10 ^ (i - trunc_lth) for i = trunc_lth : length(qnd)]) 
 ```
 
-The `OpSum` objects in `ITensors` can be converted with the collection of `Term`'s
+The `OpSum` objects in ITensor can be converted with the collection of `Term`'s
 ```@docs
 TermsFromOpSum(opsum :: Sum{Scaled{ComplexF64, Prod{Op}}})
 OpSumFromTerms(tms :: Vector{Term})

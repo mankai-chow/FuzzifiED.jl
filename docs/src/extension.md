@@ -1,6 +1,6 @@
 # Other extensions
 
-Apart from ITensors extension, FuzzifiED also provides other extensions, _viz._ HDF5 extension and CUDA extension. 
+Apart from ITensor extension, FuzzifiED also provides other extensions, _viz._ HDF5 extension and CUDA extension. 
 
 ## HDF5 extension 
 
