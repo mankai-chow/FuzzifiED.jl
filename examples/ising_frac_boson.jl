@@ -7,8 +7,11 @@
 using FuzzifiED
 using FuzzifiED.Fuzzifino
 FuzzifiED.ElementType = Float64
-const σ1 = [ 1   0 ;  0  0 ]
-const σ2 = [ 0   0 ;  0  1 ]
+const σ1 = [ 1 0 ; 0 0 ]
+const σ2 = [ 0 0 ; 0 1 ]
+const σ0 = [ 1 0 ; 0 1 ]
+
+let
 
 ne = 7
 nm = 2 * ne - 1
@@ -27,11 +30,11 @@ qnf = [
 ]
 cfs = SConfs(nof, nob, ne, [ne, 0, 0], qnd)
 
-ps_pot_inter = 2 .* [1.0, 0.53, 0.09]
-ps_pot_intra = [1.0]
+ps_pot_proj = [1.0]
+ps_pot_int = 2 .* [0.0, 0.53, 0.09]
 fld_h = 0.25
-int_el_intra = GetIntMatrix(nm, ps_pot_intra)
-int_el_inter = GetIntMatrix(nm, ps_pot_inter)
+int_el_proj = GetIntMatrix(nm, ps_pot_proj)
+int_el_int = GetIntMatrix(nm, ps_pot_int)
 
 tms_hmt = Vector{STerm}(undef, 0)
 for o1 = 1 : nob
@@ -47,17 +50,17 @@ for o1 = 1 : nob
             if (m4 <= 0 || m4 > nm) continue end
             for f4 = 1 : nf 
                 o4 = (m4 - 1) * nf + f4
-                val  = sum([ mat[f1, f4] * mat[f2, f3] * int_el_intra[m1, m2, m3] for mat in [σ1, σ2]])
-                val += σ1[f1, f4] * σ2[f2, f3] * int_el_inter[m1, m2, m3]
+                val  = σ0[f1, f4] * σ0[f2, f3] * int_el_proj[m1, m2, m3]
+                val += σ1[f1, f4] * σ2[f2, f3] * int_el_int[m1, m2, m3]
                 if (abs(val) < 1E-15) continue end 
-                push!(tms_hmt, STerm(val, [1, -o1, 1, -o2, 0, -o3, 0, -o4]))
+                tms_hmt += [STerm(val, [1, -o1, 1, -o2, 0, -o3, 0, -o4])]
             end
         end
     end
 end
 for o1 = 1 : nob 
     o2 = (o1 - 1) ⊻ 1 + 1
-    push!(tms_hmt, STerm(-fld_h, [1, -o1, 0, -o2]))
+    tms_hmt += [STerm(-fld_h, [1, -o1, 0, -o2])]
 end 
 tms_hmt = SimplifyTerms(tms_hmt)
 
@@ -94,3 +97,5 @@ enrg_0 = result[1][1]
 enrg_T = filter(st -> st[2] ≈ 6 && st[3] ≈ 1, result)[1][1]
 result_dim = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
 display(permutedims(hcat(result_dim...)))
+
+end

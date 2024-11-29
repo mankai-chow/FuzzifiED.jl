@@ -5,8 +5,10 @@
 # We acknowlege Cristian Voinea for his help in reproducing the results. 
 
 using FuzzifiED
-const σ1 = [ 1   0 ;  0  0 ]
-const σ2 = [ 0   0 ;  0  1 ]
+const σ1 = [ 1 0 ; 0 0 ]
+const σ2 = [ 0 0 ; 0 1 ]
+const σ0 = [ 1 0 ; 0 1 ]
+const σx = [ 0 1 ; 1 0 ]
 FuzzifiED.ElementType = Float64
 ≈(x, y) = abs(x - y) < eps(Float32)
 
@@ -20,8 +22,8 @@ qnf = [
     GetRotyQNOffd(nm, 2) ]
 
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2, 2 .* [1.0, 1.0, 0.49, 0.09],  σ1, σ2) + 
-    GetDenIntTerms(nm, 2, [0.0, 1.0], [σ1, σ2]) - 
+    GetDenIntTerms(nm, 2, 2 .* [0.0, 0.0, 0.49, 0.09],  σ1, σ2) + 
+    GetDenIntTerms(nm, 2, [1.0, 1.0], σ0) - 
     0.183 * GetPolTerms(nm, 2, σx) )
 tms_l2 = GetL2Terms(nm, 2)
 
