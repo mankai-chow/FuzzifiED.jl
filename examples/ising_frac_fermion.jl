@@ -22,9 +22,10 @@ qnf = [
     GetRotyQNOffd(nm, 2) ]
 
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2, 2 .* [0.0, 0.0, 0.49, 0.09],  σ1, σ2) + 
-    GetDenIntTerms(nm, 2, [1.0, 1.0], σ0) - 
-    0.183 * GetPolTerms(nm, 2, σx) )
+    GetDenIntTerms(nm, 2, [1.0, 1.0])
+    + GetDenIntTerms(nm, 2, 2 .* [0.0, 0.0, 0.49, 0.09],  σ1, σ2)
+    - 0.183 * GetPolTerms(nm, 2, σx) 
+)
 tms_l2 = GetL2Terms(nm, 2)
 
 cfs = Confs(2 * nm, [ne, 0], qnd)
