@@ -1,4 +1,4 @@
-# julia --color=yes --project make.jl && rm -r publish/*/* ; mv -f build/* publish
+# julia --color=yes --project make.jl && rm -r publish/*/* && mv -f build/* publish && rm -r build && cd publish && git commit -a -m "a" && git push
 push!(LOAD_PATH,"../src/")
 push!(LOAD_PATH,"../ext/")
 
@@ -27,6 +27,6 @@ makedocs(sitename = "FuzzifiED.jl",
     format = Documenter.HTML(
         assets = ["assets/serif.css", "assets/favicon.ico"], 
         repolink = "https://github.com/mankai-chow/FuzzifiED.jl",
-        footer = "Copyright (c) 2024 Zheng Zhou (周正) and FuzzifiED.jl contributors."
+        footer = "Powered by [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl) and the [Julia Programming Language](https://julialang.org/). Copyright (c) 2024 Zheng Zhou (周正) and contributors."
     )
 )
