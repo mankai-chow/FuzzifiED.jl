@@ -9,7 +9,7 @@ SilentStd :: Bool = false
 """
     Libpath :: String = FuzzifiED_jll.LibpathFuzzifiED
 
-define where the Fortran library are compiled. You do not need to modify that by yourself. However, if you compile the Fortran codes by yourself, you need to point this to your compiled library. 
+define path of the Fortran library `libfuzzified.so`. You do not need to modify that by yourself. However, if you compile the Fortran codes by yourself, you need to point this to your compiled library. 
 """
 Libpath :: String = FuzzifiED_jll.LibpathFuzzifiED
 
