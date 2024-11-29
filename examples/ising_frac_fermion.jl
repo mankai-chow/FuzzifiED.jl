@@ -1,14 +1,12 @@
 # This example calculates the spectrum of 3d Ising model on fuzzy sphere
 # for fermions at fractional filling ν = 1/3.
 # This example reproduces Figure 10 in arXiv:2411.15299.
-# On my table computer, this calculation takes 33.527 s
+# On my table computer, this calculation takes 33.527 s.
+# We acknowlege Cristian Voinea for his help in reproducing the results. 
 
 using FuzzifiED
 const σ1 = [ 1   0 ;  0  0 ]
 const σ2 = [ 0   0 ;  0  1 ]
-const σx = [ 0   1 ;  1  0 ]
-const σy = [ 0 -1im; 1im 0 ]
-const σz = [ 1   0 ;  0 -1 ]
 FuzzifiED.ElementType = Float64
 ≈(x, y) = abs(x - y) < eps(Float32)
 
@@ -23,7 +21,7 @@ qnf = [
 
 tms_hmt = SimplifyTerms(
     GetDenIntTerms(nm, 2, 2 .* [1.0, 1.0, 0.49, 0.09],  σ1, σ2) + 
-    GetDenIntTerms(nm, 2, [0.0, 1.0], [σx, σy, σz]) - 
+    GetDenIntTerms(nm, 2, [0.0, 1.0], [σ1, σ2]) - 
     0.183 * GetPolTerms(nm, 2, σx) )
 tms_l2 = GetL2Terms(nm, 2)
 

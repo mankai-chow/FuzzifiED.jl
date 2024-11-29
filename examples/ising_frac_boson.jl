@@ -1,18 +1,16 @@
 # This example calculates the spectrum of 3d Ising model on fuzzy sphere
 # for bosons at fractional filling ν = 1/2.
 # This example reproduces Figure 12a,b in arXiv:2411.15299.
-# On my table computer, this calculation takes 10.186 s
+# On my table computer, this calculation takes 10.186 s.
+# We acknowlege Cristian Voinea for his help in reproducing the results. 
 
 using FuzzifiED
 using FuzzifiED.Fuzzifino
 FuzzifiED.ElementType = Float64
 const σ1 = [ 1   0 ;  0  0 ]
 const σ2 = [ 0   0 ;  0  1 ]
-const σx = [ 0   1 ;  1  0 ]
-const σy = [ 0 -1im; 1im 0 ]
-const σz = [ 1   0 ;  0 -1 ]
 
-ne = 9
+ne = 7
 nm = 2 * ne - 1
 nf = 2 
 nof = 1 # Fuzzifino can only deal with mixture of bosons and fermions, so we put a single orbital of fermion and keep it empty.
@@ -49,7 +47,7 @@ for o1 = 1 : nob
             if (m4 <= 0 || m4 > nm) continue end
             for f4 = 1 : nf 
                 o4 = (m4 - 1) * nf + f4
-                val  = sum([ mat[f1, f4] * mat[f2, f3] * int_el_intra[m1, m2, m3] for mat in [σx, σy, σz]])
+                val  = sum([ mat[f1, f4] * mat[f2, f3] * int_el_intra[m1, m2, m3] for mat in [σ1, σ2]])
                 val += σ1[f1, f4] * σ2[f2, f3] * int_el_inter[m1, m2, m3]
                 if (abs(val) < 1E-15) continue end 
                 push!(tms_hmt, STerm(val, [1, -o1, 1, -o2, 0, -o3, 0, -o4]))
