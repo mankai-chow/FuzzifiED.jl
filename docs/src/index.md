@@ -36,7 +36,6 @@ Pages = [
     "itensors.md",
     "extension.md",
     "fuzzifino.md",
-    "archieve.md",
     "releases.md"
 ]
 Depth = 2
@@ -50,7 +49,6 @@ Pages = [
     "models.md",
     "itensors.md",
     "extension.md",
-    "fuzzifino.md",
-    "archieve.md"
+    "fuzzifino.md"
 ]
 ```

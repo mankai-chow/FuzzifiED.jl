@@ -22,7 +22,6 @@ makedocs(sitename = "FuzzifiED.jl",
         "ITensor extension" => "itensors.md",
         "Other extensions" => "extension.md", 
         "Fuzzifino" => "fuzzifino.md",
-        "Archieved interfaces" => "archieve.md",
         "Releases" => "releases.md"],
     format = Documenter.HTML(
         assets = ["assets/serif.css", "assets/favicon.ico"], 
