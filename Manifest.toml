@@ -374,7 +374,7 @@ uuid = "9136182c-28ba-11e9-034c-db9fb085ebd5"
 version = "0.6.11"
 
     [deps.ITensors.extensions]
-    ITensorsHDF5Ext = "HDF5"
+    EasySweepExt = "HDF5"
     ITensorsObserversExt = "Observers"
     ITensorsPackageCompilerExt = "PackageCompiler"
     ITensorsVectorInterfaceExt = "VectorInterface"

@@ -1,8 +1,8 @@
 # ITensor extension
 
-FuzzifiED also supports an ITensor extension, including convertion with the `Site` and `OpSum` objects from ITensor library and management of DMRG sweeping process. To use the extension, make sure the packages `ITensors`, `ITensorMPS` and `HDF5` are properly installed, and include
+FuzzifiED also supports an ITensor extension, including convertion with the `Site` and `OpSum` objects from ITensor library and management of DMRG sweeping process. To use the extension, make sure the packages `ITensors`, `ITensorMPS` are properly installed, and include
 ```julia
-using ITensors, ITensorMPS, HDF5
+using ITensors, ITensorMPS
 ```
 at the heading of the Julia script.
 
@@ -37,7 +37,7 @@ OpSumFromTerms(tms :: Vector{Term})
 
 ## Easy sweep
 
-This tool kit facilitates the management of DMRG process. It automatically records the intermediate results and recover these results if a job is stopped and run again on HPC. It also manages the gradual increase of maximal bond dimensions and the determination of convergence by the criteria of energy. These functions require the package [`ITensorMPOConstruction`](https://github.com/ITensor/ITensorMPOConstruction.jl), which can be installed by 
+This tool kit facilitates the management of DMRG process. It automatically records the intermediate results and recover these results if a job is stopped and run again on HPC. It also manages the gradual increase of maximal bond dimensions and the determination of convergence by the criteria of energy. This extension required the packages `HDF5`. We also recommand using the package [`ITensorMPOConstruction`](https://github.com/ITensor/ITensorMPOConstruction.jl) for the generation of Hamiltonian MPO, which can be installed by 
 ```julia
 using Pkg ; Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.git")
 ```
