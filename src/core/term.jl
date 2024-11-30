@@ -1,5 +1,5 @@
 """
-The type `Term` records a term that looks like ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}… c^{(p_l)}_{o_l}`` in an operator
+The mutable type `Term` records a term that looks like ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}… c^{(p_l)}_{o_l}`` in an operator
 
 # Fields
 - `coeff :: ComplexF64` records the coefficient ``U``

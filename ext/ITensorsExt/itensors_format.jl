@@ -133,7 +133,7 @@ end
 
 
 """
-    ITensors.Ops.OpSum(tms :: Terms) :: OpSum
+    OpSum(tms :: Terms) :: OpSum
 
 Converts a series of terms to `OpSum` object in `ITensors`.
 

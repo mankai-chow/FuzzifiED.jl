@@ -1,5 +1,5 @@
 """
-The type `Operator` records the sum of terms together with information about its symmetry and the basis of the state it acts on and the basis of the resulting state.
+The mutable type `Operator` records the sum of terms together with information about its symmetry and the basis of the state it acts on and the basis of the resulting state.
 
 # Fields
 * `bsd :: Basis` is the basis of the initial state ;

@@ -1,5 +1,5 @@
 """
-The type `QNDiag` records the information of a diagonal ``\\mathrm{U}(1)`` or ``ℤ_p`` quantum number in the form of a symmetry charge
+The mutable type `QNDiag` records the information of a diagonal ``\\mathrm{U}(1)`` or ``ℤ_p`` quantum number in the form of a symmetry charge
 ```math
 Q=∑_{o=1}^{N_o}q_on_o
 ```
@@ -81,7 +81,7 @@ end
 
 
 """
-The type `QNOffd` records the information of an off-diagonal ``ℤ_p`` quantum number in the form of a discrete transformation
+The mutable type `QNOffd` records the information of an off-diagonal ``ℤ_p`` quantum number in the form of a discrete transformation
 ```math
 𝒵:\\ c_o↦ α_o^* c^{(p_o)}_{π_o},  c_o^†↦ α_o c^{(1-p_o)}_{π_o}
 ```

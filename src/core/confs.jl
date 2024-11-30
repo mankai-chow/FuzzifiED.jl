@@ -1,5 +1,5 @@
 """
-The type `Confs` stores all the configurations that respects the diagonal quantum numbers (QNDiag) and also a table to inversely look up the index from the configuration. 
+The mutable type `Confs` stores all the configurations that respects the diagonal quantum numbers (QNDiag) and also a table to inversely look up the index from the configuration. 
 
 # Fields
 
