@@ -4,6 +4,15 @@
 
 ### Version 0.10
 
+#### Version 0.10.4 (30 November, 2024)
+
+- Split ITensorsExt and EasySweepExt.
+- Define a new SiteType "FuzzyFermion" for ITensors to avoid overwriting "Fermion" in ITensorsExt.
+- Change the names of Density and Electron to avoid conflict with other packages.
+- Create the alias Terms and STerms.
+- Fix bugs in converting OpSum to Terms.
+- Improve the interface for ITensor extension.
+
 #### Version 0.10.3 (28 November, 2024)
 
 - Add options for DMRG. 
