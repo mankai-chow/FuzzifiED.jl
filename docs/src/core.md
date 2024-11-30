@@ -115,7 +115,7 @@ The product of an operator on a state and the inner product of a final state, an
 ```
 Note that sometimes it is needed to transform a state from one basis to another. This can be done by constructing an identity operator. 
 ```julia
-stf = Operator(bsd, bsf, [Term(1., [-1, -1])]) * std
+stf = Operator(bsd, bsf, Terms(1., [-1, -1])) * std
 ```
 
 The `OpMat` object can be converted into a full matrix or converted with the `SparseMatrixCSC` object in the `SparseArrays` package. This will allow, _e.g._, full diagonalisation using the linear algebra package of julia. 

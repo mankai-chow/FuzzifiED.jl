@@ -50,7 +50,7 @@ using WignerSymbols
 # Input the parameters of the Hamiltonian
 ps_pot = [ 4.75, 1. ] * 2.
 h = 3.16
-tms_hmt = Terms(undef, 0)
+tms_hmt = Term[]
 # Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
 for m1 = 0 : nm - 1
     f1 = 0
@@ -76,13 +76,13 @@ for m1 = 0 : nm - 1
                 val += ps_pot[l] * (2 * nm - 2 * l + 1) * wigner3j(s, s, nm - l, m1r, m2r, -m1r - m2r) * wigner3j(s, s, nm - l, m4r, m3r, -m3r - m4r)
             end 
             # Record the interaction term val, "Cdag", o1, "Cdag", o2, "C", o3, "C", o4
-            push!(tms_hmt, Term(val, [1, o1, 1, o2, 0, o3, 0, o4]))
+            tms_hmt += Terms(val, [1, o1, 1, o2, 0, o3, 0, o4])
         end
     end
     o1x = o1 + 1
     # Record the transverse field term
-    push!(tms_hmt, Term(-h, [1, o1, 0, o1x]))
-    push!(tms_hmt, Term(-h, [1, o1x, 0, o1]))
+    tms_hmt += Terms(-h, [1, o1, 0, o1x])
+    tms_hmt += Terms(-h, [1, o1x, 0, o1])
 end
 
 
@@ -141,7 +141,7 @@ st_e = st[:, 2] # epsilon state
 st_s = st1[:, 1]
 
 # Record the density operator n^z
-tms_nz = Terms(undef, 0)
+tms_nz = Term[]
 for m1 = 0 : nm - 1
     o1u = 2 * m1 + 1
     o1d = 2 * m1 + 2

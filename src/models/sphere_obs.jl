@@ -236,7 +236,7 @@ returns the electron annihilation operator ``ψ_f``
 - `f :: Int64` is the index of the orbital to be taken.
 """
 function GetElectronObs(nm :: Int64, nf :: Int64, f :: Int64)
-    gc = (l2, m2) -> (l2 == nm - 1) ? [Term(1.0, [0, f + nf * ((m2 + nm - 1) ÷ 2)])] : Term[]
+    gc = (l2, m2) -> (l2 == nm - 1) ? Terms(1.0, [0, f + nf * ((m2 + nm - 1) ÷ 2)]) : Term[]
     return SphereObs(nm - 1, nm - 1, gc)
 end
 @deprecate Electron GetElectronObs

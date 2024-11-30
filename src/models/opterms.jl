@@ -58,7 +58,7 @@ Return the normal-ordered density-density term in the Hamiltonian
 function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm))
     no = nm * nf
     int_el = GetIntMatrix(nm, ps_pot)
-    tms = Terms(undef, 0)
+    tms = Term[]
     # Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
     for o1 = 1 : no
         m1 = div(o1 - 1, nf) + 1
@@ -141,7 +141,7 @@ Return the normal-ordered pair-pair interaction term in the Hamiltonian
 function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm))
     no = nm * nf
     int_el = GetIntMatrix(nm, ps_pot)
-    tms = Terms(undef, 0)
+    tms = Term[]
     # Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
     for o1 = 1 : no
         m1 = div(o1 - 1, nf) + 1
@@ -200,7 +200,7 @@ Facultative.
 """
 function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number} ; fld_m :: Vector{<:Number} = fill(1, nm))
     no = nm * nf
-    tms = Terms(undef, 0)
+    tms = Term[]
     for o1 = 1 : no
         m1 = div(o1 - 1, nf) + 1
         f1 = mod(o1 - 1, nf) + 1

@@ -153,8 +153,8 @@ function NormalOrder(tm :: STerm)
             end 
         end
     end
-    if length(cstr0) == 0 return STerm[STerm(coeff0, [-1, -1])] end
-    if (cstr0[end - 1] == -1 && length(cstr0) > 2) return STerm[STerm(coeff0, cstr0[1 : end - 2])] end
+    if length(cstr0) == 0 return STerms(coeff0, [-1, -1]) end
+    if (cstr0[end - 1] == -1 && length(cstr0) > 2) return STerms(coeff0, cstr0[1 : end - 2]) end
     return STerm[tm]
 end
 

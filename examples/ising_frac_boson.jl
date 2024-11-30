@@ -36,7 +36,7 @@ fld_h = 0.25
 int_el_proj = GetIntMatrix(nm, ps_pot_proj)
 int_el_int = GetIntMatrix(nm, ps_pot_int)
 
-tms_hmt = STerms(undef, 0)
+tms_hmt = STerm[]
 for o1 = 1 : nob
     m1 = div(o1 - 1, nf) + 1
     f1 = mod(o1 - 1, nf) + 1
@@ -53,14 +53,14 @@ for o1 = 1 : nob
                 val  = σ0[f1, f4] * σ0[f2, f3] * int_el_proj[m1, m2, m3]
                 val += σ1[f1, f4] * σ2[f2, f3] * int_el_int[m1, m2, m3]
                 if (abs(val) < 1E-15) continue end 
-                tms_hmt += [STerm(val, [1, -o1, 1, -o2, 0, -o3, 0, -o4])]
+                tms_hmt += STerms(val, [1, -o1, 1, -o2, 0, -o3, 0, -o4])
             end
         end
     end
 end
 for o1 = 1 : nob 
     o2 = (o1 - 1) ⊻ 1 + 1
-    tms_hmt += [STerm(-fld_h, [1, -o1, 0, -o2])]
+    tms_hmt += STerms(-fld_h, [1, -o1, 0, -o2])
 end 
 tms_hmt = SimplifyTerms(tms_hmt)
 
