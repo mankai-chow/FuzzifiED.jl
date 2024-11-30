@@ -43,7 +43,7 @@ SphereObs
 It can be initialised with the following methods 
 ```@docs
 SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function)
-SphereObs(s2 :: Int64, l2m :: Int64, cmps :: Dict{Tuple{Int64, Int64}, Vector{Term}})
+SphereObs(s2 :: Int64, l2m :: Int64, cmps :: Dict{Tuple{Int64, Int64}, Terms})
 ```
 The following methods explicitly calculates and stores each component
 ```@docs
@@ -79,7 +79,7 @@ AngModes
 It can be initialised with the following methods 
 ```@docs
 AngModes(l2m :: Int64, get_comp :: Function)
-AngModes(l2m :: Int64, cmps :: Dict{Tuple{Int64, Int64}, Vector{Term}})
+AngModes(l2m :: Int64, cmps :: Dict{Tuple{Int64, Int64}, Terms})
 ```
 The following methods explicitly calculates and stores each component
 ```@docs

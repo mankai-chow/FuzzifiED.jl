@@ -36,6 +36,7 @@ export GetConfWeight
 
 include("core/term.jl")
 export Term
+export Terms
 export ParticleHole
 export NormalOrder
 export SimplifyTerms

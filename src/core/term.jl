@@ -18,62 +18,75 @@ mutable struct Term
     cstr :: Vector{Int64}
 end 
 
-function zero( x :: Type{Vector{Term}})
-    return Term[]
-end
+
+""" 
+
+`Terms` is an alias for `Vector{Term}` for convenience
+
+# Initialisation
+
+    Terms(coeff :: Number, cstr :: Vector{Int64})
+
+Gives a `Terms` with a single `Term`.
 
 """
-    function *(fac :: Number, tms :: Vector{Term}) :: Vector{Term}
-    function -(tms :: Vector{Term}) :: Vector{Term}
-    function *(tms :: Vector{Term}, fac :: Number) :: Vector{Term}
-    function /(tms :: Vector{Term}, fac :: Number) :: Vector{Term}
+const Terms = Vector{Term}
+Vector{T}(coeff :: Number, cstr :: Vector{Int64}) where T <: Term = [Term(coeff, cstr)]
+zero( :: Type{Terms}) = Term[]
+
+
+"""
+    function *(fac :: Number, tms :: Terms) :: Terms
+    function -(tms :: Terms) :: Terms
+    function *(tms :: Terms, fac :: Number) :: Terms
+    function /(tms :: Terms, fac :: Number) :: Terms
 
 Return the product of a collection of terms with a number. 
 """
-function *(fac :: Number, tms :: Vector{Term})
+function *(fac :: Number, tms :: Terms)
     return [ Term(fac * tm.coeff, tm.cstr) for tm in tms ]
 end
-function -(tms :: Vector{Term})
+function -(tms :: Terms)
     return (-1) * tms
 end
-function *(tms :: Vector{Term}, fac :: Number)
+function *(tms :: Terms, fac :: Number)
     return fac * tms
 end
-function /(tms :: Vector{Term}, fac :: Number)
+function /(tms :: Terms, fac :: Number)
     return (1 / fac) * tms
 end
 
 """
-    function +(tms1 :: Vector{Term}, tms2 :: Vector{Term}) :: Vector{Term}
-    function -(tms1 :: Vector{Term}, tms2 :: Vector{Term}) :: Vector{Term}
+    function +(tms1 :: Terms, tms2 :: Terms) :: Terms
+    function -(tms1 :: Terms, tms2 :: Terms) :: Terms
 
 Return the naive sum of two series of terms by taking their union. 
 """
-function +(tms1 :: Vector{Term}, tms2 :: Vector{Term})
+function +(tms1 :: Terms, tms2 :: Terms)
     return [ tms1 ; tms2 ]
 end
-function -(tms1 :: Vector{Term}, tms2 :: Vector{Term})
+function -(tms1 :: Terms, tms2 :: Terms)
     return tms1 + (-tms2)
 end
-function +(tms1 :: Vector{Term}, tms2 :: Vararg{Vector{Term}})
+function +(tms1 :: Terms, tms2 :: Vararg{Terms})
     return tms1 + +(tms2...)
 end
 
 
 """
-    function *(tms1 :: Vector{Term}, tms2 :: Vector{Term}) :: Vector{Term}
-    function ^(tms :: Vector{Term}, pow :: Int64) :: Vector{Term}
+    function *(tms1 :: Terms, tms2 :: Terms) :: Terms
+    function ^(tms :: Terms, pow :: Int64) :: Terms
 
 Return the naive product of two series of terms or the power of one terms. The number of terms equals the product of the number of terms in `tms1` and `tms2`. For each term in `tms1` ``Uc^{(p_1)}_{o_1}…`` and `tms2` ``U'c^{(p'_1)}_{o'_1}…``, a new term is formed by taking ``UU'c^{(p_1)}_{o_1}… c^{(p'_1)}_{o'_1}…``
 """
-function *(tms1 :: Vector{Term}, tms2 :: Vector{Term})
+function *(tms1 :: Terms, tms2 :: Terms)
     return vcat([ Term(tm1.coeff * tm2.coeff, [tm1.cstr ; tm2.cstr])
         for tm1 in tms1, tm2 in tms2 ]...)
 end
-function *(tms1 :: Vector{Term}, tms2 :: Vararg{Vector{Term}})
+function *(tms1 :: Terms, tms2 :: Vararg{Terms})
     return tms1 * *(tms2...)
 end
-function ^(tms :: Vector{Term}, pow :: Int64)
+function ^(tms :: Terms, pow :: Int64)
     if pow == 1
         return tms
     else
@@ -88,11 +101,11 @@ function adjoint(tm :: Term)
 end
 """
     function adjoint(tm :: Term) :: Term
-    function adjoint(tms :: Vector{Term}) :: Vector{Term}
+    function adjoint(tms :: Terms) :: Terms
 
 Return the Hermitian conjugate of a series of terms. For each term ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}… c^{(p_l)}_{o_l}``, the adjoint is ``\\bar{U}c^{(1-p_l)}_{o_l}… c^{(1-p_2)}_{o_2}c^{(1-p_1)}_{o_1}``
 """
-function adjoint(tms :: Vector{Term})
+function adjoint(tms :: Terms)
     return adjoint.(tms)
 end
 
@@ -103,18 +116,18 @@ function ParticleHole(tm :: Term)
 end
 """
     function ParticleHole(tm :: Term) :: Term
-    function ParticleHole(tms :: Vector{Term}) :: Vector{Term}
+    function ParticleHole(tms :: Terms) :: Terms
 
 Return the particle-hole transformation of a series of terms. For each term ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}… c^{(p_l)}_{o_l}``, the transformation results in ``Uc^{(1-p_1)}_{o_1}c^{(1-p_2)}_{o_2}…c^{(1-p_l)}_{o_l}``
 """
-function ParticleHole(tms :: Vector{Term})
+function ParticleHole(tms :: Terms)
     return ParticleHole.(tms)
 end
 
 
 
 """
-    function NormalOrder(tm :: Term) :: Vector{Term}
+    function NormalOrder(tm :: Term) :: Terms
 
 rearrange a term such that 
 - the creation operators must be commuted in front of the annihilation operator 
@@ -160,7 +173,7 @@ end
 
 
 """
-    function SimplifyTerms(tms :: Vector{Term} ; cutoff :: Float64 = eps(Float64)) :: Vector{Term}
+    function SimplifyTerms(tms :: Terms ; cutoff :: Float64 = eps(Float64)) :: Terms
 
 simplifies the sum of terms such that 
 - each term is normal ordered,
@@ -171,7 +184,7 @@ simplifies the sum of terms such that
 - `cutoff :: Float64` is the cutoff such that terms with smaller absolute value of coefficients will be neglected. Facultative, `eps(Float64)` by default. 
 
 """
-function SimplifyTerms(tms :: Vector{Term} ; cutoff :: Float64 = eps(Float64)) :: Vector{Term}
+function SimplifyTerms(tms :: Terms ; cutoff :: Float64 = eps(Float64)) :: Terms
     dictlock = [ ReentrantLock() for i = 1 : 64 ]
     dict_tms = [ Dict{Vector{Int64}, ComplexF64}() for i = 1 : 64 ]
     
@@ -199,7 +212,7 @@ function SimplifyTerms(tms :: Vector{Term} ; cutoff :: Float64 = eps(Float64)) :
     return tms_f
 end
 
-function SimplifyTermsOld(tms_t :: Vector{Term}) :: Vector{Term}
+function SimplifyTermsOld(tms_t :: Terms) :: Terms
     # 
     tms = deepcopy(tms_t)
     #

@@ -316,7 +316,7 @@ end
 
 
 """
-    function GetIsingIntTerms(nm :: Int64 ; ps_pot :: Vector) :: Vector{Term}
+    function GetIsingIntTerms(nm :: Int64 ; ps_pot :: Vector) :: Terms
 
 **We have improved the interface for the function. Please consider using the function [`GetDenIntTerms`](@ref) in the future**
 ```julia

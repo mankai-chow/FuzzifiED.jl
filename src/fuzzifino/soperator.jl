@@ -26,21 +26,21 @@ end
 
 
 """
-    function SOperator(bsd :: SBasis[, bsf :: SBasis], terms :: Vector{STerm} ; red_q :: Int64, sym_q :: Int64, num_th :: Int64, disp_std :: Bool) :: SOperator
+    function SOperator(bsd :: SBasis[, bsf :: SBasis], terms :: STerms ; red_q :: Int64, sym_q :: Int64, num_th :: Int64, disp_std :: Bool) :: SOperator
 
 generates an operator object from a series of terms. 
 
 # Arguments
 * `bsd :: SBasis` is the basis of the initial state ;
 * `bsf :: SBasis` is the basis of the final state. Facultative, the same as `bsd` by default. 
-* `terms :: Vector{STerm}` records the terms ; 
+* `terms :: STerms` records the terms ; 
 * `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same set of quantum numbers, and the operator fully respects the symmetries, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0` ; Facultative, if `bsf` is not given, 1 by default, otherwise 0 by default.
 * `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0`. Facultative, if `bsf` is not given, 1 by default, otherwise 0 by default.
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 """
-function SOperator(bsd :: SBasis, bsf :: SBasis, terms :: Vector{STerm} ; red_q :: Int64 = 0, sym_q :: Int64 = 0)
+function SOperator(bsd :: SBasis, bsf :: SBasis, terms :: STerms ; red_q :: Int64 = 0, sym_q :: Int64 = 0)
     ntm = length(terms)
     nc = div(maximum([length(tm.cstr) for tm in terms]), 2)
     cstrs_vec = [ [tm.cstr ; fill(-1, 2 * nc - length(tm.cstr))] for tm in terms]
@@ -48,7 +48,7 @@ function SOperator(bsd :: SBasis, bsf :: SBasis, terms :: Vector{STerm} ; red_q 
     coeffs = [ tm.coeff for tm in terms ]
     return SOperator(bsd, bsf, red_q, sym_q, ntm, nc, cstrs, coeffs)
 end
-SOperator(bsd :: SBasis, terms :: Vector{STerm} ; red_q :: Int64 = 1, sym_q :: Int64 = 1) = SOperator(bsd, bsd, terms ; red_q, sym_q)
+SOperator(bsd :: SBasis, terms :: STerms ; red_q :: Int64 = 1, sym_q :: Int64 = 1) = SOperator(bsd, bsd, terms ; red_q, sym_q)
 
 
 """

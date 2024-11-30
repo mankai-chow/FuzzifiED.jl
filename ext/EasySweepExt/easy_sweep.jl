@@ -143,7 +143,7 @@ function EasySweep(id :: String, hmt :: MPO, st00 :: MPS ; path :: String = "./"
     return E1, st1
 end
 
-TermsOrOpSum(tms :: Vector{Term}) = OpSumFromTerms(tms)
+TermsOrOpSum(tms :: Terms) = OpSumFromTerms(tms)
 TermsOrOpSum(os :: OpSum) = os
 
 """
@@ -156,14 +156,14 @@ This function returns the MPO and sites for a given operator and a Hilbert space
 # Arguments 
 
 - `id :: String` is a string identifying the file to which the results will be accessed and written.
-- `tms :: Vector{Term}` or `tms :: OpSum` is either an array of terms or a `OpSum` objects that specifies the expression of the operator. 
+- `tms :: Terms` or `tms :: OpSum` is either an array of terms or a `OpSum` objects that specifies the expression of the operator. 
 - `qnd :: Vector{QNDiag}` is a list of diagonal quantum numbers. 
 - `path :: String` identifies the path where the results will be accessed and stored. Facultative, `./` by default. 
 - `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultative, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. _N.b._, `MPO_new` only applies to the cases that the operator do not carry charge under any of the quantum numbers.
 - `clear_previous :: Bool`. If set true, the file `op_\$(id).h5` will be removed and the calculation will start from scratch. Facultative, false by default.
 
 """
-function GetMPOSites(id :: String, tms :: Union{Vector{Term}, OpSum}, qnd :: Vector{QNDiag} ; path :: String = "./", mpo_method :: Union{Function, Type{MPO}} = MPO, clear_previous :: Bool = false)
+function GetMPOSites(id :: String, tms :: Union{Terms, OpSum}, qnd :: Vector{QNDiag} ; path :: String = "./", mpo_method :: Union{Function, Type{MPO}} = MPO, clear_previous :: Bool = false)
     if (clear_previous) rm("$(path)op_$(id).h5") end
     if (isfile("$(path)op_$(id).h5"))
         f = h5open("$(path)op_$(id).h5","r")
@@ -187,7 +187,7 @@ end
 
 
 """
-    function GetMPO(id :: String, tms :: Union{Vector{Term}, OpSum}, sites :: Vector{<:Index} ; path :: String, mpo_method :: Function) :: MPO
+    function GetMPO(id :: String, tms :: Union{Terms, OpSum}, sites :: Vector{<:Index} ; path :: String, mpo_method :: Function) :: MPO
 
 # Function 
 
@@ -196,14 +196,14 @@ This function returns the MPO for a given operator and a given set of sites. It 
 # Arguments 
 
 - `id :: String` is a string identifying the file to which the results will be accessed and written.
-- `tms :: Vector{Term}` or `tms :: OpSum` is either an array of terms or a `OpSum` objects that specifies the expression of the operator. 
+- `tms :: Terms` or `tms :: OpSum` is either an array of terms or a `OpSum` objects that specifies the expression of the operator. 
 - `sites :: Vector{<:Index}` specifies the sites that the operator is acting on. 
 - `path :: String` identifies the path where the results will be accessed and stored. Facultative, `./` by default. 
 - `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultative, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. _N.b._, `MPO_new` only applies to the cases that the operator do not carry charge under any of the quantum numbers.
 - `clear_previous :: Bool`. If set true, the file `op_\$(id).h5` will be removed and the calculation will start from scratch. Facultative, false by default.
 
 """
-function GetMPO(id :: String, tms :: Union{Vector{Term}, OpSum}, sites :: Vector{<:Index} ; path :: String = "./", mpo_method :: Union{Function, Type{MPO}} = MPO, clear_previous :: Bool = false)
+function GetMPO(id :: String, tms :: Union{Terms, OpSum}, sites :: Vector{<:Index} ; path :: String = "./", mpo_method :: Union{Function, Type{MPO}} = MPO, clear_previous :: Bool = false)
     if (clear_previous) rm("$(path)op_$(id).h5") end
     if (isfile("$(path)op_$(id).h5"))
         f = h5open("$(path)op_$(id).h5","r")

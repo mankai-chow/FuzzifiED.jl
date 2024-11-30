@@ -22,62 +22,73 @@ mutable struct STerm
     cstr :: Vector{Int64}
 end 
 
-function zero( x :: Type{Vector{STerm}})
-    return STerm[]
-end
+""" 
+
+`STerms` is an alias for `Vector{STerm}` for convenience
+
+# Initialisation
+
+    STerms(coeff :: Number, cstr :: Vector{Int64})
+
+Gives a `STerms` with a single `STerm`.
 
 """
-    function *(fac :: Number, tms :: Vector{STerm}) :: Vector{STerm}
-    function -(tms :: Vector{STerm}) :: Vector{STerm}
-    function *(tms :: Vector{STerm}, fac :: Number) :: Vector{STerm}
-    function /(tms :: Vector{STerm}, fac :: Number) :: Vector{STerm}
+const STerms = Vector{STerm}
+Base.Vector{T}(coeff :: Number, cstr :: Vector{Int64}) where T <: STerm = [STerm(coeff, cstr)]
+zero( :: Type{STerms}) = STerm[]
+
+"""
+    function *(fac :: Number, tms :: STerms) :: STerms
+    function -(tms :: STerms) :: STerms
+    function *(tms :: STerms, fac :: Number) :: STerms
+    function /(tms :: STerms, fac :: Number) :: STerms
 
 Return the product of a collection of STerms with a number. 
 """
-function *(fac :: Number, tms :: Vector{STerm})
+function *(fac :: Number, tms :: STerms)
     return [ STerm(fac * tm.coeff, tm.cstr) for tm in tms ]
 end
-function -(tms :: Vector{STerm})
+function -(tms :: STerms)
     return (-1) * tms
 end
-function *(tms :: Vector{STerm}, fac :: Number)
+function *(tms :: STerms, fac :: Number)
     return fac * tms
 end
-function /(tms :: Vector{STerm}, fac :: Number)
+function /(tms :: STerms, fac :: Number)
     return (1 / fac) * tms
 end
 
 """
-    function +(tms1 :: Vector{STerm}, tms2 :: Vector{STerm}) :: Vector{STerm}
-    function -(tms1 :: Vector{STerm}, tms2 :: Vector{STerm}) :: Vector{STerm}
+    function +(tms1 :: STerms, tms2 :: STerms) :: STerms
+    function -(tms1 :: STerms, tms2 :: STerms) :: STerms
 
 Return the naive sum of two series of STerms by taking their union. 
 """
-function +(tms1 :: Vector{STerm}, tms2 :: Vector{STerm})
+function +(tms1 :: STerms, tms2 :: STerms)
     return [ tms1 ; tms2 ]
 end
-function -(tms1 :: Vector{STerm}, tms2 :: Vector{STerm})
+function -(tms1 :: STerms, tms2 :: STerms)
     return tms1 + (-tms2)
 end
-function +(tms1 :: Vector{STerm}, tms2 :: Vararg{Vector{STerm}})
+function +(tms1 :: STerms, tms2 :: Vararg{STerms})
     return tms1 + +(tms2...)
 end
 
 
 """
-    function *(tms1 :: Vector{STerm}, tms2 :: Vector{STerm}) :: Vector{STerm}
-    function ^(tms :: Vector{STerm}, pow :: Int64) :: Vector{STerm}
+    function *(tms1 :: STerms, tms2 :: STerms) :: STerms
+    function ^(tms :: STerms, pow :: Int64) :: STerms
 
 Return the naive product of two series of STerms or the power of one STerms. The number of STerms equals the product of the number of STerms in `tms1` and `tms2`. For each STerm in `tms1` ``Ua^{(p_1)}_{o_1}…`` and `tms2` ``U'a^{(p'_1)}_{o'_1}…``, a new STerm is formed by taking ``UU'a^{(p_1)}_{o_1}… a^{(p'_1)}_{o'_1}…``
 """
-function *(tms1 :: Vector{STerm}, tms2 :: Vector{STerm})
+function *(tms1 :: STerms, tms2 :: STerms)
     return vcat([ STerm(tm1.coeff * tm2.coeff, [tm1.cstr ; tm2.cstr])
         for tm1 in tms1, tm2 in tms2 ]...)
 end
-function *(tms1 :: Vector{STerm}, tms2 :: Vararg{Vector{STerm}})
+function *(tms1 :: STerms, tms2 :: Vararg{STerms})
     return tms1 * *(tms2...)
 end
-function ^(tms :: Vector{STerm}, pow :: Int64)
+function ^(tms :: STerms, pow :: Int64)
     if pow == 1
         return tms
     else
@@ -92,17 +103,17 @@ function adjoint(tm :: STerm)
 end
 """
     function adjoint(tm :: STerm) :: STerm
-    function adjoint(tms :: Vector{STerm}) :: Vector{STerm}
+    function adjoint(tms :: STerms) :: STerms
 
 Return the Hermitian conjugate of a series of STerms. For each STerm ``Ua^{(p_1)}_{o_1}a^{(p_2)}_{o_2}… a^{(p_l)}_{o_l}``, the adjoint is ``\\bar{U}a^{(1-p_l)}_{o_l}… a^{(1-p_2)}_{o_2}a^{(1-p_1)}_{o_1}``
 """
-function adjoint(tms :: Vector{STerm})
+function adjoint(tms :: STerms)
     return adjoint.(tms)
 end
 
 
 """
-    function NormalOrder(tm :: STerm) :: Vector{STerm}
+    function NormalOrder(tm :: STerm) :: STerms
 
 rearrange a STerm such that 
 - the creation operators must be commuted in front of the annihilation operator 
@@ -151,7 +162,7 @@ end
 
 
 """
-    function SimplifyTerms(tms :: Vector{STerm} ; cutoff :: Float64 = eps(Float64)) :: Vector{STerm}
+    function SimplifyTerms(tms :: STerms ; cutoff :: Float64 = eps(Float64)) :: STerms
 
 simplifies the sum of STerms such that 
 - each STerm is normal ordered,
@@ -162,7 +173,7 @@ simplifies the sum of STerms such that
 - `cutoff :: Float64` is the cutoff such that STerms with smaller absolute value of coefficients will be neglected. Facultative, `eps(Float64)` by default. 
 
 """
-function SimplifyTerms(tms :: Vector{STerm} ; cutoff :: Float64 = eps(Float64)) :: Vector{STerm}
+function SimplifyTerms(tms :: STerms ; cutoff :: Float64 = eps(Float64)) :: STerms
     dictlock = [ ReentrantLock() for i = 1 : 64 ]
     dict_tms = [ Dict{Vector{Int64}, ComplexF64}() for i = 1 : 64 ]
     

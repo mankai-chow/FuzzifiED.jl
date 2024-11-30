@@ -78,7 +78,7 @@ function HDF5.read(parent :: Union{HDF5.File, HDF5.Group}, name :: String, :: Ty
     return Operator(bsd, bsf, red_q, sym_q, ntm, nc, cstrs, coeffs)
 end
 
-function HDF5.write(parent :: Union{HDF5.File, HDF5.Group}, name :: String, tms :: Vector{Term})
+function HDF5.write(parent :: Union{HDF5.File, HDF5.Group}, name :: String, tms :: Terms)
     grp = create_group(parent, name)
     coeffs = [ tm.coeff for tm in tms ]
     nc = maximum([length(tm.cstr) for tm in tms]) ÷ 2
@@ -88,7 +88,7 @@ function HDF5.write(parent :: Union{HDF5.File, HDF5.Group}, name :: String, tms 
     close(grp)
 end
 
-function HDF5.read(parent :: Union{HDF5.File, HDF5.Group}, name :: String, :: Type{Vector{Term}})
+function HDF5.read(parent :: Union{HDF5.File, HDF5.Group}, name :: String, :: Type{Terms})
     grp = open_group(parent, name)
     coeffs = read(grp, "coeffs")
     cstrs = read(grp, "cstrs")

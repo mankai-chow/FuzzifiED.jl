@@ -38,7 +38,7 @@ end
 
 
 """
-    GetDenIntTerms(nm :: Int64, nf :: Int64[, ps_pot :: Vector{<:Number}][, mat_a :: Matrix{<:Number}[, mat_b :: Matrix{<:Number}]][ ; m_kept :: Vector{Int64}]) :: Vector{Term}
+    GetDenIntTerms(nm :: Int64, nf :: Int64[, ps_pot :: Vector{<:Number}][, mat_a :: Matrix{<:Number}[, mat_b :: Matrix{<:Number}]][ ; m_kept :: Vector{Int64}]) :: Terms
 
 Return the normal-ordered density-density term in the Hamiltonian 
 ```math 
@@ -58,7 +58,7 @@ Return the normal-ordered density-density term in the Hamiltonian
 function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm))
     no = nm * nf
     int_el = GetIntMatrix(nm, ps_pot)
-    tms = Vector{Term}(undef, 0)
+    tms = Terms(undef, 0)
     # Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
     for o1 = 1 : no
         m1 = div(o1 - 1, nf) + 1
@@ -97,7 +97,7 @@ GetDenIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.0], ma
 
 
 """
-    GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Vector{<:AbstractMatrix{<:Number}}[, mat_b :: Vector{<:AbstractMatrix{<:Number}}][ ; m_kept :: Vector{Int64}]) :: Vector{Term}
+    GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Vector{<:AbstractMatrix{<:Number}}[, mat_b :: Vector{<:AbstractMatrix{<:Number}}][ ; m_kept :: Vector{Int64}]) :: Terms
 
 Return the sum of a series of normal-ordered density-density term in the Hamiltonian 
 ```math 
@@ -121,7 +121,7 @@ GetDenIntTerms(nm :: Int64, nf :: Int64, mats_a :: Vector{<:AbstractMatrix{<:Num
 
 
 """
-    GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}[, mat_b :: Matrix{<:Number}][ ; m_kept :: Vector{Int64}]) :: Vector{Term}
+    GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}[, mat_b :: Matrix{<:Number}][ ; m_kept :: Vector{Int64}]) :: Terms
 
 Return the normal-ordered pair-pair interaction term in the Hamiltonian 
 ```math 
@@ -141,7 +141,7 @@ Return the normal-ordered pair-pair interaction term in the Hamiltonian
 function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm))
     no = nm * nf
     int_el = GetIntMatrix(nm, ps_pot)
-    tms = Vector{Term}(undef, 0)
+    tms = Terms(undef, 0)
     # Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
     for o1 = 1 : no
         m1 = div(o1 - 1, nf) + 1
@@ -179,7 +179,7 @@ GetPairIntTerms(nm :: Int64, nf :: Int64, mat_a :: Matrix{<:Number}, mat_b :: Ma
 GetPairIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a'), m_kept :: Vector{Int64} = collect(1 : nm)) = GetPairIntTerms(nm, nf, ps_pot, mat_a, mat_b ; m_kept)
 
 """
-    GetPolTerms(nm :: Int64, nf :: Int64[, mat :: Matrix{<:Number}][ ; fld_m :: Vector{<:Number}]) :: Vector{Term}
+    GetPolTerms(nm :: Int64, nf :: Int64[, mat :: Matrix{<:Number}][ ; fld_m :: Vector{<:Number}]) :: Terms
 
 Return the polarisation term in the Hamiltonian 
 ```math 
@@ -200,7 +200,7 @@ Facultative.
 """
 function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number} ; fld_m :: Vector{<:Number} = fill(1, nm))
     no = nm * nf
-    tms = Vector{Term}(undef, 0)
+    tms = Terms(undef, 0)
     for o1 = 1 : no
         m1 = div(o1 - 1, nf) + 1
         f1 = mod(o1 - 1, nf) + 1
@@ -216,7 +216,7 @@ GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}
 
 
 """
-    function GetL2Terms(nm :: Int64, nf :: Int64) :: Vector{Term}
+    function GetL2Terms(nm :: Int64, nf :: Int64) :: Terms
 
 Return the terms for the total angular momentum.
 
@@ -242,7 +242,7 @@ function GetL2Terms(nm :: Int64, nf :: Int64)
 end
 
 """
-    function GetC2Terms(nm :: Int64, nf :: Int64, mat_gen :: Vector{<:AbstractMatrix{<:Number}}[, mat_tr :: Vector{<:AbstractMatrix{<:Number}}]) :: Vector{Term}
+    function GetC2Terms(nm :: Int64, nf :: Int64, mat_gen :: Vector{<:AbstractMatrix{<:Number}}[, mat_tr :: Vector{<:AbstractMatrix{<:Number}}]) :: Terms
 
 Return the terms for the quadratic Casimir of the flavour symmetry.
 ```math

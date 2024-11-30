@@ -38,6 +38,7 @@ export SBasis
 
 include("sterm.jl")
 export STerm
+export STerms
 
 include("soperator.jl")
 export SOperator

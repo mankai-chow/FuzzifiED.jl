@@ -151,7 +151,7 @@ using WignerSymbols
 # Input the parameters of the Hamiltonian
 ps_pot = [ 4.75, 1. ] * 2.
 h = 3.16
-tms_hmt = Vector{Term}(undef, 0)
+tms_hmt = Terms(undef, 0)
 # Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
 for m1 = 0 : nm - 1
     f1 = 0
@@ -191,7 +191,7 @@ hmt = Operator(bs, tms_hmt)
 
 ### Generate the sparse matrix and diagonalise
 
-After specifying the Hamiltonian, we then use [Operator](@ref Operator(bsd :: Basis, bsf :: Basis, terms :: Vector{Term} ; red_q :: Int64 = 0, sym_q :: Int64 = 0)) to record also the basis and use [`OpMat`](@ref) to generate a sparse matrix from the operator. To get the 10 lowest eigenstates and their energies
+After specifying the Hamiltonian, we then use [Operator](@ref Operator(bsd :: Basis, bsf :: Basis, terms :: Terms ; red_q :: Int64 = 0, sym_q :: Int64 = 0)) to record also the basis and use [`OpMat`](@ref) to generate a sparse matrix from the operator. To get the 10 lowest eigenstates and their energies
 ```julia
 hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt)
@@ -218,7 +218,7 @@ hmt_mat = read(f, "hmt_mat", OpMat{ComplexF64})
 close(f)
 ```
 
-Apart from `OpMat`, the supported types for writing include `Confs`, `Basis`, `Vector{Term}`, `Operator`, `OpMat{ComplexF64}` and `OpMat{Float64}`. 
+Apart from `OpMat`, the supported types for writing include `Confs`, `Basis`, `Terms`, `Operator`, `OpMat{ComplexF64}` and `OpMat{Float64}`. 
 
 ### Measuring the angular momentum
 
@@ -251,7 +251,7 @@ L^\pm&=\sum_{\sigma m}\sqrt{(s\mp m)(s\pm m+1)}c^\dagger_{m\pm 1}c_m
 \end{aligned}
 ```
 
-The construction of the operator can be simplified by the [addition](@ref +(tms1 :: Vector{Term}, tms2 :: Vector{Term})), [multiplication](@ref *(tms1 :: Vector{Term}, tms2 :: Vector{Term})), [Hermitian conjugate](@ref adjoint(tms :: Vector{Term})) and [simplification](@ref SimplifyTerms) of terms. 
+The construction of the operator can be simplified by the [addition](@ref +(tms1 :: Terms, tms2 :: Terms)), [multiplication](@ref *(tms1 :: Terms, tms2 :: Terms)), [Hermitian conjugate](@ref adjoint(tms :: Terms)) and [simplification](@ref SimplifyTerms) of terms. 
 
 ```julia
 tms_lz = 

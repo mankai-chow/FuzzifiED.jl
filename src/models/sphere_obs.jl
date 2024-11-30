@@ -10,16 +10,16 @@ stores the information of a local observable (or local operator) ``\\Phi`` that 
 
 - `s2 :: Int64` is twice the spin ``2s`` of the observable.
 - `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the observable. 
-- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Vector{Term}` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq l\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
+- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Terms` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq l\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
 - `stored_q :: Bool` is a boolean that specifies whether or not each component of the observable is stored.
-- `comps :: Dict{Tuple{Int64, Int64}, Vector{Term}}` stores each component of the observable in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
+- `comps :: Dict{Tuple{Int64, Int64}, Terms}` stores each component of the observable in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
 """
 mutable struct SphereObs
     s2 :: Int64
     l2m :: Int64
     get_comp :: Function
     stored_q :: Bool 
-    comps :: Dict{Tuple{Int64, Int64}, Vector{Term}}
+    comps :: Dict{Tuple{Int64, Int64}, Terms}
 end
 
 
@@ -32,10 +32,10 @@ initialises the observable from ``2s``, ``2l_{\\max}`` and the function ``(l,m)�
 
 - `s2 :: Int64` is twice the spin ``2s`` of the observable.
 - `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the observable. 
-- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Vector{Term}` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq s\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
+- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Terms` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq s\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
 """
 function SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function)
-    return SphereObs(s2, l2m, get_comp, false, Dict{Tuple{Int64, Int64}, Vector{Term}}())
+    return SphereObs(s2, l2m, get_comp, false, Dict{Tuple{Int64, Int64}, Terms}())
 end
 
 """
@@ -47,9 +47,9 @@ initialises the observable from ``2s``, ``2l_{\\max}`` and a list of ``\\Phi_{lm
 
 - `s2 :: Int64` is twice the spin ``2s`` of the observable.
 - `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the observable. 
-- `comps :: Dict{Tuple{Int64, Int64}, Vector{Term}}` stores each component of the observable in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
+- `comps :: Dict{Tuple{Int64, Int64}, Terms}` stores each component of the observable in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
 """
-function SphereObs(s2 :: Int64, l2m :: Int64, cmps :: Dict{Tuple{Int64, Int64}, Vector{Term}})
+function SphereObs(s2 :: Int64, l2m :: Int64, cmps :: Dict{Tuple{Int64, Int64}, Terms})
     return SphereObs(s2, l2m, (l2, m2) -> (l2 ≤ l2m && l2 ≥ abs(s2) && abs(m2) ≤ l2 && haskey(cmps, (l2, m2))) ? cmps[(l2, m2)] : Term[], true, cmps)
 end
 
@@ -61,7 +61,7 @@ calculates and stores each component of the observable `obs` and replace the fun
 """
 function StoreComps!(obs :: SphereObs)
     if (obs.stored_q) return end
-    cmps = Dict{Tuple{Int64, Int64}, Vector{Term}}()
+    cmps = Dict{Tuple{Int64, Int64}, Terms}()
     s2 = obs.s2
     l2m = obs.l2m
     for l2 = abs(s2) : 2 : l2m
@@ -82,7 +82,7 @@ calculates and stores each component of the observable `obs` and return a new ob
 """
 function StoreComps(obs :: SphereObs)
     if (obs.stored_q) return obs end
-    cmps = Dict{Tuple{Int64, Int64}, Vector{Term}}()
+    cmps = Dict{Tuple{Int64, Int64}, Terms}()
     s2 = obs.s2
     l2m = obs.l2m
     for l2 = abs(s2) : 2 : l2m
@@ -169,7 +169,7 @@ function *(obs1 :: SphereObs, obs2 :: SphereObs)
     l2m1 = obs1.l2m
     l2m2 = obs2.l2m
     l2m = l2m1 + l2m2
-    gc = ((l2, m2) -> sum(Vector{Term}[sum(Vector{Term}[sum(Vector{Term}[
+    gc = ((l2, m2) -> sum(Terms[sum(Terms[sum(Terms[
             (iseven((s2 + m2) ÷ 2) ? 1 : -1) *
             sqrt((l21 + 1) * (l22 + 1) * (l2 + 1) / (4 * π)) *
             wigner3j(l21/2, l22/2, l2/2, -s21/2, -s22/2, s2/2) *
@@ -196,7 +196,7 @@ end
 
 
 """
-    function GetComponent(obs :: SphereObs, l :: Number, m :: Number) :: Vector{Term}
+    function GetComponent(obs :: SphereObs, l :: Number, m :: Number) :: Terms
 
 returns an angular component ``Φ_{lm}`` of an observable in the format of a list of terms.
 """
@@ -206,7 +206,7 @@ end
 
 
 """
-    function GetPointValue(obs :: SphereObs, θ :: Float64, ϕ :: Float64) :: Vector{Term}
+    function GetPointValue(obs :: SphereObs, θ :: Float64, ϕ :: Float64) :: Terms
 
 evaluates an observable at one point ``Φ(θ,ϕ)`` in the format of a list of terms.
 """
@@ -257,7 +257,7 @@ returns the density operator ``n=∑_{ff'}ψ^†_{f}M_{ff'}ψ_{f'}``
 """
 function GetDensityObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     el = [ StoreComps(GetElectronObs(nm, nf, f)) for f = 1 : nf ]
-    obs = SphereObs(0, 0, Dict{Tuple{Int64, Int64}, Vector{Term}}())
+    obs = SphereObs(0, 0, Dict{Tuple{Int64, Int64}, Terms}())
     for f1 = 1 : nf, f2 = 1 : nf
         if abs(mat[f1, f2]) < 1E-13 continue end 
         obs += mat[f1, f2] * el'[f1] * el[f2]
@@ -281,7 +281,7 @@ returns the pair operator ``Δ=∑_{ff'}ψ_{f}M_{ff'}ψ_{f'}``
 """
 function GetPairingObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     el = [ StoreComps(GetElectronObs(nm, nf, f)) for f = 1 : nf ]
-    obs = SphereObs(2 * (nm - 1), 2 * (nm - 1), Dict{Tuple{Int64, Int64}, Vector{Term}}())
+    obs = SphereObs(2 * (nm - 1), 2 * (nm - 1), Dict{Tuple{Int64, Int64}, Terms}())
     for f1 = 1 : nf, f2 = 1 : nf
         if abs(mat[f1, f2]) < 1E-13 continue end 
         obs += mat[f1, f2] * el[f1] * el[f2]

@@ -50,7 +50,7 @@ using WignerSymbols
 # Input the parameters of the Hamiltonian
 ps_pot = [ 4.75, 1. ] * 2.
 h = 3.16
-tms_hmt = Vector{Term}(undef, 0)
+tms_hmt = Terms(undef, 0)
 # Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
 for m1 = 0 : nm - 1
     f1 = 0
@@ -141,7 +141,7 @@ st_e = st[:, 2] # epsilon state
 st_s = st1[:, 1]
 
 # Record the density operator n^z
-tms_nz = Vector{Term}(undef, 0)
+tms_nz = Terms(undef, 0)
 for m1 = 0 : nm - 1
     o1u = 2 * m1 + 1
     o1d = 2 * m1 + 2

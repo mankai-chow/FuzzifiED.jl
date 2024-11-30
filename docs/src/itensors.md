@@ -37,7 +37,7 @@ TruncateQNDiag(qnd :: Vector{QNDiag} ; trunc_lth :: Int64 = 3, trunc_wt :: Vecto
 The `OpSum` objects in ITensor can be converted with the collection of `Term`'s
 ```@docs
 TermsFromOpSum(opsum :: Sum{Scaled{ComplexF64, Prod{Op}}})
-OpSumFromTerms(tms :: Vector{Term})
+OpSumFromTerms(tms :: Terms)
 ```
 
 ## Easy sweep
@@ -50,6 +50,6 @@ using Pkg ; Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.gi
 ```@docs
 EasySweep(id :: String, hmt :: MPO, st00 :: MPS ; path :: String = "./", dim_list :: Vector{Int64} = [1000,2000,3000,4000,5000,6000], proj :: Vector{String} = String[], e_tol1 :: Float64 = 1E-6, e_tol :: Float64 = 1E-7, cutoff :: Vector{Float64} = [1E-9], maxdim0 :: Vector{Int64} = [10,20,50,100,200,500], noise0 :: Vector{Float64} = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], noise :: Vector{Float64} = [1E-6,2E-7,5E-8,1E-8,0], nsweeps :: Int64 = 10, weight :: Float64 = 100.0, observer :: AbstractObserver = EasySweepObserver(e_tol1))
 SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: String = "./", cutoff :: Vector{Float64} = [1E-9], maxdim :: Vector{Int64} = [dim1], nsweeps :: Int64 = 10, noise :: Vector{Float64} = [1E-6,1E-7,0], proj :: Vector{String} = String[], e_tol :: Float64 = 1E-6, weight :: Float64 = 100.0, observer :: AbstractObserver = EasySweepObserver(e_tol))
-GetMPOSites(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}}, qnd :: Vector{QNDiag} ; path :: String = "./", mpo_method :: Function = MPO)
-GetMPO(id :: String, tms :: Union{Vector{Term}, Sum{Scaled{ComplexF64, Prod{Op}}}}, sites :: Vector{<:Index} ; path :: String = "./", mpo_method :: Function = MPO)
+GetMPOSites(id :: String, tms :: Union{Terms, Sum{Scaled{ComplexF64, Prod{Op}}}}, qnd :: Vector{QNDiag} ; path :: String = "./", mpo_method :: Function = MPO)
+GetMPO(id :: String, tms :: Union{Terms, Sum{Scaled{ComplexF64, Prod{Op}}}}, sites :: Vector{<:Index} ; path :: String = "./", mpo_method :: Function = MPO)
 ```

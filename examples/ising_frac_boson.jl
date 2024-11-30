@@ -36,7 +36,7 @@ fld_h = 0.25
 int_el_proj = GetIntMatrix(nm, ps_pot_proj)
 int_el_int = GetIntMatrix(nm, ps_pot_int)
 
-tms_hmt = Vector{STerm}(undef, 0)
+tms_hmt = STerms(undef, 0)
 for o1 = 1 : nob
     m1 = div(o1 - 1, nf) + 1
     f1 = mod(o1 - 1, nf) + 1

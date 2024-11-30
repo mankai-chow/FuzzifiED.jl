@@ -6,15 +6,15 @@ is an object that stores angular momentum components of an operator on the spher
 # Fields
 
 - `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the modes object. 
-- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Vector{Term}` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq l\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
+- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Terms` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq l\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
 - `stored_q :: Bool` is a boolean that specifies whether or not each component of the modes object is stored.
-- `comps :: Dict{Tuple{Int64, Int64}, Vector{Term}}` stores each component of the modes object in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
+- `comps :: Dict{Tuple{Int64, Int64}, Terms}` stores each component of the modes object in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
 """
 mutable struct AngModes
     l2m :: Int64
     get_comp :: Function
     stored_q :: Bool 
-    comps :: Dict{Tuple{Int64, Int64}, Vector{Term}}
+    comps :: Dict{Tuple{Int64, Int64}, Terms}
 end
 
 
@@ -26,10 +26,10 @@ initialises the modes object from ``2l_{\\max}`` and the function ``(l,m)↦\\Ph
 # Arguments
 
 - `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the modes object. 
-- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Vector{Term}` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq s\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
+- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Terms` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq s\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
 """
 function AngModes(l2m :: Int64, get_comp :: Function)
-    return AngModes(l2m, get_comp, false, Dict{Tuple{Int64, Int64}, Vector{Term}}())
+    return AngModes(l2m, get_comp, false, Dict{Tuple{Int64, Int64}, Terms}())
 end
 
 
@@ -41,9 +41,9 @@ initialises the modes object from ``2l_{\\max}`` and a list of ``\\Phi_{lm}`` sp
 # Arguments
 
 - `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the modes object. 
-- `comps :: Dict{Tuple{Int64, Int64}, Vector{Term}}` stores each component of the modes object in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
+- `comps :: Dict{Tuple{Int64, Int64}, Terms}` stores each component of the modes object in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
 """
-function AngModes(l2m :: Int64, cmps :: Dict{Tuple{Int64, Int64}, Vector{Term}})
+function AngModes(l2m :: Int64, cmps :: Dict{Tuple{Int64, Int64}, Terms})
     return AngModes(l2m, (l2, m2) -> (l2 ≤ l2m && abs(m2) ≤ l2 && haskey(cmps, (l2, m2))) ? cmps[(l2, m2)] : Term[], true, cmps)
 end
 
@@ -55,7 +55,7 @@ calculates and stores each component of the modes object `amd` and replace the f
 """
 function StoreComps!(amd :: AngModes)
     if (amd.stored_q) return end
-    cmps = Dict{Tuple{Int64, Int64}, Vector{Term}}()
+    cmps = Dict{Tuple{Int64, Int64}, Terms}()
     l2m = amd.l2m
     for l2 = l2m % 2 : 2 : l2m
         for m2 = -l2 : 2 : l2 
@@ -76,7 +76,7 @@ calculates and stores each component of the modes object `amd` and return a new 
 """
 function StoreComps(amd :: AngModes)
     if (amd.stored_q) return amd end
-    cmps = Dict{Tuple{Int64, Int64}, Vector{Term}}()
+    cmps = Dict{Tuple{Int64, Int64}, Terms}()
     l2m = amd.l2m
     for l2 = l2m % 2 : 2 : l2m
         for m2 = -l2 : 2 : l2 
@@ -156,7 +156,7 @@ function *(obs1 :: AngModes, obs2 :: AngModes)
     l2m1 = obs1.l2m
     l2m2 = obs2.l2m
     l2m = l2m1 + l2m2
-    gc = ((l2, m2) -> sum(Vector{Term}[sum(Vector{Term}[sum(Vector{Term}[
+    gc = ((l2, m2) -> sum(Terms[sum(Terms[sum(Terms[
             (iseven((-l21 + l22 + m2) ÷ 2) ? 1 : -1) *
             sqrt(l2 + 1) *
             wigner3j(l21/2, l22/2, l2/2, m21/2, (m2-m21)/2, -m2/2) *
@@ -169,7 +169,7 @@ end
 
 
 """
-    function GetComponent(amd :: AngModes, l :: Number, m :: Number) :: Vector{Term}
+    function GetComponent(amd :: AngModes, l :: Number, m :: Number) :: Terms
 
 returns an angular component ``Φ_{lm}`` of a modes object in the format of a list of terms.
 """
@@ -238,7 +238,7 @@ returns the modes of two electrons superposed in the rule of CG coefficients.
 """
 function GetPairingMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     el = [ StoreComps(GetElectronMod(nm, nf, f)) for f = 1 : nf ]
-    amd = AngModes(2 * (nm - 1), Dict{Tuple{Int64, Int64}, Vector{Term}}())
+    amd = AngModes(2 * (nm - 1), Dict{Tuple{Int64, Int64}, Terms}())
     for f1 = 1 : nf, f2 = 1 : nf
         if abs(mat[f1, f2]) < 1E-13 continue end 
         amd += mat[f1, f2] * el[f1] * el[f2]
@@ -264,7 +264,7 @@ returns the modes of electron creation and annihilation superposed in the rule o
 """
 function GetDensityMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     el = [ StoreComps(GetElectronMod(nm, nf, f)) for f = 1 : nf ]
-    amd = AngModes(2 * (nm - 1), Dict{Tuple{Int64, Int64}, Vector{Term}}())
+    amd = AngModes(2 * (nm - 1), Dict{Tuple{Int64, Int64}, Terms}())
     for f1 = 1 : nf, f2 = 1 : nf
         if abs(mat[f1, f2]) < 1E-13 continue end 
         amd += mat[f1, f2] * el'[f1] * el[f2]

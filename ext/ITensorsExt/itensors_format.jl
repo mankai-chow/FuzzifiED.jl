@@ -91,13 +91,13 @@ function SitesFromQNDiag(qnd :: Vector{QNDiag})
 end
 
 """
-    function TermsFromOpSum(opsum :: OpSum) :: Vector{Term}
+    function TermsFromOpSum(opsum :: OpSum) :: Terms
 
 Converts a `OpSum` object in `ITensors` to a series of terms. Note that the only operators supported are `"C"`, `"Cdag"` `"N"` and `"I"`.
 
 """
 function TermsFromOpSum(opsum :: OpSum)
-    tms = Vector{Term}(undef,0)
+    tms = Terms(undef,0)
     for i in eachindex(opsum)
         cstr = []
         for j in eachindex(opsum[i])
@@ -125,12 +125,12 @@ function TermsFromOpSum(opsum :: OpSum)
 end
 
 """
-    function OpSumFromTerms(tms :: Vector{Term}) :: OpSum
+    function OpSumFromTerms(tms :: Terms) :: OpSum
 
 Converts a series of terms to `OpSum` object in `ITensors`.
 
 """
-function OpSumFromTerms(tms :: Vector{Term})
+function OpSumFromTerms(tms :: Terms)
     opsum = OpSum()
     for tm in tms
         optm = Any[tm.coeff]
