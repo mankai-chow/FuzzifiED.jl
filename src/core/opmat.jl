@@ -56,7 +56,7 @@ mutable struct OpMat{T <: Union{Float64, ComplexF64}}
     end
 end 
 """
-    function OpMat[{type}](op :: Operator ; num_th :: Int64, disp_std :: Bool) :: OpMat{type}
+    OpMat[{type}](op :: Operator ; num_th :: Int64, disp_std :: Bool) :: OpMat{type}
 
 Generates the sparse matrix from the operator. The parameter `type` is either `Float64` or `ComplexF64` ; it is facultative, given by `ElementType` by default. 
 
@@ -71,8 +71,8 @@ OpMat(op :: Operator ; type :: DataType = ElementType, num_th = NumThreads, disp
 
 
 """
-    function GetEigensystem(mat :: OpMat{ComplexF64}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{ComplexF64}, num_th :: Int64, disp_std :: Bool) :: Tuple{Vector{ComplexF64}, Matrix{ComplexF64}}
-    function GetEigensystem(mat :: OpMat{Float64}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{Float64}, num_th :: Int64, disp_std :: Bool) :: Tuple{Vector{Float64}, Matrix{Float64}}
+    GetEigensystem(mat :: OpMat{ComplexF64}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{ComplexF64}, num_th :: Int64, disp_std :: Bool) :: Tuple{Vector{ComplexF64}, Matrix{ComplexF64}}
+    GetEigensystem(mat :: OpMat{Float64}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{Float64}, num_th :: Int64, disp_std :: Bool) :: Tuple{Vector{Float64}, Matrix{Float64}}
 
 calls the Arpack package to calculate the lowest eigenstates of sparse matrix. 
 
@@ -113,8 +113,8 @@ function GetEigensystem(mat :: OpMat{Float64}, nst :: Int64 ; tol :: Float64 = 1
 end 
 
 """
-    function GetEigensystemKrylov(mat :: OpMat{ComplexF64}, nst :: Int64 ; initvec :: Vector{ComplexF64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{ComplexF64}, Matrix{ComplexF64}}
-    function GetEigensystemKrylov(mat :: OpMat{Float64}, nst :: Int64 ; initvec :: Vector{Float64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{Float64}, Matrix{Float64}}
+    GetEigensystemKrylov(mat :: OpMat{ComplexF64}, nst :: Int64 ; initvec :: Vector{ComplexF64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{ComplexF64}, Matrix{ComplexF64}}
+    GetEigensystemKrylov(mat :: OpMat{Float64}, nst :: Int64 ; initvec :: Vector{Float64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{Float64}, Matrix{Float64}}
 
 This method calls the `eigsolve` from Julia `KrylovKit.jl` package instead of Arpack from Fortran to calculate the lowest eigenstates of sparse matrix. Apple Silicon users who experience trouble calling `GetEigensystem` function may use this function instead. The performance should be similar. For an example, refer to [`ising_spectrum_krylov.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_spectrum_krylov.jl).
 
@@ -142,8 +142,8 @@ function GetEigensystemKrylov(mat :: OpMat{T}, nst :: Int64 ; tol :: Float64 = 1
 end
 
 """
-    function *(mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64} ; num_th :: Int64) :: Vector{ComplexF64}
-    function *(mat :: OpMat{Float64}, st_d :: Vector{Float64} ; num_th :: Int64) :: Vector{Float64}
+    *(mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64} ; num_th :: Int64) :: Vector{ComplexF64}
+    *(mat :: OpMat{Float64}, st_d :: Vector{Float64} ; num_th :: Int64) :: Vector{Float64}
 
 Measure the action of a sparse matrix on a state. `st_d` must be of length `mat.dimd`. Returns a vector of length `mat.dimf` that represents the final state. 
 
@@ -164,8 +164,8 @@ end
 
 
 """
-    function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64} ; num_th :: Int64) :: ComplexF64
-    function *(st_fp :: LinearAlgebra.Adjoint{Float64, Vector{Float64}}, mat :: OpMat{Float64}, st_d :: Vector{Float64} ; num_th :: Int64) :: Float64
+    *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64} ; num_th :: Int64) :: ComplexF64
+    *(st_fp :: LinearAlgebra.Adjoint{Float64, Vector{Float64}}, mat :: OpMat{Float64}, st_d :: Vector{Float64} ; num_th :: Int64) :: Float64
 
 Measuring the inner product between two states and a sparse matrix. `st_d` must be of length `mat.dimd` and `st_fp` must be of length `mat.dimf`, and `st_fp` must be an adjoint. 
 

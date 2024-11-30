@@ -1,7 +1,5 @@
 """
-    mutable struct Confs
-
-This type stores all the configurations that respects the diagonal quantum numbers (QNDiag) and also a table to inversely look up the index from the configuration. 
+The type `Confs` stores all the configurations that respects the diagonal quantum numbers (QNDiag) and also a table to inversely look up the index from the configuration. 
 
 # Fields
 
@@ -21,7 +19,7 @@ end
 
 
 """
-    function Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag} ; nor :: Int64 = div(no, 2), num_th :: Int64, disp_std :: Bool) :: Confs
+    Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag} ; nor :: Int64 = div(no, 2), num_th :: Int64, disp_std :: Bool) :: Confs
 
 generates the configurations from the list of QNDiags. 
 

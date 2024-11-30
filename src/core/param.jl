@@ -28,7 +28,7 @@ set the default type of the operator elements, either `ComplexF64` or `Float64`.
 ElementType :: DataType = ComplexF64
 
 """
-    function OpenHelp!()
+    OpenHelp!()
 
 A shortcut to open the link for documentation [http://docs.fuzzified.world](http://docs.fuzzified.world) in the system browser. 
 """

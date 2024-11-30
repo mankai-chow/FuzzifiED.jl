@@ -1,7 +1,5 @@
 """
-    mutable struct Basis
-
-This type stores the information of the basis that respects both diagonal and off-diagonal quantum numbers. The states in the basis is in the form 
+The type `Basis` stores the information of the basis that respects both diagonal and off-diagonal quantum numbers. The states in the basis is in the form 
 ```math
 |I⟩=λ_{i_{I1}}|i_{I1}⟩+λ_{i_{I2}}|i_{I2}⟩+⋯+λ_{i_{Im_I}}|i_{Im_I}⟩
 ```
@@ -28,7 +26,7 @@ end
 
 
 """
-    function Basis(cfs :: Confs, secf :: Vector{ComplexF64}, qnf :: Vector{QNOffd} ; num_th :: Int64, disp_std :: Bool) :: Basis
+    Basis(cfs :: Confs, secf :: Vector{ComplexF64}, qnf :: Vector{QNOffd} ; num_th :: Int64, disp_std :: Bool) :: Basis
 
 generates the basis that respects the off-diagonal ``ℤ_p`` quantum numbers (QNOffd)
 
@@ -75,7 +73,7 @@ end
 
 
 """
-    function Basis(cfs :: Confs) :: Basis
+    Basis(cfs :: Confs) :: Basis
 
 Generate a basis from the configurations without off-diagonal ``ℤ_n`` symmetries.
 

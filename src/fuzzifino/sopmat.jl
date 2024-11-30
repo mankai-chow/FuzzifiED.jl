@@ -37,7 +37,7 @@ function OpMat{T}(op :: SOperator ; num_th = NumThreads, disp_std = !SilentStd) 
 end
 
 """
-    function OpMat[{type}](op :: SOperator ; num_th :: Int64, disp_std :: Bool) :: OpMat{type}
+    OpMat[{type}](op :: SOperator ; num_th :: Int64, disp_std :: Bool) :: OpMat{type}
 
 Generates the sparse matrix from the operator. The parameter `type` is either `Float64` or `ComplexF64` ; it is facultative, given by `ElementType` by default. 
 

@@ -18,7 +18,7 @@ end
 
 
 """
-    function SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: String, cutoff :: Vector{Float64}, maxdim :: Vector{Int64}, nsweeps :: Int64, noise :: Vector{Float64}, proj :: Vector{String}, e_tol :: Float64, weight :: Float64, observer :: AbstractObserver, dmrg_options :: Dict, dmrg_options :: Dict) :: Tuple{Float64, MPS}
+    SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: String, cutoff :: Vector{Float64}, maxdim :: Vector{Int64}, nsweeps :: Int64, noise :: Vector{Float64}, proj :: Vector{String}, e_tol :: Float64, weight :: Float64, observer :: AbstractObserver, dmrg_options :: Dict, dmrg_options :: Dict) :: Tuple{Float64, MPS}
 
 # Function 
 
@@ -85,7 +85,7 @@ end
 
 
 """
-    function EasySweep(id :: String, hmt :: MPO, st00 :: MPS ; path :: String, dim_list :: Vector{Int64}, proj :: Vector{String}, e_tol1 :: Float64, e_tol :: Float64, cutoff :: Vector{Float64}, maxdim0 :: Vector{Float64}, noise0 :: Vector{Float64}, noise :: Vector{Int64}, nsweeps :: Int64, weight :: Float64, observer :: AbstractObserver) :: Tuple{Float64, MPS}
+    EasySweep(id :: String, hmt :: MPO, st00 :: MPS ; path :: String, dim_list :: Vector{Int64}, proj :: Vector{String}, e_tol1 :: Float64, e_tol :: Float64, cutoff :: Vector{Float64}, maxdim0 :: Vector{Float64}, noise0 :: Vector{Float64}, noise :: Vector{Int64}, nsweeps :: Int64, weight :: Float64, observer :: AbstractObserver) :: Tuple{Float64, MPS}
 
 # Function 
 
@@ -147,7 +147,7 @@ TermsOrOpSum(tms :: Terms) = OpSumFromTerms(tms)
 TermsOrOpSum(os :: OpSum) = os
 
 """
-    function GetMPOSites(id :: String, tms, qnd :: Vector{QNDiag} ; path :: String, qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}, mpo_method :: Function) :: Tuple{MPO, Vector{<:Index}}
+    GetMPOSites(id :: String, tms, qnd :: Vector{QNDiag} ; path :: String, qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}, mpo_method :: Function) :: Tuple{MPO, Vector{<:Index}}
 
 # Function 
 
@@ -187,7 +187,7 @@ end
 
 
 """
-    function GetMPO(id :: String, tms :: Union{Terms, OpSum}, sites :: Vector{<:Index} ; path :: String, mpo_method :: Function) :: MPO
+    GetMPO(id :: String, tms :: Union{Terms, OpSum}, sites :: Vector{<:Index} ; path :: String, mpo_method :: Function) :: MPO
 
 # Function 
 

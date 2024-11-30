@@ -1,7 +1,5 @@
 """
-    mutable struct SphereObs
-
-stores the information of a local observable (or local operator) ``\\Phi`` that can be decomposed into angular components.
+The type `SphereObs` stores the information of a local observable (or local operator) ``\\Phi`` that can be decomposed into angular components.
 ```math 
     \\Phi(\\Omega)=∑_{lm}\\Phi_{lm}Y^{(s)}_{lm}
 ```
@@ -24,7 +22,7 @@ end
 
 
 """
-    function SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function) :: SphereObs
+    SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function) :: SphereObs
 
 initialises the observable from ``2s``, ``2l_{\\max}`` and the function ``(l,m)↦\\Phi_{lm}``
 
@@ -39,7 +37,7 @@ function SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function)
 end
 
 """
-    function SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function) :: SphereObs
+    SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function) :: SphereObs
 
 initialises the observable from ``2s``, ``2l_{\\max}`` and a list of ``\\Phi_{lm}`` specified by a dictionary. 
 
@@ -55,7 +53,7 @@ end
 
 
 """
-    function StoreComps!(obs :: SphereObs) :: Nothing 
+    StoreComps!(obs :: SphereObs) :: Nothing 
     
 calculates and stores each component of the observable `obs` and replace the function in `obs` by the list of calculated components. 
 """
@@ -76,7 +74,7 @@ end
 
 
 """
-    function StoreComps(obs :: SphereObs) :: SphereObs
+    StoreComps(obs :: SphereObs) :: SphereObs
     
 calculates and stores each component of the observable `obs` and return a new observable with the list of calculated components. 
 """
@@ -97,10 +95,10 @@ end
 
 
 """
-    function *(fac :: Number, obs :: SphereObs) :: SphereObs
-    function *(obs :: SphereObs, fac :: Number) :: SphereObs
-    function /(obs :: SphereObs, fac :: Number) :: SphereObs
-    function -(obs :: SphereObs) :: SphereObs
+    *(fac :: Number, obs :: SphereObs) :: SphereObs
+    *(obs :: SphereObs, fac :: Number) :: SphereObs
+    /(obs :: SphereObs, fac :: Number) :: SphereObs
+    -(obs :: SphereObs) :: SphereObs
     
 enables the multiplication of an observable with a number.
 """
@@ -119,8 +117,8 @@ end
 
 
 """
-    function +(obs1 :: SphereObs, obs2 :: SphereObs) :: SphereObs
-    function -(obs1 :: SphereObs, obs2 :: SphereObs) :: SphereObs
+    +(obs1 :: SphereObs, obs2 :: SphereObs) :: SphereObs
+    -(obs1 :: SphereObs, obs2 :: SphereObs) :: SphereObs
     
 enables the addition of two observables.
 """
@@ -139,7 +137,7 @@ end
 
 
 """
-    function adjoint(obs :: SphereObs) :: SphereObs
+    adjoint(obs :: SphereObs) :: SphereObs
     
 enables the Hermitian conjugate of a spherical observable.
 ```math
@@ -158,7 +156,7 @@ end
 
 
 """
-    function *(obs1 :: SphereObs, obs2 :: SphereObs) :: SphereObs
+    *(obs1 :: SphereObs, obs2 :: SphereObs) :: SphereObs
     
 enables the multiplication of two observable by making use of the composition of two monopole harmonics into one. 
 """
@@ -183,7 +181,7 @@ end
 
 
 """
-    function Laplacian(obs :: SphereObs) :: SphereObs
+    Laplacian(obs :: SphereObs) :: SphereObs
     
 Takes the Laplacian of an observable
 ```math
@@ -196,7 +194,7 @@ end
 
 
 """
-    function GetComponent(obs :: SphereObs, l :: Number, m :: Number) :: Terms
+    GetComponent(obs :: SphereObs, l :: Number, m :: Number) :: Terms
 
 returns an angular component ``Φ_{lm}`` of an observable in the format of a list of terms.
 """
@@ -206,7 +204,7 @@ end
 
 
 """
-    function GetPointValue(obs :: SphereObs, θ :: Float64, ϕ :: Float64) :: Terms
+    GetPointValue(obs :: SphereObs, θ :: Float64, ϕ :: Float64) :: Terms
 
 evaluates an observable at one point ``Φ(θ,ϕ)`` in the format of a list of terms.
 """
@@ -227,7 +225,7 @@ function GetPointValue(obs :: SphereObs, θ :: Float64, ϕ :: Float64)
 end
 
 """
-    function GetElectronObs(nm :: Int64, nf :: Int64, f :: Int64) :: SphereObs
+    GetElectronObs(nm :: Int64, nf :: Int64, f :: Int64) :: SphereObs
 
 returns the electron annihilation operator ``ψ_f``
 
@@ -245,7 +243,7 @@ end
 
 
 """
-    function GetDensityObs(nm :: Int64, nf :: Int64[, mat :: Matrix{<:Number}]) :: SphereObs
+    GetDensityObs(nm :: Int64, nf :: Int64[, mat :: Matrix{<:Number}]) :: SphereObs
 
 returns the density operator ``n=∑_{ff'}ψ^†_{f}M_{ff'}ψ_{f'}``
 
@@ -269,7 +267,7 @@ GetDensityObs(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float6
 
 
 """
-    function GetPairingObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: SphereObs
+    GetPairingObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: SphereObs
 
 returns the pair operator ``Δ=∑_{ff'}ψ_{f}M_{ff'}ψ_{f'}``
 

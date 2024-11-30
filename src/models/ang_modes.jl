@@ -1,7 +1,5 @@
 """
-    mutable struct AngModes
-
-is an object that stores angular momentum components of an operator on the sphere ``Φ_{lm}`` and superposes in the rule of Clebsch-Gordan coefficients. The usage is similar to the spherical observables, except that SphereObs superposes in the rule of spherical harmonics and has the notion of locality
+The type `AngModes` stores angular momentum components of an operator on the sphere ``Φ_{lm}`` and superposes in the rule of Clebsch-Gordan coefficients. The usage is similar to the spherical observables, except that SphereObs superposes in the rule of spherical harmonics and has the notion of locality
 
 # Fields
 
@@ -19,7 +17,7 @@ end
 
 
 """
-    function AngModes(l2m :: Int64, get_comp :: Function) :: AngModes
+    AngModes(l2m :: Int64, get_comp :: Function) :: AngModes
 
 initialises the modes object from ``2l_{\\max}`` and the function ``(l,m)↦\\Phi_{lm}``
 
@@ -34,7 +32,7 @@ end
 
 
 """
-    function AngModes(l2m :: Int64, get_comp :: Function) :: AngModes
+    AngModes(l2m :: Int64, get_comp :: Function) :: AngModes
 
 initialises the modes object from ``2l_{\\max}`` and a list of ``\\Phi_{lm}`` specified by a dictionary. 
 
@@ -49,7 +47,7 @@ end
 
 
 """
-    function StoreComps!(amd :: AngModes) :: Nothing 
+    StoreComps!(amd :: AngModes) :: Nothing 
     
 calculates and stores each component of the modes object `amd` and replace the function in `amd` by the list of calculated components. 
 """
@@ -70,7 +68,7 @@ end
 
 
 """
-    function StoreComps(amd :: AngModes) :: AngModes
+    StoreComps(amd :: AngModes) :: AngModes
     
 calculates and stores each component of the modes object `amd` and return a new modes object with the list of calculated components. 
 """
@@ -91,10 +89,10 @@ end
 
 
 """
-    function *(fac :: Number, amd :: AngModes) :: AngModes
-    function *(amd :: AngModes, fac :: Number) :: AngModes
-    function /(amd :: AngModes, fac :: Number) :: AngModes
-    function -(amd :: AngModes) :: AngModes
+    *(fac :: Number, amd :: AngModes) :: AngModes
+    *(amd :: AngModes, fac :: Number) :: AngModes
+    /(amd :: AngModes, fac :: Number) :: AngModes
+    -(amd :: AngModes) :: AngModes
     
 enables the multiplication of a mode with a number.
 """
@@ -113,8 +111,8 @@ end
 
 
 """
-    function +(obs1 :: AngModes, obs2 :: AngModes) :: AngModes
-    function -(obs1 :: AngModes, obs2 :: AngModes) :: AngModes
+    +(obs1 :: AngModes, obs2 :: AngModes) :: AngModes
+    -(obs1 :: AngModes, obs2 :: AngModes) :: AngModes
     
 enables the addition of two modes.
 """
@@ -128,7 +126,7 @@ end
 
 
 """
-    function adjoint(amd :: AngModes) :: AngModes
+    adjoint(amd :: AngModes) :: AngModes
     
 enables the Hermitian conjugate of a spherical mode.
 ```math
@@ -145,7 +143,7 @@ end
 
 
 """
-    function *(obs1 :: AngModes, obs2 :: AngModes) :: AngModes
+    *(obs1 :: AngModes, obs2 :: AngModes) :: AngModes
     
 enables the multiplication of two modes in the rule of CG coefficients. 
 ```math 
@@ -169,7 +167,7 @@ end
 
 
 """
-    function GetComponent(amd :: AngModes, l :: Number, m :: Number) :: Terms
+    GetComponent(amd :: AngModes, l :: Number, m :: Number) :: Terms
 
 returns an angular component ``Φ_{lm}`` of a modes object in the format of a list of terms.
 """
@@ -179,7 +177,7 @@ end
 
 
 """
-    function FilterComponent(amd :: AngModes, flt) :: AngModes 
+    FilterComponent(amd :: AngModes, flt) :: AngModes 
 
 returns an angular modes object with certain modes filtered out.
 
@@ -194,7 +192,7 @@ function FilterComponent(amd :: AngModes, flt)
 end
 
 """
-    function FilterL2(amd :: AngModes, l :: Number) :: AngModes 
+    FilterL2(amd :: AngModes, l :: Number) :: AngModes 
 
 returns an angular modes object with modes of a certain total angular momentum filtered out.
 """
@@ -205,7 +203,7 @@ end
 
 
 """
-    function GetElectronMod(nm :: Int64, nf :: Int64, f :: Int64) :: AngModes
+    GetElectronMod(nm :: Int64, nf :: Int64, f :: Int64) :: AngModes
 
 returns the modes of electron annihilation operator ``c_m``, with angular momentum ``s=(N_m-1)/2``
 
@@ -223,7 +221,7 @@ end
 
 
 """
-    function GetPairingMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: AngModes
+    GetPairingMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: AngModes
 
 returns the modes of two electrons superposed in the rule of CG coefficients. 
 ```math 
@@ -249,7 +247,7 @@ end
 
 
 """
-    function GetDensityMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: AngModes
+    GetDensityMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: AngModes
 
 returns the modes of electron creation and annihilation superposed in the rule of CG coefficients. 
 ```math 

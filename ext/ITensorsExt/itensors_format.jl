@@ -1,5 +1,5 @@
 """
-    function Vector{QNDiag}(sites :: Vector{<:Index}) :: Vector{QNDiag}
+    Vector{QNDiag}(sites :: Vector{<:Index}) :: Vector{QNDiag}
 
 Converts a `Sites` object in the `ITensors` package to a set of QNDiags. 
 
@@ -97,7 +97,7 @@ end
 @deprecate SitesFromQNDiag(qnd :: Vector{QNDiag}) GetSites(qnd)
 
 """
-    function Terms(opsum :: OpSum) :: Terms
+    Terms(opsum :: OpSum) :: Terms
 
 Converts a `OpSum` object in `ITensors` to a series of terms. Note that the only operators supported are `"C"`, `"Cdag"` `"N"` and `"I"`.
 

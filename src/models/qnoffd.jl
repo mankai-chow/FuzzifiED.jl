@@ -27,7 +27,7 @@ end
 DictOrVectorPhase(ph :: Vector{<: Number}, nf :: Int64) = ph
 
 """
-    function GetParityQNOffd(nm :: Int64, nf :: Int64[, permf, fac])
+    GetParityQNOffd(nm :: Int64, nf :: Int64[, permf, fac])
     
 Return the particle-hole transformation 
 ```math
@@ -51,7 +51,7 @@ end
 
 
 """
-    function GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf , fac][, cyc])
+    GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf , fac][, cyc])
     
 Return the flavour permutaiton transformation 
 ```math
@@ -77,7 +77,7 @@ GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf :: Union{Dict{Int64, Int64}, V
 
 
 """
-    function GetRotyQNOffd(nm :: Int64, nf :: Int64)
+    GetRotyQNOffd(nm :: Int64, nf :: Int64)
     
 Return the ``π``-rotation along the ``y``-axis. 
 ```math

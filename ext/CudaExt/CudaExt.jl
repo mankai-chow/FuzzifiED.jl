@@ -21,8 +21,8 @@ function CUDA.CUSPARSE.CuSparseMatrixCSC(mat :: OpMat{T}) where T <: Union{Float
 end
 
 """
-    function GetEigensystemCuda(mat :: OpMat{ComplexF64}, nst :: Int64 ; initvec :: Vector{ComplexF64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{ComplexF64}, CuArray{ComplexF64, 2, CUDA.DeviceMemory}}
-    function GetEigensystemCuda(mat :: OpMat{Float64}, nst :: Int64 ; initvec :: Vector{Float64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{Float64}, CuArray{Float64, 2, CUDA.DeviceMemory}}
+    GetEigensystemCuda(mat :: OpMat{ComplexF64}, nst :: Int64 ; initvec :: Vector{ComplexF64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{ComplexF64}, CuArray{ComplexF64, 2, CUDA.DeviceMemory}}
+    GetEigensystemCuda(mat :: OpMat{Float64}, nst :: Int64 ; initvec :: Vector{Float64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{Float64}, CuArray{Float64, 2, CUDA.DeviceMemory}}
 
 This method uses Julia `KrylovKit` package to calculate the lowest eigenstates of sparse matrix. The sparse matrix multiplication is realised by `CUDA.CUSPARSE`. For an example, refer to [`ising_spectrum_cuda.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/ising_spectrum_cuda.jl).
 

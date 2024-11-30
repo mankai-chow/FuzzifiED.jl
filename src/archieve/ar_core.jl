@@ -1,5 +1,5 @@
 """
-    function Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Vector{Int64}} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64}, num_th :: Int64, disp_std :: Bool) :: Confs
+    Confs(no :: Int64, qnu_s :: Vector{Int64}, qnu_o :: Vector{Vector{Int64}} ; nor :: Int64 = div(no, 2), modul :: Vector{Int64}, num_th :: Int64, disp_std :: Bool) :: Confs
 
 **We have improved the interface for this function. Please consider using in the future**
 ```julia
@@ -52,7 +52,7 @@ end
 
 
 """
-    function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}} ; num_th :: Int64, disp_std :: Bool) :: Basis
+    Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}} ; num_th :: Int64, disp_std :: Bool) :: Basis
 
 **We have improved the interface for this function. Please consider using in the future**
 ```julia
@@ -108,7 +108,7 @@ function Basis(cfs :: Confs, qnz_s :: Vector{ComplexF64} ; cyc :: Vector{Int64},
 end 
 
 """
-    function GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, qnu_s_lst :: Vector{Vector{Vector{Int64}}}, qnz_s_lst :: Vector{Vector{Vector{ComplexF64}}} ; qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}, cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}}, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oa .^ 2))) :: Dict{@NamedTuple{qnu_sa, qnz_sa, qnu_sb, qnz_sb}, Vector{Float64}}
+    GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, qnu_s_lst :: Vector{Vector{Vector{Int64}}}, qnz_s_lst :: Vector{Vector{Vector{ComplexF64}}} ; qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}, cyc :: Vector{Int64}, perm_o :: Vector{Vector{Int64}}, ph_o :: Vector{Vector{Int64}}, fac_o :: Vector{Vector{ComplexF64}}, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oa .^ 2))) :: Dict{@NamedTuple{qnu_sa, qnz_sa, qnu_sb, qnz_sb}, Vector{Float64}}
 
 **We have improved the interface for this function. Please consider using in the future**
 ```julia

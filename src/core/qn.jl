@@ -1,7 +1,5 @@
 """
-    mutable struct QNDiag
-
-records the information of a diagonal ``\\mathrm{U}(1)`` or ``ℤ_p`` quantum number in the form of a symmetry charge
+The type `QNDiag` records the information of a diagonal ``\\mathrm{U}(1)`` or ``ℤ_p`` quantum number in the form of a symmetry charge
 ```math
 Q=∑_{o=1}^{N_o}q_on_o
 ```
@@ -35,10 +33,10 @@ end
 
 
 """
-    function *(fac :: Int64, qnd :: QNDiag) :: QNDiag 
-    function *(qnd :: QNDiag, fac :: Int64) :: QNDiag 
-    function ÷(qnd :: QNDiag, fac :: Int64) :: QNDiag 
-    function -(qnd :: QNDiag) :: QNDiag 
+    *(fac :: Int64, qnd :: QNDiag) :: QNDiag 
+    *(qnd :: QNDiag, fac :: Int64) :: QNDiag 
+    ÷(qnd :: QNDiag, fac :: Int64) :: QNDiag 
+    -(qnd :: QNDiag) :: QNDiag 
 
 returns the QNDiag multiplied or divided by an integer factor, where the charge is multiplied or integer-divided by the factor. For ``ℤ_p`` quantum numbers, their modulus will be multiplied or integer-divided by the absolute value. If `qnd.modul ÷ abs(fac) ≤ 1`, a trivial QNDiag will be returned.  
 """
@@ -61,8 +59,8 @@ end
 
 
 """
-    function +(qnd1 :: QNDiag, qnd2 :: QNDiag) :: QNDiag 
-    function -(qnd1 :: QNDiag, qnd2 :: QNDiag) :: QNDiag 
+    +(qnd1 :: QNDiag, qnd2 :: QNDiag) :: QNDiag 
+    -(qnd1 :: QNDiag, qnd2 :: QNDiag) :: QNDiag 
 
 returns the sum or substraction of two QNDiags, whose name is the samea as `qnd1`, charge is the same as `qnd1 ± qnd2`, and modulus is the GCD of `qnd1` and `qnd2`. If `qnd1` and `qnd2` are both ``ℤ_p`` quantum numbers and their modulus are coprime, a trivial QNDiag will be returned. 
 """
@@ -83,9 +81,7 @@ end
 
 
 """
-    mutable struct QNOffd
-
-records the information of an off-diagonal ``ℤ_p`` quantum number in the form of a discrete transformation
+The type `QNOffd` records the information of an off-diagonal ``ℤ_p`` quantum number in the form of a discrete transformation
 ```math
 𝒵:\\ c_o↦ α_o^* c^{(p_o)}_{π_o},  c_o^†↦ α_o c^{(1-p_o)}_{π_o}
 ```
@@ -121,7 +117,7 @@ end
 
 
 """
-    function *(qnf1 :: QNOffd, qnf2 :: QNOffd) :: QNOffd 
+    *(qnf1 :: QNOffd, qnf2 :: QNOffd) :: QNOffd 
 
 returns the composition of two QNOffd transformations. The cycle is set to be the LCM of two QNOffds
 """

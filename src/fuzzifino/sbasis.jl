@@ -1,7 +1,5 @@
 """
-    mutable struct SBasis
-
-This type stores the information of the SBasis that respects both diagonal and off-diagonal quantum numbers. The states in the SBasis is in the form 
+The type `SBasis` stores the information of the SBasis that respects both diagonal and off-diagonal quantum numbers. The states in the SBasis is in the form 
 ```math
 |I⟩=λ_{i_{I1}}|i_{I1}⟩+λ_{i_{I2}}|i_{I2}⟩+⋯+λ_{i_{Im_I}}|i_{Im_I}⟩
 ```
@@ -28,7 +26,7 @@ end
 
 
 """
-    function SBasis(cfs :: SConfs, secf :: Vector{ComplexF64}, qnf :: Vector{SQNOffd} ; num_th :: Int64, disp_std :: Bool) :: SBasis
+    SBasis(cfs :: SConfs, secf :: Vector{ComplexF64}, qnf :: Vector{SQNOffd} ; num_th :: Int64, disp_std :: Bool) :: SBasis
 
 generates the SBasis that respects the off-diagonal ``ℤ_p`` quantum numbers (secfQNOffd)
 
@@ -79,7 +77,7 @@ end
 
 
 """
-    function SBasis(cfs :: SConfs) :: SBasis
+    SBasis(cfs :: SConfs) :: SBasis
 
 Generate a SBasis from the configurations without off-diagonal ``ℤ_n`` symmetries.
 

@@ -44,7 +44,7 @@ function TruncateQnu(; qnu_o :: Vector{Any}, qnu_name :: Vector{String} = [ "QN"
 end
 
 """
-    function SitesFromQnu(; qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64})
+    SitesFromQnu(; qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64})
 
 **We have improved the interface for the function. Please consider using in the future [`SitesFromQNDiag`](@ref)**
 ```Julia

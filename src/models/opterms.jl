@@ -1,5 +1,5 @@
 """
-    function GetIntMatrix(nm :: Int64, ps_pot :: Vector{Number}) :: Array{ComplexF64, 3}
+    GetIntMatrix(nm :: Int64, ps_pot :: Vector{Number}) :: Array{ComplexF64, 3}
 
 # Argument
 
@@ -216,7 +216,7 @@ GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}
 
 
 """
-    function GetL2Terms(nm :: Int64, nf :: Int64) :: Terms
+    GetL2Terms(nm :: Int64, nf :: Int64) :: Terms
 
 Return the terms for the total angular momentum.
 
@@ -242,7 +242,7 @@ function GetL2Terms(nm :: Int64, nf :: Int64)
 end
 
 """
-    function GetC2Terms(nm :: Int64, nf :: Int64, mat_gen :: Vector{<:AbstractMatrix{<:Number}}[, mat_tr :: Vector{<:AbstractMatrix{<:Number}}]) :: Terms
+    GetC2Terms(nm :: Int64, nf :: Int64, mat_gen :: Vector{<:AbstractMatrix{<:Number}}[, mat_tr :: Vector{<:AbstractMatrix{<:Number}}]) :: Terms
 
 Return the terms for the quadratic Casimir of the flavour symmetry.
 ```math

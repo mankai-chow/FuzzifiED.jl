@@ -1,5 +1,5 @@
 """ 
-    function GetNeQNDiag(no :: Int64) :: QNDiag 
+    GetNeQNDiag(no :: Int64) :: QNDiag 
 
 Return the QNDiag of the number of electrons, implemented as 
 ```julia
@@ -10,7 +10,7 @@ GetNeQNDiag(no :: Int64) = QNDiag("Ne", fill(1, no))
 
 
 """ 
-    function GetLz2QNDiag(nm :: Int64, nf :: Int64) :: QNDiag 
+    GetLz2QNDiag(nm :: Int64, nf :: Int64) :: QNDiag 
 
 Return the QNDiag of the number of twice the angular momentum ``2L_z``, implemented as 
 ```julia
@@ -30,8 +30,8 @@ DictOrVectorInt(qf :: Vector{Int64}, nf :: Int64) = qf
 
 
 """ 
-    function GetFlavQNDiag(nm :: Int64, nf :: Int64, qf :: Dict{Int64, Int64}[, id :: Int64 = 1, modul :: Int64 = 1]) :: QNDiag 
-    function GetFlavQNDiag(nm :: Int64, nf :: Int64, qf :: Vector{Int64}[, id :: Int64 = 1, modul :: Int64 = 1]) :: QNDiag 
+    GetFlavQNDiag(nm :: Int64, nf :: Int64, qf :: Dict{Int64, Int64}[, id :: Int64 = 1, modul :: Int64 = 1]) :: QNDiag 
+    GetFlavQNDiag(nm :: Int64, nf :: Int64, qf :: Vector{Int64}[, id :: Int64 = 1, modul :: Int64 = 1]) :: QNDiag 
 
 Return the QNDiag of linear combination of number of electrons in each flavour, 
 ```math
@@ -46,7 +46,7 @@ GetFlavQNDiag(nm :: Int64, nf :: Int64, qf :: Union{Dict{Int64, Int64}, Vector{I
 
 
 """ 
-    function GetZnfChargeQNDiag(nm :: Int64, nf :: Int64) :: QNDiag 
+    GetZnfChargeQNDiag(nm :: Int64, nf :: Int64) :: QNDiag 
 
 Return the QNDiag of a ``ℤ_{N_f}``-charge, 
 ```math
@@ -61,7 +61,7 @@ GetZnfChargeQNDiag(nm :: Int64, nf :: Int64) = QNDiag("QZ$nf", collect(0 : nm * 
 
 
 """ 
-    function GetPinOrbQNDiag(no :: Int64, pin_o :: Vector{Int64}[, id :: Int64 = 1]) :: QNDiag 
+    GetPinOrbQNDiag(no :: Int64, pin_o :: Vector{Int64}[, id :: Int64 = 1]) :: QNDiag 
 
 Return the QNDiag of the number of electrons in the subset `pin_o`, implemented as
 ```julia

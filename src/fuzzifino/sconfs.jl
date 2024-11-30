@@ -1,7 +1,5 @@
 """
-    mutable struct SConfs
-
-This type stores all the configurations that respects the diagonal quantum numbers (SQNDiag) and also a table to inversely look up the index from the configuration. 
+The type `SConfs` stores all the configurations that respects the diagonal quantum numbers (SQNDiag) and also a table to inversely look up the index from the configuration. 
 
 # Fields
 
@@ -28,7 +26,7 @@ end
 
 
 """
-    function SConfs(nof :: Int64, nob :: Int64, nebm :: Int64, secd :: Vector{Int64}, qnd :: Vector{SQNDiag} ; , num_th :: Int64, disp_std :: Bool) :: Confs
+    SConfs(nof :: Int64, nob :: Int64, nebm :: Int64, secd :: Vector{Int64}, qnd :: Vector{SQNDiag} ; , num_th :: Int64, disp_std :: Bool) :: Confs
 
 generates the configurations from the list of QNDiags. 
 

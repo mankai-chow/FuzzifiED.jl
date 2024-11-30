@@ -1,5 +1,5 @@
 """
-    function GetSnBasis(cfs :: Confs, nf :: Int64 ; qn_r :: Int64 = 0, perm :: Vector, qn_z :: Vector{<:Number}) :: Basis
+    GetSnBasis(cfs :: Confs, nf :: Int64 ; qn_r :: Int64 = 0, perm :: Vector, qn_z :: Vector{<:Number}) :: Basis
 
 **We have improved the interface for the function. Please consider using in the future [the built-in QNOffds](http://docs.fuzzified.world/models/#Off-diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
@@ -42,7 +42,7 @@ function GetSnBasis(cfs :: Confs, nf :: Int64 ; qn_r :: Int64 = 0, perm :: Vecto
 end
 
 """
-    function GetLzQnu(nm :: Int64, nf :: Int64) :: @NamedTuple{qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}}
+    GetLzQnu(nm :: Int64, nf :: Int64) :: @NamedTuple{qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}}
 
 **We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
@@ -89,7 +89,7 @@ function GetLzQnu(nm :: Int64, nf :: Int64)
 end
 
 """
-    function GetLzZnQnu(nm :: Int64, nf :: Int64) :: @NamedTuple{qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}}
+    GetLzZnQnu(nm :: Int64, nf :: Int64) :: @NamedTuple{qnu_o :: Vector{Vector{Int64}}, qnu_name :: Vector{String}, modul :: Vector{Int64}}
 
 
 **We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)**
@@ -140,7 +140,7 @@ end
 
 
 """
-    function GetLzConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 ; num_th :: Int64, disp_std :: Bool) :: Confs
+    GetLzConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64 ; num_th :: Int64, disp_std :: Bool) :: Confs
 
 **We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
@@ -174,7 +174,7 @@ end
 
 
 """
-    function GetLzZnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64, zn :: Int64 = 0 ; num_th :: Int64, disp_std :: Bool) :: Confs
+    GetLzZnConfs(nm :: Int64, nf :: Int64, ne :: Int64 ; lz :: Float64, zn :: Int64 = 0 ; num_th :: Int64, disp_std :: Bool) :: Confs
 
 **We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
@@ -210,7 +210,7 @@ end
 
 
 """
-    function GetIsingQnz(nm :: Int64 ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0) :: @NamedTuple{cyc, perm_o, ph_o, fac_o}
+    GetIsingQnz(nm :: Int64 ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0) :: @NamedTuple{cyc, perm_o, ph_o, fac_o}
 
 **We have improved the interface for the function. Please consider using in the future [the built-in QNDiags](http://docs.fuzzified.world/models/#Diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
@@ -270,7 +270,7 @@ function GetIsingQnz(nm :: Int64 ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r ::
 end
 
 """
-    function GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0, num_th :: Int64, disp_std :: Bool) :: Basis
+    GetIsingBasis(cfs :: Confs ; qn_p :: Int64 = 0, qn_z :: Int64 = 0, qn_r :: Int64 = 0, num_th :: Int64, disp_std :: Bool) :: Basis
 
 **We have improved the interface for the function. Please consider using in the future [the built-in QNOffds](http://docs.fuzzified.world/models/#Off-diagonal-quantum-numbers-on-fuzzy-sphere)**
 ```julia
@@ -316,7 +316,7 @@ end
 
 
 """
-    function GetIsingIntTerms(nm :: Int64 ; ps_pot :: Vector) :: Terms
+    GetIsingIntTerms(nm :: Int64 ; ps_pot :: Vector) :: Terms
 
 **We have improved the interface for the function. Please consider using the function [`GetDenIntTerms`](@ref) in the future**
 ```julia
@@ -349,7 +349,7 @@ end
 
 
 """
-    function GetXPolTerms(nm :: Int64)
+    GetXPolTerms(nm :: Int64)
 
 **We have improved the interface for the function. Please consider using the function [`GetPolTerms`](@ref) in the future**
 ```julia
@@ -375,7 +375,7 @@ end
 
 
 """
-    function GetZPolTerms(nm :: Int64)
+    GetZPolTerms(nm :: Int64)
 
 **We have improved the interface for the function. Please consider using the function [`GetPolTerms`](@ref) in the future**
 ```julia

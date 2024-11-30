@@ -1,5 +1,5 @@
 """
-    function StateDecompMat(st :: Vector{<:Number}, bs0 :: Basis, bsa :: Basis, bsb :: Basis, amp_oa :: Vector{ComplexF64}, amp_ob :: Vector{ComplexF64}) :: Matrix{ComplexF64}
+    StateDecompMat(st :: Vector{<:Number}, bs0 :: Basis, bsa :: Basis, bsb :: Basis, amp_oa :: Vector{ComplexF64}, amp_ob :: Vector{ComplexF64}) :: Matrix{ComplexF64}
 
 Decompose a state ``|ψ⟩=v_I|I⟩`` into a direct-product basis of two subsystems ``|ψ⟩=M_{JI}|I_A⟩|J_B⟩``
 
@@ -28,7 +28,7 @@ function StateDecompMat(st :: Vector{<:Number}, bs0 :: Basis, bsa :: Basis, bsb 
 end
 
 """
-    function GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, secd_lst :: Vector{Vector{Vector{Int64}}}, secf_lst :: Vector{Vector{Vector{<:Number}}} ; qnd_a :: Vector{QNDiag}, qnd_b :: Vector{QNDiag} = qnd_a, qnf_a :: Vector{QNOffd}, qnf_b :: Vector{QNOffd} = qnf_a, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oa .^ 2))) :: Dict{@NamedTuple{secd_a, secf_a, secd_b, secf_b}, Vector{Float64}}
+    GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, secd_lst :: Vector{Vector{Vector{Int64}}}, secf_lst :: Vector{Vector{Vector{<:Number}}} ; qnd_a :: Vector{QNDiag}, qnd_b :: Vector{QNDiag} = qnd_a, qnf_a :: Vector{QNOffd}, qnf_b :: Vector{QNOffd} = qnf_a, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oa .^ 2))) :: Dict{@NamedTuple{secd_a, secf_a, secd_b, secf_b}, Vector{Float64}}
 
 # Arguments 
 
