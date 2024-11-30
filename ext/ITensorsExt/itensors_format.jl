@@ -1,5 +1,5 @@
 """
-    function QNDiagFromSites(sites :: Vector{<:Index}) :: Vector{QNDiag}
+    function Vector{QNDiag}(sites :: Vector{<:Index}) :: Vector{QNDiag}
 
 Converts a `Sites` object in the `ITensors` package to a set of QNDiags. 
 
@@ -8,7 +8,7 @@ Converts a `Sites` object in the `ITensors` package to a set of QNDiags.
 * `sites :: Vector{<:Index}` is a `Sites` object. Only `Fermion` site type is supported, and the quantum numbers of the `0` state must be all zero. Note that this will subject to the limitation in ITensors that the number of conserved quantities must be less than 4.
 
 """
-function QNDiagFromSites(sites :: Vector{<:Index})
+function Base.Vector{QNDiag}(sites :: Vector{<:Index})
     names = []
     moduls = Int64[]
     for site in sites 
@@ -29,10 +29,12 @@ function QNDiagFromSites(sites :: Vector{<:Index})
     end
     return qnd
 end 
+@deprecate QNDiagFromSites(sites :: Vector{<:Index}) Vector{QNDiag}(sites)
+
 
 """
-    function ConfsFromSites(sites :: Vector{<:Index}, sec_qn :: QN) :: Confs
-    function ConfsFromSites(sites :: Vector{<:Index}, cf_ref :: Vector{Int64}) :: Confs
+    Confs(sites :: Vector{<:Index}, sec_qn :: QN) :: Confs
+    Confs(sites :: Vector{<:Index}, cf_ref :: Vector{Int64}) :: Confs
 
 Converts a `Sites` object in the `ITensors` package to the `Confs` object
 
@@ -42,18 +44,21 @@ Converts a `Sites` object in the `ITensors` package to the `Confs` object
 * `sec_qn :: QN` is a `QN` object that specifies the the quantum number of the selected configuration. Alternatively, `cf_ref :: Vector{Int64})` is a reference configuration composed of `0` and `1`.
 
 """
-function ConfsFromSites(sites :: Vector{<:Index}, sec_qn :: QN)
+function FuzzifiED.Confs(sites :: Vector{<:Index}, sec_qn :: QN)
     no = length(sites)
     qnd = QNDiagFromSites(sites)
     secd = [ val(sec_qn, qndi.name) for qndi in qnd ]
     return Confs(no, secd, qnd)
 end 
-function ConfsFromSites(sites :: Vector{<:Index}, cf_ref :: Vector{Int64})
+function FuzzifiED.Confs(sites :: Vector{<:Index}, cf_ref :: Vector{Int64})
     no = length(sites)
     qnd = QNDiagFromSites(sites)
     secd = [ cf_ref' * qndi.charge for qndi in qnd ]
     return Confs(no, secd, qnd)
 end 
+@deprecate ConfsFromSites(sites :: Vector{<:Index}, sec_qn :: QN) Confs(sites, sec_qn)
+@deprecate ConfsFromSites(sites :: Vector{<:Index}, cf_ref :: Vector{Int64}) Confs(sites, cf_ref)
+
 
 
 """
@@ -80,23 +85,24 @@ end
 
 
 """
-    function SitesFromQNDiag(qnd :: Vector{QNDiag})
+    GetSites(qnd :: Vector{QNDiag})
 
 returns the ITensors Sites of type "FuzzyFermion" from a set of QNDiags.
 
 """
-function SitesFromQNDiag(qnd :: Vector{QNDiag})
+function GetSites(qnd :: Vector{QNDiag})
     no = length(qnd[1].charge)
     return [ siteind("FuzzyFermion" ; o, qnd) for o = 1 : no ]
 end
+@deprecate SitesFromQNDiag(qnd :: Vector{QNDiag}) GetSites(qnd)
 
 """
-    function TermsFromOpSum(opsum :: OpSum) :: Terms
+    function Terms(opsum :: OpSum) :: Terms
 
 Converts a `OpSum` object in `ITensors` to a series of terms. Note that the only operators supported are `"C"`, `"Cdag"` `"N"` and `"I"`.
 
 """
-function TermsFromOpSum(opsum :: OpSum)
+function FuzzifiED.Terms(opsum :: OpSum)
     tms = Term[]
     for op_prod in opsum
         cstr = []
@@ -123,14 +129,16 @@ function TermsFromOpSum(opsum :: OpSum)
     end
     return tms
 end
+@deprecate TermsFromOpSum(opsum :: OpSum) Terms(opsum)
+
 
 """
-    function OpSumFromTerms(tms :: Terms) :: OpSum
+    ITensors.Ops.OpSum(tms :: Terms) :: OpSum
 
 Converts a series of terms to `OpSum` object in `ITensors`.
 
 """
-function OpSumFromTerms(tms :: Terms)
+function ITensors.Ops.OpSum(tms :: Terms)
     opsum = OpSum()
     for tm in tms
         optm = Any[tm.coeff]
@@ -142,3 +150,4 @@ function OpSumFromTerms(tms :: Terms)
     end
     return opsum
 end
+@deprecate OpSumFromTerms(tms :: Terms) OpSum(tms)

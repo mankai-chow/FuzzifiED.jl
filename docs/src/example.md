@@ -353,15 +353,15 @@ nm = 12
 nf = 2
 no = nm * nf
 ```
-The first object we need is the sites. FuzzifiED overloads the fermion type and supports direct generation of the sites from the diagonal quantum numbers by the function [`SitesFromQNDiag`](@ref). The Ising model is expressed in the basis of ``XX-Z`` so that the flavour symmetry is diagonal. 
+The first object we need is the sites. FuzzifiED overloads the fermion type and supports direct generation of the sites from the diagonal quantum numbers by the function [`GetSites`](@ref). The Ising model is expressed in the basis of ``XX-Z`` so that the flavour symmetry is diagonal. 
 ```julia
-sites = SitesFromQNDiag([
+sites = GetSites([
     GetNeQNDiag(nm * nf), 
     GetLz2QNDiag(nm, nf),
     GetZnfChargeQNDiag(nm, nf)
 ])
 ```
-We then generate the terms of the Hamiltonian using the built-in functions, convert it to `OpSum` type in by the [`OpSumFromTerms`](@ref), and convert it to MPO using the `MPO` function in ITensor.
+We then generate the terms of the Hamiltonian using the built-in functions, convert it to [`OpSum`](@ref) type, and convert it to MPO using the `MPO` function in ITensor.
 ```julia
 ps_pot = [4.75, 1.] ./ 2
 tms_hmt = SimplifyTerms(
@@ -369,7 +369,7 @@ tms_hmt = SimplifyTerms(
     GetDenIntTerms(nm, 2, ps_pot, σx) - 
     3.16 * GetPolTerms(nm, nf, σz)
 )
-@time mpo_hmt = MPO(OpSumFromTerms(tms_hmt), sites)
+@time mpo_hmt = MPO(OpSum(tms_hmt), sites)
 ```
 We then use the all-up state as the initial state. In FuzzifiED, the occupied and empty sites are expressed by 0 and 1, while they are expressed by `"0"` and `"1"` in ITensor, so a conversion to string is needed. 
 ```julia
@@ -381,9 +381,9 @@ After that, the Hamiltonian MPO and the initial state MPS can be used for input 
 Eg, stg = dmrg(mpo_hmt, st0 ; nsweeps = 10, maxdim = [10,20,50,100,200,500], noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], cutoff = [1E-8])
 @show Eg
 ```
-We then convert these objects for the ED calculate. The configurations can be generated from Sites and a reference configuration by the function [`ConfsFromSites`](@ref). 
+We then convert these objects for the ED calculate. The configurations can be generated from Sites and a reference configuration by the function [`Confs`](@ref Confs(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, sec_qn :: QN)). 
 ```julia
-cfs = ConfsFromSites(sites, cf0)
+cfs = Confs(sites, cf0)
 bs = Basis(cfs)
 hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt)

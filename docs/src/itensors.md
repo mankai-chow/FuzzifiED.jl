@@ -22,12 +22,12 @@ ITensors.space( :: SiteType"FuzzyFermion"; o :: Int, qnd :: Vector{QNDiag})
 
 The `Sites` objects in ITensor can be converted to a QNDiags and Confs with the QNs extracted. 
 ```@docs
-QNDiagFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}})
-ConfsFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, sec_qn :: QN)
+Vector{QNDiag}(sites :: Vector{Index{Vector{Pair{QN, Int64}}}})
+Confs(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, sec_qn :: QN)
 ```
 Conversely, the  `Sites` objects in ITensors can also be generated from a set of diagonal quantum numbers 
 ```@docs
-SitesFromQNDiag(qnd :: Vector{QNDiag})
+GetSites(qnd :: Vector{QNDiag})
 ```
 If the number of quantum numbers are too many, it can be truncated by 
 ```@docs
@@ -36,8 +36,8 @@ TruncateQNDiag(qnd :: Vector{QNDiag} ; trunc_lth :: Int64 = 3, trunc_wt :: Vecto
 
 The `OpSum` objects in ITensor can be converted with the collection of `Term`'s
 ```@docs
-TermsFromOpSum(opsum :: Sum{Scaled{ComplexF64, Prod{Op}}})
-OpSumFromTerms(tms :: Terms)
+Terms(opsum :: Sum{Scaled{ComplexF64, Prod{Op}}})
+OpSum(tms :: Terms)
 ```
 
 ## Easy sweep

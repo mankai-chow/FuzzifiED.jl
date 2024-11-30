@@ -117,6 +117,7 @@ export ConfsFromSites
 export TermsFromOpSum
 export OpSumFromTerms
 export SitesFromQNDiag
+export GetSites
 export TruncateQNDiag
 export SweepOne
 export EasySweep
@@ -131,6 +132,7 @@ function ConfsFromSites end
 function TermsFromOpSum end
 function OpSumFromTerms end
 function SitesFromQNDiag end
+function GetSites end
 function TruncateQNDiag end
 function SweepOne end
 function EasySweep end

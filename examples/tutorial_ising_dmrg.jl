@@ -13,7 +13,7 @@ nf = 2
 no = nm * nf
 
 # Construct sites and MPO with 
-sites = SitesFromQNDiag([
+sites = GetSites([
     GetNeQNDiag(nm * nf), 
     GetLz2QNDiag(nm, nf),
     GetZnfChargeQNDiag(nm, nf)
@@ -24,7 +24,7 @@ tms_hmt = SimplifyTerms(
     GetDenIntTerms(nm, 2, ps_pot, σx) - 
     3.16 * GetPolTerms(nm, nf, σz)
 )
-os = OpSumFromTerms(tms_hmt)
+os = OpSum(tms_hmt)
 @time mpo_hmt = MPO(os, sites)
 
 cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
@@ -35,9 +35,9 @@ Eg, stg = dmrg(mpo_hmt, st0 ; nsweeps = 10, maxdim = [10,20,50,100,200,500], noi
 @show Eg
 
 # Convert sites and OpSum back to do ED and compare the results
-cfs = ConfsFromSites(sites, cf0)
+cfs = Confs(sites, cf0)
 bs = Basis(cfs)
-tms_hmt1 = TermsFromOpSum(os)
+tms_hmt1 = Terms(os)
 hmt = Operator(bs, tms_hmt1)
 hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 10)
