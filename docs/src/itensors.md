@@ -15,6 +15,11 @@ ITensors.enable_threaded_blocksparse();
 
 ## Format conversion
 
+FuzzyfiED defines a new SityType "FuzzyFermion" that can be initialised from QNDiags to avoid overwriting the original "Fermion" type.
+```@docs
+ITensors.space( :: SiteType"FuzzyFermion"; o :: Int, qnd :: Vector{QNDiag})
+```
+
 The `Sites` objects in ITensor can be converted to a QNDiags and Confs with the QNs extracted. 
 ```@docs
 QNDiagFromSites(sites :: Vector{Index{Vector{Pair{QN, Int64}}}})

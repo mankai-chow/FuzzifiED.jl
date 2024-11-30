@@ -82,12 +82,12 @@ end
 """
     function SitesFromQNDiag(qnd :: Vector{QNDiag})
 
-returns the ITensors Sites object from a set of QNDiags. 
+returns the ITensors Sites of type "FuzzyFermion" from a set of QNDiags.
 
 """
 function SitesFromQNDiag(qnd :: Vector{QNDiag})
     no = length(qnd[1].charge)
-    return [ siteind("Fermion" ; o, qnd) for o = 1 : no ]
+    return [ siteind("FuzzyFermion" ; o, qnd) for o = 1 : no ]
 end
 
 """
