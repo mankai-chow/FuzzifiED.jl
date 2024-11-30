@@ -97,12 +97,12 @@ Converts a `OpSum` object in `ITensors` to a series of terms. Note that the only
 
 """
 function TermsFromOpSum(opsum :: OpSum)
-    tms = Terms(undef,0)
-    for i in eachindex(opsum)
+    tms = Term[]
+    for op_prod in opsum
         cstr = []
-        for j in eachindex(opsum[i])
-            optype = opsum[i][j].which_op
-            opsite = opsum[i][j].sites[1]
+        for op_i in ITensors.argument(op_prod)
+            optype = op_i.which_op
+            opsite = op_i.sites[1]
             if optype == "Cdag"
                 append!(cstr, [1, opsite])
             elseif optype == "C"
@@ -115,10 +115,10 @@ function TermsFromOpSum(opsum :: OpSum)
                 print("The only operator supported are C, Cdag and N")
             end
         end 
-        if length(opsum[i]) == 0
+        if length(ITensors.argument(op_prod)) == 0
             append!(cstr, [-1, -1])
         end
-        fac = coefficient(opsum[i])
+        fac = coefficient(op_prod)
         push!(tms, Term(fac, cstr))
     end
     return tms
