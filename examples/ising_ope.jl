@@ -54,8 +54,8 @@ stσ = st[:, idl0[1]]
 stσ2 = st[:, idl2[2]]
 stσ1 = st[:, idl0[4]]
 
-obs_nz = Density(nm, 2, σz)
-obs_nx = Density(nm, 2, σx)
+obs_nz = GetDensityObs(nm, 2, σz)
+obs_nx = GetDensityObs(nm, 2, σx)
 tms_nz00 = SimplifyTerms(GetComponent(obs_nz, 0.0, 0.0))
 tms_nz20 = SimplifyTerms(GetComponent(obs_nz, 2.0, 0.0))
 tms_nx00 = SimplifyTerms(GetComponent(obs_nx, 0.0, 0.0))

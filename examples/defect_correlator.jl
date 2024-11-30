@@ -37,7 +37,7 @@ enrg, st = GetEigensystem(hmt_mat, 3)
 stI = st[:, 1]
 stϕ = st[:, 2]
 
-obs_nz = StoreComps(Density(nm, 2, σz))
+obs_nz = StoreComps(GetDensityObs(nm, 2, σz))
 nzl0p = Dict([ l => 
     Operator(bs, GetComponent(obs_nz, l, 0.0)) 
 for l = 0 : 2 : nm - 1])

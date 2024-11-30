@@ -65,8 +65,8 @@ st_∂σ = filter(st -> st[2] ≈ 2 && st[3] ≈ 1 && st[4] ≈-1, result)[1][en
 st_∂∂σ= filter(st -> st[2] ≈ 6 && st[3] ≈ 1 && st[4] ≈-1, result)[1][end]
 st_□σ = filter(st -> st[2] ≈ 0 && st[3] ≈ 1 && st[4] ≈-1, result)[2][end]
 
-pair_pm = StoreComps(PairMod(nm, 2, σp))
-den_x = Density(nm, 2, σx)
+pair_pm = StoreComps(GetPairingMod(nm, 2, σp))
+den_x = GetDensityObs(nm, 2, σx)
 
 tms_cand = [ 
     [GetComponent(den_x, 1, 0)] ; 

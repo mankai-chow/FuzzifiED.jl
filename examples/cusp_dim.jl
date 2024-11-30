@@ -43,7 +43,7 @@ bs = Basis(cfs)
 dims = []
 enrg_d = 0
 hd = 1000 
-nz = StoreComps(Density(nm, 2, σz))
+nz = StoreComps(GetDensityObs(nm, 2, σz))
 
 for θ in θs
     tms_hmt = SimplifyTerms(

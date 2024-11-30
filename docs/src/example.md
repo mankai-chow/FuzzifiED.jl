@@ -318,9 +318,9 @@ st_e = st[:, 2]
 st_s = st1[:, 1]
 ```
 
-The [`SphereObs`](@ref) type stores the information of a local observable on the sphere. In particular, the [electron](@ref Electron) and [density operators](@ref Density) are built-in. The addition and multiplication of observables are enabled. It can be evaluated at a certain point [GetPointValue](@ref) or angular component with [`GetComponent`](@ref). 
+The [`SphereObs`](@ref) type stores the information of a local observable on the sphere. In particular, the [electron](@ref GetElectronObs) and [density operators](@ref GetDensityObs) are built-in. The addition and multiplication of observables are enabled. It can be evaluated at a certain point [GetPointValue](@ref) or angular component with [`GetComponent`](@ref). 
 ```julia
-obs_nz = Density(nm, 2, [ 1 0 ; 0 -1 ])
+obs_nz = GetDensityObs(nm, 2, [ 1 0 ; 0 -1 ])
 tms_nz = SimplifyTerms(GetComponent(obs_nz, 0.0, 0.0))
 nz = Operator(bs, bs1, tms_nz ; red_q = 1) 
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))

@@ -205,7 +205,7 @@ end
 
 
 """
-    function ElecMod(nm :: Int64, nf :: Int64, f :: Int64) :: AngModes
+    function GetElectronMod(nm :: Int64, nf :: Int64, f :: Int64) :: AngModes
 
 returns the modes of electron annihilation operator ``c_m``, with angular momentum ``s=(N_m-1)/2``
 
@@ -215,14 +215,15 @@ returns the modes of electron annihilation operator ``c_m``, with angular moment
 - `nm :: Int64` is the number of orbitals.
 - `f :: Int64` is the index of the orbital to be taken.
 """
-function ElecMod(nm :: Int64, nf :: Int64, f :: Int64)
+function GetElectronMod(nm :: Int64, nf :: Int64, f :: Int64)
     gc = (l2, m2) -> (l2 == nm - 1) ? [Term(1.0, [0, f + nf * ((m2 + nm - 1) ÷ 2)])] : Term[]
     return AngModes(nm - 1, gc)
 end
+@deprecate ElecMod GetElectronMod
 
 
 """
-    function PairMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: AngModes
+    function GetPairingMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: AngModes
 
 returns the modes of two electrons superposed in the rule of CG coefficients. 
 ```math 
@@ -235,8 +236,8 @@ returns the modes of two electrons superposed in the rule of CG coefficients.
 - `nm :: Int64` is the number of orbitals.
 - `mat :: Int64` is the matrix ``M_{ff'}``.
 """
-function PairMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
-    el = [ StoreComps(ElecMod(nm, nf, f)) for f = 1 : nf ]
+function GetPairingMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+    el = [ StoreComps(GetElectronMod(nm, nf, f)) for f = 1 : nf ]
     amd = AngModes(2 * (nm - 1), Dict{Tuple{Int64, Int64}, Vector{Term}}())
     for f1 = 1 : nf, f2 = 1 : nf
         if abs(mat[f1, f2]) < 1E-13 continue end 
@@ -244,10 +245,11 @@ function PairMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     end
     return amd
 end
+@deprecate PairMod GetPairingMod
 
 
 """
-    function DenMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: AngModes
+    function GetDensityMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: AngModes
 
 returns the modes of electron creation and annihilation superposed in the rule of CG coefficients. 
 ```math 
@@ -260,8 +262,8 @@ returns the modes of electron creation and annihilation superposed in the rule o
 - `nm :: Int64` is the number of orbitals.
 - `mat :: Int64` is the matrix ``M_{ff'}``. Facultative, identity matrix ``\\mathbb{I}`` by default.
 """
-function DenMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
-    el = [ StoreComps(ElecMod(nm, nf, f)) for f = 1 : nf ]
+function GetDensityMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+    el = [ StoreComps(GetElectronMod(nm, nf, f)) for f = 1 : nf ]
     amd = AngModes(2 * (nm - 1), Dict{Tuple{Int64, Int64}, Vector{Term}}())
     for f1 = 1 : nf, f2 = 1 : nf
         if abs(mat[f1, f2]) < 1E-13 continue end 
@@ -269,3 +271,4 @@ function DenMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     end
     return amd
 end
+@deprecate DenMod GetDensityMod

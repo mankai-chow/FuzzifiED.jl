@@ -65,9 +65,9 @@ GetPointValue(obs :: SphereObs, θ :: Float64, ϕ :: Float64)
 ```
 Three types of operators, _viz._ electrons and density operators, and pairing operators are built-in.
 ```@docs
-Electron(nm :: Int64, nf :: Int64, f :: Int64)
-Density(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
-Pairing(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+GetElectronObs(nm :: Int64, nf :: Int64, f :: Int64)
+GetDensityObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+GetPairingObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
 ```
 
 ## Angular modes
@@ -101,7 +101,7 @@ FilterComponent(amd :: AngModes, flt)
 ```
 Three types of operators, _viz._ electrons and density operators, and pairing operators are built-in.
 ```@docs
-ElecMod(nm :: Int64, nf :: Int64, f :: Int64)
-PairMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
-DenMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+GetElectronMod(nm :: Int64, nf :: Int64, f :: Int64)
+GetPairingMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+GetDensityMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
 ```

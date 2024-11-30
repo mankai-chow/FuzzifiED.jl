@@ -42,7 +42,7 @@ hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 20)
 stσ = st[:, 1]
 
-obs_nz = StoreComps(Density(nm, 2, σz))
+obs_nz = StoreComps(GetDensityObs(nm, 2, σz))
 nzl0p = Dict([ l => 
     Operator(bsp, iseven(l) ? bsm : bsm1, GetComponent(obs_nz, l, 0.0)) 
 for l = 0 : nm - 1])

@@ -83,16 +83,15 @@ export StoreComps
 export Laplacian
 export GetComponent
 export GetPointValue
-export Electron
-export Density
-export Pairing
-export PairObs
+export GetElectronObs
+export GetDensityObs
+export GetPairingObs
 
 include("models/ang_modes.jl")
 export AngModes 
-export ElecMod
-export PairMod
-export DenMod
+export GetElectronMod
+export GetPairingMod
+export GetDensityMod
 export FilterComponent
 export FilterL2
 
