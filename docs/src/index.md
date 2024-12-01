@@ -8,9 +8,7 @@ If this package is helpful in your research, we would appreciate it if you menti
 
 To install the package, please first enter Julia by entering in the command line `julia`, and then enter the commands
 ```julia
-using Pkg
-Pkg.add(url="https://github.com/mankai-chow/FuzzifiED_jll.jl.git")
-Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
+using Pkg ; Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
 ```
 Include at the start of your Julia script
 ```julia
@@ -20,6 +18,7 @@ using FuzzifiED
 ## Tips 
 
 - Download Julia at [this link](https://julialang.org/downloads/). 
+- If the error shows up that '`FuzzifiED_jll` cannot be resolved', you may need to run `Pkg.Registry.update()`.
 - Apple Silicon (Mac M1, M2, _etc._) users may experience trouble using `GetEigensystem` function. Another function [`GetEigensystemKrylov`](@ref) is provided instead. 
 - Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook. _N.b._, you may need to install the package `IJulia` by hand to use Jupyter notebook ; in Jupyter notebooks, you may need to define how many threads OpenMP uses by hand in `FuzzifiED.NumThreads`.
 - The package is under active development, so certain interfaces may get changed, superceded or obsolete. We are sorry for any possible inconvenience. 
