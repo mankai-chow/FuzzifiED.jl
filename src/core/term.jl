@@ -27,10 +27,17 @@ end
 
 Gives a `Terms` with a single `Term`.
 
+# Special elements
+
+The zero and identity terms are defined 
+
+    zero(Terms) = Term[]
+    one(Terms) = Terms(1, [-1, -1])
 """
 const Terms = Vector{Term}
 Vector{T}(coeff :: Number, cstr :: Vector{Int64}) where T <: Term = [Term(coeff, cstr)]
 zero( :: Type{Terms}) = Term[]
+one( :: Type{Terms}) = Terms(1, [-1, -1])
 
 
 """

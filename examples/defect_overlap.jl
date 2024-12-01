@@ -67,7 +67,6 @@ hmt_mat = OpMat(hmt)
 enrg, st = GetEigensystem(hmt_mat, 3)
 st_p0 = st[:, 1]
 
-tms_I = Terms(1, [-1, -1])
-@show ovl_p000 = st_p0' * Operator(bs_00, bs_p0, tms_I) * st_00
-@show ovl_p0pp = st_p0' * Operator(bs_pp, bs_p0, tms_I) * st_pp 
+@show ovl_p000 = st_p0' * Operator(bs_00, bs_p0, one(Terms)) * st_00
+@show ovl_p0pp = st_p0' * Operator(bs_pp, bs_p0, one(Terms)) * st_pp 
 @show g_fn = (ovl_p000 / ovl_p0pp) ^ 2
