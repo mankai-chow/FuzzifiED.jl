@@ -51,13 +51,13 @@ qnf1 = [
     GetParityQNOffd(nm, 2, [2, 1], [1, -1]) * GetRotyQNOffd(nm, 2)
 ]
 cfs = Confs(no, [nm, 0, 2, 0], qnd)
-global enrg_d = 0
+enrg_d = 0
 for P in (1, -1), R in (1, -1)
     bs = Basis(cfs, [P, R], qnf)
     hmt = Operator(bs, tms_hmt)
     hmt_mat = OpMat(hmt)
     enrg, st = GetEigensystem(hmt_mat, 10)
-    if (P == 1 && R == 1) global enrg_d = enrg[1] end
+    if (P == 1 && R == 1) enrg_d = enrg[1] end
     dim = (enrg .- enrg_d) ./ (enrg_T - enrg_0) * 3
     for i in eachindex(enrg)
         push!(result, round.([dim[i], enrg[i], 0, P, R], digits = 6))

@@ -10,6 +10,8 @@ const σx = [  0  1 ;  1  0 ]
 FuzzifiED.ElementType = Float64
 ≈(x, y) = abs(x - y) < eps(Float32)
 
+let
+
 nm = 10
 qnd = [ 
     GetNeQNDiag(2 * nm), 
@@ -27,8 +29,8 @@ tms_hmt = SimplifyTerms(
     - 3.16 * GetPolTerms(nm, 2, σx) 
 )
 
-global enrg_0 = 0
-global enrg_D = 0
+enrg_0 = 0
+enrg_D = 0
 result = []
 for lz = 0 : 4, Z in (1, -1)
     cfs = Confs(2 * nm, [nm, 2 * lz], qnd)
@@ -37,8 +39,8 @@ for lz = 0 : 4, Z in (1, -1)
     hmt_mat = OpMat(hmt)
     enrg, st = GetEigensystem(hmt_mat, 20)
     if (lz == 0 && Z == 1)
-        global enrg_0 = enrg[1]
-        global enrg_D = enrg[2]
+        enrg_0 = enrg[1]
+        enrg_D = enrg[2]
     end
     dim = 3 .* (enrg .- enrg_0) ./ (enrg_D - enrg_0)
     for i in eachindex(enrg)
@@ -48,3 +50,5 @@ end
 
 sort!(result, by = st -> real(st[1]))
 display(permutedims(hcat(result...)))
+
+end

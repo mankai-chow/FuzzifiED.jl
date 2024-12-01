@@ -6,10 +6,11 @@
 
 using FuzzifiED
 using FuzzifiED.Fuzzifino
-FuzzifiED.ElementType = Float64
 const σ1 = [ 1 0 ; 0 0 ]
 const σ2 = [ 0 0 ; 0 1 ]
 const σ0 = [ 1 0 ; 0 1 ]
+FuzzifiED.ElementType = Float64
+≈(x, y) = abs(x - y) < eps(Float32)
 
 let
 
