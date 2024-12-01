@@ -2,7 +2,7 @@
 
 The package `FuzzifiED` is designed to do exact diagonalisation (ED) calculations on the fuzzy sphere, and also facilitates the DMRG calculations by ITensors. It can also be used for generic fermionic and bosonic models. Using this package, you can reproduce almost all the ED results in fuzzy sphere works.
 
-Documentations can be found at [http://docs.fuzzified.world/](http://docs.fuzzified.world/).
+Documentations can be found at [docs.fuzzified.world/](https://docs.fuzzified.world/).
 
 Download Julia at [this link](https://julialang.org/downloads/). 
 
