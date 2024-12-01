@@ -1,4 +1,4 @@
-module ITensorsExt
+module FuzzifiEDITensorsExt
 
 using ITensors 
 using ITensorMPS

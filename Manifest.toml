@@ -374,7 +374,7 @@ uuid = "9136182c-28ba-11e9-034c-db9fb085ebd5"
 version = "0.6.11"
 
     [deps.ITensors.extensions]
-    EasySweepExt = "HDF5"
+    FuzzifiEDEasySweepExt = "HDF5"
     ITensorsObserversExt = "Observers"
     ITensorsPackageCompilerExt = "PackageCompiler"
     ITensorsVectorInterfaceExt = "VectorInterface"
@@ -615,7 +615,7 @@ version = "0.3.24"
     NDTensorsAMDGPUExt = ["AMDGPU", "GPUArraysCore"]
     NDTensorsCUDAExt = ["CUDA", "GPUArraysCore"]
     NDTensorsGPUArraysCoreExt = "GPUArraysCore"
-    NDTensorsHDF5Ext = "HDF5"
+    NDTensorsFuzzifiEDHDF5Ext = "HDF5"
     NDTensorsMetalExt = ["GPUArraysCore", "Metal"]
     NDTensorsOctavianExt = "Octavian"
     NDTensorsTBLISExt = "TBLIS"

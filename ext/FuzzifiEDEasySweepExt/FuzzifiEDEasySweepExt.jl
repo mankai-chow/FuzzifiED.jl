@@ -1,4 +1,4 @@
-module EasySweepExt
+module FuzzifiEDEasySweepExt
 
 using ITensors 
 using ITensorMPS

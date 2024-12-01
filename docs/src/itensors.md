@@ -53,3 +53,26 @@ SweepOne(id :: String, hmt :: MPO, st0 :: MPS, dim1 :: Int64 ; path :: String = 
 GetMPOSites(id :: String, tms :: Union{Terms, Sum{Scaled{ComplexF64, Prod{Op}}}}, qnd :: Vector{QNDiag} ; path :: String = "./", mpo_method :: Function = MPO)
 GetMPO(id :: String, tms :: Union{Terms, Sum{Scaled{ComplexF64, Prod{Op}}}}, sites :: Vector{<:Index} ; path :: String = "./", mpo_method :: Function = MPO)
 ```
+
+## Modified Version of ITensor
+
+We have forked `ITensors` and made some modifications to better suit our modifications. To install the modified packages, please use 
+
+```julia
+    using Pkg 
+    Pkg.rm("ITensors")
+    Pkg.rm("ITensorMPS")
+    Pkg.rm("ITensorMPOConstruction")
+    Pkg.add(url="https://github.com/mankai-chow/ITensors.jl.git")
+    Pkg.add(url="https://github.com/mankai-chow/ITensorMPS.jl.git")
+    Pkg.add(url="https://github.com/mankai-chow/ITensorMPOConstruction.jl.git")
+```
+
+The modifications made include
+
+* Modify `ITensors` to allow up to 10 quantum numbers ; 
+* Modify `ITensorMPS` to allow `write_when_maxdim_exceeds` in DMRG in the presence of projection matrices ;
+* Modify `ITensorMPOConstruction` to allow building MPOs that has symmetry flux ;
+* Modify `ITensorMPOConstruction` to allow compatibility with the newest version of `ITensors`.
+
+Please be warned that the robustness and the backward compatibility of these modifications are not warranted. 

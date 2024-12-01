@@ -1,4 +1,4 @@
-module HDF5Ext 
+module FuzzifiEDHDF5Ext 
 
 using HDF5
 using FuzzifiED
