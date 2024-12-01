@@ -1,4 +1,6 @@
 """
+    SQNDiag
+
 The mutable type `SQNDiag` records the information of a diagonal ``\\mathrm{U}(1)`` or ``ℤ_p`` quantum number in the form of a symmetry charge
 ```math
 Q=∑_{o=1}^{N_{of}}q_{f,o}n_{f,o}+∑_{o=1}^{N_{ob}}q_{b,o}n_{b,o}
@@ -34,6 +36,8 @@ mutable struct SQNDiag
 end
 
 """
+    SQNOffd
+
 The mutable type `SQNOffd` records the information of an off-diagonal ``ℤ_p`` quantum number in the form of a discrete transformation
 ```math
 𝒵:\\ f_o↦ α_{f,o}^* f^{(p_{f,o})}_{π_{f,o}},  f_o^†↦α_{f,o} c^{(1-p_{f,o})}_{π_{f,o}},  b_o^†↦α_{b,o} b^†_{π_{b,o}}

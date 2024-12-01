@@ -1,4 +1,6 @@
 """
+    SOperator
+    
 The mutable type `SOperator` records the sum of terms together with information about its symmetry and the basis of the state it acts on and the basis of the resulting state.
 
 # Fields

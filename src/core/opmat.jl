@@ -1,8 +1,8 @@
 """
-    mutable struct OpMat{ComplexF64}
-    mutable struct OpMat{Float64}
+    OpMat{ComplexF64}
+    OpMat{Float64}
 
-This type stores a sparse matrix in the same form as `SparseMatrixCSC` in `SparseArrays`. If the matrix is Hermitian or symmetric, only the lower triangle is stored. 
+The mutable type `OpMat{T}` where the element type `T` can be Float64 and ComplexF64 stores a sparse matrix in the same form as `SparseMatrixCSC` in `SparseArrays`. If the matrix is Hermitian or symmetric, only the lower triangle is stored. 
 
 # Fields
 * `dimd :: Int64` and `dimf :: Int64` are the number of columns and rows of the matrix ;

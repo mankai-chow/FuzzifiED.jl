@@ -1,4 +1,6 @@
 """
+    STerm 
+    
 The mutable type `STerm` records a STerm that looks like ``Ua^{(p_1)}_{o_1}a^{(p_2)}_{o_2}… a^{(p_l)}_{o_l}`` in an operator, where positive ``o`` denotes fermions and negative ``o`` denotes bosons
 
 ```math

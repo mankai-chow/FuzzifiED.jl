@@ -1,4 +1,6 @@
 """
+    SphereObs
+
 The mutable type `SphereObs` stores the information of a local observable (or local operator) ``\\Phi`` that can be decomposed into angular components.
 ```math 
     \\Phi(\\Omega)=∑_{lm}\\Phi_{lm}Y^{(s)}_{lm}

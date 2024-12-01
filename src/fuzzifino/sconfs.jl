@@ -1,4 +1,6 @@
 """
+    SConfs
+    
 The mutable type `SConfs` stores all the configurations that respects the diagonal quantum numbers (SQNDiag) and also a table to inversely look up the index from the configuration. 
 
 # Fields

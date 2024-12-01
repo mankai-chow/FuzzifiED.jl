@@ -1,4 +1,6 @@
 """
+    SBasis
+    
 The mutable type `SBasis` stores the information of the SBasis that respects both diagonal and off-diagonal quantum numbers. The states in the SBasis is in the form 
 ```math
 |I⟩=λ_{i_{I1}}|i_{I1}⟩+λ_{i_{I2}}|i_{I2}⟩+⋯+λ_{i_{Im_I}}|i_{Im_I}⟩

@@ -1,4 +1,6 @@
 """
+    AngModes
+    
 The mutable type `AngModes` stores angular momentum components of an operator on the sphere ``Φ_{lm}`` and superposes in the rule of Clebsch-Gordan coefficients. The usage is similar to the spherical observables, except that SphereObs superposes in the rule of spherical harmonics and has the notion of locality
 
 # Fields
