@@ -54,18 +54,15 @@ GetMPOSites(id :: String, tms :: Union{Terms, Sum{Scaled{ComplexF64, Prod{Op}}}}
 GetMPO(id :: String, tms :: Union{Terms, Sum{Scaled{ComplexF64, Prod{Op}}}}, sites :: Vector{<:Index} ; path :: String = "./", mpo_method :: Function = MPO)
 ```
 
-## Modified Version of ITensor
+## Modified version of ITensor
 
 We have forked `ITensors` and made some modifications to better suit our modifications. To install the modified packages, please use 
 
 ```julia
-    using Pkg 
-    Pkg.rm("ITensors")
-    Pkg.rm("ITensorMPS")
-    Pkg.rm("ITensorMPOConstruction")
-    Pkg.add(url="https://github.com/mankai-chow/ITensors.jl.git")
-    Pkg.add(url="https://github.com/mankai-chow/ITensorMPS.jl.git")
-    Pkg.add(url="https://github.com/mankai-chow/ITensorMPOConstruction.jl.git")
+using Pkg 
+Pkg.add(url="https://github.com/mankai-chow/ITensors.jl.git")
+Pkg.add(url="https://github.com/mankai-chow/ITensorMPS.jl.git")
+Pkg.add(url="https://github.com/mankai-chow/ITensorMPOConstruction.jl.git")
 ```
 
 The modifications made include
