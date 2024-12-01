@@ -1,4 +1,4 @@
-module CudaExt
+module FuzzifiEDCUDAExt
 
 using CUDA
 using CUDA.CUSPARSE
