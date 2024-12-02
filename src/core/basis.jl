@@ -28,7 +28,7 @@ end
 
 
 """
-    Basis(cfs :: Confs, secf :: Vector{ComplexF64}, qnf :: Vector{QNOffd} ; num_th :: Int64, disp_std :: Bool) :: Basis
+    Basis(cfs :: Confs, secf :: Vector{ComplexF64}, qnf :: Vector{QNOffd} ; num_th :: Int64, disp_std :: Bool)
 
 generates the basis that respects the off-diagonal ``ℤ_p`` quantum numbers (QNOffd)
 
@@ -75,7 +75,7 @@ end
 
 
 """
-    Basis(cfs :: Confs) :: Basis
+    Basis(cfs :: Confs)
 
 Generate a basis from the configurations without off-diagonal ``ℤ_n`` symmetries.
 

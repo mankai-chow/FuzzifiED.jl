@@ -1,5 +1,5 @@
 """
-Confs
+    Confs
 
 The mutable type `Confs` stores all the configurations that respects the diagonal quantum numbers (QNDiag) and also a table to inversely look up the index from the configuration. 
 
@@ -21,7 +21,7 @@ end
 
 
 """
-    Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag} ; nor :: Int64 = div(no, 2), num_th :: Int64, disp_std :: Bool) :: Confs
+    Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag} ; nor :: Int64 = div(no, 2), num_th :: Int64, disp_std :: Bool)
 
 generates the configurations from the list of QNDiags. 
 

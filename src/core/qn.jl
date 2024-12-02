@@ -21,7 +21,7 @@ where ``i=1,…,N_U`` is the index of quantum number, ``o`` is the index of orbi
 
 It can be initialised by the following method
 ```julia
-QNDiag([name :: String, ]charge :: Vector{Int64}[, modul :: Int64]) :: QNDiag
+QNDiag([name :: String, ]charge :: Vector{Int64}[, modul :: Int64])
 ```
 The arguments `name` and `modul` are facultative. By default `name` is set to `\"QN\"` and `modul` is set to 1. 
 """
@@ -102,8 +102,8 @@ where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_
 
 It can be initialised by the following method
 ```julia
-QNOffd(perm :: Vector{Int64}[, ph :: Vector{Int64}][, fac :: Vector{ComplexF64}][, cyc :: Int64]) :: QNOffd
-QNOffd(perm :: Vector{Int64}, ph_q :: Bool[, fac :: Vector{ComplexF64}]) :: QNOffd
+QNOffd(perm :: Vector{Int64}[, ph :: Vector{Int64}][, fac :: Vector{ComplexF64}][, cyc :: Int64])
+QNOffd(perm :: Vector{Int64}, ph_q :: Bool[, fac :: Vector{ComplexF64}])
 ```
 The arguments `ph`, `fac` and `cyc` are facultative. By default `ph` is set all 0, `fac` is set to all 1 and `cyc` is set to 2. If `ph_q` is a bool and true, then `ph` is set to all 1. 
 
