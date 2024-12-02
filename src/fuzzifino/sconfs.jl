@@ -5,12 +5,12 @@ The mutable type `SConfs` stores all the configurations that respects the diagon
 
 # Fields
 
-* `nof :: Int64` is the number of fermionic orbital\\*flavour.
-* `nof :: Int64` is the number of bosonic orbital\\*flavour.
+* `nof :: Int64` is the number of fermionic sites.
+* `nof :: Int64` is the number of bosonic sites.
 * `nebm :: Int64` is the maximal number of boson occupation.
 * `ncf :: Int64` is the number of configurations.
-* `conff :: Vector{Int64}` is an array of length `ncf` containing all the fermion configurations. Each configuration is expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th orbital in the `i`-th configuration is occupied ; if the bit is 0, then the orbital is empty. 
-* `confb :: Vector{Int64}` is an array of length `ncf` containing all the boson configurations. Each configuration is expressed in a binary number that has ``N_{b,o}`` 1's and ``N_{eb}`` 0's and the number of 0's following each 1 records the number of bosons in that orbital. 
+* `conff :: Vector{Int64}` is an array of length `ncf` containing all the fermion configurations. Each configuration is expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th site in the `i`-th configuration is occupied ; if the bit is 0, then the site is empty. 
+* `confb :: Vector{Int64}` is an array of length `ncf` containing all the boson configurations. Each configuration is expressed in a binary number that has ``N_{b,o}`` 1's and ``N_{eb}`` 0's and the number of 0's following each 1 records the number of bosons in that site. 
 * `norf :: Int64`, `nobf :: Int64`, `lid :: Vector{Int64}` and `rid :: Vector{Int64}` contain the information of Lin table that is used to inversely look up the index `i` from the configuration. 
 """
 mutable struct SConfs
@@ -34,8 +34,8 @@ generates the configurations from the list of QNDiags.
 
 # Arguments
 
-* `nof :: Int64` is the number of fermionic orbital\\*flavour ``N_{of}``.
-* `nob :: Int64` is the number of bosonic orbital\\*flavour ``N_{ob}``.
+* `nof :: Int64` is the number of fermionic sites ``N_{of}``.
+* `nob :: Int64` is the number of bosonic sites ``N_{ob}``.
 * `nebm :: Int64` is the maximal number of total bosons.
 * `secd :: Vector{Int64}` is the set of ``Q_i`` for the selected configurations in the sector.
 * `qnd :: Vector{SQNDiag}` is the set of [SQNDiags](@ref SQNDiag). 

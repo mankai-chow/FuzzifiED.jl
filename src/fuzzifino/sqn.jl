@@ -9,13 +9,13 @@ or
 ```math
 Q=∑_{o=1}^{N_{of}}q_{f,o}n_{f,o}+∑_{o=1}^{N_{ob}}q_{b,o}n_{b,o}\\ \\mathrm{mod}\\ p
 ```
-where ``i=1,…,N_U`` is the index of quantum number, ``o`` is the index of orbital, ``N_{of}`` and ``N_{ob}`` are the number of fermionic and bosonic orbitals, ``n_{f,o}=f^†_of_o``, ``n_{b,o}=b^†_ob_o``, and ``q_{f,o},q_{b,o}`` are a set of symmetry charges that must be integer valued.
+where ``i=1,…,N_U`` is the index of quantum number, ``o`` is the index of site, ``N_{of}`` and ``N_{ob}`` are the number of fermionic and bosonic sites, ``n_{f,o}=f^†_of_o``, ``n_{b,o}=b^†_ob_o``, and ``q_{f,o},q_{b,o}`` are a set of symmetry charges that must be integer valued.
 
 # Fields 
 
 - `name :: String` is the name of the diagonal quantum number 
-- `chargef :: Vector{Int64}` is the symmetry charge ``q_{f,o}`` of each orbital
-- `chargeb :: Vector{Int64}` is the symmetry charge ``q_{b,o}`` of each orbital
+- `chargef :: Vector{Int64}` is the symmetry charge ``q_{f,o}`` of each site
+- `chargeb :: Vector{Int64}` is the symmetry charge ``q_{b,o}`` of each site
 - `modul :: Vector{Int64}` is the modulus ``p``, set to 1 for ``\\mathrm{U}(1)`` SQNDiags. 
 
 # Initialisation 
@@ -42,7 +42,7 @@ The mutable type `SQNOffd` records the information of an off-diagonal ``ℤ_p`` 
 ```math
 𝒵:\\ f_o↦ α_{f,o}^* f^{(p_{f,o})}_{π_{f,o}},  f_o^†↦α_{f,o} c^{(1-p_{f,o})}_{π_{f,o}},  b_o^†↦α_{b,o} b^†_{π_{b,o}}
 ```
-where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_{f,o},π_{b,o}`` are permutations of ``1,…,N_{of}`` or ``N_{ob}``, ``α_{f,o},α_{b,o}`` are coefficients, and ``p_{f,o}`` specified whether or not particle-hole transformation is performed for the fermionic orbital. Note that one must guarentee that all these transformations commute with each other and also commute with the diagonal QNs. 
+where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_{f,o},π_{b,o}`` are permutations of ``1,…,N_{of}`` or ``N_{ob}``, ``α_{f,o},α_{b,o}`` are coefficients, and ``p_{f,o}`` specified whether or not particle-hole transformation is performed for the fermionic site. Note that one must guarentee that all these transformations commute with each other and also commute with the diagonal QNs. 
 
 # Arguments 
 

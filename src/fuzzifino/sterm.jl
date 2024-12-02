@@ -117,7 +117,7 @@ end
 
 rearrange a STerm such that 
 - the creation operators must be commuted in front of the annihilation operator 
-- the orbital index of the creation operators are in ascending order and the annihilation operators in descending order. 
+- the site index of the creation operators are in ascending order and the annihilation operators in descending order. 
 return a list of STerms whose result is equal to the original STerm. 
 """
 function NormalOrder(tm :: STerm)

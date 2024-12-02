@@ -213,7 +213,7 @@ returns the modes of electron annihilation operator ``c_m``, with angular moment
 
 - `nf :: Int64` is the number of flavours.
 - `nm :: Int64` is the number of orbitals.
-- `f :: Int64` is the index of the orbital to be taken.
+- `f :: Int64` is the index of the flavour to be taken.
 """
 function GetElectronMod(nm :: Int64, nf :: Int64, f :: Int64)
     gc = (l2, m2) -> (l2 == nm - 1) ? Terms(1.0, [0, f + nf * ((m2 + nm - 1) ÷ 2)]) : Term[]

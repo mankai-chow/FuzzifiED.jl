@@ -14,13 +14,13 @@ or
 ```math
 Q_i=∑_{o=1}^{N_o}q_{io}n_o\\ \\mathrm{mod}\\ p_i
 ```
-where ``i=1,…,N_U`` is the index of quantum number, ``o`` is the index of orbital, ``n_o=c^†_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. (A list of ``q_o`` with both positive and negative entries can be adapted by shifting every elements by a same value)
+where ``i=1,…,N_U`` is the index of quantum number, ``o`` is the index of site, ``n_o=c^†_oc_o``, and ``q_o`` is a set of coefficients that must be non negative integer valued. (A list of ``q_o`` with both positive and negative entries can be adapted by shifting every elements by a same value)
 
 # Arguments
 
-* `no :: Int64` is the number of orbital\\*flavour ``N_o`` ;
+* `no :: Int64` is the number of sites ``N_o`` ;
 * `qnu_s :: Vector{Int64}` is the set of ``Q_i`` for the selected configurations ;
-* `qnu_o :: Vector{Vector{Int64}}` is the set of ``q_{io}`` for each quantum number and for each orbital. It should contain ``N_U`` elements and each element should be a vector of length ``N_o``. 
+* `qnu_o :: Vector{Vector{Int64}}` is the set of ``q_{io}`` for each quantum number and for each site. It should contain ``N_U`` elements and each element should be a vector of length ``N_o``. 
 * `nor :: Int64` is the number of less significant bits used to generate the Lin table. Facultative, ``N_o/2`` by default.
 * `modul :: Vector{Int64}` is the modulus of each quantum number. Setting it to 1 means there is no modulus. Facultative, all 1 by default. 
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
@@ -65,7 +65,7 @@ generates the basis that respects the off-diagonal ``ℤ_n`` quantum numbers (QN
 𝒵:\\ c_o↦ α_o^* c^{(p_o)}_{π_o},  c_o^†↦ α_o c^{(1-p_o)}_{π_o}
 ```
 
-where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_o`` is a permutation of ``1,…,N_o``, ``α_o`` is a coefficient, and ``p_o`` specified whether or not particle-hole transformation is performed for the orbital. Note that one must guarentee that all these transformations commute with each other and also commute with the diagonal QNs. 
+where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_o`` is a permutation of ``1,…,N_o``, ``α_o`` is a coefficient, and ``p_o`` specified whether or not particle-hole transformation is performed for the site. Note that one must guarentee that all these transformations commute with each other and also commute with the diagonal QNs. 
 
 # Arguments 
 
@@ -123,7 +123,7 @@ GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, secd_lst :: Vector{Vector{Vecto
 - `qnz_s_lst :: Vector{Vector{Vector{ComplexF64}}}` gives the list of QNZ sectors of subsystems to be calculated. Each of its elements is a two element vector ; the first specifies the QNZs for subsystem A, and the second specifies the QNZs for subsystem B. 
 - `qnu_o :: Vector{Vector{Int64}}`, `qnu_name :: Vector{String}` and `modul :: Vector{Int64}` specifies the diagonal quantum numbers of the subsystems A and B. 
 - `cyc :: Vector{Int64}`, `perm_o :: Vector{Vector{Int64}}`, `ph_o :: Vector{Vector{Int64}}` and `fac_o :: Vector{Vector{ComplexF64}}` specifies the off-diagonal quantum numbers of the subsystems A and B. 
-- `amp_oa :: Vector{ComplexF64}` and `amp_ob :: Vector{ComplexF64}` are complex lists of length `no` that specify the amplitute of each orbital in the subsystems A and B. For a non-local basis, we decompose each electron into creation operators in two subsystems ``c^†_o=a_{o,A}c^†_{o,A}+a_{o,B}c^†_{o,B}`` and this list specifies ``a_{o,A}``. This is equivalent to ``√{ℱ_{m,A}}`` in [PRB 85, 125308 (2012)](https://dx.doi.org/10.1103/PhysRevB.85.125308) with an extra phase factor. 
+- `amp_oa :: Vector{ComplexF64}` and `amp_ob :: Vector{ComplexF64}` are complex lists of length `no` that specify the amplitute of each site in the subsystems A and B. For a non-local basis, we decompose each electron into creation operators in two subsystems ``c^†_o=a_{o,A}c^†_{o,A}+a_{o,B}c^†_{o,B}`` and this list specifies ``a_{o,A}``. This is equivalent to ``√{ℱ_{m,A}}`` in [PRB 85, 125308 (2012)](https://dx.doi.org/10.1103/PhysRevB.85.125308) with an extra phase factor. 
 
 # Output
 

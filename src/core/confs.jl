@@ -5,9 +5,9 @@ The mutable type `Confs` stores all the configurations that respects the diagona
 
 # Fields
 
-* `no :: Int64` is the number of orbital\\*flavour.
+* `no :: Int64` is the number of sites.
 * `ncf :: Int64` is the number of configurations.
-* `conf :: Vector{Int64}` is an array of length `ncf` containing all the configurations. Each configuration is expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th orbital in the `i`-th configuration is occupied ; if the bit is 0, then the orbital is empty. 
+* `conf :: Vector{Int64}` is an array of length `ncf` containing all the configurations. Each configuration is expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th site in the `i`-th configuration is occupied ; if the bit is 0, then the site is empty. 
 * `nor :: Int64`, `lid :: Vector{Int64}` and `rid :: Vector{Int64}` contain the information of Lin table that is used to inversely look up the index `i` from the configuration. 
 """
 mutable struct Confs
@@ -27,7 +27,7 @@ generates the configurations from the list of QNDiags.
 
 # Arguments
 
-* `no :: Int64` is the number of orbital\\*flavour ``N_o``.
+* `no :: Int64` is the number of sites ``N_o``.
 * `secd :: Vector{Int64}` is the set of ``Q_i`` for the selected configurations in the sector.
 * `qnd :: Vector{QNDiag}` is the set of [QNDiags](@ref QNDiag). 
 * `nor :: Int64` is the number of less significant bits used to generate the Lin table. Facultative, ``N_o/2`` by default.
@@ -96,7 +96,7 @@ inversely look up the index from the configuration
 # Arguments
 
 * `cfs :: Confs` stores the configurations.
-* `cf :: Int64` stores the configuration to be looked-up expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th orbital in the `i`-th configuration is occupied ; if the bit is 0, then the orbital is empty. 
+* `cf :: Int64` stores the configuration to be looked-up expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th site in the `i`-th configuration is occupied ; if the bit is 0, then the site is empty. 
 
 # Output
 * `id :: Int64` is the id of the configuration such that `cfs.conf[id] == cf`

@@ -9,12 +9,12 @@ or
 ```math
 Q=∑_{o=1}^{N_o}q_on_o\\ \\mathrm{mod}\\ p
 ```
-where ``i=1,…,N_U`` is the index of quantum number, ``o`` is the index of orbital, ``n_o=c^†_oc_o``, and ``q_o`` is a set of coefficients that must be integer valued.
+where ``i=1,…,N_U`` is the index of quantum number, ``o`` is the index of site, ``n_o=c^†_oc_o``, and ``q_o`` is a set of coefficients that must be integer valued.
 
 # Fields 
 
 - `name :: String` is the name of the diagonal quantum number 
-- `charge :: Vector{Int64}` is the symmetry charge ``q_o`` of each orbital
+- `charge :: Vector{Int64}` is the symmetry charge ``q_o`` of each site
 - `modul :: Vector{Int64}` is the modulus ``p``, set to 1 for ``\\mathrm{U}(1)`` QNDiags. 
 
 # Initialisation 
@@ -89,7 +89,7 @@ The mutable type `QNOffd` records the information of an off-diagonal ``ℤ_p`` q
 ```math
 𝒵:\\ c_o↦ α_o^* c^{(p_o)}_{π_o},  c_o^†↦ α_o c^{(1-p_o)}_{π_o}
 ```
-where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_o`` is a permutation of ``1,…,N_o``, ``α_o`` is a coefficient, and ``p_o`` specified whether or not particle-hole transformation is performed for the orbital. Note that one must guarentee that all these transformations commute with each other and also commute with the diagonal QNs. 
+where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_o`` is a permutation of ``1,…,N_o``, ``α_o`` is a coefficient, and ``p_o`` specified whether or not particle-hole transformation is performed for the site. Note that one must guarentee that all these transformations commute with each other and also commute with the diagonal QNs. 
 
 # Arguments 
 

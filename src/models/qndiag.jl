@@ -67,6 +67,6 @@ Return the QNDiag of the number of electrons in the subset `pin_o`, implemented 
 ```julia
     QNDiag("Npin\$i", [ o in pin_o ? 1 : 0 for o = 1 : no])
 ```
-This QNDiag is useful in pinning defects, where certain subset of orbitals need to be set empty or filled. To empty the orbitals, set this QNDiag to 0 ; to fill the orbitals, set this QNDiag to `length(pin_o)`. `id` is an index to be put in the name to distinguish. 
+This QNDiag is useful in pinning defects, where certain subset of sites need to be set empty or filled. To empty the sites, set this QNDiag to 0 ; to fill the sites, set this QNDiag to `length(pin_o)`. `id` is an index to be put in the name to distinguish. 
 """
 GetPinOrbQNDiag(no :: Int64, pin_o :: Vector{Int64}, id :: Int64 = 1) = QNDiag("Npin$id", [ o in pin_o ? 1 : 0 for o = 1 : no])

@@ -140,7 +140,7 @@ end
 
 rearrange a term such that 
 - the creation operators must be commuted in front of the annihilation operator 
-- the orbital index of the creation operators are in ascending order and the annihilation operators in descending order. 
+- the site index of the creation operators are in ascending order and the annihilation operators in descending order. 
 return a list of terms whose result is equal to the original term. 
 """
 function NormalOrder(tm :: Term)

@@ -107,7 +107,7 @@ looks up a the weight of a configuration in a state.
 
 * `bs :: Basis` is the basis of the state ; 
 * `st :: Vector{ComplexF64}` or `st :: Vector{Float64}` is a vector of length `bs.dim` that stores the state ; 
-* `cf :: Int64` stores the configuration to be looked-up expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th orbital in the `i`-th configuration is occupied ; if the bit is 0, then the orbital is empty. 
+* `cf :: Int64` stores the configuration to be looked-up expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th site in the `i`-th configuration is occupied ; if the bit is 0, then the site is empty. 
 
 # Output
 

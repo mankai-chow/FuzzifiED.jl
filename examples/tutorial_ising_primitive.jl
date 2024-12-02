@@ -29,7 +29,7 @@ cfs = Confs(no, [ne, 0], qnd)
 IMPLEMENT THE OFF-DIAGONAL QNS AND INITIALISE THE BASIS
 ======================================================#
 
-# Record a QNOffd by orbital permutation (and facultatives particle-hole, factor, cycle)
+# Record a QNOffd by site permutation (and facultatives particle-hole, factor, cycle)
 qnf = [ 
     # Parity (Particle-hole)
     QNOffd([ isodd(o) ? o + 1 : o - 1 for o = 1 : no], true, ComplexF64[ isodd(o) ? -1 : 1 for o = 1 : no]),

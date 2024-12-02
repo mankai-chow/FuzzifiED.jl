@@ -17,7 +17,7 @@ let
 ne = 7
 nm = 2 * ne - 1
 nf = 2 
-nof = 1 # Fuzzifino can only deal with mixture of bosons and fermions, so we put a single orbital of fermion and keep it empty.
+nof = 1 # Fuzzifino can only deal with mixture of bosons and fermions, so we put a single site of fermion and keep it empty.
 nob = nm * nf 
 qnd = [
     SQNDiag([1], fill(1, nob)),

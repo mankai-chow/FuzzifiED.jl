@@ -20,7 +20,7 @@ or ``\mathbb{Z}_n`` diagonal quantum numbers with period ``P_i``
 ```math
 Q_i=\sum_{o=1}^{N_o}q_{io}n_o\ \mathrm{mod}\ P_i
 ```
-where ``i=1,\dots,N_U`` is the index of diagonal quantum numbers, ``o`` is the index of orbital, ``n_o=c^\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be integer-valued. 
+where ``i=1,\dots,N_U`` is the index of diagonal quantum numbers, ``o`` is the index of sites, ``n_o=c^\dagger_oc_o``, and ``q_o`` is a set of coefficients that must be integer-valued. 
 
 There are two diagonal quantum numbers in the Ising model, _viz._ the particle number and the angular momentum
 ```math
@@ -29,7 +29,7 @@ Q_1&=N_e,& q_{1,m\sigma}&=1\\
 Q_2&=2L_z,&q_{2,m\sigma}&=2m
 \end{aligned}
 ```
-where the orbital index ``o`` contains both ``m`` and ``\sigma``. In the code, we store the orbitals with the same ``m`` together, _viz._ we store the spin-up orbitals in odd ``o=1,3,\dots,2N_m-1`` and the spin-down orbitals in even ``o=2,4,\dots,2N_m``. We look at the ``L_z=0`` half-filled sector. 
+where the site index ``o`` contains both ``m`` and ``\sigma``. In the code, we store the sites with the same ``m`` together, _viz._ we store the spin-up sites in odd ``o=1,3,\dots,2N_m-1`` and the spin-down sites in even ``o=2,4,\dots,2N_m``. We look at the ``L_z=0`` half-filled sector. 
 
 These two diagonal quantum numbers are built in with functions [`GetNeQNDiag`](@ref) and [`GetLz2QNDiag`](@ref) and the configurations can be generated with function [`Confs`](@ref 
 Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag} ; nor :: Int64 = div(no, 2), num_th :: Int64 = NumThreads, disp_std :: Bool = !SilentStd)). 
@@ -46,7 +46,7 @@ cfs = Confs(2 * nm, [nm, 0], qnd)
 
 #### Primitive version 
 
-Alternatively, you can put in the diagonal quantum numbers [`QNDiag`](@ref) by hand by specifying the symmetry charges ``q_o`` of the orbitals, and facultatively the name and the modulus
+Alternatively, you can put in the diagonal quantum numbers [`QNDiag`](@ref) by hand by specifying the symmetry charges ``q_o`` of the sites, and facultatively the name and the modulus
 ```julia
 nf = 2
 nm = 8
@@ -71,7 +71,7 @@ cfs = Confs(no, [ne, 0], qnd)
 \mathscr{Z}:\ c_o\to \alpha_o^* c^{(p_o)}_{\pi_o},\quad c_o^\dagger\to \alpha_o c^{(1-p_o)}_{\pi_o}
 ```
 
-where we use a notation ``c^{(1)}=c^\dagger`` and ``c^{0}=c`` for convenience, where ``\pi_o`` is a permutation of ``1,\dots N_o``, ``\alpha_o`` is a coefficient, and ``p_o`` specified whether or not particle-hole transformation is performed for the orbital. Note that one must guarentee that all these transformations commute with each other and also commute with the diagonal quantum numbers. 
+where we use a notation ``c^{(1)}=c^\dagger`` and ``c^{0}=c`` for convenience, where ``\pi_o`` is a permutation of ``1,\dots N_o``, ``\alpha_o`` is a coefficient, and ``p_o`` specified whether or not particle-hole transformation is performed for the site. Note that one must guarentee that all these transformations commute with each other and also commute with the diagonal quantum numbers. 
 
 After implementing these symmetries, a state in the new basis should look like 
 
@@ -104,9 +104,9 @@ If no discrete symmetry is needed, one can simply put instead `bs = Basis(conf)`
 
 #### Primitive version 
 
-Alternatively, you can put in the diagonal quantum numbers [`QNOffd`](@ref) by hand by specifying the permutations ``\pi_o`` of the orbitals, and facultatively the particle-hole transformation ``p_o``, the factor ``\alpha_o`` and the cycle. 
+Alternatively, you can put in the diagonal quantum numbers [`QNOffd`](@ref) by hand by specifying the permutations ``\pi_o`` of the sites, and facultatively the particle-hole transformation ``p_o``, the factor ``\alpha_o`` and the cycle. 
 ```julia
-# Record a QNOffd by orbital permutation (and facultatives particle-hole, factor, cycle)
+# Record a QNOffd by site permutation (and facultatives particle-hole, factor, cycle)
 qnf = [ 
     # Parity (Particle-hole)
     QNOffd([ isodd(o) ? o + 1 : o - 1 for o = 1 : no], true, ComplexF64[ isodd(o) ? -1 : 1 for o = 1 : no]),
