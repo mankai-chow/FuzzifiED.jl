@@ -159,7 +159,7 @@ This function returns the MPO and sites for a given operator and a Hilbert space
 - `tms :: Terms` or `tms :: OpSum` is either an array of terms or a `OpSum` objects that specifies the expression of the operator. 
 - `qnd :: Vector{QNDiag}` is a list of diagonal quantum numbers. 
 - `path :: String` identifies the path where the results will be accessed and stored. Facultative, `./` by default. 
-- `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultative, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. _N.b._, `MPO_new` only applies to the cases that the operator do not carry charge under any of the quantum numbers.
+- `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultative, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. _N.b._, `MPO_new` only applies to the cases that the operator do not carry charge under any of the quantum numbers.
 - `clear_previous :: Bool`. If set true, the file `op_\$(id).h5` will be removed and the calculation will start from scratch. Facultative, false by default.
 
 """
@@ -199,7 +199,7 @@ This function returns the MPO for a given operator and a given set of sites. It 
 - `tms :: Terms` or `tms :: OpSum` is either an array of terms or a `OpSum` objects that specifies the expression of the operator. 
 - `sites :: Vector{<:Index}` specifies the sites that the operator is acting on. 
 - `path :: String` identifies the path where the results will be accessed and stored. Facultative, `./` by default. 
-- `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultative, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/mankai-chow/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. _N.b._, `MPO_new` only applies to the cases that the operator do not carry charge under any of the quantum numbers.
+- `mpo_method :: Function` is a function `mpo_method(os :: OpSum, sites :: Sites) :: MPO` that generates the MPO from OpSum and Sites. Facultative, `MPO` by default. We suggest using `MPO_new` in `ITensorMPOConstruction` package. See [`example_ising_dmrg_easysweep.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/example_ising_dmrg_easysweep.jl) for example. _N.b._, `MPO_new` only applies to the cases that the operator do not carry charge under any of the quantum numbers.
 - `clear_previous :: Bool`. If set true, the file `op_\$(id).h5` will be removed and the calculation will start from scratch. Facultative, false by default.
 
 """

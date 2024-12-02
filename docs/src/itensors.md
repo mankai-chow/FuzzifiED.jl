@@ -60,9 +60,9 @@ We have forked `ITensors` and made some modifications to better suit our need. T
 
 ```julia
 using Pkg 
-Pkg.add(url="https://github.com/mankai-chow/ITensors.jl.git")
-Pkg.add(url="https://github.com/mankai-chow/ITensorMPS.jl.git")
-Pkg.add(url="https://github.com/mankai-chow/ITensorMPOConstruction.jl.git")
+Pkg.add(url="https://github.com/FuzzifiED/ITensors.jl.git")
+Pkg.add(url="https://github.com/FuzzifiED/ITensorMPS.jl.git")
+Pkg.add(url="https://github.com/FuzzifiED/ITensorMPOConstruction.jl.git")
 ```
 
 The modifications made include

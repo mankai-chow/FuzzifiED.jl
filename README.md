@@ -8,7 +8,7 @@ Download Julia at [this link](https://julialang.org/downloads/).
 
 To install the package, please enter the following commands in Julia :
 ```julia
-using Pkg ; Pkg.add(url="https://github.com/mankai-chow/FuzzifiED.jl.git")
+using Pkg ; Pkg.add(url="https://github.com/FuzzifiED/FuzzifiED.jl.git")
 ```
 Include at the start of your Julia script
 ```julia

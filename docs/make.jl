@@ -27,7 +27,7 @@ makedocs(sitename = "FuzzifiED.jl",
         "Releases" => "releases.md"],
     format = Documenter.HTML(
         assets = ["assets/serif.css", "assets/favicon.ico"], 
-        repolink = "https://github.com/mankai-chow/FuzzifiED.jl",
+        repolink = "https://github.com/FuzzifiED/FuzzifiED.jl",
         footer = "Powered by [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl) and the [Julia Programming Language](https://julialang.org/). Copyright (c) 2024 Zheng Zhou (周正) and contributors."
     )
 )
