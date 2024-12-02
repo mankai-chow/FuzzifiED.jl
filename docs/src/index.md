@@ -15,14 +15,15 @@ Include at the start of your Julia script
 using FuzzifiED
 ```
 
-## Tips 
+## Useful information
 
 - Download Julia at [this link](https://julialang.org/downloads/). 
-- If the error shows up that '`FuzzifiED_jll` cannot be resolved', you may need to run `Pkg.Registry.update()`.
-- Apple Silicon (Mac M1, M2, _etc._) users may experience trouble using `GetEigensystem` function. Another function [`GetEigensystemKrylov`](@ref) is provided instead. 
+- We are registering the packages `FuzzifiED` and `FuzzifiED_jll` in Julia. If error occurs at installation, try `Pkg.Registry.update()`.
+- Please make sure that the package `Arpack_jll` is at a version lower than 3.9. You can make sure of this by commanding `Pkg.add(PackageSpec(name="Arpack_jll", version="3.5"))`.
 - Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook. _N.b._, you may need to install the package `IJulia` by hand to use Jupyter notebook ; in Jupyter notebooks, you may need to define how many threads OpenMP uses by hand in `FuzzifiED.NumThreads`.
 - The package is under active development, so certain interfaces may get changed, superceded or obsolete. We are sorry for any possible inconvenience. 
 - For the DMRG calculation, due to the change of interface in update of ITensors v0.7, now both package `ITensors` and `ITensorMPS` need to be installed. 
+- The supporting Fortran code for ED is stored at the GitHub Repo at [mankai-chow/FuzzifiED_Fortran](https://github.com/mankai-chow/FuzzifiED_Fortran).
 
 ## Outline 
 
