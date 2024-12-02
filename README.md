@@ -17,4 +17,4 @@ using FuzzifiED
 
 Apple Silicon (Mac M1, M2, _etc._) users may experience trouble using `GetEigensystem` function. Another function `GetEigensystemKrylov` is provided instead. See documentation for detail.
 
-If this package is helpful in your research, we would appreciate it if you mention in the acknowledgement. If you have any questions, please contact Zheng Zhou (周正) at [physics@zhengzhou.page](mailto:physics@zhengzhou.page).
+If this package is helpful in your research, we would appreciate it if you mention in the acknowledgement. If you have any questions, please contact Zheng Zhou (周正) at [fuzzified@zhengzhou.page](mailto:fuzzified@zhengzhou.page).
