@@ -1,6 +1,6 @@
 
 """
-    ITensors.space( ::SiteType"FuzzyFermion" ; o :: Int, qnd :: Vector{QNDiag})
+    ITensors.space( :: SiteType"FuzzyFermion" ; o :: Int, qnd :: Vector{QNDiag})
 
 Define a new site type "FuzzyFermion" which inherits all the features of ITensor type "Fermion". It can be initialised by a set of QNDiag's and the site index ``o``.
 """

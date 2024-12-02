@@ -56,7 +56,7 @@ GetMPO(id :: String, tms :: Union{Terms, Sum{Scaled{ComplexF64, Prod{Op}}}}, sit
 
 ## Modified version of ITensor
 
-We have forked `ITensors` and made some modifications to better suit our modifications. To install the modified packages, please use 
+We have forked `ITensors` and made some modifications to better suit our need. To install the modified packages, please use 
 
 ```julia
 using Pkg 

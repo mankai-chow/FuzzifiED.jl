@@ -30,10 +30,10 @@ ElementType :: DataType = ComplexF64
 """
     OpenHelp!()
 
-A shortcut to open the link for documentation [http://docs.fuzzified.world](http://docs.fuzzified.world) in the system browser. 
+A shortcut to open the link for documentation [docs.fuzzified.world](https://docs.fuzzified.world) in the system browser. 
 """
 function OpenHelp!()
-    url = "http://docs.fuzzified.world"
+    url = "https://docs.fuzzified.world"
     if Sys.iswindows()
         run(`start $url` ; wait = false)
     elseif Sys.isapple()
