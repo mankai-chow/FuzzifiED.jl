@@ -1,5 +1,5 @@
 """
-    Vector{QNDiag}(sites :: Vector{<:Index}) :: Vector{QNDiag}
+    Vector{QNDiag}(sites :: Vector{<:Index})
 
 Converts a `Sites` object in the `ITensors` package to a set of QNDiags. 
 
@@ -33,8 +33,8 @@ end
 
 
 """
-    Confs(sites :: Vector{<:Index}, sec_qn :: QN) :: Confs
-    Confs(sites :: Vector{<:Index}, cf_ref :: Vector{Int64}) :: Confs
+    Confs(sites :: Vector{<:Index}, sec_qn :: QN)
+    Confs(sites :: Vector{<:Index}, cf_ref :: Vector{Int64})
 
 Converts a `Sites` object in the `ITensors` package to the `Confs` object
 
@@ -85,7 +85,7 @@ end
 
 
 """
-    GetSites(qnd :: Vector{QNDiag})
+    GetSites(qnd :: Vector{QNDiag}) :: Vector{<:Index}
 
 returns the ITensors Sites of type "FuzzyFermion" from a set of QNDiags.
 
@@ -97,7 +97,7 @@ end
 @deprecate SitesFromQNDiag(qnd :: Vector{QNDiag}) GetSites(qnd)
 
 """
-    Terms(opsum :: OpSum) :: Terms
+    Terms(opsum :: OpSum)
 
 Converts a `OpSum` object in `ITensors` to a series of terms. Note that the only operators supported are `"C"`, `"Cdag"` `"N"` and `"I"`.
 
@@ -133,7 +133,7 @@ end
 
 
 """
-    OpSum(tms :: Terms) :: OpSum
+    OpSum(tms :: Terms)
 
 Converts a series of terms to `OpSum` object in `ITensors`.
 

@@ -25,7 +25,7 @@ GetRotyQNOffd(nm :: Int64, nf :: Int64)
 ## Operators on fuzzy sphere
 
 ```@docs 
-GetIntMatrix(nm :: Int64, ps_pot :: Vector{Number})
+GetIntMatrix(nm :: Int64, ps_pot :: Vector{<:Number})
 GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a'))
 GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mats_a :: Vector{<:AbstractMatrix{<:Number}}, mats_b :: Vector{<:AbstractMatrix{<:Number}} = [Matrix(mat_a') for mat_a in mats_a])
 GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a'))

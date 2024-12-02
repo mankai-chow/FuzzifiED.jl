@@ -49,7 +49,7 @@ end
 
 
 """
-    StoreComps!(amd :: AngModes) :: Nothing 
+    StoreComps!(amd :: AngModes)
     
 calculates and stores each component of the modes object `amd` and replace the function in `amd` by the list of calculated components. 
 """

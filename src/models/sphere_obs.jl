@@ -55,7 +55,7 @@ end
 
 
 """
-    StoreComps!(obs :: SphereObs) :: Nothing 
+    StoreComps!(obs :: SphereObs)
     
 calculates and stores each component of the observable `obs` and replace the function in `obs` by the list of calculated components. 
 """

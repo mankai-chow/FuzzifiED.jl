@@ -320,7 +320,7 @@ end
 
 **We have improved the interface for the function. Please consider using the function [`GetDenIntTerms`](@ref) in the future**
 ```julia
-    GetDenIntTerms(nm, 2 ; ps_pot = 2 .* ps_pot, mat_a = diagm([1, 0]), mat_b = diagm([0, 1]))
+GetDenIntTerms(nm, 2 ; ps_pot = 2 .* ps_pot, mat_a = diagm([1, 0]), mat_b = diagm([0, 1]))
 ```
 
 Returns the terms for the ising interaction 
@@ -353,7 +353,7 @@ end
 
 **We have improved the interface for the function. Please consider using the function [`GetPolTerms`](@ref) in the future**
 ```julia
-    GetPolTerms(nm, 2, [ 0 1 ; 1 0 ])
+GetPolTerms(nm, 2, [ 0 1 ; 1 0 ])
 ```
 
 Returns the terms for the density operator ``n^x_{l=0,m=0}``
@@ -379,7 +379,7 @@ end
 
 **We have improved the interface for the function. Please consider using the function [`GetPolTerms`](@ref) in the future**
 ```julia
-    GetPolTerms(nm, 2, [ 1 0 ; 0 -1 ])
+GetPolTerms(nm, 2, [ 1 0 ; 0 -1 ])
 ```
 
 Returns the terms for the density operator ``n^z_{l=0,m=0}``

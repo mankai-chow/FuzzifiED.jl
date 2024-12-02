@@ -1,15 +1,15 @@
 """
-    GetIntMatrix(nm :: Int64, ps_pot :: Vector{Number}) :: Array{ComplexF64, 3}
+    GetIntMatrix(nm :: Int64, ps_pot :: Vector{<:Number}) :: Array{ComplexF64, 3}
 
 # Argument
 
 - `nm :: Int64` is the number of orbitals
-- `ps_pot :: Vector{Number}` is the vector of non-zero pseudopotentials 
+- `ps_pot :: Vector{<:Number}` is the vector of non-zero pseudopotentials 
 
 # Output
 - A `nm`\\*`nm`\\*`nm` array giving the interaction matrix ``U_{m_1,m_2,m_3,-m_1-m_2-m_3}``
 """
-function GetIntMatrix(nm :: Int64, ps_pot :: Vector)
+function GetIntMatrix(nm :: Int64, ps_pot :: Vector{<:Number})
     ## N = 2s+1, get V[i,j,k,l]
     int_el = zeros(ComplexF64, nm, nm, nm)
     s = .5 * (nm - 1)
@@ -24,7 +24,7 @@ function GetIntMatrix(nm :: Int64, ps_pot :: Vector)
                     continue
                 end
                 m4r = m4 - s - 1
-                for l in 1 : length(ps_pot)
+                for l in eachindex(ps_pot)
                     if (abs(m1r + m2r) > nm - l || abs(m3r + m4r) > nm - l)
                         break
                     end 
