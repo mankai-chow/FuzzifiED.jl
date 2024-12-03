@@ -19,7 +19,7 @@ using FuzzifiED
 
 - Download Julia at [this link](https://julialang.org/downloads/). 
 - We are registering the packages `FuzzifiED` and `FuzzifiED_jll` in Julia. If error occurs at installation, try `Pkg.Registry.update()`.
-- Please make sure that the package `Arpack_jll` is at a version lower than 3.9. You can make sure of this by commanding `Pkg.add(PackageSpec(name="Arpack_jll", version="3.5"))`.
+- We are migrating the GitHub repositories from the personal account to the organisation account `FuzzifiED`. The old repositories will still be accessible. 
 - Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook. _N.b._, you may need to install the package `IJulia` by hand to use Jupyter notebook ; in Jupyter notebooks, you may need to define how many threads OpenMP uses by hand in `FuzzifiED.NumThreads`.
 - The package is under active development, so certain interfaces may get changed, superceded or obsolete. We are sorry for any possible inconvenience. 
 - For the DMRG calculation, due to the change of interface in update of ITensors v0.7, now both package `ITensors` and `ITensorMPS` need to be installed. 
