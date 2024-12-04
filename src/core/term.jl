@@ -213,7 +213,7 @@ function SimplifyTerms(tms :: Terms ; cutoff :: Float64 = eps(Float64)) :: Terms
             end
         end
     end
-    tms_f = [ 
+    tms_f = Term[ 
         Term(coeff_i, cstr_i)
         for dict_tms_i in dict_tms 
         for (cstr_i, coeff_i) in dict_tms_i if abs(coeff_i) > cutoff
