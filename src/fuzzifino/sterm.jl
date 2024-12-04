@@ -83,8 +83,8 @@ end
 Return the naive product of two series of STerms or the power of one STerms. The number of STerms equals the product of the number of STerms in `tms1` and `tms2`. For each STerm in `tms1` ``Ua^{(p_1)}_{o_1}…`` and `tms2` ``U'a^{(p'_1)}_{o'_1}…``, a new STerm is formed by taking ``UU'a^{(p_1)}_{o_1}… a^{(p'_1)}_{o'_1}…``
 """
 function *(tms1 :: STerms, tms2 :: STerms)
-    return vcat([ STerm(tm1.coeff * tm2.coeff, [tm1.cstr ; tm2.cstr])
-        for tm1 in tms1, tm2 in tms2 ]...)
+    return STerms(vcat([ STerm(tm1.coeff * tm2.coeff, [tm1.cstr ; tm2.cstr])
+        for tm1 in tms1, tm2 in tms2 ]...))
 end
 function *(tms1 :: STerms, tms2 :: Vararg{STerms})
     return tms1 * *(tms2...)
