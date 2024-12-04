@@ -36,6 +36,7 @@ Gives a `STerms` with a single `STerm`.
 const STerms = Vector{STerm}
 Base.Vector{T}(coeff :: Number, cstr :: Vector{Int64}) where T <: STerm = [STerm(coeff, cstr)]
 zero( :: Type{STerms}) = STerm[]
+one( :: Type{STerms}) = STerms(1, [-1, -1])
 
 """
     *(fac :: Number, tms :: STerms) :: STerms
