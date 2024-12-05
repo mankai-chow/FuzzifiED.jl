@@ -8,7 +8,7 @@ If this package is helpful in your research, we would appreciate it if you menti
 
 To install the package, please first enter Julia by entering in the command line `julia`, and then enter the commands
 ```julia
-using Pkg ; Pkg.add(url="https://github.com/FuzzifiED/FuzzifiED.jl.git")
+using Pkg ; Pkg.add("FuzzifiED")
 ```
 Include at the start of your Julia script
 ```julia
@@ -18,7 +18,12 @@ using FuzzifiED
 ## Useful information
 
 - Download Julia at [this link](https://julialang.org/downloads/). 
-- We are registering the packages `FuzzifiED` and `FuzzifiED_jll` in Julia. If error occurs at installation, try `Pkg.Registry.update()`.
+- We have registered FuzzifiED at Julia General Registry ! The package regisitry may have some delay, to bring up to date, use `Pkg.Registry.update()`, or install from the github repositories 
+```Julia
+using Pkg
+Pkg.add(url="https://github.com/FuzzifiED/FuzzifiED_jll.jl")
+Pkg.add(url="https://github.com/FuzzifiED/FuzzifiED.jl")
+```
 - We are migrating the GitHub repositories from the personal account to the organisation account `FuzzifiED`. The old repositories will still be accessible. 
 - Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook. _N.b._, you may need to install the package `IJulia` by hand to use Jupyter notebook ; in Jupyter notebooks, you may need to define how many threads OpenMP uses by hand in `FuzzifiED.NumThreads`.
 - The package is under active development, so certain interfaces may get changed, superceded or obsolete. We are sorry for any possible inconvenience. 
