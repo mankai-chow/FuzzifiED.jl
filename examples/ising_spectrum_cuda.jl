@@ -1,8 +1,8 @@
 # This example calculates the spectrum of 3d Ising model on fuzzy sphere at nm = 12
 # for one sector by performing the sparse matrix multiplication on CUDA.
 
-using CUDA
 using FuzzifiED
+using CUDA, SparseArrays, KrylovKit
 const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]

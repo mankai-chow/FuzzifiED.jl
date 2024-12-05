@@ -12,6 +12,7 @@ using ITensorMPS
 using CUDA
 using LinearAlgebra
 using HDF5
+using KrylovKit
 using FuzzifiED
 using FuzzifiED.Fuzzifino
 

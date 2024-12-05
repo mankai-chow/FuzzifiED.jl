@@ -4,6 +4,7 @@
 
 using FuzzifiED
 using LinearAlgebra
+using SparseArrays
 const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]
@@ -25,6 +26,6 @@ cfs = Confs(2 * nm, [nm, 0], qnd)
 bs = Basis(cfs, [1, 1, 1], qnf)
 hmt = Operator(bs, tms_hmt)
 hmt_mat = OpMat(hmt)
-hmt_mat_full = MatrixFromOpMat(hmt_mat)
+hmt_mat_full = Matrix(hmt_mat)
 enrg, st = eigen(hmt_mat_full)
 @show enrg

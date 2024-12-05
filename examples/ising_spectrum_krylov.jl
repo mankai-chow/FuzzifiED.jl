@@ -3,6 +3,7 @@
 # On my table computer, this calculation takes 4.825 s
 
 using FuzzifiED
+using KrylovKit
 const σ1 = [  1  0 ;  0  0 ]
 const σ2 = [  0  0 ;  0  1 ]
 const σx = [  0  1 ;  1  0 ]

@@ -4,11 +4,11 @@
 
 The following environment parameters defines how FuzzifiED works, _viz._ whether it outputs logs, how many threads it uses and where it reads its libraries. In general, you can keep it at default. 
 ```@docs
-SilentStd
-NumThreads
-Libpath
-ElementType
-OpenHelp!()
+FuzzifiED.SilentStd
+FuzzifiED.NumThreads
+FuzzifiED.Libpath
+FuzzifiED.ElementType
+FuzzifiED.OpenHelp!()
 ```
 
 ## Quantum numbers
@@ -103,10 +103,6 @@ The lowest eigenstates of the sparse matrix can be calculated by
 ```@docs
 GetEigensystem(mat :: OpMat{ComplexF64}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10))
 ```
-Besides Arpack in Fortran, we also provide an interface calling KrylovKit in Julia.
-```@docs
-GetEigensystemKrylov(mat :: OpMat{ComplexF64}, nst :: Int64)
-```
 
 The product of an operator on a state and the inner product of a final state, an operator and an initial state can be calculated by
 ```@docs
@@ -116,13 +112,6 @@ The product of an operator on a state and the inner product of a final state, an
 Note that sometimes it is needed to transform a state from one basis to another. This can be done by constructing an identity operator. 
 ```julia
 stf = Operator(bsd, bsf, one(Terms)) * std
-```
-
-The `OpMat` object can be converted into a full matrix or converted with the `SparseMatrixCSC` object in the `SparseArrays` package. This will allow, _e.g._, full diagonalisation using the linear algebra package of julia. 
-```@docs
-SparseMatrixCSC(mat :: OpMat)
-Matrix(mat :: OpMat)
-OpMat(matcsc :: SparseMatrixCSC)
 ```
 
 ## Entanglement
