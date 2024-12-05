@@ -17,10 +17,6 @@ import Base.one
 import Base.adjoint
 
 include("core/param.jl")
-export NumThreads
-export SilentStd
-export Libpath
-export ElementType
 export OpenHelp!
 
 include("core/qn.jl")
@@ -41,7 +37,6 @@ export Terms
 export ParticleHole
 export NormalOrder
 export SimplifyTerms
-export SimplifyTermsOld
 
 include("core/operator.jl")
 export Operator
