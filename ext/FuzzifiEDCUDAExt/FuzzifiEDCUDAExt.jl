@@ -6,7 +6,8 @@ using SparseArrays
 using FuzzifiED
 using KrylovKit
 
-import FuzzifiED:GetEigensystemCuda
+import FuzzifiED.GetEigensystemCuda
+import FuzzifiED.SilentStd
 
 """
     CUSPARSE.CuSparseMatrixCSC(mat :: OpMat{ComplexF64})
@@ -33,7 +34,6 @@ This method uses Julia `KrylovKit` package to calculate the lowest eigenstates o
 * `tol :: Float64` is the tolerence for the KrylovKit process. The default value is `1E-8` ;
 * `ncv :: Int64` is the maximum dimension of the Krylov subspace. The default value is `max(2 * nst, nst + 10)`. If `krylovdim` is also given, `ncv` will not be used.
 * `initvec` is the initial vector. Facultative, a random initialisation `CUDA.rand(T, mat.dimd)` by default ;
-* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 * `kwargs...` is the options that will directly sent into `eigsolve`, see its [documentation](https://jutho.github.io/KrylovKit.jl/stable/man/eig/#KrylovKit.eigsolve) for detail.
 

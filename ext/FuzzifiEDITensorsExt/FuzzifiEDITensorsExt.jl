@@ -15,6 +15,7 @@ import FuzzifiED.GetSites
 import FuzzifiED.TruncateQNDiag
 import FuzzifiED.TruncateQnu
 import FuzzifiED.SitesFromQnu
+import FuzzifiED.SilentStd
 
 include("fermion_type.jl")
 include("itensors_format.jl")

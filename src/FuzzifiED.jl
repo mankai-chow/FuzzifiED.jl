@@ -1,11 +1,9 @@
 module FuzzifiED 
 
 using LinearAlgebra
-using SparseArrays
 using WignerSymbols
 using SphericalHarmonics
 using FuzzifiED_jll
-using KrylovKit
 import Base.:+
 import Base.:-
 import Base.:*
@@ -17,7 +15,6 @@ import Base.one
 import Base.adjoint
 
 include("core/param.jl")
-export OpenHelp!
 
 include("core/qn.jl")
 export QNDiag
@@ -44,8 +41,6 @@ export Operator
 include("core/opmat.jl")
 export OpMat
 export GetEigensystem
-export GetEigensystemKrylov
-export SparseMatrixCSCFromOpMat
 export MatrixFromOpMat
 
 include("core/entangle.jl")
@@ -121,6 +116,8 @@ export GetMPOSites
 export GetMPO
 export TruncateQnu
 export SitesFromQnu
+export SparseMatrixCSCFromOpMat
+export GetEigensystemKrylov
 export GetEigensystemCuda
 
 function QNDiagFromSites end
@@ -136,6 +133,8 @@ function GetMPOSites end
 function GetMPO end
 function TruncateQnu end
 function SitesFromQnu end
+function SparseMatrixCSCFromOpMat end
+function GetEigensystemKrylov end
 function GetEigensystemCuda end
 
 function __init__()

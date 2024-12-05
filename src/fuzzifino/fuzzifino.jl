@@ -17,6 +17,7 @@ import FuzzifiED.SimplifyTerms
 import FuzzifiED.OpMat
 import FuzzifiED.NumThreads
 import FuzzifiED.SilentStd
+import FuzzifiED.ElementType
 
 """
     Libpathino :: String = FuzzifiED_jll.LibpathFuzzifino
