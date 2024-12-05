@@ -4,6 +4,12 @@
 
 ### Version 0.10
 
+#### Version 0.10.5 (4 December, 2024)
+
+- Fix the dependency in FuzzifiED_jll
+- Move KrylovKit and SparseArrays to extensions. 
+- Fix minor bugs. 
+
 #### Version 0.10.4 (30 November, 2024)
 
 - Split ITensorsExt and EasySweepExt.
