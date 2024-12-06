@@ -49,7 +49,7 @@ function GetEntSpec(st :: Vector{<:Number}, bs0 :: Basis, secd_lst :: Vector{Vec
     nor = bs0.cfs.nor
     dictlock = ReentrantLock()
     EntSpec = Dict{@NamedTuple{secd_a :: Vector{<:Number}, secf_a :: Vector{<:Number}, secd_b :: Vector{<:Number}, secf_b :: Vector{<:Number}}, Vector{Float64}}()
-    Threads.@threads for secd in secd_lst Confs
+    Threads.@threads for secd in secd_lst
         cfsa = Confs(no, secd[1], qnd_a ; nor, num_th = 1, disp_std)
         if (cfsa.ncf == 0) continue end 
         cfsb = Confs(no, secd[2], qnd_b ; nor, num_th = 1, disp_std)
