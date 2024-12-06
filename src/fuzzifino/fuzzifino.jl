@@ -16,6 +16,8 @@ import FuzzifiED.NormalOrder
 import FuzzifiED.SimplifyTerms
 import FuzzifiED.OpMat
 import FuzzifiED.NumThreads
+import FuzzifiED.StateDecompMat
+import FuzzifiED.GetEntSpec
 import FuzzifiED.SilentStd
 import FuzzifiED.ElementType
 
@@ -45,5 +47,7 @@ include("soperator.jl")
 export SOperator
 
 include("sopmat.jl")
+
+include("sentangle.jl")
 
 end
