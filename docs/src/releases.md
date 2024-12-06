@@ -4,6 +4,10 @@
 
 ### Version 0.10
 
+#### Version 0.10.6 (6 December, 2024)
+
+- Add entanglement calculations in Fuzzifino. 
+
 #### Version 0.10.5 (4 December, 2024)
 
 - Fix the dependency in FuzzifiED_jll
