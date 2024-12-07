@@ -13,13 +13,10 @@ import FuzzifiED.OpSumFromTerms
 import FuzzifiED.SitesFromQNDiag
 import FuzzifiED.GetSites
 import FuzzifiED.TruncateQNDiag
-import FuzzifiED.TruncateQnu
-import FuzzifiED.SitesFromQnu
 import FuzzifiED.SilentStd
 
 include("fermion_type.jl")
 include("itensors_format.jl")
-include("ar_itensor.jl")
 
 function __init__()
     BLAS.set_num_threads(1);
