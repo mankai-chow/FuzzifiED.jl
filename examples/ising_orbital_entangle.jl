@@ -1,6 +1,6 @@
 # This example calculates the entanglement entropy of the Ising ground state
-# along the orbital space cut at m = 0, and also the entanglement spectrum 
-# in the half-filled lz = 0, 1 and  both Z_2 sectors
+# along the orbital space cut at m = 0, and also the lowest entanglement spectrum 
+# in the half-filled sectors
 # On my table computer, this calculation takes 0.506 s
 
 using FuzzifiED
@@ -51,11 +51,17 @@ tr_rho = sum(eig_rho)
 ent_entropy = -sum(eig_rho .* log.(eig_rho))
 @show ent_entropy
 
-spec_p0 = -log.(ent_spec[(secd_a = [nm ÷ 2, -(nm ÷ 2) ^ 2,     0], secf_a = [ 1], secd_b = [nm ÷ 2, (nm ÷ 2) ^ 2,     0], secf_b = [ 1])][1:10])
-spec_m0 = -log.(ent_spec[(secd_a = [nm ÷ 2, -(nm ÷ 2) ^ 2,     0], secf_a = [-1], secd_b = [nm ÷ 2, (nm ÷ 2) ^ 2,     0], secf_b = [-1])][1:10])
-spec_p1 = -log.(ent_spec[(secd_a = [nm ÷ 2, -(nm ÷ 2) ^ 2 - 2, 0], secf_a = [ 1], secd_b = [nm ÷ 2, (nm ÷ 2) ^ 2 + 2, 0], secf_b = [ 1])][1:10])
-spec_m1 = -log.(ent_spec[(secd_a = [nm ÷ 2, -(nm ÷ 2) ^ 2 - 2, 0], secf_a = [-1], secd_b = [nm ÷ 2, (nm ÷ 2) ^ 2 + 2, 0], secf_b = [-1])][1:10])
-@show spec_p0 
-@show spec_m0
-@show spec_p1 
-@show spec_m1
+ent_spec_p = hcat(sort([ [sec.secd_a[2] / 2, -log(val)] 
+    for (sec, vals) in ent_spec 
+    if sec.secd_a[1] == nm ÷ 2 && sec.secf_a[1] == 1
+    for val in vals 
+], by = p -> p[2])...)
+ent_spec_m = hcat(sort([ [sec.secd_a[2] / 2, -log(val)] 
+    for (sec, vals) in ent_spec 
+    if sec.secd_a[1] == nm ÷ 2 && sec.secf_a[1] == -1
+    for val in vals 
+], by = p -> p[2])...)
+# To plot the entanglement spectrum, uncomment the following lines 
+# using Plots 
+# scatter(ent_spec_p[1, :], ent_spec_p[2, :])
+# scatter!(ent_spec_m[1, :], ent_spec_m[2, :])
