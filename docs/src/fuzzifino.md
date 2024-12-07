@@ -8,7 +8,7 @@ using FuzzifiED.Fuzzifino
 ## Environment parameter
 
 ```@docs
-Libpathino
+FuzzifiED.Fuzzifino.Libpathino
 ```
 
 ## Quantum numbers
