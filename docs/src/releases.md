@@ -82,19 +82,19 @@
 - Add new examples. 
 - Fix bugs
 
-### Version 0.7.0 (9 June, 2024)
+#### Version 0.7.0 (9 June, 2024)
 
 - Revise the implementation of diagonal and off-diagonal quantum number. 
 
 ### Version 0.6
 
-### Version 0.6.3 (8 June, 2024)
+#### Version 0.6.3 (8 June, 2024)
 
 - Add support for calculating entanglement spectrum. 
 - Add global parameters to control the number of threads, the output and the path of the dynamic library. 
 - Fix bugs. 
 
-### Version 0.6.0 (5 June, 2024)
+#### Version 0.6.0 (5 June, 2024)
 
 - Add support for full diagonalisation. 
 - Fix bugs and typos.
