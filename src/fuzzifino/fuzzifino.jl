@@ -47,6 +47,9 @@ export SOperator
 
 include("sopmat.jl")
 
+include("stransf.jl")
+export STransf
+
 include("sentangle.jl")
 
 end

@@ -43,6 +43,9 @@ export OpMat
 export GetEigensystem
 export MatrixFromOpMat
 
+include("core/transf.jl")
+export Transf
+
 include("core/entangle.jl")
 export StateDecompMat
 export GetEntSpec
