@@ -1,3 +1,6 @@
+export GetIntMatrix, GetDenIntTerms, GetPairIntTerms, GetPolTerms, GetL2Terms, GetC2Terms
+
+
 """
     GetIntMatrix(nm :: Int64, ps_pot :: Vector{<:Number}) :: Array{ComplexF64, 3}
 
@@ -91,8 +94,7 @@ function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, ma
     end
     return SimplifyTerms(tms)
 end
-GetDenIntTerms(nm :: Int64, nf :: Int64, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm)) = GetDenIntTerms(nm, nf, [1.0], mat_a, mat_b ; m_kept)
-GetDenIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.0], mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a'), m_kept :: Vector{Int64} = collect(1 : nm)) = GetDenIntTerms(nm, nf, ps_pot, mat_a, mat_b ; m_kept)
+GetDenIntTerms(nm :: Int64, nf :: Int64, mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm)) = GetDenIntTerms(nm, nf, [1.0], mat_a, mat_b ; m_kept)
 
 
 """
@@ -173,7 +175,7 @@ function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, m
     return SimplifyTerms(tms)
 end
 GetPairIntTerms(nm :: Int64, nf :: Int64, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm)) = GetPairIntTerms(nm, nf, [1.0], mat_a, mat_b ; m_kept)
-GetPairIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a'), m_kept :: Vector{Int64} = collect(1 : nm)) = GetPairIntTerms(nm, nf, ps_pot, mat_a, mat_b ; m_kept)
+
 
 """
     GetPolTerms(nm :: Int64, nf :: Int64[, mat :: Matrix{<:Number}][ ; fld_m :: Vector{<:Number}]) :: Terms
@@ -194,7 +196,7 @@ Return the polarisation term in the Hamiltonian
 ```
 Facultative. 
 """
-function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number} ; fld_m :: Vector{<:Number} = fill(1, nm))
+function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf) ; fld_m :: Vector{<:Number} = fill(1, nm))
     no = nm * nf
     tms = Term[]
     for o1 = 1 : no
@@ -208,7 +210,6 @@ function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number} ; fld_m :
     end
     return SimplifyTerms(tms)
 end
-GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), fld_m :: Vector{<:Number} = fill(1, nm)) = GetPolTerms(nm, nf, mat ; fld_m)
 
 
 """

@@ -3,7 +3,7 @@ module FuzzifiEDSparseArraysExt
 using SparseArrays
 using LinearAlgebra
 using FuzzifiED
-import FuzzifiED.SparseMatrixCSCFromOpMat
+
 
 """
     SparseMatrixCSC(mat :: OpMat{ComplexF64}) :: SparseMatrixCSC{Int64,ComplexF64}
@@ -21,7 +21,6 @@ function SparseArrays.SparseMatrixCSC(mat :: OpMat)
         return matcsc1 + transpose(matcsc1) - spdiagm(diag(matcsc1))
     end
 end
-SparseMatrixCSCFromOpMat(mat :: OpMat) = SparseMatrixCSC(mat)
 
 
 """
@@ -44,6 +43,6 @@ converts the `OpMat` objects to a full matrix.
 function LinearAlgebra.Matrix(mat :: OpMat)
     return Matrix(SparseMatrixCSCFromOpMat(mat))
 end
-MatrixFromOpMat(mat :: OpMat) = Matrix(mat)
+
 
 end

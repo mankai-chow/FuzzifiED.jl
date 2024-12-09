@@ -1,3 +1,6 @@
+export STransf
+
+
 """
     STransf 
 
@@ -49,7 +52,7 @@ Act a transformation on a state. `st_d` must be of length `trs.bsd.dim`. Returns
 
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 """
-function *(trs :: STransf, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
+function Base.:*(trs :: STransf, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
     st_f = Vector{ComplexF64}(undef, trs.bsf.dim)
     binom_d = [ binomial(i + j, i) for i = 0 : trs.bsd.cfs.nebm, j = 0 : trs.bsd.cfs.nob]
     binom_f = [ binomial(i + j, i) for i = 0 : trs.bsf.cfs.nebm, j = 0 : trs.bsf.cfs.nob]
@@ -59,7 +62,7 @@ function *(trs :: STransf, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
     trs.permf :: Ref{Int64}, trs.permb :: Ref{Int64}, trs.phf :: Ref{Int64}, trs.facf :: Ref{ComplexF64}, trs.facb :: Ref{ComplexF64}, ComplexF64.(st_d) :: Ref{ComplexF64}, st_f :: Ref{ComplexF64}, num_th :: Ref{Int64}) :: Nothing 
     return st_f
 end
-function *(trs :: STransf, st_d :: Vector{Float64} ; num_th = NumThreads)
+function Base.:*(trs :: STransf, st_d :: Vector{Float64} ; num_th = NumThreads)
     st_f = Vector{ComplexF64}(undef, trs.bsf.dim)
     binom_d = [ binomial(i + j, i) for i = 0 : trs.bsd.cfs.nebm, j = 0 : trs.bsd.cfs.nob]
     binom_f = [ binomial(i + j, i) for i = 0 : trs.bsf.cfs.nebm, j = 0 : trs.bsf.cfs.nob]

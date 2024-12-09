@@ -1,3 +1,6 @@
+export GetNeQNDiag, GetLz2QNDiag, GetFlavQNDiag, GetZnfChargeQNDiag, GetPinOrbQNDiag
+
+
 """ 
     GetNeQNDiag(no :: Int64) :: QNDiag 
 

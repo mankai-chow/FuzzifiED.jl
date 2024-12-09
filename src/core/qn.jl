@@ -1,3 +1,6 @@
+export QNDiag, QNOffd
+
+
 """
     QNDiag
 
@@ -42,20 +45,20 @@ end
 
 returns the QNDiag multiplied or divided by an integer factor, where the charge is multiplied or integer-divided by the factor. For ``ℤ_p`` quantum numbers, their modulus will be multiplied or integer-divided by the absolute value. If `qnd.modul ÷ abs(fac) ≤ 1`, a trivial QNDiag will be returned.  
 """
-function *(fac :: Int64, qnd :: QNDiag)
+function Base.:*(fac :: Int64, qnd :: QNDiag)
     return QNDiag(qnd.name, qnd.charge .* fac, qnd.modul == 1 ? 1 : (qnd.modul * abs(fac)))
 end
-function *(qnd :: QNDiag, fac :: Int64)
+function Base.:*(qnd :: QNDiag, fac :: Int64)
     return fac * qnd
 end
-function ÷(qnd :: QNDiag, fac :: Int64)
+function Base.:÷(qnd :: QNDiag, fac :: Int64)
     if (qnd.modul > 1 && qnd.modul ÷ fac ≤ 1)
         return QNDiag(qnd.name, qnd.charge .* 0, 1)
     else
         return QNDiag(qnd.name, qnd.charge .÷ fac, qnd.modul == 1 ? 1 : (qnd.modul ÷ abs(fac)))
     end
 end
-function -(qnd :: QNDiag)
+function Base.:-(qnd :: QNDiag)
     return (-1) * qnd
 end
 
@@ -66,7 +69,7 @@ end
 
 returns the sum or substraction of two QNDiags, whose name is the samea as `qnd1`, charge is the same as `qnd1 ± qnd2`, and modulus is the GCD of `qnd1` and `qnd2`. If `qnd1` and `qnd2` are both ``ℤ_p`` quantum numbers and their modulus are coprime, a trivial QNDiag will be returned. 
 """
-function +(qnd1 :: QNDiag, qnd2 :: QNDiag)
+function Base.:+(qnd1 :: QNDiag, qnd2 :: QNDiag)
     if (qnd1.modul == 1)
         modul = qnd2.modul 
     elseif (qnd2.modul == 1)
@@ -77,7 +80,7 @@ function +(qnd1 :: QNDiag, qnd2 :: QNDiag)
     end
     return QNDiag(qnd1.name, qnd1.charge .+ qnd2.charge, modul)
 end
-function -(qnd1 :: QNDiag, qnd2 :: QNDiag)
+function Base.:-(qnd1 :: QNDiag, qnd2 :: QNDiag)
     return qnd1 + (-1) * qnd2
 end
 
@@ -125,7 +128,7 @@ end
 
 returns the composition of two QNOffd transformations. The cycle is set to be the LCM of two QNOffds.
 """
-function *(qnf1 :: QNOffd, qnf2 :: QNOffd)
+function Base.:*(qnf1 :: QNOffd, qnf2 :: QNOffd)
     perm1 = [ qnf1.perm[qnf2.perm[o]] for o in eachindex(qnf1.perm)]
     ph1 = [ qnf1.ph[qnf2.perm[o]] ⊻ qnf2.ph[o] for o in eachindex(qnf1.perm) ]
     fac1 = [ (qnf2.ph[o] == 0 ? qnf1.fac[qnf2.perm[o]] : conj(qnf1.fac[qnf2.perm[o]])) * qnf2.fac[o] for o in eachindex(qnf1.perm) ]

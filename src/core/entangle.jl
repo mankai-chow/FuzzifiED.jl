@@ -1,3 +1,6 @@
+export StateDecompMat, GetEntSpec
+
+
 """
     StateDecompMat(st :: Vector{<:Number}, bs0 :: Basis, bsa :: Basis, bsb :: Basis, amp_oa :: Vector{ComplexF64}, amp_ob :: Vector{ComplexF64}) :: Matrix{ComplexF64}
 

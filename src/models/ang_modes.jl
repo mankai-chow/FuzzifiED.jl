@@ -1,3 +1,6 @@
+export AngModes, GetElectronMo, GetPairingMo, GetDensityMo, FilterComponen, FilterL2
+
+
 """
     AngModes
     
@@ -98,16 +101,16 @@ end
     
 enables the multiplication of a mode with a number.
 """
-function *(fac :: Number, amd :: AngModes) 
+function Base.:*(fac :: Number, amd :: AngModes) 
     return AngModes(amd.l2m, (l2, m2) -> fac * amd.get_comp(l2, m2))
 end
-function *(amd :: AngModes, fac :: Number) 
+function Base.:*(amd :: AngModes, fac :: Number) 
     return fac * amd
 end
-function /(amd :: AngModes, fac :: Number) 
+function Base.:/(amd :: AngModes, fac :: Number) 
     return (1 / fac) * amd
 end
-function -(amd :: AngModes) 
+function Base.:-(amd :: AngModes) 
     return (-1) * amd
 end
 
@@ -118,11 +121,11 @@ end
     
 enables the addition of two modes.
 """
-function +(obs1 :: AngModes, obs2 :: AngModes) 
+function Base.:+(obs1 :: AngModes, obs2 :: AngModes) 
     l2m = max(obs1.l2m, obs2.l2m)
     return AngModes(l2m, (l2, m2) -> obs1.get_comp(l2, m2) + obs2.get_comp(l2, m2))
 end
-function -(obs1 :: AngModes, obs2 :: AngModes)
+function Base.:-(obs1 :: AngModes, obs2 :: AngModes)
     return obs1 + (-1) * obs2
 end
 
@@ -137,7 +140,7 @@ enables the Hermitian conjugate of a spherical mode.
 \\end{aligned}
 ```
 """
-function adjoint(amd :: AngModes)
+function Base.adjoint(amd :: AngModes)
     l2m = amd.l2m
     obs1 = AngModes(l2m, (l2, m2) -> (iseven((l2 + m2) ÷ 2) ? 1 : -1) * amd.get_comp(l2, -m2)')
     return obs1
@@ -152,7 +155,7 @@ enables the multiplication of two modes in the rule of CG coefficients.
     Φ_{lm}=∑_{l_1l_2m_1m_2}δ_{m,m_1+m_2}⟨l_1m_1,l_2m_2|lm⟩Φ_{l_1m_1}Φ_{l_2m_2}
 ```
 """
-function *(obs1 :: AngModes, obs2 :: AngModes)
+function Base.:*(obs1 :: AngModes, obs2 :: AngModes)
     l2m1 = obs1.l2m
     l2m2 = obs2.l2m
     l2m = l2m1 + l2m2
@@ -220,7 +223,6 @@ function GetElectronMod(nm :: Int64, nf :: Int64, f :: Int64)
     gc = (l2, m2) -> (l2 == nm - 1) ? Terms(1.0, [0, f + nf * ((m2 + nm - 1) ÷ 2)]) : Term[]
     return AngModes(nm - 1, gc)
 end
-@deprecate ElecMod GetElectronMod
 
 
 """
@@ -246,7 +248,6 @@ function GetPairingMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     end
     return amd
 end
-@deprecate PairMod GetPairingMod
 
 
 """
@@ -272,4 +273,3 @@ function GetDensityMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     end
     return amd
 end
-@deprecate DenMod GetDensityMod

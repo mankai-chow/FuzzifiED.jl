@@ -1,3 +1,6 @@
+export SphereObs, StoreComps!, StoreComps, Laplacian, GetComponent, GetPointValue, GetElectronObs, GetDensityObs, GetPairingObs
+
+
 """
     SphereObs
 
@@ -105,16 +108,16 @@ end
     
 enables the multiplication of an observable with a number.
 """
-function *(fac :: Number, obs :: SphereObs) 
+function Base.:*(fac :: Number, obs :: SphereObs) 
     return SphereObs(obs.s2, obs.l2m, (l2, m2) -> fac * obs.get_comp(l2, m2))
 end
-function *(obs :: SphereObs, fac :: Number) 
+function Base.:*(obs :: SphereObs, fac :: Number) 
     return fac * obs
 end
-function /(obs :: SphereObs, fac :: Number) 
+function Base.:/(obs :: SphereObs, fac :: Number) 
     return (1 / fac) * obs
 end
-function -(obs :: SphereObs) 
+function Base.:-(obs :: SphereObs) 
     return (-1) * obs
 end
 
@@ -125,7 +128,7 @@ end
     
 enables the addition of two observables.
 """
-function +(obs1 :: SphereObs, obs2 :: SphereObs) 
+function Base.:+(obs1 :: SphereObs, obs2 :: SphereObs) 
     if (obs1.s2 ≠ obs2.s2) 
         print("Additions must have equal S")
         return 
@@ -134,7 +137,7 @@ function +(obs1 :: SphereObs, obs2 :: SphereObs)
     l2m = max(obs1.l2m, obs2.l2m)
     return SphereObs(s2, l2m, (l2, m2) -> obs1.get_comp(l2, m2) + obs2.get_comp(l2, m2))
 end
-function -(obs1 :: SphereObs, obs2 :: SphereObs)
+function Base.:-(obs1 :: SphereObs, obs2 :: SphereObs)
     return obs1 + (-1) * obs2
 end
 
@@ -150,7 +153,7 @@ enables the Hermitian conjugate of a spherical observable.
 \\end{aligned}
 ```
 """
-function adjoint(obs :: SphereObs)
+function Base.adjoint(obs :: SphereObs)
     s2 = obs.s2
     l2m = obs.l2m
     obs1 = SphereObs(-s2, l2m, (l2, m2) -> obs.get_comp(l2, -m2)' * (iseven((s2 - m2) ÷ 2) ? 1 : -1))
@@ -163,7 +166,7 @@ end
     
 enables the multiplication of two observable by making use of the composition of two monopole harmonics into one. 
 """
-function *(obs1 :: SphereObs, obs2 :: SphereObs)
+function Base.:*(obs1 :: SphereObs, obs2 :: SphereObs)
     s21 = obs1.s2 
     s22 = obs2.s2
     s2 = s21 + s22
@@ -243,7 +246,6 @@ function GetElectronObs(nm :: Int64, nf :: Int64, f :: Int64)
     gc = (l2, m2) -> (l2 == nm - 1) ? Terms(1.0, [0, f + nf * ((m2 + nm - 1) ÷ 2)]) : Term[]
     return SphereObs(nm - 1, nm - 1, gc)
 end
-@deprecate Electron GetElectronObs
 
 
 """
@@ -257,7 +259,7 @@ returns the density operator ``n=∑_{ff'}ψ^†_{f}M_{ff'}ψ_{f'}``
 * `nm :: Int64` is the number of orbitals.
 * `mat :: Int64` is the matrix ``M_{ff'}``. Facultative, identity matrix ``\\mathbb{I}`` by default.
 """
-function GetDensityObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
+function GetDensityObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf))
     el = [ StoreComps(GetElectronObs(nm, nf, f)) for f = 1 : nf ]
     obs = SphereObs(0, 0, Dict{Tuple{Int64, Int64}, Terms}())
     for f1 = 1 : nf, f2 = 1 : nf
@@ -266,8 +268,6 @@ function GetDensityObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     end
     return obs
 end
-GetDensityObs(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf)) = GetDensityObs(nm, nf, mat)
-@deprecate Density GetDensityObs
 
 
 """
@@ -290,4 +290,3 @@ function GetPairingObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     end
     return obs
 end
-@deprecate PairObs GetPairingObs

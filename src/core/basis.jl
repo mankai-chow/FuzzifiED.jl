@@ -1,3 +1,6 @@
+export Basis, GetConfWeight
+
+
 """
     Basis
 

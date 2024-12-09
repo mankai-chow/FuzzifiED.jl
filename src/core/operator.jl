@@ -1,3 +1,6 @@
+export Operator
+
+
 """
     Operator
 
@@ -61,7 +64,7 @@ Measure the action of an operator on a state. `st_d` must be of length `op.bsd.d
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
-function *(op :: Operator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, disp_std = !SilentStd)
+function Base.:*(op :: Operator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, disp_std = !SilentStd)
     st_f = Vector{ComplexF64}(undef, op.bsf.dim)
     @ccall Libpath.__op_MOD_action_op(op.bsd.cfs.no :: Ref{Int64}, op.bsd.cfs.nor :: Ref{Int64}, 
     op.bsd.cfs.ncf :: Ref{Int64}, op.bsd.dim :: Ref{Int64}, op.bsd.cfs.conf :: Ref{Int64}, op.bsd.cfs.lid :: Ref{Int64}, op.bsd.cfs.rid :: Ref{Int64}, op.bsd.szz :: Ref{Int64}, op.bsd.cfgr :: Ref{Int64}, op.bsd.cffac :: Ref{ComplexF64}, op.bsd.grel :: Ref{Int64}, op.bsd.grsz :: Ref{Int64}, 
@@ -69,7 +72,7 @@ function *(op :: Operator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, dis
     op.ntm :: Ref{Int64}, op.nc :: Ref{Int64}, op.cstrs :: Ref{Int64}, op.coeffs :: Ref{ComplexF64}, op.red_q :: Ref{Int64}, st_d :: Ref{ComplexF64}, st_f :: Ref{ComplexF64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing
     return st_f
 end
-function *(op :: Operator, st_d :: Vector{Float64} ; num_th = NumThreads, disp_std = !SilentStd)
+function Base.:*(op :: Operator, st_d :: Vector{Float64} ; num_th = NumThreads, disp_std = !SilentStd)
     st_f = Vector{ComplexF64}(undef, op.bsf.dim)
     @ccall Libpath.__op_MOD_action_op(op.bsd.cfs.no :: Ref{Int64}, op.bsd.cfs.nor :: Ref{Int64}, 
     op.bsd.cfs.ncf :: Ref{Int64}, op.bsd.dim :: Ref{Int64}, op.bsd.cfs.conf :: Ref{Int64}, op.bsd.cfs.lid :: Ref{Int64}, op.bsd.cfs.rid :: Ref{Int64}, op.bsd.szz :: Ref{Int64}, op.bsd.cfgr :: Ref{Int64}, op.bsd.cffac :: Ref{ComplexF64}, op.bsd.grel :: Ref{Int64}, op.bsd.grsz :: Ref{Int64}, 
@@ -90,7 +93,7 @@ Measuring the inner product between two states and an operator. `st_d` must be o
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
-function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op :: Operator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, disp_std = !SilentStd)
+function Base.:*(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op :: Operator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, disp_std = !SilentStd)
     ovl_ref = Ref{ComplexF64}(0)
     @ccall Libpath.__op_MOD_overlap_op(op.bsd.cfs.no :: Ref{Int64}, op.bsd.cfs.nor :: Ref{Int64}, 
     op.bsd.cfs.ncf :: Ref{Int64}, op.bsd.dim :: Ref{Int64}, op.bsd.cfs.conf :: Ref{Int64}, op.bsd.cfs.lid :: Ref{Int64}, op.bsd.cfs.rid :: Ref{Int64}, op.bsd.szz :: Ref{Int64}, op.bsd.cfgr :: Ref{Int64}, op.bsd.cffac :: Ref{ComplexF64}, op.bsd.grel :: Ref{Int64}, op.bsd.grsz :: Ref{Int64}, 
@@ -98,7 +101,7 @@ function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op ::
     op.ntm :: Ref{Int64}, op.nc :: Ref{Int64}, op.cstrs :: Ref{Int64}, op.coeffs :: Ref{ComplexF64}, op.red_q :: Ref{Int64}, ComplexF64.(st_d) :: Ref{ComplexF64}, ComplexF64.(st_fp') :: Ref{ComplexF64}, ovl_ref :: Ref{ComplexF64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing 
     return ovl_ref[]
 end
-function *(st_fp :: LinearAlgebra.Adjoint{Float64, Vector{Float64}}, op :: Operator, st_d :: Vector{Float64} ; num_th = NumThreads, disp_std = !SilentStd)
+function Base.:*(st_fp :: LinearAlgebra.Adjoint{Float64, Vector{Float64}}, op :: Operator, st_d :: Vector{Float64} ; num_th = NumThreads, disp_std = !SilentStd)
     ovl_ref = Ref{ComplexF64}(0)
     @ccall Libpath.__op_MOD_overlap_op(op.bsd.cfs.no :: Ref{Int64}, op.bsd.cfs.nor :: Ref{Int64}, 
     op.bsd.cfs.ncf :: Ref{Int64}, op.bsd.dim :: Ref{Int64}, op.bsd.cfs.conf :: Ref{Int64}, op.bsd.cfs.lid :: Ref{Int64}, op.bsd.cfs.rid :: Ref{Int64}, op.bsd.szz :: Ref{Int64}, op.bsd.cfgr :: Ref{Int64}, op.bsd.cffac :: Ref{ComplexF64}, op.bsd.grel :: Ref{Int64}, op.bsd.grsz :: Ref{Int64}, 
