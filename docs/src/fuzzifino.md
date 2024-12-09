@@ -87,6 +87,14 @@ StateDecompMat(st::Vector{<:Number}, bs0::SBasis, bsa::SBasis, bsb::SBasis, amp_
 GetEntSpec(st::Vector{<:Number}, bs0::SBasis, secd_lst::Vector{Vector{Vector{Int64}}}, secf_lst::Union{Vector{Vector{Vector{ComplexF64}}}, Vector{Vector{Vector{Float64}}}, Vector{Vector{Vector{Int64}}}}; qnd_a, qnd_b, qnf_a, qnf_b, amp_ofa, amp_oba, amp_ofb, amp_obb, disp_std)
 ```
 
+## Transformation
+
+```@docs
+STransf
+STransf(bsd :: SBasis, bsf :: SBasis, qnf :: SQNOffd)
+*(trs :: STransf, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
+```
+
 ## Related examples
 
 * [`test_boson.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/test_boson.jl) tests the nearest-neighbour tight-binding model $H=\sum_i(b^\dagger_ib_{i+1}+f^\dagger_if_{i+1}+\mathrm{h.c.})$. The example diagonalises the sector with the number of bosons and fermions both $N_o/2$, and even under the reflection with respect to a bond center $i\mapsto N_o+1-i$, and measures the total particle number squared $\left[\sum_i(b_i^\dagger b_i+f^\dagger_if_i)\right]^2$.

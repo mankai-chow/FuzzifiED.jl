@@ -114,6 +114,14 @@ Note that sometimes it is needed to transform a state from one basis to another.
 stf = Operator(bsd, bsf, one(Terms)) * std
 ```
 
+## Transformation
+
+```@docs
+Transf
+Transf(bsd :: Basis, bsf :: Basis, qnf :: QNOffd)
+*(trs :: Transf, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
+```
+
 ## Entanglement
 
 ```@docs
