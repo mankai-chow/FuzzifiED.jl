@@ -4,6 +4,10 @@
 
 ### Version 0.10
 
+#### Version 0.10.7 (9 December, 2024)
+
+- Add implementation of transformations.
+
 #### Version 0.10.6 (6 December, 2024)
 
 - Add entanglement calculations in Fuzzifino. 
