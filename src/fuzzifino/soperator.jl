@@ -4,11 +4,11 @@
 The mutable type `SOperator` records the sum of terms together with information about its symmetry and the basis of the state it acts on and the basis of the resulting state.
 
 # Fields
-* `bsd :: SBasis` is the basis of the initial state ;
-* `bsf :: SBasis` is the basis of the final state ;
-* `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same set of quantum numbers, and the operator fully respects the symmetries, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0` ; 
-* `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0` ;
-* `ntm :: Int64` is the number of terms ;
+* `bsd :: SBasis` is the basis of the initial state.
+* `bsf :: SBasis` is the basis of the final state.
+* `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same set of quantum numbers, and the operator fully respects the symmetries, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0`.
+* `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0`.
+* `ntm :: Int64` is the number of terms.
 * `nc :: Int64` is the maximum number of operators in an operator string
 * `cstrs :: Matrix{Int64}` is a matrix recording the operator string of each term. Each column corresponds to a term and is padded to the maximum length with `-1`'s.
 * `coeffs :: Vector{ComplexF64}` corresponds to the coefficients in each term.
@@ -31,14 +31,13 @@ end
 generates an operator object from a series of terms. 
 
 # Arguments
-* `bsd :: SBasis` is the basis of the initial state ;
+* `bsd :: SBasis` is the basis of the initial state.
 * `bsf :: SBasis` is the basis of the final state. Facultative, the same as `bsd` by default. 
-* `terms :: STerms` records the terms ; 
+* `terms :: STerms` records the terms.
 * `red_q :: Int64` is a flag that records whether or not the conversion to a sparse martrix can be simplified : if `bsd` and `bsf` have exactly the same set of quantum numbers, and the operator fully respects the symmetries, and all the elements in `bsd.cffac` and `bsf.cffac` has the same absolute value, then `red_q = 1` ; otherwise `red_q = 0` ; Facultative, if `bsf` is not given, 1 by default, otherwise 0 by default.
 * `sym_q :: Int64` records the symmetry of the operator : if the matrix is Hermitian, then `sym_q = 1` ; if it is symmetric, then `sym_q = 2` ; otherwise `sym_q = 0`. Facultative, if `bsf` is not given, 1 by default, otherwise 0 by default.
-* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
-
 """
 function SOperator(bsd :: SBasis, bsf :: SBasis, terms :: STerms ; red_q :: Int64 = 0, sym_q :: Int64 = 0)
     ntm = length(terms)
@@ -59,9 +58,8 @@ Measure the action of an operator on a state. `st_d` must be of length `op.bsd.d
 
 # Facultative arguments
 
-* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
-
 """
 function *(op :: SOperator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, disp_std = !SilentStd)
     st_f = Vector{ComplexF64}(undef, op.bsf.dim)
@@ -93,7 +91,7 @@ Measuring the inner product between two states and an operator. `st_d` must be o
 
 # Facultative arguments
 
-* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
 function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op :: SOperator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, disp_std = !SilentStd)

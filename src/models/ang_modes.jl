@@ -5,10 +5,10 @@ The mutable type `AngModes` stores angular momentum components of an operator on
 
 # Fields
 
-- `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the modes object. 
-- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Terms` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq l\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
-- `stored_q :: Bool` is a boolean that specifies whether or not each component of the modes object is stored.
-- `comps :: Dict{Tuple{Int64, Int64}, Terms}` stores each component of the modes object in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
+* `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the modes object. 
+* `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Terms` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq l\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
+* `stored_q :: Bool` is a boolean that specifies whether or not each component of the modes object is stored.
+* `comps :: Dict{Tuple{Int64, Int64}, Terms}` stores each component of the modes object in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
 """
 mutable struct AngModes
     l2m :: Int64
@@ -25,8 +25,8 @@ initialises the modes object from ``2l_{\\max}`` and the function ``(l,m)↦\\Ph
 
 # Arguments
 
-- `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the modes object. 
-- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Terms` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq s\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
+* `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the modes object. 
+* `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Terms` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq s\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
 """
 function AngModes(l2m :: Int64, get_comp :: Function)
     return AngModes(l2m, get_comp, false, Dict{Tuple{Int64, Int64}, Terms}())
@@ -40,8 +40,8 @@ initialises the modes object from ``2l_{\\max}`` and a list of ``\\Phi_{lm}`` sp
 
 # Arguments
 
-- `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the modes object. 
-- `comps :: Dict{Tuple{Int64, Int64}, Terms}` stores each component of the modes object in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
+* `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the modes object. 
+* `comps :: Dict{Tuple{Int64, Int64}, Terms}` stores each component of the modes object in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
 """
 function AngModes(l2m :: Int64, cmps :: Dict{Tuple{Int64, Int64}, Terms})
     return AngModes(l2m, (l2, m2) -> (l2 ≤ l2m && abs(m2) ≤ l2 && haskey(cmps, (l2, m2))) ? cmps[(l2, m2)] : Term[], true, cmps)
@@ -185,13 +185,14 @@ returns an angular modes object with certain modes filtered out.
 
 # Arguments 
 
-- `amd :: AngModes` is the original angular modes
-- `flt` is the filter function whose input is the pair ``(l,m)`` and output is a logical that indicates whether this mode is chosen. E.g., if one wants to filter out the modes with angular momentum `l0`, one should put `(l, m) -> l == l0`.
+* `amd :: AngModes` is the original angular modes
+* `flt` is the filter function whose input is the pair ``(l,m)`` and output is a logical that indicates whether this mode is chosen. E.g., if one wants to filter out the modes with angular momentum `l0`, one should put `(l, m) -> l == l0`.
 """
 function FilterComponent(amd :: AngModes, flt) 
     l2m = amd.l2m
     return AngModes(l2m, (l2, m2) -> flt(l2 / 2, m2 / 2) ? amd.get_comp(l2, m2) : Term[])
 end
+
 
 """
     FilterL2(amd :: AngModes, l :: Number) :: AngModes 
@@ -211,9 +212,9 @@ returns the modes of electron annihilation operator ``c_m``, with angular moment
 
 # Arguments
 
-- `nf :: Int64` is the number of flavours.
-- `nm :: Int64` is the number of orbitals.
-- `f :: Int64` is the index of the flavour to be taken.
+* `nf :: Int64` is the number of flavours.
+* `nm :: Int64` is the number of orbitals.
+* `f :: Int64` is the index of the flavour to be taken.
 """
 function GetElectronMod(nm :: Int64, nf :: Int64, f :: Int64)
     gc = (l2, m2) -> (l2 == nm - 1) ? Terms(1.0, [0, f + nf * ((m2 + nm - 1) ÷ 2)]) : Term[]
@@ -232,9 +233,9 @@ returns the modes of two electrons superposed in the rule of CG coefficients.
 
 # Arguments
 
-- `nf :: Int64` is the number of flavours.
-- `nm :: Int64` is the number of orbitals.
-- `mat :: Int64` is the matrix ``M_{ff'}``.
+* `nf :: Int64` is the number of flavours.
+* `nm :: Int64` is the number of orbitals.
+* `mat :: Int64` is the matrix ``M_{ff'}``.
 """
 function GetPairingMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     el = [ StoreComps(GetElectronMod(nm, nf, f)) for f = 1 : nf ]
@@ -258,9 +259,9 @@ returns the modes of electron creation and annihilation superposed in the rule o
 
 # Arguments
 
-- `nf :: Int64` is the number of flavours.
-- `nm :: Int64` is the number of orbitals.
-- `mat :: Int64` is the matrix ``M_{ff'}``. Facultative, identity matrix ``\\mathbb{I}`` by default.
+* `nf :: Int64` is the number of flavours.
+* `nm :: Int64` is the number of orbitals.
+* `mat :: Int64` is the matrix ``M_{ff'}``. Facultative, identity matrix ``\\mathbb{I}`` by default.
 """
 function GetDensityMod(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     el = [ StoreComps(GetElectronMod(nm, nf, f)) for f = 1 : nf ]

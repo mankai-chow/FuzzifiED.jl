@@ -8,8 +8,8 @@ The mutable type `STerm` records a STerm that looks like ``Ua^{(p_1)}_{o_1}a^{(p
 ```
 
 # Fields
-- `coeff :: ComplexF64` records the coefficient ``U``
-- `cstr :: Vector{Int64}` is a length-``2l`` vector ``(p_1,o_1,p_2,o_2,… p_l,o_l)`` recording the operator string
+* `coeff :: ComplexF64` records the coefficient ``U``
+* `cstr :: Vector{Int64}` is a length-``2l`` vector ``(p_1,o_1,p_2,o_2,… p_l,o_l)`` recording the operator string
 
 # Method 
 
@@ -58,6 +58,7 @@ end
 function /(tms :: STerms, fac :: Number)
     return (1 / fac) * tms
 end
+
 
 """
     +(tms1 :: STerms, tms2 :: STerms) :: STerms
@@ -117,8 +118,8 @@ end
     NormalOrder(tm :: STerm) :: STerms
 
 rearrange a STerm such that 
-- the creation operators must be commuted in front of the annihilation operator 
-- the site index of the creation operators are in ascending order and the annihilation operators in descending order. 
+* the creation operators must be commuted in front of the annihilation operator 
+* the site index of the creation operators are in ascending order and the annihilation operators in descending order. 
 return a list of STerms whose result is equal to the original STerm. 
 """
 function NormalOrder(tm :: STerm)
@@ -166,13 +167,12 @@ end
     SimplifyTerms(tms :: STerms ; cutoff :: Float64 = eps(Float64)) :: STerms
 
 simplifies the sum of STerms such that 
-- each STerm is normal ordered,
-- like STerms are combined, and STerms with zero coefficients are removed.
+* each STerm is normal ordered,
+* like STerms are combined, and STerms with zero coefficients are removed.
 
 # Argument 
 
-- `cutoff :: Float64` is the cutoff such that STerms with smaller absolute value of coefficients will be neglected. Facultative, `eps(Float64)` by default. 
-
+* `cutoff :: Float64` is the cutoff such that STerms with smaller absolute value of coefficients will be neglected. Facultative, `eps(Float64)` by default. 
 """
 function SimplifyTerms(tms :: STerms ; cutoff :: Float64 = eps(Float64)) :: STerms
     dictlock = [ ReentrantLock() for i = 1 : 64 ]

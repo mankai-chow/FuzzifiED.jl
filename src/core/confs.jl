@@ -29,9 +29,9 @@ generates the configurations from the list of QNDiags.
 
 * `no :: Int64` is the number of sites ``N_o``.
 * `secd :: Vector{Int64}` is the set of ``Q_i`` for the selected configurations in the sector.
-* `qnd :: Vector{QNDiag}` is the set of [QNDiags](@ref QNDiag). 
+* `qnd :: Vector{QNDiag}` is the set of [QNDiags](@ref QNDiag).
 * `nor :: Int64` is the number of less significant bits used to generate the Lin table. Facultative, ``N_o/2`` by default.
-* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output
@@ -88,6 +88,7 @@ function Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag} ; nor :
     return Confs(no, nor, ncf, conf, lid, rid)
 end
 
+
 """
     GetConfId(cfs :: Confs, cf :: Int64) :: Int64
 
@@ -99,8 +100,7 @@ inversely look up the index from the configuration
 * `cf :: Int64` stores the configuration to be looked-up expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th site in the `i`-th configuration is occupied ; if the bit is 0, then the site is empty. 
 
 # Output
-* `id :: Int64` is the id of the configuration such that `cfs.conf[id] == cf`
-
+* `id :: Int64` is the id of the configuration such that `cfs.conf[id] == cf`.
 """
 function GetConfId(cfs :: Confs, cf :: Int64)
     cf_l = cf >> cfs.nor

@@ -13,10 +13,10 @@ where ``i=1,…,N_U`` is the index of quantum number, ``o`` is the index of site
 
 # Fields 
 
-- `name :: String` is the name of the diagonal quantum number 
-- `chargef :: Vector{Int64}` is the symmetry charge ``q_{f,o}`` of each site
-- `chargeb :: Vector{Int64}` is the symmetry charge ``q_{b,o}`` of each site
-- `modul :: Vector{Int64}` is the modulus ``p``, set to 1 for ``\\mathrm{U}(1)`` SQNDiags. 
+* `name :: String` is the name of the diagonal quantum number 
+* `chargef :: Vector{Int64}` is the symmetry charge ``q_{f,o}`` of each site
+* `chargeb :: Vector{Int64}` is the symmetry charge ``q_{b,o}`` of each site
+* `modul :: Vector{Int64}` is the modulus ``p``, set to 1 for ``\\mathrm{U}(1)`` SQNDiags. 
 
 # Initialisation 
 
@@ -35,6 +35,7 @@ mutable struct SQNDiag
     SQNDiag(chargef :: Vector{Int64}, chargeb :: Vector{Int64}, modul :: Int64 = 1) = new("QN", chargef, chargeb, modul)
 end
 
+
 """
     SQNOffd
 
@@ -46,12 +47,12 @@ where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_
 
 # Arguments 
 
-- `permf :: Vector{Int64}` is a length-``N_{of}`` vector that records the fermion permutation ``π_{f,o}``.
-- `permb :: Vector{Int64}` is a length-``N_{ob}`` vector that records the boson permutation ``π_{b,o}``.
-- `phf :: Vector{Int64}` is a length-``N_{of}`` vector that records ``p_{f,o}`` to determine whether or not to perform a particle-hole transformation
-- `facf :: Vector{ComplexF64}` is a length-``N_{of}`` vector that records the factor ``α_{f,o}`` in the transformation.
-- `facb :: Vector{ComplexF64}` is a length-``N_{ob}`` vector that records the factor ``α_{b,o}`` in the transformation.
-- `cyc :: Int64` is the cycle ``p``. 
+* `permf :: Vector{Int64}` is a length-``N_{of}`` vector that records the fermion permutation ``π_{f,o}``.
+* `permb :: Vector{Int64}` is a length-``N_{ob}`` vector that records the boson permutation ``π_{b,o}``.
+* `phf :: Vector{Int64}` is a length-``N_{of}`` vector that records ``p_{f,o}`` to determine whether or not to perform a particle-hole transformation
+* `facf :: Vector{ComplexF64}` is a length-``N_{of}`` vector that records the factor ``α_{f,o}`` in the transformation.
+* `facb :: Vector{ComplexF64}` is a length-``N_{ob}`` vector that records the factor ``α_{b,o}`` in the transformation.
+* `cyc :: Int64` is the cycle ``p``. 
 
 # Initialisation 
 

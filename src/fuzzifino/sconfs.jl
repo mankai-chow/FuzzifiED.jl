@@ -38,9 +38,9 @@ generates the configurations from the list of QNDiags.
 * `nob :: Int64` is the number of bosonic sites ``N_{ob}``.
 * `nebm :: Int64` is the maximal number of total bosons.
 * `secd :: Vector{Int64}` is the set of ``Q_i`` for the selected configurations in the sector.
-* `qnd :: Vector{SQNDiag}` is the set of [SQNDiags](@ref SQNDiag). 
+* `qnd :: Vector{SQNDiag}` is the set of [SQNDiags](@ref SQNDiag).
 * `norf :: Int64` and `norb :: Int64` are the number of less significant bits used to generate the Lin table. Facultative, ``N_{of}/2`` and ``N_{ob}/2`` by default.
-* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output

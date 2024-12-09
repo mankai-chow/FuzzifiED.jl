@@ -8,11 +8,11 @@ The mutable type `SBasis` stores the information of the SBasis that respects bot
 where ``|i⟩`` is a direct product state, _i.e._, the configurations ``|i_{Ik}⟩`` are grouped into a state ``|I⟩``. 
 
 # Fields
-* `cfs :: SConfs` stores the configurations that respect the QNDiags ;
-* `dim :: Int64` is the dimension of the SBasis ;
-* `szz :: Int64` records the maximum size ``\\max m_g`` of groups;
-* `cfgr :: Vector{Int64}` is a vector of length `cfs.ncf` and records which group ``|I⟩`` each configuration ``|i⟩`` belong to ;
-* `cffac :: Vector{ComplexF64}` is a vector of length `cfs.ncf` and records the coefficients ``λ_i`` of each configuration ;
+* `cfs :: SConfs` stores the configurations that respect the QNDiags.
+* `dim :: Int64` is the dimension of the SBasis.
+* `szz :: Int64` records the maximum size ``\\max m_g`` of groups.
+* `cfgr :: Vector{Int64}` is a vector of length `cfs.ncf` and records which group ``|I⟩`` each configuration ``|i⟩`` belong to.
+* `cffac :: Vector{ComplexF64}` is a vector of length `cfs.ncf` and records the coefficients ``λ_i`` of each configuration.
 * `grel :: Matrix{Int64}` is a `szz`\\*`dim` matrix that records the configurations in each group ``|i_{Ik}⟩ (k = 1,…,m_I)``
 * `grsz :: Vector{Int64}` is a vector of length `dim` that records the size ``m_I`` of each group.
 """
@@ -28,21 +28,21 @@ end
 
 
 """
-    SBasis(cfs :: SConfs, secf :: Vector{ComplexF64}, qnf :: Vector{SQNOffd} ; num_th :: Int64, disp_std :: Bool) :: SBasis
+    SBasis(cfs :: SConfs, secf :: Vector{ComplexF64}, qnf :: Vector{SQNOffd} ; num_th :: Int64, disp_std :: Bool)
 
 generates the SBasis that respects the off-diagonal ``ℤ_p`` quantum numbers (secfQNOffd)
 
 # Arguments 
 
-* `cfs :: SConfs` is the diagonal QN–preserving configurations ;
-* `secf :: Vector{ComplexF64}` is a vector of length the same as the number of discrete symmetries that records the eigenvalue of each transformation in the sector ;
-* `qnf :: Vector{SQNOffd}` is a vector of off-diagonal quantum numbers. 
-* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `cfs :: SConfs` is the diagonal QN–preserving configurations.
+* `secf :: Vector{ComplexF64}` is a vector of length the same as the number of discrete symmetries that records the eigenvalue of each transformation in the sector.
+* `qnf :: Vector{SQNOffd}` is a vector of off-diagonal quantum numbers.
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output
 
-* `bs :: SBasis` is the resulting [SBasis](@ref SBasis) object
+* `bs :: SBasis` is the resulting [SBasis](@ref SBasis) object.
 """
 function SBasis(cfs :: SConfs, secf :: Vector{<:Number}, qnf :: Vector{SQNOffd} ; num_th = NumThreads, disp_std = !SilentStd)
     if (length(secf) == 0) return SBasis(cfs) end
@@ -79,17 +79,17 @@ end
 
 
 """
-    SBasis(cfs :: SConfs) :: SBasis
+    SBasis(cfs :: SConfs)
 
 Generate a SBasis from the configurations without off-diagonal ``ℤ_n`` symmetries.
 
 # Arguments 
 
-* `cfs :: SConfs` is the diagonal QN–preserving configurations ;
+* `cfs :: SConfs` is the diagonal QN–preserving configurations.
 
 # Output
 
-* `bs :: SBasis` is the resulting `SBasis` object
+* `bs :: SBasis` is the resulting `SBasis` object.
 """
 function SBasis(cfs :: SConfs)
     dim = cfs.ncf

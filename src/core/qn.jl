@@ -13,9 +13,9 @@ where ``i=1,…,N_U`` is the index of quantum number, ``o`` is the index of site
 
 # Fields 
 
-- `name :: String` is the name of the diagonal quantum number 
-- `charge :: Vector{Int64}` is the symmetry charge ``q_o`` of each site
-- `modul :: Vector{Int64}` is the modulus ``p``, set to 1 for ``\\mathrm{U}(1)`` QNDiags. 
+* `name :: String` is the name of the diagonal quantum number.
+* `charge :: Vector{Int64}` is the symmetry charge ``q_o`` of each site.
+* `modul :: Vector{Int64}` is the modulus ``p``, set to 1 for ``\\mathrm{U}(1)`` QNDiags. 
 
 # Initialisation 
 
@@ -93,10 +93,10 @@ where we use a notation ``c^{(1)}=c^†`` and ``c^{0}=c`` for convenience, ``π_
 
 # Arguments 
 
-- `perm :: Vector{Int64}` is a length-``N_o`` vector that records the permutation ``π_o``.
-- `ph :: Vector{Int64}` is a length-``N_o`` vector that records ``p_o`` to determine whether or not to perform a particle-hole transformation
-- `fac :: Vector{ComplexF64}` is a length-``N_o`` vector that records the factor ``α_o`` in the transformation.
-- `cyc :: Int64` is the cycle ``p``. 
+* `perm :: Vector{Int64}` is a length-``N_o`` vector that records the permutation ``π_o``.
+* `ph :: Vector{Int64}` is a length-``N_o`` vector that records ``p_o`` to determine whether or not to perform a particle-hole transformation.
+* `fac :: Vector{ComplexF64}` is a length-``N_o`` vector that records the factor ``α_o`` in the transformation.
+* `cyc :: Int64` is the cycle ``p``. 
 
 # Initialisation 
 
@@ -123,7 +123,7 @@ end
 """
     *(qnf1 :: QNOffd, qnf2 :: QNOffd) :: QNOffd 
 
-returns the composition of two QNOffd transformations. The cycle is set to be the LCM of two QNOffds
+returns the composition of two QNOffd transformations. The cycle is set to be the LCM of two QNOffds.
 """
 function *(qnf1 :: QNOffd, qnf2 :: QNOffd)
     perm1 = [ qnf1.perm[qnf2.perm[o]] for o in eachindex(qnf1.perm)]

@@ -21,6 +21,7 @@ function CUDA.CUSPARSE.CuSparseMatrixCSC(mat :: OpMat{T}) where T <: Union{Float
     return CuSparseMatrixCSC(mat_csc)
 end
 
+
 """
     GetEigensystemCuda(mat :: OpMat{ComplexF64}, nst :: Int64 ; initvec :: Vector{ComplexF64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{ComplexF64}, CuArray{ComplexF64, 2, CUDA.DeviceMemory}}
     GetEigensystemCuda(mat :: OpMat{Float64}, nst :: Int64 ; initvec :: Vector{Float64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{Float64}, CuArray{Float64, 2, CUDA.DeviceMemory}}
@@ -29,11 +30,11 @@ This method uses Julia `KrylovKit` package to calculate the lowest eigenstates o
 
 # Arguments 
 
-* `mat :: OpMat{ComplexF64}` or `mat :: OpMat{Float64}` is the matrix ;
-* `nst :: Int64` is the number of eigenstates to be calculated ;
-* `tol :: Float64` is the tolerence for the KrylovKit process. The default value is `1E-8` ;
+* `mat :: OpMat{ComplexF64}` or `mat :: OpMat{Float64}` is the matrix.
+* `nst :: Int64` is the number of eigenstates to be calculated.
+* `tol :: Float64` is the tolerence for the KrylovKit process. The default value is `1E-8`.
 * `ncv :: Int64` is the maximum dimension of the Krylov subspace. The default value is `max(2 * nst, nst + 10)`. If `krylovdim` is also given, `ncv` will not be used.
-* `initvec` is the initial vector. Facultative, a random initialisation `CUDA.rand(T, mat.dimd)` by default ;
+* `initvec` is the initial vector. Facultative, a random initialisation `CUDA.rand(T, mat.dimd)` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 * `kwargs...` is the options that will directly sent into `eigsolve`, see its [documentation](https://jutho.github.io/KrylovKit.jl/stable/man/eig/#KrylovKit.eigsolve) for detail.
 

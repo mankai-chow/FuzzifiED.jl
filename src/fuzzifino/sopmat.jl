@@ -36,6 +36,7 @@ function OpMat{T}(op :: SOperator ; num_th = NumThreads, disp_std = !SilentStd) 
     return OpMat{T}(op.bsd.dim, op.bsf.dim, op.sym_q, nel, colptr, rowid, elval)
 end
 
+
 """
     OpMat[{type}](op :: SOperator ; num_th :: Int64, disp_std :: Bool) :: OpMat{type}
 
@@ -43,9 +44,9 @@ Generates the sparse matrix from the operator. The parameter `type` is either `F
 
 # Arguments 
 
-* `op :: SOperator` is the operator ;
+* `op :: SOperator` is the operator.
 * `type :: DataType` specifies the type of the matrix. It can either be `ComplexF64` or `Float64`. Facultative, the same as `ElementType` by default
-* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
 OpMat(op :: SOperator ; type :: DataType = ElementType, num_th = NumThreads, disp_std = !SilentStd) = OpMat{type}(op ; num_th, disp_std)

@@ -3,11 +3,11 @@
 
 # Argument
 
-- `nm :: Int64` is the number of orbitals
-- `ps_pot :: Vector{<:Number}` is the vector of non-zero pseudopotentials 
+* `nm :: Int64` is the number of orbitals.
+* `ps_pot :: Vector{<:Number}` is the vector of non-zero pseudopotentials.
 
 # Output
-- A `nm`\\*`nm`\\*`nm` array giving the interaction matrix ``U_{m_1,m_2,m_3,-m_1-m_2-m_3}``
+* A `nm`\\*`nm`\\*`nm` array giving the interaction matrix ``U_{m_1,m_2,m_3,-m_1-m_2-m_3}``.
 """
 function GetIntMatrix(nm :: Int64, ps_pot :: Vector{<:Number})
     ## N = 2s+1, get V[i,j,k,l]
@@ -42,18 +42,17 @@ end
 
 Return the normal-ordered density-density term in the Hamiltonian 
 ```math 
-∑_{\\{m_i,f_i\\}}U_{m_1m_2m_3m_4}M^A_{f_1f_4}M^B_{f_2f_3}c^{†}_{m_1f_1}c^{†}_{m_2f_2}c_{m_3f_3}c_{m_4f_4}
+∑_{\\{m_i,f_i\\}}U_{m_1m_2m_3m_4}M^A_{f_1f_4}M^B_{f_2f_3}c^{†}_{m_1f_1}c^{†}_{m_2f_2}c_{m_3f_3}c_{m_4f_4}.
 ```
 
 # Arguments 
 
-- `nm :: Int64` is the number of orbitals.
-- `nf :: Int64` is the number of flavours.
-- `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``. Facultative, `[1.0]` by default. 
-- `mat_a :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^A_{ff'}``. Facultative, ``I_{N_f}`` by default. 
-- `mat_b :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^B_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
-- `m_kept :: Vector{Int64}` is a list of orbitals that range from 1 to `nm`. Facultative, if specified, only terms for which all ``m_i`` are in the list are kept. 
-
+* `nm :: Int64` is the number of orbitals.
+* `nf :: Int64` is the number of flavours.
+* `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``. Facultative, `[1.0]` by default. 
+* `mat_a :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^A_{ff'}``. Facultative, ``I_{N_f}`` by default. 
+* `mat_b :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^B_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
+* `m_kept :: Vector{Int64}` is a list of orbitals that range from 1 to `nm`. Facultative, if specified, only terms for which all ``m_i`` are in the list are kept. 
 """
 function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm))
     no = nm * nf
@@ -101,18 +100,17 @@ GetDenIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number} = [1.0], ma
 
 Return the sum of a series of normal-ordered density-density term in the Hamiltonian 
 ```math 
-∑_{\\{m_i,f_i,α\\}}U_{m_1m_2m_3m_4}(M^A_{α})_{f_1f_4}(M^B_{α})_{f_2f_3}c^{†}_{m_1f_1}c^{†}_{m_2f_2}c_{m_3f_3}c_{m_4f_4}
+∑_{\\{m_i,f_i,α\\}}U_{m_1m_2m_3m_4}(M^A_{α})_{f_1f_4}(M^B_{α})_{f_2f_3}c^{†}_{m_1f_1}c^{†}_{m_2f_2}c_{m_3f_3}c_{m_4f_4}.
 ```
 
 # Arguments 
 
-- `nm :: Int64` is the number of orbitals.
-- `nf :: Int64` is the number of flavours.
-- `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``. Facultative, `[1.0]` by default.
-- `mat_a :: Vector{<:AbstractMatrix{<:Number}}` is a vector of `nf`\\*`nf` matrix specifying ``(M^A_{α})_{ff'}``. Facultative, ``I_{N_f}`` by default. 
-- `mat_b :: Vector{<:AbstractMatrix{<:Number}}` is a vector of `nf`\\*`nf` matrix specifying ``(M^B_{α})_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
-- `m_kept :: Vector{Int64}` is a list of orbitals that range from 1 to `nm`. Facultative, if specified, only terms for which all ``m_i`` are in the list are kept. 
-
+* `nm :: Int64` is the number of orbitals.
+* `nf :: Int64` is the number of flavours.
+* `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``. Facultative, `[1.0]` by default.
+* `mat_a :: Vector{<:AbstractMatrix{<:Number}}` is a vector of `nf`\\*`nf` matrix specifying ``(M^A_{α})_{ff'}``. Facultative, ``I_{N_f}`` by default. 
+* `mat_b :: Vector{<:AbstractMatrix{<:Number}}` is a vector of `nf`\\*`nf` matrix specifying ``(M^B_{α})_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
+* `m_kept :: Vector{Int64}` is a list of orbitals that range from 1 to `nm`. Facultative, if specified, only terms for which all ``m_i`` are in the list are kept. 
 """
 function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mats_a :: Vector{<:AbstractMatrix{<:Number}}, mats_b :: Vector{<:AbstractMatrix{<:Number}} = [Matrix(mat_a') for mat_a in mats_a] ; m_kept :: Vector{Int64} = collect(1 : nm))
     return sum([GetDenIntTerms(nm, nf, ps_pot, mats_a[i], mats_b[i] ; m_kept) for i in eachindex(mats_a)])
@@ -125,18 +123,17 @@ GetDenIntTerms(nm :: Int64, nf :: Int64, mats_a :: Vector{<:AbstractMatrix{<:Num
 
 Return the normal-ordered pair-pair interaction term in the Hamiltonian 
 ```math 
-∑_{\\{m_i,f_i\\}}U_{m_1m_2m_3m_4}M^A_{f_1f_2}M^B_{f_3f_4}c^{†}_{m_1f_1}c^{†}_{m_2f_2}c_{m_3f_3}c_{m_4f_4}
+∑_{\\{m_i,f_i\\}}U_{m_1m_2m_3m_4}M^A_{f_1f_2}M^B_{f_3f_4}c^{†}_{m_1f_1}c^{†}_{m_2f_2}c_{m_3f_3}c_{m_4f_4}.
 ```
 
 # Arguments 
 
-- `nm :: Int64` is the number of orbitals.
-- `nf :: Int64` is the number of flavours.
-- `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``. 
-- `mat_a :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^A_{ff'}``. Facultative, ``I_{N_f}`` by default. 
-- `mat_b :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^B_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
-- `m_kept :: Vector{Int64}` is a list of orbitals that range from 1 to `nm`. Facultative, if specified, only terms for which all ``m_i`` are in the list are kept. 
-
+* `nm :: Int64` is the number of orbitals.
+* `nf :: Int64` is the number of flavours.
+* `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``. 
+* `mat_a :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^A_{ff'}``. Facultative, ``I_{N_f}`` by default. 
+* `mat_b :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^B_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
+* `m_kept :: Vector{Int64}` is a list of orbitals that range from 1 to `nm`. Facultative, if specified, only terms for which all ``m_i`` are in the list are kept. 
 """
 function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a') ; m_kept :: Vector{Int64} = collect(1 : nm))
     no = nm * nf
@@ -183,20 +180,19 @@ GetPairIntTerms(nm :: Int64, nf :: Int64 ; ps_pot :: Vector{<:Number}, mat_a :: 
 
 Return the polarisation term in the Hamiltonian 
 ```math 
-∑_{mff'}c^{†}_{mf}M_{ff'}c_{mf'}
+∑_{mff'}c^{†}_{mf}M_{ff'}c_{mf'}.
 ```
 
 # Arguments 
 
-- `nm :: Int64` is the number of orbitals ;
-- `nf :: Int64` is the number of flavours ; 
-- `mat :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M_{ff'}``. Facultative, ``I_{N_f}`` by default. 
-- `fld_m :: Vector{<:Number}` gives an orbital dependent polarisation
+* `nm :: Int64` is the number of orbitals.
+* `nf :: Int64` is the number of flavours. 
+* `mat :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M_{ff'}``. Facultative, ``I_{N_f}`` by default. 
+* `fld_m :: Vector{<:Number}` gives an orbital dependent polarisation
 ```math 
 ∑_{mff'}h_mc^{†}_{mf}M_{ff'}c_{mf'}
 ```
 Facultative. 
-
 """
 function GetPolTerms(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number} ; fld_m :: Vector{<:Number} = fill(1, nm))
     no = nm * nf
@@ -221,8 +217,8 @@ GetPolTerms(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float64}
 Return the terms for the total angular momentum.
 
 # Arguments
-- `nm :: Int64` is the number of orbitals.
-- `nf :: Int64` is the number of flavours.
+* `nm :: Int64` is the number of orbitals.
+* `nf :: Int64` is the number of flavours.
 """
 function GetL2Terms(nm :: Int64, nf :: Int64)
     s = (nm - 1) / 2.0
@@ -241,6 +237,7 @@ function GetL2Terms(nm :: Int64, nf :: Int64)
     return SimplifyTerms(tms_l2)
 end
 
+
 """
     GetC2Terms(nm :: Int64, nf :: Int64, mat_gen :: Vector{<:AbstractMatrix{<:Number}}[, mat_tr :: Vector{<:AbstractMatrix{<:Number}}]) :: Terms
 
@@ -251,10 +248,10 @@ Return the terms for the quadratic Casimir of the flavour symmetry.
 where ``G_i`` are the generator matrices, and ``T_i`` are the trace matrices. 
 
 # Arguments
-- `nm :: Int64` is the number of orbitals.
-- `nf :: Int64` is the number of flavours.
-- `mat_gen :: Vector{Matrix{Number}})` is a list of the matrices that gives the generators. It will automatically be normalised such that its square traces to unity. 
-- `mat_tr :: Vector{Matrix{Number}})` is a list of trace matrices that will be normalised automatically and substracted. Facultative.
+* `nm :: Int64` is the number of orbitals.
+* `nf :: Int64` is the number of flavours.
+* `mat_gen :: Vector{Matrix{Number}})` is a list of the matrices that gives the generators. It will automatically be normalised such that its square traces to unity. 
+* `mat_tr :: Vector{Matrix{Number}})` is a list of trace matrices that will be normalised automatically and substracted. Facultative.
 """
 function GetC2Terms(nm :: Int64, nf :: Int64, mat_gen :: Vector{<:AbstractMatrix{<:Number}}, mat_tr :: Vector{<:AbstractMatrix{<:Number}} = Matrix{Float64}[])
     return SimplifyTerms(

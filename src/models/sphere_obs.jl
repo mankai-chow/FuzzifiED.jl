@@ -8,11 +8,11 @@ The mutable type `SphereObs` stores the information of a local observable (or lo
 
 # Fields
 
-- `s2 :: Int64` is twice the spin ``2s`` of the observable.
-- `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the observable. 
-- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Terms` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq l\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
-- `stored_q :: Bool` is a boolean that specifies whether or not each component of the observable is stored.
-- `comps :: Dict{Tuple{Int64, Int64}, Terms}` stores each component of the observable in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
+* `s2 :: Int64` is twice the spin ``2s`` of the observable.
+* `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the observable. 
+* `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Terms` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq l\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
+* `stored_q :: Bool` is a boolean that specifies whether or not each component of the observable is stored.
+* `comps :: Dict{Tuple{Int64, Int64}, Terms}` stores each component of the observable in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
 """
 mutable struct SphereObs
     s2 :: Int64
@@ -26,17 +26,18 @@ end
 """
     SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function) :: SphereObs
 
-initialises the observable from ``2s``, ``2l_{\\max}`` and the function ``(l,m)↦\\Phi_{lm}``
+initialises the observable from ``2s``, ``2l_{\\max}`` and the function ``(l,m)↦\\Phi_{lm}``.
 
 # Arguments
 
-- `s2 :: Int64` is twice the spin ``2s`` of the observable.
-- `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the observable. 
-- `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Terms` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq s\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
+* `s2 :: Int64` is twice the spin ``2s`` of the observable.
+* `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the observable. 
+* `get_comp :: Function` is a function `get_comp(l2 :: Int64, m2 :: Int64) :: Terms` that sends the component specified by a tuple of integers ``(2l,2m)`` where ``|s|\\leq s\\leq l_{\\max}, -l\\leq m\\leq l`` to a list of terms that specifies the expression of the component. 
 """
 function SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function)
     return SphereObs(s2, l2m, get_comp, false, Dict{Tuple{Int64, Int64}, Terms}())
 end
+
 
 """
     SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function) :: SphereObs
@@ -45,9 +46,9 @@ initialises the observable from ``2s``, ``2l_{\\max}`` and a list of ``\\Phi_{lm
 
 # Arguments
 
-- `s2 :: Int64` is twice the spin ``2s`` of the observable.
-- `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the observable. 
-- `comps :: Dict{Tuple{Int64, Int64}, Terms}` stores each component of the observable in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
+* `s2 :: Int64` is twice the spin ``2s`` of the observable.
+* `l2m :: Int64` is twice the maximal angular momentum ``2l_{\\max}`` of the components of the observable. 
+* `comps :: Dict{Tuple{Int64, Int64}, Terms}` stores each component of the observable in the format of a dictionary whose keys are the tuples of integers ``(2l,2m)`` and values are the lists of terms that specifies the expression of the component. 
 """
 function SphereObs(s2 :: Int64, l2m :: Int64, cmps :: Dict{Tuple{Int64, Int64}, Terms})
     return SphereObs(s2, l2m, (l2, m2) -> (l2 ≤ l2m && l2 ≥ abs(s2) && abs(m2) ≤ l2 && haskey(cmps, (l2, m2))) ? cmps[(l2, m2)] : Term[], true, cmps)
@@ -226,16 +227,17 @@ function GetPointValue(obs :: SphereObs, θ :: Float64, ϕ :: Float64)
     return tms
 end
 
+
 """
     GetElectronObs(nm :: Int64, nf :: Int64, f :: Int64) :: SphereObs
 
-returns the electron annihilation operator ``ψ_f``
+returns the electron annihilation operator ``ψ_f``.
 
 # Arguments
 
-- `nf :: Int64` is the number of flavours.
-- `nm :: Int64` is the number of orbitals.
-- `f :: Int64` is the index of the flavour to be taken.
+* `nf :: Int64` is the number of flavours.
+* `nm :: Int64` is the number of orbitals.
+* `f :: Int64` is the index of the flavour to be taken.
 """
 function GetElectronObs(nm :: Int64, nf :: Int64, f :: Int64)
     gc = (l2, m2) -> (l2 == nm - 1) ? Terms(1.0, [0, f + nf * ((m2 + nm - 1) ÷ 2)]) : Term[]
@@ -251,9 +253,9 @@ returns the density operator ``n=∑_{ff'}ψ^†_{f}M_{ff'}ψ_{f'}``
 
 # Arguments
 
-- `nf :: Int64` is the number of flavours.
-- `nm :: Int64` is the number of orbitals.
-- `mat :: Int64` is the matrix ``M_{ff'}``. Facultative, identity matrix ``\\mathbb{I}`` by default.
+* `nf :: Int64` is the number of flavours.
+* `nm :: Int64` is the number of orbitals.
+* `mat :: Int64` is the matrix ``M_{ff'}``. Facultative, identity matrix ``\\mathbb{I}`` by default.
 """
 function GetDensityObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     el = [ StoreComps(GetElectronObs(nm, nf, f)) for f = 1 : nf ]
@@ -271,13 +273,13 @@ GetDensityObs(nm :: Int64, nf :: Int64 ; mat :: Matrix{<:Number} = Matrix{Float6
 """
     GetPairingObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number}) :: SphereObs
 
-returns the pair operator ``Δ=∑_{ff'}ψ_{f}M_{ff'}ψ_{f'}``
+returns the pair operator ``Δ=∑_{ff'}ψ_{f}M_{ff'}ψ_{f'}``.
 
 # Arguments
 
-- `nf :: Int64` is the number of flavours.
-- `nm :: Int64` is the number of orbitals.
-- `mat :: Int64` is the matrix ``M_{ff'}``.
+* `nf :: Int64` is the number of flavours.
+* `nm :: Int64` is the number of orbitals.
+* `mat :: Int64` is the matrix ``M_{ff'}``.
 """
 function GetPairingObs(nm :: Int64, nf :: Int64, mat :: Matrix{<:Number})
     el = [ StoreComps(GetElectronObs(nm, nf, f)) for f = 1 : nf ]

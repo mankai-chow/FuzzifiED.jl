@@ -8,12 +8,12 @@ The mutable type `Basis` stores the information of the basis that respects both 
 where ``|i⟩`` is a direct product state, _i.e._, the configurations ``|i_{Ik}⟩`` are grouped into a state ``|I⟩``. 
 
 # Fields
-* `cfs :: Confs` stores the configurations that respect the QNDiags ;
-* `dim :: Int64` is the dimension of the basis ;
-* `szz :: Int64` records the maximum size ``\\max m_g`` of groups;
-* `cfgr :: Vector{Int64}` is a vector of length `cfs.ncf` and records which group ``|I⟩`` each configuration ``|i⟩`` belong to ;
-* `cffac :: Vector{ComplexF64}` is a vector of length `cfs.ncf` and records the coefficients ``λ_i`` of each configuration ;
-* `grel :: Matrix{Int64}` is a `szz`\\*`dim` matrix that records the configurations in each group ``|i_{Ik}⟩ (k = 1,…,m_I)``
+* `cfs :: Confs` stores the configurations that respect the QNDiags.
+* `dim :: Int64` is the dimension of the basis.
+* `szz :: Int64` records the maximum size ``\\max m_g`` of groups.
+* `cfgr :: Vector{Int64}` is a vector of length `cfs.ncf` and records which group ``|I⟩`` each configuration ``|i⟩`` belong to.
+* `cffac :: Vector{ComplexF64}` is a vector of length `cfs.ncf` and records the coefficients ``λ_i`` of each configuration.
+* `grel :: Matrix{Int64}` is a `szz`\\*`dim` matrix that records the configurations in each group ``|i_{Ik}⟩ (k = 1,…,m_I)``.
 * `grsz :: Vector{Int64}` is a vector of length `dim` that records the size ``m_I`` of each group.
 """
 mutable struct Basis
@@ -34,15 +34,15 @@ generates the basis that respects the off-diagonal ``ℤ_p`` quantum numbers (QN
 
 # Arguments 
 
-* `cfs :: Confs` is the diagonal QN–preserving configurations ;
-* `secf :: Vector{ComplexF64}` is a vector of length the same as the number of discrete symmetries that records the eigenvalue of each transformation in the sector ;
-* `qnf :: Vector{QNOffd}` is a vector of off-diagonal quantum numbers. 
-* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `cfs :: Confs` is the diagonal QN–preserving configurations.
+* `secf :: Vector{ComplexF64}` is a vector of length the same as the number of discrete symmetries that records the eigenvalue of each transformation in the sector.
+* `qnf :: Vector{QNOffd}` is a vector of off-diagonal quantum numbers.
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output
 
-* `bs :: Basis` is the resulting [Basis](@ref Basis) object
+* `bs :: Basis` is the resulting [Basis](@ref Basis) object.
 """
 function Basis(cfs :: Confs, secf :: Vector{<:Number}, qnf :: Vector{QNOffd} ; num_th = NumThreads, disp_std = !SilentStd)
     if (length(secf) == 0) return Basis(cfs) end
@@ -81,11 +81,11 @@ Generate a basis from the configurations without off-diagonal ``ℤ_n`` symmetri
 
 # Arguments 
 
-* `cfs :: Confs` is the diagonal QN–preserving configurations ;
+* `cfs :: Confs` is the diagonal QN–preserving configurations.
 
 # Output
 
-* `bs :: Basis` is the resulting `Basis` object
+* `bs :: Basis` is the resulting `Basis` object.
 """
 function Basis(cfs :: Confs)
     dim = cfs.ncf
@@ -105,14 +105,13 @@ looks up a the weight of a configuration in a state.
 
 # Arguments 
 
-* `bs :: Basis` is the basis of the state ; 
-* `st :: Vector{ComplexF64}` or `st :: Vector{Float64}` is a vector of length `bs.dim` that stores the state ; 
+* `bs :: Basis` is the basis of the state.
+* `st :: Vector{ComplexF64}` or `st :: Vector{Float64}` is a vector of length `bs.dim` that stores the state.
 * `cf :: Int64` stores the configuration to be looked-up expressed in a binary number. If the `o-1`-th bit of `conf[i]` is 1, then the `o`-th site in the `i`-th configuration is occupied ; if the bit is 0, then the site is empty. 
 
 # Output
 
-* The weight of the configuration in the state 
-
+* The weight of the configuration in the state.
 """
 function GetConfWeight(bs :: Basis, st :: Union{Vector{ComplexF64}, Vector{Float64}}, cf :: Int64)
     id = GetConfId(bs.cfs, cf)

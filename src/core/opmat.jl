@@ -5,9 +5,9 @@
 The mutable type `OpMat{T}` where the element type `T` can be Float64 and ComplexF64 stores a sparse matrix in the same form as `SparseMatrixCSC` in `SparseArrays`. If the matrix is Hermitian or symmetric, only the lower triangle is stored. 
 
 # Fields
-* `dimd :: Int64` and `dimf :: Int64` are the number of columns and rows of the matrix ;
-* `symq :: Int64` records whether or not the matrix is Hermitian or symmetric ;
-* `nel :: Int64` records the number of elements ;
+* `dimd :: Int64` and `dimf :: Int64` are the number of columns and rows of the matrix.
+* `symq :: Int64` records whether or not the matrix is Hermitian or symmetric.
+* `nel :: Int64` records the number of elements.
 * `colptr :: Vector{Int64}`, `rowid :: Vector{Int64}` and `elval :: Vector{ComplexF64}` records the elements of the sparse matrix as in the `SparseMatrixCSC` elements of Julia. 
 """
 mutable struct OpMat{T <: Union{Float64, ComplexF64}}
@@ -56,15 +56,15 @@ mutable struct OpMat{T <: Union{Float64, ComplexF64}}
     end
 end 
 """
-    OpMat[{type}](op :: Operator ; num_th :: Int64, disp_std :: Bool) :: OpMat{type}
+    OpMat[{T}](op :: Operator ; num_th :: Int64, disp_std :: Bool)
 
-Generates the sparse matrix from the operator. The parameter `type` is either `Float64` or `ComplexF64` ; it is facultative, given by `ElementType` by default. 
+Generates the sparse matrix from the operator. The parametric type `T` is either `Float64` or `ComplexF64` ; it is facultative, given by `ElementType` by default. 
 
 # Arguments 
 
-* `op :: Operator` is the operator ;
-* `type :: DataType` specifies the type of the matrix. It can either be `ComplexF64` or `Float64`. Facultative, the same as `ElementType` by default
-* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `op :: Operator` is the operator.
+* `T :: DataType` specifies the type of the matrix. It can either be `ComplexF64` or `Float64`. Facultative, the same as `ElementType` by default.
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
 OpMat(op :: Operator ; type :: DataType = ElementType, num_th = NumThreads, disp_std = !SilentStd) = OpMat{type}(op ; num_th, disp_std)
@@ -78,12 +78,12 @@ calls the Arpack package to calculate the lowest eigenstates of sparse matrix.
 
 # Arguments 
 
-* `mat :: OpMat{ComplexF64}` or `mat :: OpMat{Float64}` is the matrix ;
-* `nst :: Int64` is the number of eigenstates to be calculated ;
-* `tol :: Float64` is the tolerence for the Arpack process. The default value is `1E-8` ;
-* `ncv :: Int64` is an auxiliary parameter needed in the Arpack process. The default value is `max(2 * nst, nst + 10)`
-* `initvec :: Vector{ComplexF64}` or `initvec :: Vector{Float64}` is the initial vector. If empty, a random initialisation shall be used. Facultative, empty by default. 
-* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
+* `mat :: OpMat{ComplexF64}` or `mat :: OpMat{Float64}` is the matrix.
+* `nst :: Int64` is the number of eigenstates to be calculated.
+* `tol :: Float64` is the tolerence for the Arpack process. The default value is `1E-8`.
+* `ncv :: Int64` is an auxiliary parameter needed in the Arpack process. The default value is `max(2 * nst, nst + 10)`.
+* `initvec :: Vector{ComplexF64}` or `initvec :: Vector{Float64}` is the initial vector. If empty, a random initialisation shall be used. Facultative, empty by default.
+* `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output

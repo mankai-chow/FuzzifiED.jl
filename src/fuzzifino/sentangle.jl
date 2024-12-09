@@ -5,19 +5,18 @@ Decompose a state ``|ψ⟩=v_I|I⟩`` into a direct-product basis of two subsyst
 
 # Arguments 
 
-- `st :: Vector{<:Number}` is the state to be decomposed into direct-product basis of two subsystems.
-- `bs0 :: SBasis` is the total basis. 
-- `bsa :: SBasis` is the basis for the subsystem A.
-- `bsb :: SBasis` is the basis for the subsystem B. 
-- `amp_ofa :: Vector{ComplexF64}` is a complex list of length `no` that specifies the fermionic amplitute of each orbital in the subsystem A. For a non-local basis, we decompose each electron into creation operators in two subsystems ``c^†_o=a_{o,A}c^†_{o,A}+a_{o,B}c^†_{o,B}`` and this list specifies ``a_{o,A}``. This is equivalent to ``√{ℱ_{m,A}}`` in [PRB 85, 125308 (2012)](https://dx.doi.org/10.1103/PhysRevB.85.125308) with an extra phase factor. 
-- `amp_oba :: Vector{ComplexF64}` is a complex list of length `no` that specifies the bosonic amplitute of each orbital in the subsystem A. 
-- `amp_ofb :: Vector{ComplexF64}` is a complex list of length `no` that specifies the fermionic amplitute of each orbital in the subsystem B. 
-- `amp_obb :: Vector{ComplexF64}` is a complex list of length `no` that specifies the bosonic amplitute of each orbital in the subsystem B. 
+* `st :: Vector{<:Number}` is the state to be decomposed into direct-product basis of two subsystems.
+* `bs0 :: SBasis` is the total basis. 
+* `bsa :: SBasis` is the basis for the subsystem A.
+* `bsb :: SBasis` is the basis for the subsystem B. 
+* `amp_ofa :: Vector{ComplexF64}` is a complex list of length `no` that specifies the fermionic amplitute of each orbital in the subsystem A. For a non-local basis, we decompose each electron into creation operators in two subsystems ``c^†_o=a_{o,A}c^†_{o,A}+a_{o,B}c^†_{o,B}`` and this list specifies ``a_{o,A}``. This is equivalent to ``√{ℱ_{m,A}}`` in [PRB 85, 125308 (2012)](https://dx.doi.org/10.1103/PhysRevB.85.125308) with an extra phase factor. 
+* `amp_oba :: Vector{ComplexF64}` is a complex list of length `no` that specifies the bosonic amplitute of each orbital in the subsystem A. 
+* `amp_ofb :: Vector{ComplexF64}` is a complex list of length `no` that specifies the fermionic amplitute of each orbital in the subsystem B. 
+* `amp_obb :: Vector{ComplexF64}` is a complex list of length `no` that specifies the bosonic amplitute of each orbital in the subsystem B. 
 
 # Output
 
-A complex matrix of dimension `bsb.dim * bsa.dim` that corresponds to the state in the decomposed basis ``|ψ⟩=M_{JI}|I_A⟩|J_B⟩``. This is equivalent to ``R_{μν}^A/√p`` in [PRB 85, 125308 (2012)](https://dx.doi.org/10.1103/PhysRevB.85.125308). After calculating all the sectors, the reduced density matrix will be ``ρ_B=⊕\\mathbf{M}\\mathbf{M}^†``
-
+A complex matrix of dimension `bsb.dim * bsa.dim` that corresponds to the state in the decomposed basis ``|ψ⟩=M_{JI}|I_A⟩|J_B⟩``. This is equivalent to ``R_{μν}^A/√p`` in [PRB 85, 125308 (2012)](https://dx.doi.org/10.1103/PhysRevB.85.125308). After calculating all the sectors, the reduced density matrix will be ``ρ_B=⊕\\mathbf{M}\\mathbf{M}^†``.
 """
 function StateDecompMat(st :: Vector{<:Number}, bs0 :: SBasis, bsa :: SBasis, bsb :: SBasis, amp_ofa :: Vector{<:Number}, amp_oba :: Vector{<:Number}, amp_ofb :: Vector{<:Number}, amp_obb :: Vector{<:Number})
     st_dcp = Matrix{ComplexF64}(undef, bsb.dim, bsa.dim) ;
@@ -33,22 +32,22 @@ function StateDecompMat(st :: Vector{<:Number}, bs0 :: SBasis, bsa :: SBasis, bs
     return st_dcp
 end
 
+
 """
     GetEntSpec(st :: Vector{<:Number}, bs0 :: SBasis, secd_lst :: Vector{Vector{Vector{Int64}}}, secf_lst :: Vector{Vector{Vector{<:Number}}} ; qnd_a :: Vector{SQNDiag}, qnd_b :: Vector{SQNDiag} = qnd_a, qnf_a :: Vector{SQNOffd}, qnf_b :: Vector{SQNOffd} = qnf_a, amp_oa :: Vector{<:Number}, amp_ob :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oa .^ 2))) :: Dict{@NamedTuple{secd_a, secf_a, secd_b, secf_b}, Vector{Float64}}
 
 # Arguments 
 
-- `st :: Vector{<:Number}` is the state to be decomposed into direct-product basis of two subsystems.
-- `bs0 :: SBasis` is the total basis. 
-- `secd_lst :: Vector{Vector{Vector{Int64}}}` gives the list of QNDiag sectors of subsystems to be calculated. Each of its elements is a two element vector ; the first specifies the sector for subsystem A, and the second specifies the sector for subsystem B. 
-- `secf_lst :: Vector{Vector{Vector{ComplexF64}}}` gives the list of QNOffd sectors of subsystems to be calculated. Each of its elements is a two element vector ; the first specifies the sector for subsystem A, and the second specifies the sector for subsystem B. 
-- `qnd_a :: Vector{SQNDiag}, qnd_b :: Vector{SQNDiag} = qnd_a, qnf_a :: Vector{QNOffd}, qnf_b :: Vector{QNOffd}` specifies the diagonal and off-diagonal quantum numbers of the subsystems A and B. `qnd_b` and `qnf_b` are facultative and the same as `qnd_a` and `qnf_a` by default. 
-- `amp_oa :: Vector{ComplexF64}` and `amp_ob :: Vector{ComplexF64}` are complex lists of length `no` that specify the amplitute of each orbital in the subsystems A and B. For a non-local basis, we decompose each electron into creation operators in two subsystems ``c^†_o=a_{o,A}c^†_{o,A}+a_{o,B}c^†_{o,B}`` and this list specifies ``a_{o,A}``. This is equivalent to ``√{ℱ_{m,A}}`` in [PRB 85, 125308 (2012)](https://dx.doi.org/10.1103/PhysRevB.85.125308) with an extra phase factor. 
+* `st :: Vector{<:Number}` is the state to be decomposed into direct-product basis of two subsystems.
+* `bs0 :: SBasis` is the total basis. 
+* `secd_lst :: Vector{Vector{Vector{Int64}}}` gives the list of QNDiag sectors of subsystems to be calculated. Each of its elements is a two element vector ; the first specifies the sector for subsystem A, and the second specifies the sector for subsystem B. 
+* `secf_lst :: Vector{Vector{Vector{ComplexF64}}}` gives the list of QNOffd sectors of subsystems to be calculated. Each of its elements is a two element vector ; the first specifies the sector for subsystem A, and the second specifies the sector for subsystem B. 
+* `qnd_a :: Vector{SQNDiag}, qnd_b :: Vector{SQNDiag} = qnd_a, qnf_a :: Vector{QNOffd}, qnf_b :: Vector{QNOffd}` specifies the diagonal and off-diagonal quantum numbers of the subsystems A and B. `qnd_b` and `qnf_b` are facultative and the same as `qnd_a` and `qnf_a` by default. 
+* `amp_oa :: Vector{ComplexF64}` and `amp_ob :: Vector{ComplexF64}` are complex lists of length `no` that specify the amplitute of each orbital in the subsystems A and B. For a non-local basis, we decompose each electron into creation operators in two subsystems ``c^†_o=a_{o,A}c^†_{o,A}+a_{o,B}c^†_{o,B}`` and this list specifies ``a_{o,A}``. This is equivalent to ``√{ℱ_{m,A}}`` in [PRB 85, 125308 (2012)](https://dx.doi.org/10.1103/PhysRevB.85.125308) with an extra phase factor. 
 
 # Output
 
 A dictionary whose keys are named tuples that specify the sector containing entries `secd_a`, `secf_a`, `secd_b`, `secf_b` and values are lists of eigenvalues of the density matrix in those sectors. 
-
 """
 function GetEntSpec(st :: Vector{<:Number}, bs0 :: SBasis, secd_lst :: Vector{Vector{Vector{Int64}}}, secf_lst :: Union{Vector{Vector{Vector{Int64}}}, Vector{Vector{Vector{Float64}}}, Vector{Vector{Vector{ComplexF64}}} } ; qnd_a :: Vector{SQNDiag}, qnd_b :: Vector{SQNDiag} = qnd_a, qnf_a :: Vector{SQNOffd}, qnf_b :: Vector{SQNOffd} = qnf_a, amp_ofa :: Vector{<:Number}, amp_oba :: Vector{<:Number}, amp_ofb :: Vector{<:Number} = sqrt.(1 .- abs.(amp_ofa .^ 2)), amp_obb :: Vector{<:Number} = sqrt.(1 .- abs.(amp_oba .^ 2)), disp_std = false)
     nof = bs0.cfs.nof 

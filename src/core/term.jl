@@ -5,8 +5,8 @@ The mutable type `Term` records a term that looks like ``Uc^{(p_1)}_{o_1}c^{(p_2
 
 # Fields
 
-- `coeff :: ComplexF64` records the coefficient ``U``
-- `cstr :: Vector{Int64}` is a length-``2l`` vector ``(p_1,o_1,p_2,o_2,… p_l,o_l)`` recording the operator string
+* `coeff :: ComplexF64` records the coefficient ``U``.
+* `cstr :: Vector{Int64}` is a length-``2l`` vector ``(p_1,o_1,p_2,o_2,… p_l,o_l)`` recording the operator string.
 
 # Initialisation
 
@@ -33,7 +33,7 @@ Gives a `Terms` with a single `Term`.
 
 # Special elements
 
-The zero and identity terms are defined 
+The zero and identity terms are defined.
 
     zero(Terms) = Term[]
     one(Terms) = Terms(1, [-1, -1])
@@ -65,6 +65,7 @@ function /(tms :: Terms, fac :: Number)
     return (1 / fac) * tms
 end
 
+
 """
     +(tms1 :: Terms, tms2 :: Terms) :: Terms
     -(tms1 :: Terms, tms2 :: Terms) :: Terms
@@ -86,7 +87,7 @@ end
     *(tms1 :: Terms, tms2 :: Terms) :: Terms
     ^(tms :: Terms, pow :: Int64) :: Terms
 
-Return the naive product of two series of terms or the power of one terms. The number of terms equals the product of the number of terms in `tms1` and `tms2`. For each term in `tms1` ``Uc^{(p_1)}_{o_1}…`` and `tms2` ``U'c^{(p'_1)}_{o'_1}…``, a new term is formed by taking ``UU'c^{(p_1)}_{o_1}… c^{(p'_1)}_{o'_1}…``
+Return the naive product of two series of terms or the power of one terms. The number of terms equals the product of the number of terms in `tms1` and `tms2`. For each term in `tms1` ``Uc^{(p_1)}_{o_1}…`` and `tms2` ``U'c^{(p'_1)}_{o'_1}…``, a new term is formed by taking ``UU'c^{(p_1)}_{o_1}… c^{(p'_1)}_{o'_1}…``.
 """
 function *(tms1 :: Terms, tms2 :: Terms)
     return Terms(vcat([ Term(tm1.coeff * tm2.coeff, [tm1.cstr ; tm2.cstr])
@@ -112,7 +113,7 @@ end
     adjoint(tm :: Term) :: Term
     adjoint(tms :: Terms) :: Terms
 
-Return the Hermitian conjugate of a series of terms. For each term ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}… c^{(p_l)}_{o_l}``, the adjoint is ``\\bar{U}c^{(1-p_l)}_{o_l}… c^{(1-p_2)}_{o_2}c^{(1-p_1)}_{o_1}``
+Return the Hermitian conjugate of a series of terms. For each term ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}… c^{(p_l)}_{o_l}``, the adjoint is ``\\bar{U}c^{(1-p_l)}_{o_l}… c^{(1-p_2)}_{o_2}c^{(1-p_1)}_{o_1}``.
 """
 function adjoint(tms :: Terms)
     return adjoint.(tms)
@@ -127,20 +128,19 @@ end
     ParticleHole(tm :: Term) :: Term
     ParticleHole(tms :: Terms) :: Terms
 
-Return the particle-hole transformation of a series of terms. For each term ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}… c^{(p_l)}_{o_l}``, the transformation results in ``Uc^{(1-p_1)}_{o_1}c^{(1-p_2)}_{o_2}…c^{(1-p_l)}_{o_l}``
+Return the particle-hole transformation of a series of terms. For each term ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}… c^{(p_l)}_{o_l}``, the transformation results in ``Uc^{(1-p_1)}_{o_1}c^{(1-p_2)}_{o_2}…c^{(1-p_l)}_{o_l}``.
 """
 function ParticleHole(tms :: Terms)
     return ParticleHole.(tms)
 end
 
 
-
 """
     NormalOrder(tm :: Term) :: Terms
 
 rearrange a term such that 
-- the creation operators must be commuted in front of the annihilation operator 
-- the site index of the creation operators are in ascending order and the annihilation operators in descending order. 
+* the creation operators must be commuted in front of the annihilation operator 
+* the site index of the creation operators are in ascending order and the annihilation operators in descending order. 
 return a list of terms whose result is equal to the original term. 
 """
 function NormalOrder(tm :: Term)
@@ -185,13 +185,12 @@ end
     SimplifyTerms(tms :: Terms ; cutoff :: Float64 = eps(Float64)) :: Terms
 
 simplifies the sum of terms such that 
-- each term is normal ordered,
-- like terms are combined, and terms with zero coefficients are removed.
+* each term is normal ordered,
+* like terms are combined, and terms with zero coefficients are removed.
 
 # Argument 
 
-- `cutoff :: Float64` is the cutoff such that terms with smaller absolute value of coefficients will be neglected. Facultative, `eps(Float64)` by default. 
-
+* `cutoff :: Float64` is the cutoff such that terms with smaller absolute value of coefficients will be neglected. Facultative, `eps(Float64)` by default. 
 """
 function SimplifyTerms(tms :: Terms ; cutoff :: Float64 = eps(Float64)) :: Terms
     dictlock = [ ReentrantLock() for i = 1 : 64 ]

@@ -48,7 +48,6 @@ Act a transformation on a state. `st_d` must be of length `trs.bsd.dim`. Returns
 # Facultative arguments
 
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
-
 """
 function *(trs :: STransf, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
     st_f = Vector{ComplexF64}(undef, trs.bsf.dim)
