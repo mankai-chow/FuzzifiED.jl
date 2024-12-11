@@ -1,20 +1,12 @@
 export Fuzzifino
 
-
 module Fuzzifino
 
 using FuzzifiED_jll
 using FuzzifiED
 using LinearAlgebra
 
-import FuzzifiED.NormalOrder
-import FuzzifiED.SimplifyTerms
-import FuzzifiED.OpMat
-import FuzzifiED.NumThreads
-import FuzzifiED.StateDecompMat
-import FuzzifiED.GetEntSpec
-import FuzzifiED.SilentStd
-import FuzzifiED.ElementType
+import FuzzifiED: NumThreads, SilentStd, ElementType
 
 """
     FuzzifiED.Fuzzifino.Libpathino :: String = FuzzifiED_jll.LibpathFuzzifino

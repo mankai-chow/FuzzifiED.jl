@@ -1,3 +1,4 @@
+import FuzzifiED: NormalOrder, SimplifyTerms
 export STerm, STerms
 
 

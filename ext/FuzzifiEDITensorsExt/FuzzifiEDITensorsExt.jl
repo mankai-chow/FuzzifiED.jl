@@ -5,12 +5,6 @@ using ITensorMPS
 using FuzzifiED
 using LinearAlgebra
 
-import FuzzifiED.GetSites
-import FuzzifiED.TruncateQNDiag
-import FuzzifiED.Confs
-import FuzzifiED.Terms
-import FuzzifiED.SilentStd
-
 include("fermion_type.jl")
 include("itensors_format.jl")
 

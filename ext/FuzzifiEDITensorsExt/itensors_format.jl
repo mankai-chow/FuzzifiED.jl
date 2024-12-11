@@ -1,3 +1,6 @@
+import FuzzifiED: GetSites, TruncateQNDiag, Confs, Terms
+
+
 """
     Vector{QNDiag}(sites :: Vector{<:Index})
 

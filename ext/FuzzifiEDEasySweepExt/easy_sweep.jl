@@ -1,3 +1,5 @@
+import FuzzifiED: SweepOne, EasySweep, GetMPOSites, GetMPO
+
 mutable struct EasySweepObserver <: AbstractObserver
     e_tol :: Float64
     e_last :: Float64
