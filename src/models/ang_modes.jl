@@ -1,4 +1,4 @@
-export AngModes, GetElectronMo, GetPairingMo, GetDensityMo, FilterComponen, FilterL2
+export AngModes, GetElectronMod, GetPairingMod, GetDensityMod, FilterComponent, FilterL2
 
 
 """
