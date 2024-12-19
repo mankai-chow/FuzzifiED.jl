@@ -41,7 +41,7 @@ end
 converts the `OpMat` objects to a full matrix.
 """
 function LinearAlgebra.Matrix(mat :: OpMat)
-    return Matrix(SparseMatrixCSCFromOpMat(mat))
+    return Matrix(SparseMatrixCSC(mat))
 end
 
 
