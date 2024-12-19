@@ -23,8 +23,9 @@ include("models/ang_modes.jl")
 
 include("fuzzifino/fuzzifino.jl")
 
-export GetSites, TruncateQNDiag
+export GetSites, GetQNDiags, TruncateQNDiag
 function GetSites end
+function GetQNDiags end
 function TruncateQNDiag end
 
 export SweepOne, EasySweep, GetMPOSites, GetMPO

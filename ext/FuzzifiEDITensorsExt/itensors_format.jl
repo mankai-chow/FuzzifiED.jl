@@ -1,8 +1,8 @@
-import FuzzifiED: GetSites, TruncateQNDiag, Confs, Terms
+import FuzzifiED: GetSites, GetQNDiags, TruncateQNDiag, Confs, Terms
 
 
 """
-    Vector{QNDiag}(sites :: Vector{<:Index})
+    GetQNDiags(sites :: Vector{<:Index})
 
 Converts a `Sites` object in the `ITensors` package to a set of QNDiags. 
 
@@ -10,7 +10,7 @@ Converts a `Sites` object in the `ITensors` package to a set of QNDiags.
 
 * `sites :: Vector{<:Index}` is a `Sites` object. Only `Fermion` site type is supported, and the quantum numbers of the `0` state must be all zero. Note that this will subject to the limitation in ITensors that the number of conserved quantities must be less than 4.
 """
-function Base.Vector{QNDiag}(sites :: Vector{<:Index})
+function GetQNDiags(sites :: Vector{<:Index})
     names = []
     moduls = Int64[]
     for site in sites 
@@ -46,13 +46,13 @@ Converts a `Sites` object in the `ITensors` package to the `Confs` object
 """
 function Confs(sites :: Vector{<:Index}, sec_qn :: QN)
     no = length(sites)
-    qnd = QNDiagFromSites(sites)
+    qnd = GetQNDiags(sites)
     secd = [ val(sec_qn, qndi.name) for qndi in qnd ]
     return Confs(no, secd, qnd)
 end 
 function Confs(sites :: Vector{<:Index}, cf_ref :: Vector{Int64})
     no = length(sites)
-    qnd = QNDiagFromSites(sites)
+    qnd = GetQNDiags(sites)
     secd = [ cf_ref' * qndi.charge for qndi in qnd ]
     return Confs(no, secd, qnd)
 end 

@@ -143,7 +143,7 @@ function EasySweep(id :: String, hmt :: MPO, st00 :: MPS ; path :: String = "./"
     return E1, st1
 end
 
-TermsOrOpSum(tms :: Terms) = OpSumFromTerms(tms)
+TermsOrOpSum(tms :: Terms) = OpSum(tms)
 TermsOrOpSum(os :: OpSum) = os
 
 """
@@ -171,7 +171,7 @@ function GetMPOSites(id :: String, tms :: Union{Terms, OpSum}, qnd :: Vector{QND
         close(f)
         println("FINISHED READING OPERATOR $(id)")
     else
-        sites = SitesFromQNDiag(qnd)
+        sites = GetSites(qnd)
         os = TermsOrOpSum(tms)
 
         @time "GENERATE OPERATOR $(id) MPO" mpo = mpo_method(os, sites)
