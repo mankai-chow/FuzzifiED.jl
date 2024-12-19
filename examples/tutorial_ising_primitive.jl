@@ -4,6 +4,8 @@
 
 using FuzzifiED
 
+let
+
 #================================================
 IMPLEMENT THE DIAGONAL QNS AND GENERATE THE CONFS
 ================================================#
@@ -152,3 +154,5 @@ end
 nz = Operator(bs, bs1, tms_nz ; red_q = 1)
 # Measuring the finite size OPE
 @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
+
+end
