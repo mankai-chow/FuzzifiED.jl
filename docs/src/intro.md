@@ -44,7 +44,7 @@ The study of 3d CFTs on fuzzy sphere can mainly be devided into four catagories 
 
 4. Exploring applicable numerical techniques.
 
-(The following sections are under revision)
+_(The following sections are under revision)_
 
 ### The pioneering work [[Zhu 2022](@ref References)]
 
@@ -188,11 +188,11 @@ The most straightforward way to construct an interaction term is to add a densit
 ```
 The interacting potentials can be expanded in terms of the Legendre polynomials 
 ```math
-    U(\mathbf{r}_{12})=\sum_l\tilde{U}_lP_l(\cos\theta_{12})=\sum_{lm}\frac{4\pi}{2l+1}\bar{Y}_{lm}(\hat{\mathbf{r}}_1)Y_{lm}(\hat{\mathbf{r}}_2)
+    U(|\mathbf{r}_{12}|)=\sum_l\tilde{U}_lP_l(\cos\theta_{12})=\sum_{lm}\frac{4\pi}{2l+1}\bar{Y}_{lm}(\hat{\mathbf{r}}_1)Y_{lm}(\hat{\mathbf{r}}_2)
 ```
 Conversely
 ```math
-    \tilde{U}_l=\int \sin\theta_{12}\mathrm{d}\theta_{12}\,\frac{2l+1}{2}U(\mathbf{r}_{12})P_l(\cos\theta_{12})
+    \tilde{U}_l=\int \sin\theta_{12}\mathrm{d}\theta_{12}\,\frac{2l+1}{2}U(|\mathbf{r}_{12}|)P_l(\cos\theta_{12})
 ```
 Specifically, for local and super-local interactions
 ```math
@@ -251,23 +251,24 @@ For systems with more complicated continuous symmetries, classification in terms
 ```math
     H=\sum_{\substack{l\in\mathbb{Z}\\m_1m_2m_3m_4}}U_lC^l_{m_1m_2m_3m_4}c^\dagger_{m_1a}c^\dagger_{m_2b}c_{m_3b}c_{m_4a}-\frac{1}{2}\sum_{\substack{l\in\mathbb{2Z}\\m_1m_2m_3m_4}}V_lC^l_{m_1m_2m_3m_4}\Omega_{aa'}\Omega_{bb'}c^\dagger_{m_1a}c^\dagger_{m_2a'}c_{m_3b'}c_{m_4b}
 ```
+where $\Omega=\begin{pmatrix}0&\mathbb{I}_N\\-\mathbb{I}_N&0\end{pmatrix}$.
 
 To find out all the four-fermion interactions allowed by the rotation symmetry $\mathrm{SO}(3)$ and global symmetry $\mathrm{Sp}(N)$, we classify all the fermion bilinears $c_{m_1a}c_{m_2b}$ into irreducible representations (irrep) of $\mathrm{SO}(3)\times\mathrm{Sp}(N)$. For each irrep, by contracting the bilinear with its Hermitian conjugate, we obtain an allowed four-fermion interaction term. Each fermion carries $\mathrm{SO}(3)$ spin-$s$ and $\mathrm{Sp}(N)$ fundamental. For the rotation symmetry $\mathrm{SO}(3)$, the bilinear can carry spin-$(2s-l)(l=0,\dots,2s)$ represetation ; for even $l$, the orbital indices are symmetrised ; for odd $l$, the orbital indices are antisymmetrised. For the global symmetry $\mathrm{Sp}(N)$, the bilinear can carry singlet $\mathrm{S}$, traceless antisymmetric rank-2 tensor $A$ and symmetric rank-2 tensor $T$ representation ; for $S$ and $A$, the flavour indices are antisymmetrised ; for $T$, the flavour indices are symmetrised. As the two fermions altogether should be antisymmetrised, the allowed combinations are 
 
-Case 1. $\mathrm{Sp}(N)$ singlet and $\mathrm{SO}(3)$ spin-$(2s-l)$ with even $l$, the bilinears are 
+__Case 1.__ $\mathrm{Sp}(N)$ singlet and $\mathrm{SO}(3)$ spin-$(2s-l)$ with even $l$, the bilinears are 
 ```math
     \Delta_{lm}=\sum_{m_1m_2}\langle sm_1,sm_2|(2s-l)m\rangle\Omega_{aa'}c_{m_1a}c_{m_2a'}\delta_{m,m_1+m_2}
 ```
 The corresponding interaction term $H_{S,l}=\sum_m\Delta_{lm}^\dagger\Delta_{lm}$ is the even-$l$ pseudopotential for the $V$-term.
 
-Case 2. $\mathrm{Sp}(N)$ antisymmetric and $\mathrm{SO}(3)$ spin-$(2s-l)$ with even $l$, the bilinears are 
+__Case 2.__ $\mathrm{Sp}(N)$ antisymmetric and $\mathrm{SO}(3)$ spin-$(2s-l)$ with even $l$, the bilinears are 
 
 ```math
     \Delta_{lm,[ab]}=\sum_{m_1m_2}\langle sm_1,sm_2|(2s-l)m\rangle\left(c_{m_1a}c_{m_2b}-c_{m_1b}c_{m_2a}-\tfrac{1}{N}\Omega_{ab}\Omega_{cc'}c_{m_1c'}c_{m_2c}\right)\delta_{m,m_1+m_2}.
 ```
 The corresponding interaction term $H_{A,l}=\sum_m\Delta_{lm,[ab]}^\dagger\Delta_{lm,[ab]}$ is the even-$l$ pseudopotential for the $U$-term.
 
-Case 3. $\mathrm{Sp}(N)$ symmetric and $\mathrm{SO}(3)$ spin-$(2s-l)$ with odd $l$, the bilinears are 
+__Case 3.__ $\mathrm{Sp}(N)$ symmetric and $\mathrm{SO}(3)$ spin-$(2s-l)$ with odd $l$, the bilinears are 
 
 ```math
     \Delta_{lm,(ab)}=\sum_{m_1m_2}\langle sm_1,sm_2|(2s-l)m\rangle\left(c_{m_1a}c_{m_2b}+c_{m_1b}c_{m_2a}\right)\delta_{m,m_1+m_2}.
@@ -279,7 +280,7 @@ In summary, all allowed interactions are the $U_l$ terms with both even and odd 
 
 We also note that each pseudopotential can correspond to a profile of interaction potential functions. The conversion between the pseudopotentials $U_l$ and the Legendre expansion coefficients of the potential function $\tilde{U}_l$ 
 ```math
-    U(\mathbf{r}_{12})=\sum_l\tilde{U}_lP_l\cos\theta_{12}
+    U(|\mathbf{r}_{12}|)=\sum_l\tilde{U}_lP_l(\cos\theta_{12})
 ```
 is 
 ```math
@@ -288,15 +289,15 @@ U_l=\sum_k \tilde{U}_k(-1)^l(2s+1)^2\begin{Bmatrix}2s-l&s&s\\k&s&s\end{Bmatrix}\
 where $\{\dots\}$ is the $6j$-symbol. Specifically, a local interaction contains only pseudopotential $U_0$ ; a superlocal interaction of form $(\nabla^2)^l\delta(\mathbf{r}_{12})$ contains $U_0,U_1,\dots,U_l$. Here we give the expressions for the lowest pseudopotentials explicitly.
 ```math 
     \begin{aligned}
-        U(\mathbf{r}_{12})&=\delta(\mathbf{r}_{12})&U_0&=\frac{(2s+1)^2}{4s+1}\\
-        U(\mathbf{r}_{12})&=\nabla^2\delta(\mathbf{r}_{12})&U_0&=-\frac{s(2s+1)^2}{4s+1}&U_1&=\frac{s(2s+1)^2}{4s-1}.
+        U(|\mathbf{r}_{12}|)&=\delta(\mathbf{r}_{12})&U_0&=\frac{(2s+1)^2}{4s+1}\\
+        U(|\mathbf{r}_{12}|)&=\nabla^2\delta(\mathbf{r}_{12})&U_0&=-\frac{s(2s+1)^2}{4s+1}&U_1&=\frac{s(2s+1)^2}{4s-1}.
     \end{aligned}
 ```
 More details are given in [Fan 2024](@ref References).
 
 ### Local observables
 
-(This section is under revision)
+_(This section is under revision)_
 
 On the fuzzy sphere, the simplest local observable is the density operator. We consider the Ising model as an example specifically
 ```math
@@ -320,7 +321,7 @@ where $R=N^{1/2}$ in the fuzzy sphere.
 
 ### Conformal generators
 
-(This section is under revision)
+_(This section is under revision)_
 
 The conformal generator $\Lambda^\mu=P^\mu+K^\mu$ on the states is the $l=1$ component of the Hamiltonian density. For example, for Ising model, it is the local density operator and density-density interactions with some full derivatives
 ```math
@@ -350,7 +351,7 @@ Here, $\tilde{U}_l$ are tuning parameters.
 
 ## Numerical methods
 
-(This section is under construction)
+_(The following sections are under revision)_
 
 ### Exact diagonalisation
 
