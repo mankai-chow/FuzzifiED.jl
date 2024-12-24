@@ -34,21 +34,19 @@ The power of this approach has been first demonstrated in the context of the 3D 
 
 ## Review of existing work
 
-The study of 3d CFTs on fuzzy sphere can mainly be devided into four catagories :
+In this section, we review the existing work related to fuzzy sphere. 
+
+### The pioneering work
+
+The pioneering work [Zhu 2022](@ref References) first proposes the idea of fuzzy sphere and apply it to the simplest example of 3d Ising CFT. The paper constructs a model with two flavours of fermions that resembles the spin-up and spin-down in the lattice transverse-field Ising model. At half-filling, one can morally think that a spin degree of freedom lives on each orbital. The Hamiltonian contains a density-density interaction that resembles the Ising ferromagnetic interaction and a polarising terms that resembles the transverse field. By tuning the ratio of the two terms, a transition between quantum Hall ferromagnet (a two-fold degenerate state where one of the two flavours are completely occupied) and paramagnet (a one-fold degenerate state where the superpositions of the two flavours at each orbital are occupied) occurs. This transition spontaneously breaks a $\mathbb{Z}_2$ symmetry and falls into the Ising criticality. The paper then make use of a unique feature of spherical models described by CFT --- state-operator correspondence --- at the critical point to extract the scaling dimensions of the scaling local operators. The paper finds evidence for conformal symmetry, including that (1) there exists a conserved stress tensor with $\Delta=3$ (which is used as the calibrator), and (2) all the levels can be classified into conformal multiplet where the spacing between operators' scaling dimensions are very close to integer. This is one of the first numerical evidence that 3d Ising transition has emergent conformal symmetry. More remarkably, the scaling dimensions of primaries such as $\sigma,\epsilon,\epsilon'$ are already very close to the most accurate known value by numerical bootstrap with an error within $1\%$ at a small system size $N_m=16$, which is comparable to a $4\times4$ lattice system. The structure of Ising CFT operator spectrum already starts to show up at an even smaller system size $N_m=4$. All these clues point towards a curious observation that fuzzy sphere suffers from a remarkably small finite-size effect. 
+
+This seminal paper opens a new avenue for studying 3d conformal field theories. After that, most of the researches on fuzzy sphere can be roughly divided into three catagories, with several exceptions :
 
 1. Accessing various conformal data, 
 
-2. Realising various 3d CFTs,
+2. Realising various 3d CFTs, and
 
-3. Studying conformal defects and boundaries, and 
-
-4. Exploring applicable numerical techniques.
-
-_(The following sections are under revision)_
-
-### The pioneering work [[Zhu 2022](@ref References)]
-
-This seminal paper opens a new avenue for studying 3d conformal field theories. It calculates and analyses the energy spectra at the 3d Ising transition, and explicitly demonstrate the state-operator correspondence as a fingerprint of conformal field theory, thus directly elucidates the emergent conformal symmetry of the 3d Ising transition.
+3. Studying conformal defects and boundaries.
 
 ### Accessing various conformal data
 
