@@ -153,7 +153,19 @@ We then project the system onto the LLL. Technically, this can be done by write 
 ```
 where $\hat{c}^{(\dagger)}_{mf}$ annihilates/creates an electron with $L^z$-quantum number $m$ at the $f$-th flavour of the lowest Landau level. In the following sections, we will omit the hats on the operators.
 
-_(Add some comments on the radius and the non-commutativity)_
+The word « _fuzzy_ » means non-commutativity. Here the magnetic field results in a the non-commutativity of the coordinates. More concretely, we project write the coordinate operators as a matrix on the lowest Landau level
+```math
+    X^\mu_{m_1m_2}=\int\mathrm{d}^2\hat{\mathbf{n}}\,n^\mu \bar{Y}_{sm_1}^{(s)}(\hat{\mathbf{n}})Y_{sm_2}^{(s)}(\hat{\mathbf{n}})
+```
+These matrices $\mathbf{X}^\mu$ ($\mu=x,y,z$) satisfy relation 
+```math
+    \mathbf{X}_\mu\mathbf{X}^\mu=\frac{s}{s+1}\mathbb{I},\qquad [\mathbf{X}^\mu,\mathbf{X}^\nu]=\frac{1}{s+1}i\epsilon^{\mu\nu\rho}\mathbf{X}_\rho
+```
+The first equation involves the radius $R$ of the sphere, and the second equation involves the magnetic length $l_B$ that determines the non-commutativity. An arbitrary scale factor can change these lengths but their ratio is fixed and scales as
+```math
+    R/l_B\sim\sqrt{s}\sim\sqrt{N_m}
+```
+We can take $l_B=1$ as the unit length. In this way, we can see that the radius scales with the square root of number of orbitals. The thermodynamic limit can be taken by $N_m\to\infty$, where a regular sphere can be recovered.
 
 ### Density operator
 
