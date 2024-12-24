@@ -94,6 +94,8 @@ So far, the numerical methods that has been applied to fuzzy sphere to include e
 
 ## Model construction 
 
+In this section, we review the process to construct a model on fuzzy sphere and extract conformal data. We are especially devoted to the technical detail that is rarely covered by other literature.
+
 ### Projection onto the lowest Landau level
 
 To build the setup of fuzzy sphere, we consider a sphere with radius $R$ and put a $4\pi s$-monopole at its centre. Consider free electrons moving on the sphere. The monopole will modify the single particle Hamilltonian. 
@@ -416,52 +418,64 @@ For the first line, the subleading contribution comes from the contribution of t
 ```
 Here $c_1$ and $c'_1$ are constant factors that represents the contribution of $\Box\sigma$ and does not scale with system size. Hence, the subleading contribution scales as $R^{-2}$. For the second line, the subleading contribution comes from the stress tensor $T^{\mu\nu}$. Similarly, the power of the scaling is the difference of the scaling dimension $R^{\Delta_{T^{\mu\nu}}-\Delta_\epsilon}=R^{-(3-\Delta_\epsilon)}$.
 
-We then proceed to the insertion of two operators. This can help us determine up to a four-point function. Through conformal transformation, any four point function can be expressed as 
+We then proceed to the insertion of two operators. This can help us determine up to a four-point function. Through conformal transformation, any four point function can be expressed in the form of
 ```math
-    \langle\Phi_1^\dagger(\infty)\Phi_2(\mathbf{r})\Phi_3(\hat{\mathbf{z}})\Phi_4(0)\rangle=\frac{e^{\Delta_{\Phi_2}\tau/R}}{R^{\Delta_{\Phi_2}+\Delta_{\Phi_3}}}\langle\Phi_1|\Phi^{\mathrm{(cyl.)}}_2(\hat{\mathbf{n}},\tau)\Phi^{\mathrm{(cyl.)}}_3(\hat{\mathbf{z}})|\Phi_4\rangle
+    \langle\Phi_1|\Phi^{\mathrm{(cyl.)}}_2(\hat{\mathbf{n}},\tau)\Phi^{\mathrm{(cyl.)}}_3(\hat{\mathbf{z}})|\Phi_4\rangle=\frac{e^{\Delta_{\Phi_2}\tau/R}}{R^{\Delta_{\Phi_2}+\Delta_{\Phi_3}}}\langle\Phi_1^\dagger(\infty)\Phi_2(\mathbf{r})\Phi_3(\hat{\mathbf{z}})\Phi_4(0)\rangle
 ```
 where the time-displaced operator can be defined as 
 ```math
     \Phi_2(\hat{\mathbf{n}},\tau)=e^{-H\tau}\Phi_2(\hat{\mathbf{n}})e^{H\tau}
 ```
-As a sanity check, By taking $\Phi_1=\Phi_4=\mathbb{I}$, $\Phi_2=\Phi_3$ and $\tau=0$, the two-point function on the sphere is recovered 
+As a sanity check, By taking $\Phi_1=\Phi_4=\mathbb{I}$, $\Phi_2=\Phi_3$ and $\tau=0$, the two-point function on the unit sphere is recovered 
 ```math
     \langle0|\Phi^{\mathrm{(cyl.)}}_2(\hat{\mathbf{n}})\Phi^{\mathrm{(cyl.)}}_2(\hat{\mathbf{z}})|0\rangle=R^{-2\Delta_{\Phi_2}}\langle\Phi_2(\hat{\mathbf{n}})\Phi_2(\hat{\mathbf{z}})\rangle=\frac{1}{R^{2\Delta_{\Phi_2}}|\hat{\mathbf{n}}-\hat{\mathbf{z}}|^{2\Delta_{\Phi_2}}}=\frac{1}{R^{2\Delta_{\Phi_2}}(1-\cos\theta)^{\Delta_{\Phi_2}}}.
 ```
 
 ### Conformal generators
 
-_(This section is under revision)_
+So far, in the conformal group, we know that the rotation and the dilatation is manifest on the fuzzy sphere. The rest, _viz._ translation and SCT, are emergent. In this section, we consider how to express the generators of these emergent symmetries in terms of the microscopic operators. It can be proven that the conformal generator $\Lambda^\mu=P^\mu+K^\mu$ is the $l=1$ component of the Hamiltonian density
+```math
+    \Lambda_m=P_m+K_m=\int\mathrm{d}^2\mathbf{r}\,\bar{Y}_{1m}(\mathbf{r})\mathscr{H}(\mathbf{r}).
+```
+Without special note, we consider the generators that act on the origin point. By acting it on the the states, the number of derivatives is increased or decreased by $1$, _e.g._, for a primary $\Phi$
+```math
+\begin{aligned}
+    \Lambda^\mu|\Phi\rangle&=\mathrm{const.}\times|\partial^\mu\Phi\rangle\\
+    \Lambda^\mu|\partial_\mu\Phi\rangle&=\mathrm{const.}\times|\Phi\rangle+\mathrm{const.}\times|\partial^\mu\partial^\nu\Phi\rangle+\mathrm{const.}\times|\Box\Phi\rangle
+\end{aligned}
+```
+The derivation of the expression and the constant factors are calculated and given in [Fardelli 2024](@ref References) and [Fan 2024](@ref References). 
 
-_Talk about derivation_
-
-The conformal generator $\Lambda^\mu=P^\mu+K^\mu$ on the states is the $l=1$ component of the Hamiltonian density. For example, for Ising model, it is the local density operator and density-density interactions with some full derivatives
+We then need to find the expression for the Hamiltonian density. For example, for Ising model, it is the local density operator and density-density interactions with some full derivatives
 ```math
     \mathscr{H}(\mathbf{r})=n_z\left(g_0+g_1\nabla^2\right)n_z-hn_x+g_{D,1}\nabla^2n_x+g_{D,2}\nabla^2n_z^2+\dots
 ```
-where $g_{D,i}$ are undetermined constants that does not affect the Hamiltonian $H=\int\mathrm{d}^2\mathbf{r}\,\mathscr{H}$. We have only listed a few examples of the allowed full derivatives. The generator is expressed as 
+where $g_{D,i}$ are undetermined constants that does not affect the Hamiltonian $H=\int\mathrm{d}^2\mathbf{r}\,\mathscr{H}$. We have only listed a few examples of the allowed full derivatives. 
 
+To determine those constants, we consider another strategy by consider all the possible two-fermion and four-fermion operators that are singlet under flavour symmetry and spin-1 under $\mathrm{SO}(3)$. We consider the example of Ising CFT. The two-fermion terms include the density operactors
 ```math
-    \Lambda_m=P_m+K_m=\int\mathrm{d}^2\mathbf{r}\,Y_{l=1,m}(\mathbf{r})\mathscr{H}(\mathbf{r}).
+    n^x_{10}\quad\textrm{and}\quad n^0_{10}.
 ```
-
-To determine those constants, we consider another strategy by combining four fermion operators into $\mathrm{SO}(3)$ spin-1 operators. Similar to what we have done for Hamiltonian, we combine the fermion bilinears $\Delta_{lm}$.
-
+Similar to what we have done for Hamiltonian, the four-fermion operators can be obtained by combining the fermion bilinears $\Delta_{lm}$
 ```math
-    \Lambda_m=\sum_{\substack{l_1l_2m_1m_2}}\tilde{U}_{l_1l_2}\Delta^\dagger_{l_1m_1}\Delta_{l_2m_2}\begin{pmatrix}
-        2s-l_1&2s-l_2&1\\-m_1&m_2&m
-    \end{pmatrix}+hn_{x,1m}
+    \sum_{\substack{l_1l_2m_1m_2}}\tilde{U}_{l_1l_2}\Delta^\dagger_{l_1m_1}\Delta_{l_2m_2}\langle (2s-l_1)(-m_1),(2s-l_2)m_2|1m\rangle
 ```
-For $l_1\in2\mathbb{Z}$, the spin index in the pairing operator is anti-symmetrised ; For $l_1\in2\mathbb{Z}+1$, the spin index in the pairing operator is symmetrised. Therefore, $l_1-l_2\in2\mathbb{Z}$ for non-zero results. And since $|l_1-l_2|\leq 1$, we conclude $l_1=l_2$, so
+For $l_1\in2\mathbb{Z}$, the spin index in the pairing operator is anti-symmetrised ; For $l_1\in2\mathbb{Z}+1$, the spin index in the pairing operator is symmetrised. Therefore, $l_1-l_2\in2\mathbb{Z}$ for non-zero results. And since $|l_1-l_2|\leq 1$, we conclude $l_1=l_2$. so
 
 ```math
     \Lambda_m=\sum_{\substack{lm_1m_2}}\tilde{U}_{l}\Delta^\dagger_{lm_1}\Delta_{lm_2}\begin{pmatrix}
         2s-l&2s-l&1\\-m_1&m_2&m
-    \end{pmatrix}+hn_{x,1m}
+    \end{pmatrix}+\tilde{h}n^x_{1m}+\tilde{\mu}n^0_{1m}
 ```
-Here, $\tilde{U}_l$ are tuning parameters. 
+Here, $\tilde{U}_l,\tilde{h},\tilde{\mu}$ are tuning parameters. 
 
-_Talk about individual P and K_
+After obtaining $\Lambda^\mu=P^\mu+K^\mu$, the separate $P^\mu$ and $K^\mu$ can be obtained by considering the commutator with the dilatation generator $D$, which is proportional to the Hamiltonian. As $[D,P^\mu]=P^\mu$ and $[D,K^\mu]=-K^\mu$.
+```math
+\begin{aligned}
+    P^\mu&=\tfrac{1}{2}\Lambda^\mu+\tfrac{1}{2}[D,\Lambda^\mu]\\
+    K^\mu&=\tfrac{1}{2}\Lambda^\mu-\tfrac{1}{2}[D,\Lambda^\mu].
+\end{aligned}
+```
 
 ## Numerical methods
 
