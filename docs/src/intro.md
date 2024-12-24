@@ -111,8 +111,9 @@ where $\mu=\theta,\phi$ and we take
 The eigenstates of the Hamiltonian are the monopole spherical harmonics
 
 ```math
-    Y_{lm}^{(s)}(\hat{\mathbf{r}}),\quad l=s,s+1,\dots,\quad m=-l,\dots,l-1,l
+    Y_{lm}^{(s)}(\hat{\mathbf{n}}),\quad l=s,s+1,\dots,\quad m=-l,\dots,l-1,l
 ```
+where $\hat{\mathbf{n}}$ is the unit vector of the point on the sphere
 
 with the eigenenergies 
 
@@ -123,48 +124,50 @@ with the eigenenergies
 Each level, known as a Landau level, has a degeneracy of $(2l+1)$. Specifically, the wavefunctions on the lowest Landau level (LLL) $l=s$ is easy to write out :
 
 ```math
-    Y_{sm}^{(s)}(\hat{\mathbf{r}})=C_me^{im\phi}\cos^{s+m}\frac{\theta}{2}\sin^{s-m}\frac{\theta}{2},\quad C_m=\frac{1}{{\sqrt{4\pi\Beta(s+m+1,s-m+1)}}}
+    Y_{sm}^{(s)}(\hat{\mathbf{n}})=C_me^{im\phi}\cos^{s+m}\frac{\theta}{2}\sin^{s-m}\frac{\theta}{2},\quad C_m=\frac{1}{{\sqrt{4\pi\Beta(s+m+1,s-m+1)}}}
 ```
 
 where $C_m$ is the normalising factor, and $\Beta$ is the Euler's beta function. The LLL has a degeneracy $N_m=2s+1$.
 
-We now consider $N_f$ flavours of fermions moving on the sphere, characterised by the second-quantised fermion operator $\hat{\psi}_f(\hat{\mathbf{r}})$, with a flavour index $f=1,\dots,N_f$. We partially fill the lowest Landau level and set the single energy gap to be much larger than the scale of interaction $H_0\gg H_\mathrm{int}$, so that the quantum fluctuation can be constrained on the lowest Landau level. In practice, we often fill integer number of flavours $N_e=kN_m$ ($k\in\mathbb{Z}$) so that a quantum Hall ferromagnet (_i.e._, the state where integer number of LLLs are filled) is preferred in the absence of interaction, for which the charge degree of freedom is gapped and will not couple strongly to the CFT degree of freedom in the presence of the interaction.  
+We now consider $N_f$ flavours of fermions moving on the sphere, characterised by the second-quantised fermion operator $\hat{\psi}_f(\hat{\mathbf{n}})$, with a flavour index $f=1,\dots,N_f$. We partially fill the lowest Landau level and set the single energy gap to be much larger than the scale of interaction $H_0\gg H_\mathrm{int}$, so that the quantum fluctuation can be constrained on the lowest Landau level. In practice, we often fill integer number of flavours $N_e=kN_m$ ($k\in\mathbb{Z}$) so that a quantum Hall ferromagnet (_i.e._, the state where integer number of LLLs are filled) is preferred in the absence of interaction, for which the charge degree of freedom is gapped and will not couple strongly to the CFT degree of freedom in the presence of the interaction.  
 
 We then project the system onto the LLL. Technically, this can be done by write the fermion operators in terms of the annihilation operators of the LLL orbitals
 ```math
-    \hat{\psi}_f(\hat{\mathbf{r}})=\sum_{m=-s}^s Y^{(s)}_{sm}(\hat{\mathbf{r}})\hat{c}_{mf}
+    \hat{\psi}_f(\hat{\mathbf{n}})=\sum_{m=-s}^s Y^{(s)}_{sm}(\hat{\mathbf{n}})\hat{c}_{mf}
 ```
 where $\hat{c}^{(\dagger)}_{mf}$ annihilates/creates an electron with $L^z$-quantum number $m$ at the $f$-th flavour of the lowest Landau level. In the following sections, we will omit the hats on the operators.
+
+_(Add some comments on the radius and the non-commutativity)_
 
 ### Density operator
 
 The simplest building block of an interacting many-body Hamiltonian is density operators, which are local fermion bilinears. 
 
 ```math
-    n_M(\hat{\mathbf{r}})=\psi_{f'}^\dagger(\hat{\mathbf{r}})M_{f'f}\psi_f(\hat{\mathbf{r}})
+    n_M(\hat{\mathbf{n}})=\psi_{f'}^\dagger(\hat{\mathbf{n}})M_{f'f}\psi_f(\hat{\mathbf{n}})
 ```
 
 Here the matrix insertion $M$ put the density operators at a certain representation of the flavour symmetry. For example, for a 2-flavour system, $M$ can be taken as the Pauli matrices $\mathbb{I},\sigma^x,\sigma^y,\sigma^z$ ; for a system with $N_f$ flavours in the fundamental representation of $\mathrm{SU}(N_f)$ flavour symmetry, one can put $n_M$ in the singlet or adjoint representation 
 ```math
     \begin{aligned}
-        n_S(\hat{\mathbf{r}})&=\psi_{c}^\dagger(\hat{\mathbf{r}})\psi^c(\hat{\mathbf{r}})\\
-        n_a{}^b(\hat{\mathbf{r}})&=\psi_{a}^\dagger(\hat{\mathbf{r}})\psi^b(\hat{\mathbf{r}})-\tfrac{1}{N}\delta_{a}{}^b\psi_c^\dagger(\hat{\mathbf{r}})\psi^c(\hat{\mathbf{r}})
+        n_S(\hat{\mathbf{n}})&=\psi_{c}^\dagger(\hat{\mathbf{n}})\psi^c(\hat{\mathbf{n}})\\
+        n_a{}^b(\hat{\mathbf{n}})&=\psi_{a}^\dagger(\hat{\mathbf{n}})\psi^b(\hat{\mathbf{n}})-\tfrac{1}{N}\delta_{a}{}^b\psi_c^\dagger(\hat{\mathbf{n}})\psi^c(\hat{\mathbf{n}})
     \end{aligned}
 ```
 
 Like the fermion operator, the density operator can also be expressed in the orbital space. 
 
 ```math
-    n_M(\hat{\mathbf{r}})=\sum_{lm}Y_{lm}(\hat{\mathbf{r}})n_{lm}
+    n_M(\hat{\mathbf{n}})=\sum_{lm}Y_{lm}(\hat{\mathbf{n}})n_{lm}
 ```
 
 Conversely,
 
 ```math
     \begin{aligned}
-        n_{lm}&=\int\mathrm{d}^2\hat{\mathbf{r}}\,\bar{Y}_{lm}n_M(\hat{\mathbf{r}})\\
-        &=\int\mathrm{d}^2\hat{\mathbf{r}}\,\bar{Y}_{lm}\left(\sum_{m_1}\bar{Y}^{(s)}_{sm_1}c^\dagger_{m_1f_1}\right)M_{f_1f_2}\left(\sum_{m_2}Y^{(s)}_{sm_2}c_{m_1f_2}\right)\\
-        &=\sum_{m_1m_2}c^\dagger_{m_1f_1}M_{f_1f_2}c_{m_1f_2}\int\mathrm{d}^2\hat{\mathbf{r}}\,\bar{Y}_{lm}\bar{Y}^{(s)}_{sm_1}Y^{(s)}_{sm_2}\\
+        n_{lm}&=\int\mathrm{d}^2\hat{\mathbf{n}}\,\bar{Y}_{lm}n_M(\hat{\mathbf{n}})\\
+        &=\int\mathrm{d}^2\hat{\mathbf{n}}\,\bar{Y}_{lm}\left(\sum_{m_1}\bar{Y}^{(s)}_{sm_1}c^\dagger_{m_1f_1}\right)M_{f_1f_2}\left(\sum_{m_2}Y^{(s)}_{sm_2}c_{m_1f_2}\right)\\
+        &=\sum_{m_1m_2}c^\dagger_{m_1f_1}M_{f_1f_2}c_{m_1f_2}\int\mathrm{d}^2\hat{\mathbf{n}}\,\bar{Y}_{lm}\bar{Y}^{(s)}_{sm_1}Y^{(s)}_{sm_2}\\
         &=\sum_{m_1}c^\dagger_{m_1f_1}M_{f_1f_2}c_{m+m_1,f_2}(-1)^{s+m+m_1}(2s+1)\sqrt{\frac{2l+1}{4\pi}}\begin{pmatrix}s&l&s\\m_1&m&-m_1-m\end{pmatrix}\begin{pmatrix}s&l&s\\m_1&m&-m_1-m\end{pmatrix}
     \end{aligned}
 ```
@@ -173,8 +176,8 @@ Here we have used [various properties of the monopole spherical harmonics](https
 ```math
     \begin{aligned}
         \bar{Y}_{lm}^{s}&=(-1)^{s+m}Y_{l,-m}^{(-s)}\\
-        \int\mathrm{d}^2\hat{\mathbf{r}}\,Y_{lm}^{(s)}\bar{Y}_{lm}^{(s)}&=\delta_{ll'}\delta_{mm'}\\
-        \int\mathrm{d}^2\hat{\mathbf{r}}\,Y_{l_1m_1}^{(s_1)}Y_{l_2m_2}^{(s_2)}Y_{l_3m_3}^{(s_3)}&=\sqrt{\frac{(2l_1+1)(2l_2+1)(2l_3+1)}{4\pi}}\begin{pmatrix}l_1&l_2&l_3\\m_1&m_2&m_3\end{pmatrix}\begin{pmatrix}l_1&l_2&l_3\\-s_1&-s_2&-s_3\end{pmatrix}
+        \int\mathrm{d}^2\hat{\mathbf{n}}\,Y_{lm}^{(s)}\bar{Y}_{lm}^{(s)}&=\delta_{ll'}\delta_{mm'}\\
+        \int\mathrm{d}^2\hat{\mathbf{n}}\,Y_{l_1m_1}^{(s_1)}Y_{l_2m_2}^{(s_2)}Y_{l_3m_3}^{(s_3)}&=\sqrt{\frac{(2l_1+1)(2l_2+1)(2l_3+1)}{4\pi}}\begin{pmatrix}l_1&l_2&l_3\\m_1&m_2&m_3\end{pmatrix}\begin{pmatrix}l_1&l_2&l_3\\-s_1&-s_2&-s_3\end{pmatrix}
     \end{aligned}
 ```
 and $\begin{pmatrix}l_1&l_2&l_3\\m_1&m_2&m_3\end{pmatrix}$ is the [$3j$-symbol](https://en.wikipedia.org/wiki/3-j_symbol). In this way, we have fully expressed the density operator in terms of the operators in the orbital space $c^{(\dagger)}_{mf}$. 
@@ -184,11 +187,11 @@ and $\begin{pmatrix}l_1&l_2&l_3\\m_1&m_2&m_3\end{pmatrix}$ is the [$3j$-symbol](
 The most straightforward way to construct an interaction term is to add a density-density interaction potential $U(r)$. We note that this is not the simplest construction and we will present the simpler construction in terms of pseudopotentials in the next section. 
 
 ```math
-    H_\mathrm{int}=\int\mathrm{d}^2\hat{\mathbf{r}}_1\,\mathrm{d}^2\hat{\mathbf{r}}_2\,U(|\hat{\mathbf{r}}_1-\hat{\mathbf{r}}_2|)n_M(\hat{\mathbf{r}}_1)n_M(\hat{\mathbf{r}}_2)
+    H_\mathrm{int}=\int\mathrm{d}^2\hat{\mathbf{n}}_1\,\mathrm{d}^2\hat{\mathbf{n}}_2\,U(|\hat{\mathbf{n}}_1-\hat{\mathbf{n}}_2|)n_M(\hat{\mathbf{n}}_1)n_M(\hat{\mathbf{n}}_2)
 ```
 The interacting potentials can be expanded in terms of the Legendre polynomials 
 ```math
-    U(|\mathbf{r}_{12}|)=\sum_l\tilde{U}_lP_l(\cos\theta_{12})=\sum_{lm}\frac{4\pi}{2l+1}\bar{Y}_{lm}(\hat{\mathbf{r}}_1)Y_{lm}(\hat{\mathbf{r}}_2)
+    U(|\mathbf{r}_{12}|)=\sum_l\tilde{U}_lP_l(\cos\theta_{12})=\sum_{lm}\frac{4\pi}{2l+1}\bar{Y}_{lm}(\hat{\mathbf{n}}_1)Y_{lm}(\hat{\mathbf{n}}_2)
 ```
 Conversely
 ```math
@@ -208,11 +211,11 @@ By expanding the density operators into the orbital space and completing the int
 
 For example, for the 3d Ising CFT, we take two flavours of fermions and write down an interaction 
 ```math
-    H_\mathrm{int}=\int\mathrm{d}^2\hat{\mathbf{r}}_1\,\mathrm{d}^2\hat{\mathbf{r}}_2\,U(|\hat{\mathbf{r}}_1-\hat{\mathbf{r}}_2|)(n_0(\hat{\mathbf{r}}_1)n_0(\hat{\mathbf{r}}_2)-n_z(\hat{\mathbf{r}}_1)n_z(\hat{\mathbf{r}}_2))-h\int\mathrm{d}^2\hat{\mathbf{r}}\,n_x(\hat{\mathbf{r}})
+    H_\mathrm{int}=\int\mathrm{d}^2\hat{\mathbf{n}}_1\,\mathrm{d}^2\hat{\mathbf{n}}_2\,U(|\hat{\mathbf{n}}_1-\hat{\mathbf{n}}_2|)(n_0(\hat{\mathbf{n}}_1)n_0(\hat{\mathbf{n}}_2)-n_z(\hat{\mathbf{n}}_1)n_z(\hat{\mathbf{n}}_2))-h\int\mathrm{d}^2\hat{\mathbf{n}}\,n_x(\hat{\mathbf{n}})
 ```
 where the density operators are defined as 
 ```math
-    n_i(\hat{\mathbf{r}})=\psi^\dagger_{f'}(\hat{\mathbf{r}})(\sigma_i)_{f'f}\psi_f(\hat{\mathbf{r}})
+    n_i(\hat{\mathbf{n}})=\psi^\dagger_{f'}(\hat{\mathbf{n}})(\sigma_i)_{f'f}\psi_f(\hat{\mathbf{n}})
 ```
 and the potentials are taken as a combination of local and super-local interactions.
 
@@ -246,14 +249,14 @@ We need also to consider the constraint that the two fermions must be anti-symme
 
 The fermion bilinears with other pseudo-spin configurations $\lambda_{mm',\pm}(c_{m\uparrow}c_{m'\uparrow}\pm c_{m\downarrow}c_{m'\downarrow})$ can be analysed in a similar way. After that, we have enumerated all possible four-fermion interaction terms. 
 
-For systems with more complicated continuous symmetries, classification in terms of representation of flavour symmetry must also be considered, and the indices must be overall antisymmetrised. We explain that through the example of a system with $2N$ flavours that live in the fundamental representation of an $\mathrm{Sp}(N)$ global symmetry [[Zhou 2024Oct]](@ref References). We shall show that all the allowed terms are 
+For systems with more complicated continuous symmetries, classification in terms of representation of flavour symmetry must also be considered, and the indices must be overall antisymmetrised. We explain that through the example of a system with $2N$ flavours that live in the fundamental representation of an $\mathrm{Sp}(N)$ flavour symmetry [[Zhou 2024Oct]](@ref References). We shall show that all the allowed terms are 
 
 ```math
     H=\sum_{\substack{l\in\mathbb{Z}\\m_1m_2m_3m_4}}U_lC^l_{m_1m_2m_3m_4}c^\dagger_{m_1a}c^\dagger_{m_2b}c_{m_3b}c_{m_4a}-\frac{1}{2}\sum_{\substack{l\in\mathbb{2Z}\\m_1m_2m_3m_4}}V_lC^l_{m_1m_2m_3m_4}\Omega_{aa'}\Omega_{bb'}c^\dagger_{m_1a}c^\dagger_{m_2a'}c_{m_3b'}c_{m_4b}
 ```
 where $\Omega=\begin{pmatrix}0&\mathbb{I}_N\\-\mathbb{I}_N&0\end{pmatrix}$.
 
-To find out all the four-fermion interactions allowed by the rotation symmetry $\mathrm{SO}(3)$ and global symmetry $\mathrm{Sp}(N)$, we classify all the fermion bilinears $c_{m_1a}c_{m_2b}$ into irreducible representations (irrep) of $\mathrm{SO}(3)\times\mathrm{Sp}(N)$. For each irrep, by contracting the bilinear with its Hermitian conjugate, we obtain an allowed four-fermion interaction term. Each fermion carries $\mathrm{SO}(3)$ spin-$s$ and $\mathrm{Sp}(N)$ fundamental. For the rotation symmetry $\mathrm{SO}(3)$, the bilinear can carry spin-$(2s-l)(l=0,\dots,2s)$ represetation ; for even $l$, the orbital indices are symmetrised ; for odd $l$, the orbital indices are antisymmetrised. For the global symmetry $\mathrm{Sp}(N)$, the bilinear can carry singlet $\mathrm{S}$, traceless antisymmetric rank-2 tensor $A$ and symmetric rank-2 tensor $T$ representation ; for $S$ and $A$, the flavour indices are antisymmetrised ; for $T$, the flavour indices are symmetrised. As the two fermions altogether should be antisymmetrised, the allowed combinations are 
+To find out all the four-fermion interactions allowed by the rotation symmetry $\mathrm{SO}(3)$ and flavour symmetry $\mathrm{Sp}(N)$, we classify all the fermion bilinears $c_{m_1a}c_{m_2b}$ into irreducible representations (irrep) of $\mathrm{SO}(3)\times\mathrm{Sp}(N)$. For each irrep, by contracting the bilinear with its Hermitian conjugate, we obtain an allowed four-fermion interaction term. Each fermion carries $\mathrm{SO}(3)$ spin-$s$ and $\mathrm{Sp}(N)$ fundamental. For the rotation symmetry $\mathrm{SO}(3)$, the bilinear can carry spin-$(2s-l)(l=0,\dots,2s)$ represetation ; for even $l$, the orbital indices are symmetrised ; for odd $l$, the orbital indices are antisymmetrised. For the flavour symmetry $\mathrm{Sp}(N)$, the bilinear can carry singlet $\mathrm{S}$, traceless antisymmetric rank-2 tensor $A$ and symmetric rank-2 tensor $T$ representation ; for $S$ and $A$, the flavour indices are antisymmetrised ; for $T$, the flavour indices are symmetrised. As the two fermions altogether should be antisymmetrised, the allowed combinations are 
 
 __Case 1.__ $\mathrm{Sp}(N)$ singlet and $\mathrm{SO}(3)$ spin-$(2s-l)$ with even $l$, the bilinears are 
 ```math
@@ -295,33 +298,142 @@ where $\{\dots\}$ is the $6j$-symbol. Specifically, a local interaction contains
 ```
 More details are given in [Fan 2024](@ref References).
 
+### Operator spectrum and search for conformal point
+
+Having introduced how to construct an interacting model on fuzzy sphere, we now turn to the verification of the conformal symmetry and the extraction of the CFT data. The most straightforward approach is to extract the scaling dimensions from the energy spectrum through the state-operator correspondence. Specifically, there is a one-to-one correspondence between the eigenstates of the Hamiltonian and the CFT operators. The state and its corresponding operator has the same $\mathrm{SO}(3)$ spin and representation under flavour symmetry, and the excitation energy of a state $|\Phi\rangle$ is proportional to the scaling dimension of the corresponding operator $\Delta_\Phi$
+```math
+    E_\Phi-E_0=\frac{v}{R}\Delta_\Phi
+```
+where $E_0$ is the ground state energy, $R$ is the radius of the sphere (here we take $R=\sqrt{N_m}$), and $v$ is the model-dependent speed of light. The constant $v/R$ can be determined through a calibration process, _i.e._, comparing the spectrum to some known properties of a CFT spectrum. The criteria to determine the conformal symmetry include 
+
+1. The existence of a conserved stress tensor $T^{\mu\nu}$. The stress tensor is the symmetry current of the translation transformation. It is known to be a singlet under the flavour symmetry, have spin-2 under $\mathrm{SO}(3)$ rotation and scaling dimension exactly $\Delta_{T^{\mu\nu}}=3$.
+
+2. The existence of a conserved flavour symmetry current $J^\mu$ if there is a continuous flavour symmetry. The symmetry current typically lives in the antisymmetric rank-2 tensor representation of the flavour symmetry. _E.g._, if the flavour symmetry is $\mathrm{U}(1)$, then the symmetry current has charge-0 ; if the flavour symmetry is $\mathrm{O}(3)$, then the symmetry current has spin-1 and is odd under the improper $\mathbb{Z}_2$ transformation ; if the flavour symmetry is $\mathrm{O}(n)$ ($n\ge 4$) or $\mathrm{SU}(n)$ ($n\ge 3$), then the symmetry current lives in the antisymmetric rank-$2$ tensor representation. 
+
+3. The organisation of the operator spectrum into conformal multiplets. All the levels in the spectrum of a CFT can be organised into the conformal primaries and their descendants. The descendants live in the same representation under the flavour symmetry as the primary, and the difference between the scaling dimensions of a primary and its descendant is an integer. Specifically, for a scalar primary $\Phi$, its descendants have the form $\Box^n\partial^{\mu_1}\partial^{\mu_2}\dots\partial^{\mu_l}\Phi-\textrm{(trace)}$ ($n,l=0,1,2,\dots$) with $\mathrm{SO}(3)$ spin-$l$ and scaling dimension $\Phi+2n+l$, where $\Box=\partial_\mu\partial^\nu$. For a spinning primary $\Phi^{\mu_1\dots\mu_s}$, its descendants has the two forms : $\Box^n\partial^{\nu_1}\dots\partial^{\nu_m}\partial_{\rho_1}\dots\partial_{\rho_k}\Phi^{\rho_1\dots\rho_{k}\mu_1\dots \mu_{s-k}}$ ($k=0,\dots,s$, $n,m=0,1,\dots$) with scaling dimension $\Delta_\Phi+k+m+2n$ and $\mathrm{SO}(3)$ spin-$(s-k+m)$, and $\Box^n\partial^{\nu_1}\dots\partial^{\nu_m}\partial_{\rho_1}\dots\partial_{\rho_k}\epsilon^{\sigma}{}_{\tilde{\mu}\tilde{\nu}}\partial^{\tilde{\nu}}\Phi^{\rho_1\dots\rho_{k}\tilde{\mu}\mu_1\dots \mu_{s-k-1}}$ ($k=0,\dots,s-1$, $n,m=0,1,\dots$) with scaling dimension $\Delta_\Phi+k+m+2n+1$ and $\mathrm{SO}(3)$ spin-$(s-k+m)$. For the second form, the fully antisymmetric tensor $\epsilon$ alters the parity.
+
+The most convenient way of determining the coefficient $v/R$ is by utilising criteria 1 or 2 :
+```math
+    \frac{v}{R}=\frac{E_{T^{\mu\nu}}-E_0}{3}\quad\textrm{or}\quad\frac{E_{J^\mu}-E_0}{2}
+```
+Alternatively, one can define a cost function that depends on the tuning parameter and the speed of light and compares the scaling dimensions obtained from fuzzy sphere and the prediction by conformal symmetry. _E.g._, for the Ising CFT, the tuning parameters are the pseudopotentials $\{U_i\}$ and the transverse field $h$. The criteria for conformal symmetry we use include the stress tensor $T^{\mu\nu}$ and the descendants $\partial^\mu\sigma$, $\partial^\mu\partial^\nu\sigma$, $\Box\sigma$, $\partial^\mu\epsilon$. The cost function is the root-mean-square of the deviations of these criteria from the expectation of the conformal symmetry
+```math
+    Q(\{U_i\},h,v;N_m)=\frac{1}{N_s}\left[(\Delta_{T^{\mu\nu}}^{(\mathrm{FS})}-3)^2+(\Delta_{\partial^\mu\sigma}^{(\mathrm{FS})}-\Delta_\sigma^{(\mathrm{FS})}-1)^2+(\Delta_{\partial^\mu\partial^\nu\sigma}^{(\mathrm{FS})}-\Delta_\sigma^{(\mathrm{FS})}-1)^2+(\Delta_{\Box\sigma}^{(\mathrm{FS})}-\Delta_\sigma^{(\mathrm{FS})}-1)^2+(\Delta_{\partial^\mu\epsilon}^{(\mathrm{FS})}-\Delta_\epsilon^{(\mathrm{FS})}-1)^2\right]
+```
+where $N_s=5$ is the number of criteria, the scaling dimensions of an operator $\Phi$ on the fuzzy sphere is determined as 
+```math
+    \Delta_\Phi^{(\mathrm{FS})}(\{U_i\},h,v;N_m)=\frac{E_\Phi-E_0}{v/R}.
+```
+The optimal conformal point and calibrator are determined by minimising this cost function for each system size $N_m$. Note that this optimal point depends on the system size. In order to do finite size scaling, if the CFT describes a phase transition, one could fix all but one parameters at the optimal point in the largest accessible system size and tune the last parameter to determine the critical point through a finite size scaling. 
+
 ### Local observables
 
-_(This section is under revision)_
+We have introduced how to determine the scaling dimensions from the energy spectrum. Beyond that, evaluating other CFT quantities requires realising local CFT operators on the fuzzy sphere. Any gapless local observables $\mathcal{O}(\hat{\mathbf{n}})$ on the fuzzy sphere can be written as the linear combination of CFT operators that lives in the same representation of flavour symmetry and parity.
+```math
+    \mathcal{O}(\hat{\mathbf{n}},\tau)=\sum_\alpha \lambda_\alpha\Phi^{(\mathrm{cyc.})}_\alpha(\hat{\mathbf{n}},\tau)
+```
+Here special care should be taken for the CFT operator $\Phi^{(\mathrm{cyc.})}_\alpha(\hat{\mathbf{n}},\tau)$ on the cylinder. A conformal transformation produces a scale factor $\Lambda(\mathbf{r})^{\Delta_\Phi}$ to a primary operator $\Phi$. For the Weyl transformation from the flat spacetime to the cylinder, the scale factor is $\Lambda(\mathbf{r})=r/R$. Hence,
+```math
+    \Phi^{(\mathrm{cyc.})}_\alpha(\hat{\mathbf{n}},\tau)=\left(\frac{e^{\tau/R}}{R}\right)^{\Delta_{\Phi_\alpha}}\Phi_\alpha^{\mathrm{(flat)}}(\mathbf{r})
+```
+For descendants, certain other factors may be produced, but the conversion factors still scale with the radius of the sphere as $R^{-\Delta}$ where $\Delta$ is the scaling dimension of the descendants. For simplicity, hereafter we focus on the equal-time correlators with $\tau=0$, for which $\Phi^{(\mathrm{cyc.})}_\alpha(\hat{\mathbf{n}})=R^{-\Delta_{\Phi_\alpha}}\Phi_\alpha^{\mathrm{(flat)}}(\mathbf{r})$. The operator with larger system size decays faster when increasing system size. 
 
-On the fuzzy sphere, the simplest local observable is the density operator. We consider the Ising model as an example specifically
+The simplest local observable is the density operator. 
 ```math
-    n^i(\Omega)=\Psi^\dagger(\Omega)\sigma^i\Psi(\Omega)=\sum_{mm'}Y^{(s)}_{sm}(\Omega)\bar{Y}^{(s)}_{sm'}(\Omega)\mathbf{c}^\dagger_m\sigma^i\mathbf{c}_{m'}
+    n^M(\hat{\mathbf{n}})=\sum_{f_1f_2}\psi_{f_1}^\dagger(\hat{\mathbf{n}})M_{f_1f_2}\psi_{f_2}(\hat{\mathbf{n}})=\sum_{m_1m_2f_1f_2}\bar{Y}^{(s)}_{sm_1}(\hat{\mathbf{n}})Y^{(s)}_{sm_2}(\hat{\mathbf{n}})c^\dagger_{m_1f_1}M_{f_1f_2}c_{m_2f_2}
 ```
-where $i=x,z$. From the CFT perspective, the density operators are the superpositions of scaling operators with corresponding quantum numbers. In the leading order, they can be used as UV realisations of CFT operators $\sigma$ and $\epsilon$.
+The angular modes are
+```math
+    n_M(\hat{\mathbf{n}})=\sum_{lm}Y_{lm}(\hat{\mathbf{n}})n_{lm}\\
+    n_{M,lm}=\sum_{m_1}c^\dagger_{m_1f_1}M_{f_1f_2}c_{m+m_1,f_2}(-1)^{s+m+m_1}(2s+1)\sqrt{\frac{2l+1}{4\pi}}\begin{pmatrix}s&l&s\\m_1&m&-m_1-m\end{pmatrix}\begin{pmatrix}s&l&s\\m_1&m&-m_1-m\end{pmatrix}
+```
+From the CFT perspective, the density operators are the superpositions of scaling operators with corresponding quantum numbers, _i.e._, with the same representation under flavour symmetry and parity. 
+
+Take the Ising model as an example.
+```math
+    n^i(\hat{\mathbf{n}})=\Psi^\dagger(\hat{\mathbf{n}})\sigma^i\Psi(\hat{\mathbf{n}})=\sum_{m'm}\bar{Y}^{(s)}_{sm'}(\hat{\mathbf{n}})Y^{(s)}_{sm}(\hat{\mathbf{n}})\mathbf{c}^\dagger_{m'}\sigma^i\mathbf{c}_m
+```
+where $i=x,z$. In the leading order, they can be used as UV realisations of CFT operators $\sigma$ and $\epsilon$. 
 ```math
 \begin{aligned}
-    n^x&=\lambda_0+\lambda_\epsilon R^{-\Delta_\epsilon}\epsilon+\lambda_{\partial_\tau\epsilon}R^{-\Delta_\epsilon-1}\partial_\tau\epsilon+\lambda_{T_{\tau\tau}}R^{-3}T_{\tau\tau}+\dots&\epsilon_\mathrm{FS}&=\frac{n^x-\lambda_0}{\lambda_\epsilon R^{-\Delta_\epsilon}}\nonumber\\
-    n^z&=\lambda_\sigma R^{-\Delta_\sigma}\sigma+\lambda_{\partial_\tau\sigma}R^{-\Delta_\sigma-1}\partial_\tau\epsilon+\lambda_{\partial^2\sigma}R^{-\Delta_\sigma-2}\partial^2\sigma+\dots&\sigma_\mathrm{FS}&=\frac{n^z}{\lambda_\sigma R^{-\Delta_\sigma}}
+    n^x(\hat{\mathbf{n}})&=\lambda_0+\lambda_\epsilon\epsilon(\hat{\mathbf{n}})+\lambda_{\partial^\mu\epsilon}\partial^\mu\epsilon(\hat{\mathbf{n}})+\lambda_{T^{\mu\nu}}T^{\mu\nu}(\hat{\mathbf{n}})+\dots&\epsilon_\mathrm{FS}&=\frac{n^x-\lambda_0}{\lambda_\epsilon}+\dots\\
+    n^z(\hat{\mathbf{n}})&=\lambda_\sigma\sigma(\hat{\mathbf{n}})+\lambda_{\partial^\mu\sigma}\partial^\mu\epsilon(\hat{\mathbf{n}})+\lambda_{\partial^\mu\partial^\nu\sigma}\partial^\mu\partial^\nu\sigma(\hat{\mathbf{n}})+\dots&\sigma_\mathrm{FS}&=\frac{n^z}{\lambda_\sigma}+\dots
 \end{aligned}
 ```
-The UV-dependent coefficients $\lambda_0,\lambda_\sigma,\lambda_\epsilon$ can be computed from the 1-point function. The subleading terms to the density operators contribute to the finite size corrections
+where the coefficients $\lambda_0,\lambda_\epsilon,\lambda_\sigma,\dots$ are model-dependent and need to be determined, and all the operators on the right hand side are defined on the cylinder. 
+
+We first consider the insertion of a single operator $\langle\Phi_1|\Phi_2(\hat{\mathbf{n}})|\Phi_3\rangle$. It helps us produce the OPE coefficients. For the simplest example of three scalars,
+```math
+    f_{\Phi_1\Phi_2\Phi_3}=\lim_{r_\infty\to\infty}r_\infty^{-2\Delta_{\Phi_1}}\langle \Phi_1(x_\infty)\Phi_2(x)\Phi_3(0)\rangle_\mathrm{flat}=\langle\Phi_1|\Phi_2^{(\mathrm{flat})}(x)|\Phi_3\rangle
+```
+where $x_\infty$ is a point on the sphere with radius $r_\infty$, $x$ is a point on the unit sphere, the states are defined as the operator acting on the origin point 
 ```math
 \begin{aligned}
-    \epsilon_\mathrm{FS}&=\epsilon+\frac{\lambda_{\partial_\tau\epsilon}}{\lambda_\epsilon}R^{-1}\partial_\tau\epsilon+\frac{\lambda_{T_{\tau\tau}}}{\lambda_\epsilon}R^{-3+\Delta_\epsilon}T_{\tau\tau}+\dots\nonumber\\
-    \sigma_\mathrm{FS}&=\sigma+\frac{\lambda_{\partial_\tau\sigma}}{\lambda_\sigma}R^{-1}\partial_\tau\sigma+\frac{\lambda_{\partial^2\sigma}}{\lambda_\sigma}R^{-2}\partial^2\sigma+\dots
+    |\Phi_3\rangle&=\Phi_3(0)|0\rangle
 \end{aligned}
 ```
-where $R=N^{1/2}$ in the fuzzy sphere. 
+and its Hermitian conjugate is defined as 
+```math
+    \Phi_1^\dagger(\infty)=(\Phi_1(0))^\dagger=\lim_{r_\infty\to\infty}r_\infty^{2\Delta_{\Phi_1}}\Phi_1(x_\infty),\qquad
+    \langle\Phi_1|=\langle0|\Phi_1^\dagger(\infty)
+```
+After the Weyl transformation from the flat spacetime to the cylinder, we obtain the expression on fuzzy sphere 
+```math
+    f_{\Phi_1\Phi_2\Phi_3}=R^{\Delta_{\Phi_2}}\langle\Phi_1|\Phi^{(\mathrm{cyl.})}_2(\hat{\mathbf{n}})|\Phi_3\rangle
+```
+The UV realisation of $\Phi_2$ contains many other operators with different spins. By integrating the correlation function against different spherical harmonics, _i.e._, take the angular modes of the operator inserted 
+```math
+    \int\mathrm{d}\hat{\mathbf{n}}\,\bar{Y}_{lm}(\hat{\mathbf{n}})\langle\Phi_1|\Phi_2(\hat{\mathbf{n}})|\Phi_3\rangle=\langle\Phi_1|\Phi_{2,lm}|\Phi_3\rangle
+```
+we can filter out the subleading contributions with different spin. For the spinning operators, this will also tell us about different OPE structures. By taking $\Phi_3=\mathbb{I}$, we can recover the two point functions 
+```math
+\begin{aligned}
+    \langle\Phi_2|\Phi_{2,00}|0\rangle&=R^{-\Phi_2}\\
+    \Phi_2(\hat{\mathbf{n}})|0\rangle&=R^{-\Phi_2}\left[|\Phi_2\rangle+\lambda'_\mu(\hat{\mathbf{n}})|\partial^\mu\Phi_2\rangle+\lambda''(\hat{\mathbf{n}})|\Box\Phi_2\rangle+\lambda''_{\mu\nu}(\hat{\mathbf{n}})|\partial^\mu\partial^\nu\Phi_2\rangle\right]
+\end{aligned}
+```
+It is worthnoting acting a primary $\Phi_2(\hat{\mathbf{n}})$ on the vacuum will also produce various descendants in the multiplet.
+
+In the example of Ising CFT, we first use the insertion of a single operator to determine the coefficients $\lambda_0,\lambda_\epsilon,\lambda_\sigma$.
+```math
+    \lambda_0=\frac{1}{\sqrt{4\pi}}\langle 0|n^x_{00}|0\rangle,\quad\lambda_\epsilon=\frac{R^{\Delta_\epsilon}}{\sqrt{4\pi}}\langle \epsilon|n^x_{00}|0\rangle,\quad\lambda_\sigma=\frac{R^{\Delta_\sigma}}{\sqrt{4\pi}}\langle \sigma|n^z_{00}|0\rangle\\
+```
+Take the OPE coefficient $f_{\sigma\sigma\epsilon}$ as an example. It can be expressed either as a one point function of $\sigma$ or $\epsilon$
+```math
+\begin{aligned}
+    f_{\sigma\sigma\epsilon}&=R^{\Delta_\sigma}\langle\epsilon|\sigma(\hat{\mathbf{n}})|\sigma\rangle=\frac{\langle\epsilon|n_{00}^z|\sigma\rangle}{\langle 0|n_{00}^z|\sigma\rangle}+\mathcal{O}(R^{-2})\\
+    &=R^{\Delta_\epsilon}\langle\sigma|\epsilon(\hat{\mathbf{n}})|\sigma\rangle=\frac{\langle\sigma|n^x_{00}|\sigma\rangle-\langle0|n^x_{00}|0\rangle}{\langle\epsilon|n^x_{00}|0\rangle}+\mathcal{O}(R^{-(3-\Delta_\epsilon)})
+\end{aligned}
+```
+For the first line, the subleading contribution comes from the contribution of the descendant $\Box\sigma$ to $n_{00}^z$. As $\sigma(\hat{\mathbf{n}})$ scales as $R^{-\Delta_\sigma}$ and $\Box\sigma(\hat{\mathbf{n}})$ as $R^{-\Delta_\sigma-2}$, 
+```math
+\begin{aligned}
+    \langle\epsilon|n_{00}^z|\sigma\rangle&=f_{\sigma\sigma\epsilon}\lambda_\sigma R^{-\Delta_\sigma}(1+c_1R^{-2}+\dots)\\
+    \langle\epsilon|n_{00}^z|\sigma\rangle&=\lambda_\sigma R^{-\Delta_\sigma}(1+c'_1R^{-2}+\dots)\\
+    \frac{\langle\epsilon|n_{00}^z|\sigma\rangle}{\langle 0|n_{00}^z|\sigma\rangle}&=
+    f_{\sigma\sigma\epsilon}+\mathcal{O}(R^{-2})
+\end{aligned}
+```
+Here $c_1$ and $c'_1$ are constant factors that represents the contribution of $\Box\sigma$ and does not scale with system size. Hence, the subleading contribution scales as $R^{-2}$. For the second line, the subleading contribution comes from the stress tensor $T^{\mu\nu}$. Similarly, the power of the scaling is the difference of the scaling dimension $R^{\Delta_{T^{\mu\nu}}-\Delta_\epsilon}=R^{-(3-\Delta_\epsilon)}$.
+
+We then proceed to the insertion of two operators. This can help us determine up to a four-point function. Through conformal transformation, any four point function can be expressed as 
+```math
+    \langle\Phi_1^\dagger(\infty)\Phi_2(\mathbf{r})\Phi_3(\hat{\mathbf{z}})\Phi_4(0)\rangle=\frac{e^{\Delta_{\Phi_2}\tau/R}}{R^{\Delta_{\Phi_2}+\Delta_{\Phi_3}}}\langle\Phi_1|\Phi^{\mathrm{(cyl.)}}_2(\hat{\mathbf{n}},\tau)\Phi^{\mathrm{(cyl.)}}_3(\hat{\mathbf{z}})|\Phi_4\rangle
+```
+where the time-displaced operator can be defined as 
+```math
+    \Phi_2(\hat{\mathbf{n}},\tau)=e^{-H\tau}\Phi_2(\hat{\mathbf{n}})e^{H\tau}
+```
+As a sanity check, By taking $\Phi_1=\Phi_4=\mathbb{I}$, $\Phi_2=\Phi_3$ and $\tau=0$, the two-point function on the sphere is recovered 
+```math
+    \langle0|\Phi^{\mathrm{(cyl.)}}_2(\hat{\mathbf{n}})\Phi^{\mathrm{(cyl.)}}_2(\hat{\mathbf{z}})|0\rangle=R^{-2\Delta_{\Phi_2}}\langle\Phi_2(\hat{\mathbf{n}})\Phi_2(\hat{\mathbf{z}})\rangle=\frac{1}{R^{2\Delta_{\Phi_2}}|\hat{\mathbf{n}}-\hat{\mathbf{z}}|^{2\Delta_{\Phi_2}}}=\frac{1}{R^{2\Delta_{\Phi_2}}(1-\cos\theta)^{\Delta_{\Phi_2}}}.
+```
 
 ### Conformal generators
 
 _(This section is under revision)_
+
+_Talk about derivation_
 
 The conformal generator $\Lambda^\mu=P^\mu+K^\mu$ on the states is the $l=1$ component of the Hamiltonian density. For example, for Ising model, it is the local density operator and density-density interactions with some full derivatives
 ```math
@@ -348,6 +460,8 @@ For $l_1\in2\mathbb{Z}$, the spin index in the pairing operator is anti-symmetri
     \end{pmatrix}+hn_{x,1m}
 ```
 Here, $\tilde{U}_l$ are tuning parameters. 
+
+_Talk about individual P and K_
 
 ## Numerical methods
 
