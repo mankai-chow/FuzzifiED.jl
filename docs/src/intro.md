@@ -74,15 +74,31 @@ Within the generators of conformal symmetry, the $\mathrm{SO}(3)$ rotation and t
 
 ### Realising various 3d CFTs
 
-_(This section is under revision)_
-
 The second direction is study various other CFTs beyond 3d Ising. Fuzzy sphere has revealed many new information about these theories ; the previously known data are also consistent with fuzzy sphere results. So far, the accessible CFTs include $\mathrm{SO}(5)$ deconfined criticality, $\mathrm{O}(3)$ Wilson-Fisher and a series of new theories with $\mathrm{Sp}(N)$ symmetry. 
 
-1. __The $\mathrm{SO}(5)$ deconfined criticality__ [[Zhou 2023](@ref References)] This paper provides clear evidence that the DQCP exhibits approximate conformal symmetry, and demonstrate that the DQCP is more likely pseudo-critical.
+##### The $\mathrm{SO}(5)$ deconfined criticality
 
-2. __The $\mathrm{O}(3)$ Wilson-Fisher__ [[Han 2023Dec](@ref References)] This paper design a microscopic model of Heisenberg magnet bilayer and study the underlying Wilson-Fisher $\mathrm{O}(3)$ transition through the lens of fuzzy sphere regularization. 
+* __[Zhou 2023]__ The ``\mathrm{SO}(5)`` deconfined phase transition under the fuzzy sphere microscope: approximate conformal symmetry, pseudo-criticality, and operator spectrum, Zheng Zhou, Liangdong Hu, Wei Zhu, and Yin-Chen He, [arXiv:2306.16435](https://arxiv.org/abs/2306.16435), [Phys. Rev. X __14__, 021044 (2024)](https://doi.org/10.1103/PhysRevX.14.021044).
 
-3. __A series of new $\mathrm{Sp}(N)$-symmetric CFTs__ [[Zhou 2024Oct](@ref References)] This paper discovers a series of new CFTs with global symmetry $\mathrm{Sp}(N)$ in the fuzzy sphere models that are closely related to the SO(5) deconfined phase transition, and are related to non-linear sigma model with a Wess-Zumino-Witten term and Chern-Simons-matter theories. The emergent conformal symmetry is numerically verified by observing the integer-spaced conformal multiplets and the quality of conformal generators. 
+The first model besides Ising model to which fuzzy sphere is applied is the $\mathrm{SO}(5)$ deconfined quantum critical point (DQCP). Deconfined quantum critical point (DQCP) is one of the pioneering phase transitions beyond Landau paradigm. It has led to numerous theoretical surprises including the emergent $\mathrm{SO}(5)$ symmetry and the duality between interacting theories. Despite extensive studies over the past two decades, its nature remains controversial. The two competing scenarios are (1) DQCP is truely critical, and (2) DQCP is pseudocritical, _i.e._, a weakly first-order phase transition that has approximate critical behaviour, and is controlled by a pair of complex fixed points very close to the pseudocritical region.
+
+The DQCP can be conveniently studied on the fuzzy sphere by constructing a non-linear sigma model (NLσM) on target space $S^4$ with a level-1 topological Wess-Zumino-Witten (WZW) term, which serves as a dual description of the DQCP with an exact $\mathrm{SO}(5)$ symmetry. The idea is to construct a four-flavour model with global symmetry $\mathrm{Sp}(2)/\mathbb{Z}_2=\mathrm{SO}(5)$ ($\mathbb{Z}_2$ means to gauge the pseudoreal representations). At half-filling, the target space is a Grassmannian $\tfrac{\mathrm{Sp}(2)}{\mathrm{Sp}(1)\times\mathrm{Sp}(1)}\cong S^4$ and the WZW level can be matched. This paper provides evidence that the DQCP exhibits approximate conformal symmetry. This paper has identified 19 conformal primaries and their 82 descendants. Furthermore, by examining the renormalisation group flow of the lowest symmetry singlet, this paper demonstrates that the DQCP is more likely pseudo-critical, with the approximate conformal symmetry plausibly emerging from nearby complex fixed points.
+
+##### The $\mathrm{O}(3)$ Wilson-Fisher
+
+* __[Han 2023Dec]__ Conformal operator content of the Wilson-Fisher transition on fuzzy sphere bilayers, Chao Han, Liangdong Hu, and Wei Zhu, [arXiv:2312.04047](https://arxiv.org/abs/2312.04047), [Phys. Rev. B __110__, 115113 (2024)](https://doi.org/10.1103/PhysRevB.110.115113).
+
+The $\mathrm{O}(N)$ Wilson-Fisher theories are probably one of the most studied theories for 3d criticalities with wide range of applications. Specifically, this paper focus on the $\mathrm{O}(3)$ WF CFT. The construction involves two copies of $\mathrm{SU}(2)$ ferromagnet with altogether 4 flavours. Briefly speaking, the model contains two competing terms : (1) a $\mathrm{SU}(2)$ ferromagnetic interaction which favours a Heisenberg ferromagnetic phase where each of the two copies being half-filled and the symmetry-breaking order parameter lives on a $S^2$ manifold, (2) a transverse field which favours one of the two copies being completely filled, corresponding to a Heisenberg paramagnet. The transition between these two phases falls into the $\mathrm{O}(3)$ Wilson-Fisher universality. Through the energy spectrum at the transition, this paper provides evidence that $\mathrm{O}(3)$ Wilson-Fisher fixed point exhibits conformal symmetry, and a wealth of information about the CFT can be revealed, such as the instability to cubic anisotropy. This paper also calculates several OPE coefficients.
+
+##### A series of new $\mathrm{Sp}(N)$-symmetric CFTs
+
+* __[Zhou 2024Oct]__ A new series of 3d CFTs with ``\mathrm{Sp}(N)`` global symmetry on fuzzy sphere, Zheng Zhou, and Yin-Chen He, [arXiv:2410.00087](https://arxiv.org/abs/2410.00087).
+
+The quest to discover new 3d CFTs has been intriguing for physicists. A virgin land on this quest is the parity-breaking CFTs. In 3d, the Chern-Simons-matter theory stands out as the most well known and possibly the only known type of parity-breaking CFTs. Fuzzy sphere is a promising platform to study these theories. This paper makes a concrete construction by generalising the DQCP to the WZW-NLσM on the target space of a general symplectic Grassmannian
+```math
+    \frac{\mathrm{Sp}(N)}{\mathrm{Sp}(M)\times\mathrm{Sp}(N-M)}.
+```
+Several candidate Chern-Simons-matter theories are known to exist on its phase diagram which have $N$ flavour of gapless bosons or fermions coupled to a non-Abelian (_viz._ $\mathrm{Sp}(1)$, $\mathrm{Sp}(2)$, etc.) Chern-Simons gauge field. On the fuzzy sphere, this WZW-NLσM can be realised by a $2N$ layer model with $\mathrm{Sp}(N)$ global symmetry, and $2M$ out of the $2N$ layers are filled. This paper numerically verifies the emergent conformal symmetry by observing the integer-spaced conformal multiplets and studying the finite-size scaling of the conformality. 
 
 ### Studying conformal defects and boundaries
 
