@@ -127,11 +127,29 @@ Apart from the bulk CFTs, fuzzy sphere can also be used to study their conformal
 
 ### Other works on the fuzzy sphere
 
-So far, the numerical methods that has been applied to fuzzy sphere to include exact diagonalisation (ED), density matrix renormalisation group (DMRG) and determinant quantum Monte Carlo (DQMC). The former two has been reviewed in previous sections.
+Besides the three catagories of works, several other works push the boundary of our knowledge of and techniques for the fuzzy sphere. 
 
-1. __Quantum Monte Carlo on fuzzy sphere__ [[Hofmann 2023](@ref References)] This paper presents a numerical quantum Monte Carlo (QMC) method for simulating the 3D phase transition on the recently proposed fuzzy sphere.
+##### Conformal perturbation
 
-2. __Ising CFT on top of FQHE state__ [[Voinea 2024](@ref References)]
+* __[Lao 2023]__ 3d Ising CFT and exact diagonalisation on icosahedron : the power of conformal perturbation theory, Bing-Xin Lao, and Slava Rychkov [arXiv:2307.02540](https://arxiv.org/abs/2307.02540), [SciPost Phys. __15__, 243 (2023)](https://doi.org/10.21468/SciPostPhys.15.6.243).
+
+The energy spectrum calculated numerically at finite size does not coincide with that of the CFT. Part of the finite-size correction comes from the higher irrelavant operators that are not exactly tuned to zero (_e.g._, in the Ising CFT, the irrelavent operators include $\epsilon', C_{\mu\nu\rho\sigma}, T'_{\mu\nu}$, _etc._, and the two parameters mainly tune $\epsilon$ and $\epsilon'$). These irrelevant operators exert perturbations on the states and their energy. This paper captures this kind of correction by the conformal perturbation theory. By making use of the fact that the corrections from an irrelevant operator on the energy of the primary and its descendants are not independent, the coefficients of the irrelevant operators can be fitted.
+
+Although this work is does not exactly carry out study on the fuzzy sphere, it opens up a new route of improving the precision of scaling dimensions on fuzzy sphere by making better use of the existing data, and the method of partly removing the finite-size correction through conformal perturbation theory is widely used by following works.
+
+##### Quantum Monte Carlo on fuzzy sphere 
+
+* __[Hofmann 2024]__ Quantum Monte Carlo simulation of the 3d Ising transition on the fuzzy sphere, Johannes S. Hofmann, Florian Goth, Wei Zhu, Yin-Chen He, and Emilie Huffman, [arXiv:2310.19880](https://arxiv.org/abs/2310.19880), [SciPost Phys. Core __7__, 028 (2024)](https://doi.org/10.21468/SciPostPhysCore.7.2.028).
+
+Up to the time of this work, the numerical methods that has been applied to fuzzy sphere include exact diagonalisation (ED) and density matrix renormalisation group (DMRG). This work further presents the numerical studies of fuzzy sphere with quantum Monte Carlo (QMC) simulation, which is known for its potential of studying criticalities in $(2+1)$ dimensions at larger system size. Specifically, this work makes use of the determinant quantum Monte Carlo (DQMC) method that converts the simulation of fermions into thesimulation of bosonic auxiliary fields. To overcome the sign problem, the work considers two copies of the original model and constructs the Ising CFT on a 4-flavour model. This work determines the lowest energy spectra within each symmetry sector by calculating the time-displaced correlation functions. This work also calculates the equal-time correlation functions and compares them with the two-point functions of CFT. 
+
+##### Ising CFT on top of FQHE state
+
+* __[Voinea 2024]__ Regularising 3d conformal field theories via anyons on the fuzzy sphere, [arXiv:2411.15299](https://arxiv.org/abs/2411.15299).
+
+Up to the time of this work, all the constructions of CFTs on fuzzy sphere are based on the quantum Hall ferromagnet. Specifically, before the interaction is added, integer number of the lowest Landau levels are fully occupied. This state has a finite charge gap that guarentees that the gapless spin degree of freedom do not strongly couple with the charge degree of freedom when one adds the interactions. 
+
+This work further explores the possibility to construct CFTs on other states with charge gap --- in particular, the Haldane-Laughlin states of the fractional quantum Hall (FQH) states. Specifically, this work studies the fermionic LLL at a filling of $\nu=1/3$ and $1/5$. The model Hamiltonian contains (1) a dominant projection term that put the ground state on the Haldane-Laughlin state, and (2) an interaction term as a perturbation that drives the Ising-type phase transition. This work shows that the energy spectra at the critical point exhibit conformal symmetry. More noticeably, this work also makes the construction with respect to the bosonic LLL at a filling of $\nu=1/2$. 
 
 ## Model construction 
 
