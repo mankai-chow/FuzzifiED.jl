@@ -36,7 +36,7 @@ The power of this approach has been first demonstrated in the context of the 3D 
 
 In this section, we review the existing work related to fuzzy sphere. 
 
-##### The pioneering work 
+##### [The pioneering work](@id Zhu2022)
 
 * __[Zhu 2022]__ Uncovering conformal symmetry in the 3d Ising transition : state-operator correspondence from a quantum fuzzy sphere regularisation, Wei Zhu, Chao Han, Emilie Huffman, Johannes S. Hofmann, and Yin-Chen He, [arXiv:2210.13482](https://arxiv.org/abs/2210.13482), [Phys. Rev. X __13__, 021009 (2023)](https://doi.org/10.1103/PhysRevX.13.021009).
 
@@ -54,19 +54,19 @@ This seminal work opens a new avenue for studying 3d conformal field theories. A
 
 The first direction is to develop methods to calculate various data and quantities of 3d CFTs on fuzzy sphere. Typically, these methods are tested on the simplest example of 3d Ising CFT. For many of those CFT data, fuzzy sphere is the first non-perturbative method to access them ; for the others, the fuzzy sphere has achieved great consistency with previous methods such as quantum Monte Carlo and conformal bootstrap. So far, the accessible CFT data include operator spectrum, OPE coefficients, correlation functions, entropic $F$-function and conformal generators. 
 
-##### OPE coefficients
+##### [OPE coefficients](@id Hu2023Mar)
 
 * __[Hu 2023Mar]__ Operator product expansion coefficients of the 3d Ising criticality via quantum fuzzy sphere, Liangdong Hu, Yin-Chen He, and Wei Zhu, [arXiv:2303.08844](https://arxiv.org/abs/2303.08844), [Phys. Rev. Lett __131__, 031601 (2023)](https://doi.org/10.1103/PhysRevLett.131.031601).
 
-Apart from the operator spectrum that has been studied in [Zhu 2022](@ref References), a wealth of CFT data can be obtained from the local operators. This work studies the local observables on the fuzzy sphere, including the density operators and certain four-fermion operators. These observables can be expressed as the linear combination of CFT local scaling operators. After a finite size scaling that takes into account the data from different system sizes, the subleading contribution can be substracted and only the leading contribution are left. This includes the lowest primaries in Ising CFT in each symmetry sector : $\mathbb{Z}_2$-odd $\sigma$ and $\mathbb{Z}_2$-even $\epsilon$. The OPE coefficients are then evaluated by taking the inner product of a fuzzy sphere local observable with two CFT states $\langle\Phi_1|\Phi_2(\hat{\mathbf{n}})|\Phi_3\rangle$. This work computes 17 OPE coefficients of low-lying CFT primary fields with high accuracy, including 4 that has not being reported before. The rest are consistent with numerical bootstrap results. Also remarkably, this work start to apply DMRG to the fuzzy sphere. The maximal system size is increased from $N_m=18$ by ED to $N_m=48$ by DMRG.
+Apart from the operator spectrum that has been studied in [Zhu 2022](@ref Zhu2022), a wealth of CFT data can be obtained from the local operators. This work studies the local observables on the fuzzy sphere, including the density operators and certain four-fermion operators. These observables can be expressed as the linear combination of CFT local scaling operators. After a finite size scaling that takes into account the data from different system sizes, the subleading contribution can be substracted and only the leading contribution are left. This includes the lowest primaries in Ising CFT in each symmetry sector : $\mathbb{Z}_2$-odd $\sigma$ and $\mathbb{Z}_2$-even $\epsilon$. The OPE coefficients are then evaluated by taking the inner product of a fuzzy sphere local observable with two CFT states $\langle\Phi_1|\Phi_2(\hat{\mathbf{n}})|\Phi_3\rangle$. This work computes 17 OPE coefficients of low-lying CFT primary fields with high accuracy, including 4 that has not being reported before. The rest are consistent with numerical bootstrap results. Also remarkably, this work start to apply DMRG to the fuzzy sphere. The maximal system size is increased from $N_m=18$ by ED to $N_m=48$ by DMRG.
 
-##### Correlation functions
+##### [Correlation functions](@id Han2023Jun)
 
 * __[Han 2023Jun]__ Conformal four-point correlators of the 3d Ising transition via the quantum fuzzy sphere, Chao Han, Liangdong Hu, Wei Zhu, and Yin-Chen He, [arXiv:2306.04681](https://arxiv.org/abs/2306.04681), [Phys. Rev. B __108__, 235123 (2023)](https://doi.org/10.1103/PhysRevB.108.235123).
 
 In addition to the OPE coefficients, the local observable can also be used to calculate correlation functions. By taking the inner product of two local observables (density operators) at a time displacement $\langle\Phi_1|\Phi_2(\hat{\mathbf{n}}_0)\Phi_3(\hat{\mathbf{n}},\tau)|\Phi_4\rangle$ with two CFT states, a general four-point function can be calculated. This piece of CFT data in practice cannot be derived from the rest. This work calculates this four-point function in 3d Ising CFT with DMRG. A non-trivial check of conformality, the crossing symmetry, is verified for the correlator $\langle\sigma\sigma\sigma\sigma\rangle$. The special case --- two-point functions by taking $\Phi_1=\Phi_4=\mathbb{I}$ --- are also studied and compared with the expected results by conformal symmetry. 
 
-##### Entropic $F$-function
+##### [Entropic $F$-function](@id Hu2024)
 
 * __[Hu 2024]__ Entropic ``F``-function of 3d Ising conformal field theory via the fuzzy sphere regularisation, Liangdong Hu, Wei Zhu, and Yin-Chen He, [arXiv:2401.17362](https://arxiv.org/abs/2401.17362).
 
@@ -76,7 +76,7 @@ Beyond the correlators of local operators, a wealth of information can be learnt
 ``` 
 where $\delta$ is a UV-regulator. The constant part is known as the $F$-function of a 3d CFT. The $F$-function is proved to be RG-monotonic, _i.e._, along a renormalisation group flow from UV to IR, the value of $F$-function is non-increasing, analogous to the central charge in 2d CFTs. Despite its importance, it has never been calculated before through non-perturbative approaches in interacting 3d CFTs. This work has performed the first non-perturbative computation of $F$ function for paradigmatic 3d Ising CFT on fuzzy sphere. The sphere is cut in the real space into two crowns along a latitude circle $\theta$, and the entanglement entropy $S_A(\theta)$ as a function of $\theta$ is calculated. The $F$-function is extracted from the $S_A(\theta)$ in vicinity of the equator, and the result yields $F_A=0.0612(5)$ after a finite size scaling.
 
-##### Conformal generators
+##### [Conformal generators](@id Fardelli2024)
 
 * __[Fardelli 2024]__ Constructing the infrared conformal generators on the fuzzy sphere, Giulia Fardelli, A. Liam Fitzpatrick, and Emanuel Katz, [arXiv:2409.02998](https://arxiv.org/abs/2409.02998).
 * __[Fan 2024]__ Note on explicit construction of conformal generators on the fuzzy sphere, Ruihua Fan, [arXiv:2409.08257](https://arxiv.org/abs/2409.08257).
@@ -87,7 +87,7 @@ Within the generators of conformal symmetry, the $\mathrm{SO}(3)$ rotation and t
 
 The second direction is study various other CFTs beyond 3d Ising. Fuzzy sphere has revealed many new information about these theories ; the previously known data are also consistent with fuzzy sphere results. So far, the accessible CFTs include $\mathrm{SO}(5)$ deconfined criticality, $\mathrm{O}(3)$ Wilson-Fisher and a series of new theories with $\mathrm{Sp}(N)$ symmetry. 
 
-##### The $\mathrm{SO}(5)$ deconfined criticality
+##### [The $\mathrm{SO}(5)$ deconfined criticality](@id Zhou2023)
 
 * __[Zhou 2023]__ The ``\mathrm{SO}(5)`` deconfined phase transition under the fuzzy sphere microscope: approximate conformal symmetry, pseudo-criticality, and operator spectrum, Zheng Zhou, Liangdong Hu, Wei Zhu, and Yin-Chen He, [arXiv:2306.16435](https://arxiv.org/abs/2306.16435), [Phys. Rev. X __14__, 021044 (2024)](https://doi.org/10.1103/PhysRevX.14.021044).
 
@@ -95,13 +95,13 @@ The first model besides Ising model to which fuzzy sphere is applied is the $\ma
 
 The DQCP can be conveniently studied on the fuzzy sphere by constructing a non-linear sigma model (NLσM) on target space $S^4$ with a level-1 topological Wess-Zumino-Witten (WZW) term, which serves as a dual description of the DQCP with an exact $\mathrm{SO}(5)$ symmetry. The idea is to construct a four-flavour model with global symmetry $\mathrm{Sp}(2)/\mathbb{Z}_2=\mathrm{SO}(5)$ ($\mathbb{Z}_2$ means to gauge the pseudoreal representations). At half-filling, the target space is a Grassmannian $\tfrac{\mathrm{Sp}(2)}{\mathrm{Sp}(1)\times\mathrm{Sp}(1)}\cong S^4$ and the WZW level can be matched. This work provides evidence that the DQCP exhibits approximate conformal symmetry. This work has identified 19 conformal primaries and their 82 descendants. Furthermore, by examining the renormalisation group flow of the lowest symmetry singlet, this work demonstrates that the DQCP is more likely pseudo-critical, with the approximate conformal symmetry plausibly emerging from nearby complex fixed points.
 
-##### The $\mathrm{O}(3)$ Wilson-Fisher
+##### [The $\mathrm{O}(3)$ Wilson-Fisher](@id Han2023Dec)
 
 * __[Han 2023Dec]__ Conformal operator content of the Wilson-Fisher transition on fuzzy sphere bilayers, Chao Han, Liangdong Hu, and Wei Zhu, [arXiv:2312.04047](https://arxiv.org/abs/2312.04047), [Phys. Rev. B __110__, 115113 (2024)](https://doi.org/10.1103/PhysRevB.110.115113).
 
 The $\mathrm{O}(N)$ Wilson-Fisher theories are probably one of the most studied theories for 3d criticalities with wide range of applications. Specifically, this work focus on the $\mathrm{O}(3)$ WF CFT. The construction involves two copies of $\mathrm{SU}(2)$ ferromagnet with altogether 4 flavours. Briefly speaking, the model contains two competing terms : (1) a $\mathrm{SU}(2)$ ferromagnetic interaction which favours a Heisenberg ferromagnetic phase where each of the two copies being half-filled and the symmetry-breaking order parameter lives on a $S^2$ manifold, (2) a transverse field which favours one of the two copies being completely filled, corresponding to a Heisenberg paramagnet. The transition between these two phases falls into the $\mathrm{O}(3)$ Wilson-Fisher universality. Through the energy spectrum at the transition, this work provides evidence that $\mathrm{O}(3)$ Wilson-Fisher fixed point exhibits conformal symmetry, and a wealth of information about the CFT can be revealed, such as the instability to cubic anisotropy. This work also calculates several OPE coefficients.
 
-##### A series of new $\mathrm{Sp}(N)$-symmetric CFTs
+##### [A series of new $\mathrm{Sp}(N)$-symmetric CFTs](@id Zhou2024Oct)
 
 * __[Zhou 2024Oct]__ A new series of 3d CFTs with ``\mathrm{Sp}(N)`` global symmetry on fuzzy sphere, Zheng Zhou, and Yin-Chen He, [arXiv:2410.00087](https://arxiv.org/abs/2410.00087).
 
@@ -117,23 +117,23 @@ _(This section is under revision)_
 
 Apart from the bulk CFTs, fuzzy sphere can also be used to study their conformal defects and boundaries. So far, the accessible defects/boundaries include the magnetic line defect of 3d Ising CFT, including its defect operator spectrum, correlators, $g$-function, defect changing operators, and its cusp, and the conformal boundaries of 3d Ising CFT.
 
-##### Conformal magnetic line defect
+##### [Conformal magnetic line defect](@id Hu2023Aug)
 
 * __[Hu 2023Aug]__ Solving conformal defects in 3d conformal field theory using fuzzy sphere regularisation, Liangdong Hu, Yin-Chen He, and Wei Zhu, [arXiv:2308.01903](https://arxiv.org/abs/2308.01903), [Nat. Commun. __15__, 3659 (2024)](https://doi.org/10.1038/s41467-024-47978-y).
 
 This work studies the magnetic line defect of 3D Ising CFT and clearly demonstrates that it flows to a conformal defect fixed point. The authors have identified 6 low-lying defect primary operators and extract their scaling dimensions, as well as computing one-point bulk correlators and two-point bulk-defect correlators.
 
-##### The $g$-function and defect changing operators
+##### [The $g$-function and defect changing operators](@id Zhou2024Jan)
 
 * __[Zhou 2024Jan]__ The ``g``-function and defect changing operators from wavefunction overlap on a fuzzy sphere, Zheng Zhou, Davide Gaiotto, Yin-Chen He, Yijian Zou, [arXiv:2401.00039](https://arxiv.org/abs/2401.00039), [SciPost Phys. __17__, 021 (2024)](https://doi.org/10.21468/SciPostPhys.17.1.021).
 
 This work have performed the non-perturbative computations of the scaling dimensions of defect-changing, creation operators and the $g$-function for the pinning defect in 3d Ising model. 
 
-##### Cusp
+##### [Cusp](@id Cuomo2024)
 
 * __[Cuomo 2024]__ Impurities with a cusp : general theory and 3d Ising, Gabriel Cuomo, Yin-Chen He, Zohar Komargodski, [arXiv:2406.10186](https://arxiv.org/abs/2406.10186). 
 
-##### Conformal boundaries of 3d Ising CFT
+##### [Conformal boundaries of 3d Ising CFT](@id Zhou2024Jul)
 
 * __[Zhou 2024Jul]__ Studying the 3d Ising surface CFTs on the fuzzy sphere, Zheng Zhou, and Yijian Zou, [arXiv:2407.15914](https://arxiv.org/abs/2407.15914).
 * __[Dedushenko 2024]__ Ising BCFTs from the fuzzy hemisphere, Mykola Dedushenko, [arXiv:2407.15948](https://arxiv.org/abs/2407.15948).
@@ -144,7 +144,7 @@ These papers demonstrates that conformal field theory (CFT) with a boundary, kno
 
 Besides the three catagories of works, several other works push the boundary of our knowledge of and techniques for the fuzzy sphere. 
 
-##### Conformal perturbation
+##### [Conformal perturbation](@id Lao2023)
 
 * __[Lao 2023]__ 3d Ising CFT and exact diagonalisation on icosahedron : the power of conformal perturbation theory, Bing-Xin Lao, and Slava Rychkov [arXiv:2307.02540](https://arxiv.org/abs/2307.02540), [SciPost Phys. __15__, 243 (2023)](https://doi.org/10.21468/SciPostPhys.15.6.243).
 
@@ -152,13 +152,13 @@ The energy spectrum calculated numerically at finite size does not coincide with
 
 Although this work is does not exactly carry out study on the fuzzy sphere, it opens up a new route of improving the precision of scaling dimensions on fuzzy sphere by making better use of the existing data, and the method of partly removing the finite-size correction through conformal perturbation theory is widely used by following works.
 
-##### Quantum Monte Carlo on fuzzy sphere 
+##### [Quantum Monte Carlo on fuzzy sphere](@id Hofmann2024)
 
 * __[Hofmann 2024]__ Quantum Monte Carlo simulation of the 3d Ising transition on the fuzzy sphere, Johannes S. Hofmann, Florian Goth, Wei Zhu, Yin-Chen He, and Emilie Huffman, [arXiv:2310.19880](https://arxiv.org/abs/2310.19880), [SciPost Phys. Core __7__, 028 (2024)](https://doi.org/10.21468/SciPostPhysCore.7.2.028).
 
 Up to the time of this work, the numerical methods that has been applied to fuzzy sphere include exact diagonalisation (ED) and density matrix renormalisation group (DMRG). This work further presents the numerical studies of fuzzy sphere with quantum Monte Carlo (QMC) simulation, which is known for its potential of studying criticalities in $(2+1)$ dimensions at larger system size. Specifically, this work makes use of the determinant quantum Monte Carlo (DQMC) method that converts the simulation of fermions into thesimulation of bosonic auxiliary fields. To overcome the sign problem, the work considers two copies of the original model and constructs the Ising CFT on a 4-flavour model. This work determines the lowest energy spectra within each symmetry sector by calculating the time-displaced correlation functions. This work also calculates the equal-time correlation functions and compares them with the two-point functions of CFT. 
 
-##### Ising CFT on top of FQHE state
+##### [Ising CFT on top of FQHE state](@id Voinea2024)
 
 * __[Voinea 2024]__ Regularising 3d conformal field theories via anyons on the fuzzy sphere, [arXiv:2411.15299](https://arxiv.org/abs/2411.15299).
 
@@ -339,7 +339,7 @@ We need also to consider the constraint that the two fermions must be anti-symme
 
 The fermion bilinears with other pseudo-spin configurations $\lambda_{mm',\pm}(c_{m\uparrow}c_{m'\uparrow}\pm c_{m\downarrow}c_{m'\downarrow})$ can be analysed in a similar way. After that, we have enumerated all possible four-fermion interaction terms. 
 
-For systems with more complicated continuous symmetries, classification in terms of representation of flavour symmetry must also be considered, and the indices must be overall antisymmetrised. We explain that through the example of a system with $2N$ flavours that live in the fundamental representation of an $\mathrm{Sp}(N)$ flavour symmetry [[Zhou 2024Oct]](@ref References). We shall show that all the allowed terms are 
+For systems with more complicated continuous symmetries, classification in terms of representation of flavour symmetry must also be considered, and the indices must be overall antisymmetrised. We explain that through the example of a system with $2N$ flavours that live in the fundamental representation of an $\mathrm{Sp}(N)$ flavour symmetry [[Zhou 2024Oct]](@ref Zhou2024Oct). We shall show that all the allowed terms are 
 
 ```math
     H=\sum_{\substack{l\in\mathbb{Z}\\m_1m_2m_3m_4}}U_lC^l_{m_1m_2m_3m_4}c^\dagger_{m_1a}c^\dagger_{m_2b}c_{m_3b}c_{m_4a}-\frac{1}{2}\sum_{\substack{l\in\mathbb{2Z}\\m_1m_2m_3m_4}}V_lC^l_{m_1m_2m_3m_4}\Omega_{aa'}\Omega_{bb'}c^\dagger_{m_1a}c^\dagger_{m_2a'}c_{m_3b'}c_{m_4b}
@@ -386,7 +386,7 @@ where $\{\dots\}$ is the $6j$-symbol. Specifically, a local interaction contains
         U(|\mathbf{r}_{12}|)&=\nabla^2\delta(\mathbf{r}_{12})&U_0&=-\frac{s(2s+1)^2}{4s+1}&U_1&=\frac{s(2s+1)^2}{4s-1}.
     \end{aligned}
 ```
-More details are given in [Fan 2024](@ref References).
+More details are given in [Fan 2024](@ref Fardelli2024).
 
 ### Operator spectrum and search for conformal point
 
@@ -532,7 +532,7 @@ Without special note, we consider the generators that act on the origin point. B
     \Lambda^\mu|\partial_\mu\Phi\rangle&=\mathrm{const.}\times|\Phi\rangle+\mathrm{const.}\times|\partial^\mu\partial^\nu\Phi\rangle+\mathrm{const.}\times|\Box\Phi\rangle
 \end{aligned}
 ```
-The derivation of the expression and the constant factors are calculated and given in [Fardelli 2024](@ref References) and [Fan 2024](@ref References). 
+The derivation of the expression and the constant factors are calculated and given in [Fardelli 2024 and Fan 2024](@ref Fardelli2024). 
 
 We then need to find the expression for the Hamiltonian density. For example, for Ising model, it is the local density operator and density-density interactions with some full derivatives
 ```math
