@@ -1,10 +1,10 @@
 # FuzzifiED explained in an example
 
-In this example, we will illustrate how to use `FuzzifiED` to calculate the spectrum of Ising model on fuzzy sphere and how to calculate the OPE coefficient ``\lambda_{\sigma\sigma\epsilon}`` by measuring the expectation value of the density operator ``n^z``. 
+In this example, we will illustrate how to use FuzzifiED to calculate the spectrum of Ising model on fuzzy sphere and how to calculate the OPE coefficient ``\lambda_{\sigma\sigma\epsilon}`` by measuring the expectation value of the density operator ``n^z``. 
 
 The examples can be found in the directory [`examples`](https://github.com/FuzzifiED/FuzzifiED.jl/tree/main/examples). Two versions of this example is provided. The first uses the built-in functions for quantum numbers and operators to calculate the observables and is stored in [`tutorial_ising.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising.jl). The second does not use the built-in example and is stored in [`tutorial_ising_primitive.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_primitive.jl). 
 
-In addition, an example of how `FuzzifiED` can facilitate DMRG calculation is given. The example contains two versions. The first uses `MPO` and `dmrg` functions of the ITensor package and is stored in [`tutorial_ising_dmrg.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg.jl). The second uses the [`EasySweep`](@ref) function in the package which further wraps the `dmrg` function to facilitate the management of sweeps and is stored in [`tutorial_ising_dmrg_easysweep.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg_easysweep.jl). 
+In addition, an example of how FuzzifiED can facilitate DMRG calculation is given. The example contains two versions. The first uses `MPO` and `dmrg` functions of the ITensor package and is stored in [`tutorial_ising_dmrg.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg.jl). The second uses the [`EasySweep`](@ref) function in the package which further wraps the `dmrg` function to facilitate the management of sweeps and is stored in [`tutorial_ising_dmrg_easysweep.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg_easysweep.jl). 
 
 We also append in the end [a list of given examples](#List-of-examples) at the end of the page.
 
@@ -12,7 +12,7 @@ We also append in the end [a list of given examples](#List-of-examples) at the e
 
 ### Implement the diagonal quantum numbers and generate the configurations
 
-`FuzzifiED` supports ``\mathrm{U}(1)`` diagonal quantum numbers (QNDiag) 
+FuzzifiED supports ``\mathrm{U}(1)`` diagonal quantum numbers (QNDiag) 
 ```math
 Q_i=\sum_{o=1}^{N_o}q_{io}n_o
 ```
@@ -65,7 +65,7 @@ cfs = Confs(no, [ne, 0], qnd)
 
 ### Implement the off-diagonal ``\mathbb{Z}_p`` symmetries and initialise the basis
 
-`FuzzifiED` supports off diagonal discrete ``\mathbb{Z}_p`` symmetries in the form of 
+FuzzifiED supports off diagonal discrete ``\mathbb{Z}_p`` symmetries in the form of 
 
 ```math
 \mathscr{Z}:\ c_o\to \alpha_o^* c^{(p_o)}_{\pi_o},\quad c_o^\dagger\to \alpha_o c^{(1-p_o)}_{\pi_o}
@@ -107,7 +107,7 @@ If no discrete symmetry is needed, one can simply put instead `bs = Basis(conf)`
 Alternatively, you can put in the diagonal quantum numbers [`QNOffd`](@ref) by hand by specifying the permutations ``\pi_o`` of the sites, and facultatively the particle-hole transformation ``p_o``, the factor ``\alpha_o`` and the cycle. 
 ```julia
 # Record a QNOffd by site permutation (and facultatives particle-hole, factor, cycle)
-qnf = [ 
+qnf = [
     # Parity (Particle-hole)
     QNOffd([ isodd(o) ? o + 1 : o - 1 for o = 1 : no], true, ComplexF64[ isodd(o) ? -1 : 1 for o = 1 : no]),
     # Flavour symmetry
