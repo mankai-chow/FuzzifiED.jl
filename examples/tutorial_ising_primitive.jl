@@ -12,10 +12,9 @@ IMPLEMENT THE DIAGONAL QNS AND GENERATE THE CONFS
 
 # Inputing the basic setups
 nf = 2
-nm = 8
+nm = 12
 no = nf * nm
 s = .5 * (nm - 1)
-ne = div(no, 2)
 # Record the QNDiag
 qnd = [ 
     # Number of electrons Ne
@@ -23,7 +22,7 @@ qnd = [
     # Twice angular momentum 2Lz
     QNDiag([ (o - 1) ÷ nf * 2 - (nm - 1) for o = 1 : no ])
 ]
-cfs = Confs(no, [ne, 0], qnd)
+cfs = Confs(no, [nm, 0], qnd)
 @show cfs.ncf
 
 
@@ -129,7 +128,7 @@ MEASURE THE DENSITY OPERATOR OBSERVABLE
 ======================================#
 
 # Repeat the calculation for the Z_2 odd sector (with subscript 1)
-qnz_s1 =  # Change only the discrete quantum numbers and generate the basis
+qnz_s1 = Basis(cfs, [1, -1, 1], qnf) # Change only the discrete quantum numbers and generate the basis
 @time "Initialise Basis Z" bs1 = Basis(cfs, [ 1, -1, 1 ], qnf) 
 @show bs1.dim 
 hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis

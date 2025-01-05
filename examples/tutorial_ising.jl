@@ -42,7 +42,6 @@ enrg, st = GetEigensystem(hmt_mat, 10)
 @show enrg
 
 # Write the sparse matrix into HDF5 file
-using HDF5 
 f = h5open("data_tmp.h5", "cw")
 write(f, "hmt_mat", hmt_mat)
 close(f)

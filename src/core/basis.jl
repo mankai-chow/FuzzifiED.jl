@@ -13,7 +13,7 @@ where ``|i⟩`` is a direct product state, _i.e._, the configurations ``|i_{Ik}�
 # Fields
 * `cfs :: Confs` stores the configurations that respect the QNDiags.
 * `dim :: Int64` is the dimension of the basis.
-* `szz :: Int64` records the maximum size ``\\max m_g`` of groups.
+* `szz :: Int64` records the maximum size ``\\max m_I`` of groups.
 * `cfgr :: Vector{Int64}` is a vector of length `cfs.ncf` and records which group ``|I⟩`` each configuration ``|i⟩`` belong to.
 * `cffac :: Vector{ComplexF64}` is a vector of length `cfs.ncf` and records the coefficients ``λ_i`` of each configuration.
 * `grel :: Matrix{Int64}` is a `szz`\\*`dim` matrix that records the configurations in each group ``|i_{Ik}⟩ (k = 1,…,m_I)``.
