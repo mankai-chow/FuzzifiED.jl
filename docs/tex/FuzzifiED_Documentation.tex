@@ -1,0 +1,1414 @@
+\documentclass{timesjhep}
+\usepackage{xeCJK}
+\usepackage{listings,algpseudocode}
+\usepackage{algorithm}
+\setmonofont{Monaspace Xenon}
+\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true,numbers=none,numberstyle=\scriptsize,numbersep=-1.5em,keywordstyle=\bfseries,morekeywords={baremodule,begin,break,catch,const,continue,do,else,elseif,end,export,false,finally,for,function,global,if,import,let,local,macro,module,quote,return,struct,true,try,using,while}}
+\renewcommand{\algorithmiccomment}[1]{\hfill{\blendcolors*{!50}\textcolor{Black}{$\triangleright$ \textit{#1}}}}
+\newenvironment{block}[1]{\vspace{0.4\baselineskip}\hrule\vspace{0.10\baselineskip}\hrule\vspace{0.30\baselineskip}{\bfseries #1}\vspace{0.2\baselineskip}\hrule\vspace{0.3\baselineskip}
+}{\vspace{0.2\baselineskip}\hrule\vspace{0.10\baselineskip}\hrule\vspace{0.5\baselineskip}}
+
+\title{FuzzifiED}
+\subtitle{Toolkit to close the gap for fuzzy sphere numerics}
+\date{1 March, 2025}
+\author{Zheng Zhou 周正}
+\affiliation{Perimeter Institute for Theoretical Physics, Waterloo, Ontario N2L 2Y5, Canada}
+\affiliation{Department of Physics and Astronomy, University of Waterloo, Waterloo, Ontario N2L 3G1, Canada}
+\emailAdd{physics@zhengzhou.page}
+\abstract{Since its proposal, the fuzzy sphere regularisation has made significant contribution to the study of 3d CFTs. The Julia package FuzzifiED is aimed at simplifying the numerical calculations on the fuzzy sphere. It facilitates the exact diagonalisation (ED) calculations as well as the density matrix renormalisation group (DMRG) with the help of ITensor. It can also be used for generic fermionic and bosonic models. This documentation gives a general introduction to the fuzzy sphere regularisation and a detailed instruction for using the package for numerical calculations.}
+\extra{\textit{Documentation}~:~\url{https://docs.fuzzified.world/}\\\textit{Source code}~:~\url{https://github.com/FuzzifiED/FuzzifiED.jl}}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+\subsection{Purpose and outline}
+
+Since its proposal, the fuzzy sphere regularisation has made significant contribution to the study of 3d CFTs~\cite{Zhu2022,Hu2023Mar,Han2023Jun,Zhou2023,Lao2023,Hu2023Aug,Hofmann2023,Han2023Dec,Zhou2024Jan,Hu2024,Cuomo2024,Zhou2024Jul,Dedushenko2024,Fardelli2024,Fan2024,Zhou2024Oct,Voinea2024}. The Julia package FuzzifiED is aimed at simplifying the numerical calculations on the fuzzy sphere. It facilitates the exact diagonalisation (ED) calculations as well as the density matrix renormalisation group (DMRG) with the help of ITensor~\cite{ITensor}. It can also be used for generic fermionic and bosonic models. This package features the following characteristics~: 
+\begin{enumerate}
+    \item Versatality : FuzzifiED can help reproduce almost all the ED and DMRG results in fuzzy sphere works, and it is easy to adapt to new models. 
+    \item Usability : Julia interfaces make the code intuitive and short. To help the users get started, we have also provided a collection of examples.
+    \item Efficiency : FuzzifiED can produce results on reasonable system sizes within minutes.
+    \item Open source~: The code for FuzzifiED is fully open source. 
+\end{enumerate}
+
+This documentation gives a general introduction to the fuzzy sphere regularisation and a detailed instruction for numerical calculations with FuzzifiED. The rest of this documentation is organised as the follows~: Sections~\ref{sec:intro}--\ref{sec:numerics} are devoted to a general introduction to the fuzzy sphere regularisation and the numerical methods applied to it~; Sections~\ref{sec:usage}--\ref{sec:examples} give a detailed instruction for numerical calculation with the package FuzzifiED. 
+\begin{itemize}
+    \item In the rest of Section~\ref{sec:intro}, we make a brief introduction to the conformal field theories in dimensions $d\ge 3$ and the fuzzy sphere regularisation. 
+    \item In Section~\ref{sec:review}, we review the existing works related to the fuzzy sphere. 
+    \item In Section~\ref{sec:construct}, we review the setup of fuzzy sphere, the construction of interaction models and the extraction of CFT data.
+    \item In Section~\ref{sec:numerics}, we review the numerical methods used in the package FuzzifiED, \textit{viz.} ED and DMRG. 
+    \item In Section~\ref{sec:usage}, we give an instruction for installing and getting started with FuzzifiED. 
+    \item In Section~\ref{sec:ed}, we give an instruction on performing ED calculation with FuzzifiED. 
+    \item In Section~\ref{sec:dmrg}, we give an instruction on performing DMRG calculation with FuzzifiED. 
+    \item In Section~\ref{sec:examples}, we present a collection of practical examples that reproduce many existing results.
+\end{itemize}
+
+\subsection{Conformal field theory}
+
+Conformal field theory (CFT) is one of the central topics of modern physics. It refers to a field theory that is invariant under conformal transformations that preserve the angles between vectors. In spacetime dimension $d>2$, the global conformal symmetry is generated by translation, $\mathrm{SO}(d)$ rotation (In this note we work in Euclidean signature. In Lorentzian signature it is the Lorentz transformation $\mathrm{SO}(1,d-1)$), dilatation (scale transformation), and special conformal transformation (SCT)~\cite{Rychkov2016CFT,SimmonsDuffin2016CFT}. These transformations altogether generate the conformal group $\mathrm{SO}(d+1,1)$. Each CFT operator must transform under irreducible representations of rotation and dilatation. The representations are labelled by $\mathrm{SO}(d)$ spin $l$ and scaling dimension $\Delta$, respectively. A special kind of operators that are invariant under SCT called « primaries » deserve particular attension. By acting the space derivatives on the primaries, their « descendants » are obtained. The conformal symmetry is the maximal spacetime symmetry (except supersymmetry) that a field theory can have. It gives powerful constraint on the property of the field theory. In particular, conformal symmetry uniquely determines the form of two-point and three-point correlation functions. The three-point correlator of three primary operators $\Phi_i,\Phi_j,\Phi_k$ contains a universal coefficient called the OPE coefficient $f_{\Phi_i\Phi_j\Phi_k}$. The collection of scaling dimensions and the OPE coefficients $\{\Delta_{\Phi_i},f_{\Phi_i\Phi_j\Phi_k}\}$ is called the conformal data. Theoretically, with full knowledge of the CFT data, an arbitrary correlation function of a CFT can be obtained. 
+
+CFT has provided important insights into various fields of theoretical physics. In condensed matter physics, it has produced useful prediction about the critical phenomena~\cite{Polyakov1970Conformal,Cardy1996Scaling}. Many classical and quantum phase transitions are conjectured to have emergent conformal symmetry in the IR. The universal critical exponents are directly determined by the scaling dimensions of the primary operators. \textit{E.g.}, in Ising transitions that spontaneously break $\mathbb{Z}_2$ symmetry, most critical exponents are given by the scaling dimensions of the lowest $\mathbb{Z}_2$-odd operator $\sigma$ and $\mathbb{Z}_2$-even operator $\epsilon$, such as \begin{equation} \eta=2\Delta_\sigma-1\qquad\nu=\frac{1}{3-\Delta_\epsilon} \end{equation} CFT is also closely related to string theory and quantum gravity in high energy physics. In the string theory, CFT describes the 2d worldsheet~; in quantum gravity, there is a conjectured duality between the gravity theory in $(d+1)$-dimensional anti-de Sitter (AdS) space in the bulk and a $d$-dimensional CFT on the boundary~\cite{Maldacena1998AdSCFT}. Moreover, CFT plays an important role in our understanding of quantum field theories. It describes many fixed points in the RG flow and many QFTs can be seen as a CFT with perturbations. It also helps us understand how physics change under a change of scale and reveals some fundamental structure of the RG flow~\cite{Zamolodchikov1986Irreversibility}. 
+
+In 2d CFTs, besides the global conformal symmetry $\mathrm{SO}(3,1)$, there also exists an infinite dimensional local conformal symmetry~\cite{DiFrancesco1997CFT,Ginsparg1988CFT,Belavin1984BPZ}. Altogether, they form the Virasoro algebra. The infinite dimensional conformal algebra has made many theories exactly solvable, especially the rational theories such as the minimal models and more generally the Wess-Zumino-Witten (WZW) theories. On the other hand, going to the higher dimensions, the CFTs are much less well-studied due to a much smaller conformal group. The existing methods include numerical conformal bootstrap and Monte Carlo lattice simulations. Numerical boostrap bounds the conformal data by making use of consistency conditions such as reflection positivity together with some information of the CFT such as the global symmetry and a certain amount of assumptions~\cite{Poland2018Bootstrap,Rychkov2023Bootstrap}. It has achieved great success in 3d Ising, $\mathrm{O}(N)$ Wilson-Fisher, Gross-Neveu CFTs, \textit{etc.} On the other hand, one can study a CFT by constructing a lattice model that goes through a phase transition in the corresponding universality class, and study the phase transition by Monte Carlo simulation. The extraction of universal data usually involves complicated and expensive finite-size scaling, and only the lowest few CFT operators can be accessed in this way. 
+
+Among these higher dimensional CFTs, we especially focus on $d=3$, as many Lagrangians in $d\ge 4$ flow to free theories. 
+
+\subsection{Fuzzy sphere}
+
+In addition to these existing approaches, the \textit{« fuzzy sphere regularisation »} has recently emerged as a new powerful method to study 3d CFTs. The idea is to put an interacting quantum Hamiltonian on a 2-sphere $S^2$. This geometry preserves the full rotation symmetry (on the contrary, lattice models often only preserve a discrete subgroup). Moreover, when the system is tuned to a critical point or critical phase, combined with the time evolution direction, the system is described by a quantum field theory living on a generalised cylinder $S^2\times\mathbb{R}$, a manifold that is conformally equivalent to flat spacetime through the Weyl transformation
+\begin{equation}
+    (\hat{\mathbf{n}},\tau)\in S^2\times\mathbb{R}\ \longmapsto\ r\hat{\mathbf{n}}\in\mathbb{R}^3,\qquad r=e^{\tau/R}
+\end{equation}
+where $R$ is the radius of the sphere. This conformal transformation maps each time slice of the cylinder to a cocentric sphere in the the flat spacetime. 
+
+Thanks to the conformal flatness that is not owned by other manifolds (\textit{e.g.}, a lattice model with periodic boundary condition lives on the torus $T^2$ which is not conformally flat), we can make use of some nice properties of conformal field theories, the most important one of which is the state-operator correspondance. Specifically, there is a one-to-one correspondence between the eigenstates of the critical Hamiltonian on the sphere and the CFT operators. One can colloquially understand the state $|\Phi\rangle$ as the insertion of the corresponding operator $\Phi(0)$ at the origin point into the vacuum $|0\rangle$~: $|\Phi\rangle=\Phi(0)|0\rangle$. The state and its corresponding operator has the same $\mathrm{SO}(3)$ spin and representation under global symmetry. More importantly, as the Weyl transformation maps the Hamiltonian $H$ corresponding to the time translation on the cylinder to the dilatation $D$ on the flat spacetime, the excitation energy of a state $|\Phi\rangle$ is proportional to the scaling dimension of the corresponding operator $\Delta_\Phi$ 
+\begin{equation}
+    E_\Phi-E_0=\frac{v}{R}\Delta_\Phi
+\end{equation}
+where $E_0$ is the ground state energy, $R$ is the radius of the sphere, and $v$ is the speed of light that is dependent on the microscopic model and is the same for different states. With this property, one can calculate the scaling dimensions simply by obtaining the energy spectrum of the quantum Hamiltonian without doing complicated finite size scalings, and one can obtain the OPE coefficients simply from the inner product of a local operator. This process will be described in detail below. 
+
+Although the quantum Hamiltonians on a sphere enjoy the full rotation symmetry and the property of state-operator correspondence, it is difficult to put a lattice on the sphere due to the curvature (in particular the non-zero Euler characteristic), especially to recover an $\mathrm{SO}(3)$-symmetric theomodynamic limit. An alternative way we take is to fuzzify the sphere. We consider charged free particles moving on a sphere with a magnetic monopole with a flux $4\pi s$ ($s\in\mathbb{Z}/2$) placed at its centre. The monopole exerts a uniform magnetic field on the sphere, which modifies the single particle Hamiltonian and the single particle eigenstates. Now the single particle eigenstates form highly degenerate spherical Landau levels. The lowest Landau level has a degeneracy $(2s+1)$. By setting the single particle gap to be the leading energy scale, adding interactions, and projecting onto the lowest Landau level, we obtain a finite Hilbert space. For the sake of numerical simulation, the system is analoguous to a length-$(2s+1)$ spin chain with long range interaction, where different Landau level orbitals behave like the lattice sites. The difference is that the $(2s+1)$ orbital forms a spin-$s$ representation of the $\mathrm{SO}(3)$ rotation group, and in this way the continuous rotation symmetry is preserved. The word « fuzzy » means the non-commutativity, in our case, due to the presence of magnetic field. The non-commutativity provides a natural length scale which serves as a UV regulator of the quantum field theory. The radius of the sphere scales as $R\sim\sqrt s$. The thermodynic limit can be taken as $s\to\infty$, and we then recover a regular sphere without non-commutativity. 
+
+The power of this approach has been first demonstrated in the context of the 3D Ising transition, where the presence of emergent conformal symmetry has been convincingly established and a wealth of conformal data has been accurately computed. The study has then been extended to accessing various conformal data such as the OPE coefficients, correlation functions, entropic $F$-function, conformal generators in the 3d Ising CFT, studying conformal defects and boundaries such as the magnetic line defect, various conformal boundaries in 3D Ising CFT, and realising various 3d CFTs such as Wilson-Fisher CFTs, $\mathrm{SO}(5)$ deconfined criticality, $\mathrm{Sp}(N)$ symmetric CFTs, \textit{etc.} In the following sections, we shall review the existing works, technical details and the numerical methods. 
+
+\section{Review of existing work}
+\label{sec:review}
+
+In this section, we review the existing work related to fuzzy sphere. 
+
+\paragraph{The pioneering work~\cite{Zhu2022}}
+
+This work first proposes the idea of fuzzy sphere and apply it to a pedagogical example of 3d Ising CFT. This work constructs a model with two flavours of fermions that resembles the spin-up and spin-down in the lattice transverse-field Ising model. At half-filling, one can colloquially think that a spin degree of freedom lives on each orbital. The Hamiltonian contains a density-density interaction that resembles the Ising ferromagnetic interaction and a polarising terms that resembles the transverse field. By tuning the ratio of the two terms, a transition between quantum Hall ferromagnet (a two-fold degenerate state where either of the two flavours is completely occupied) and paramagnet (a one-fold degenerate state where the superpositions of the two flavours at each orbital are occupied) occurs. This transition spontaneously breaks a $\mathbb{Z}_2$ symmetry and falls into the Ising criticality. This work then make use of a unique feature of spherical models described by CFT --- state-operator correspondence --- at the critical point to extract the scaling dimensions of the scaling local operators. This work finds evidence for conformal symmetry, including that (1) there exists a conserved stress tensor with $\Delta=3$ (which is used as the calibrator), and (2) all the levels can be classified into conformal multiplet where the spacing between operators' scaling dimensions are very close to integer. This is one of the first numerical evidence that 3d Ising transition has emergent conformal symmetry. More remarkably, the scaling dimensions of primaries such as $\sigma,\epsilon,\epsilon'$ are already very close to the most accurate known value by numerical bootstrap with an error within $1.2\%$ at a small system size $N_m=16$, for which the computational cost is comparable to a $4\times4$ lattice system. The structure of Ising CFT operator spectrum already starts to show up at an even smaller system size $N_m=4$. All these clues point towards a curious observation that fuzzy sphere suffers from a remarkably small finite-size effect. 
+
+This seminal work opens a new avenue for studying 3d conformal field theories. After that, most of the researches on fuzzy sphere can roughly be catagorised into three directions (with several exceptions)~: 
+
+\begin{enumerate} 
+    \item Accessing various conformal data, 
+    \item Realising various 3d CFTs, and 
+    \item Studying conformal defects and boundaries.
+\end{enumerate} 
+
+\subsection{Accessing various conformal data}
+
+The first direction is to develop methods to calculate various data and quantities of 3d CFTs on fuzzy sphere. Typically, these methods are tested on the simplest example of 3d Ising CFT. For many of those CFT data, fuzzy sphere is the first non-perturbative method to access them~; for the others, the fuzzy sphere has achieved great consistency with previous methods such as quantum Monte Carlo and conformal bootstrap. So far, the accessible CFT data include operator spectrum, OPE coefficients, correlation functions, entropic $F$-function and conformal generators. 
+
+\paragraph{OPE coefficients~\cite{Hu2023Mar}}
+
+Apart from the operator spectrum that has been studied in Ref.~\cite{}, a wealth of CFT data can be obtained from the local operators. This work studies the local observables on the fuzzy sphere, including the density operators and certain four-fermion operators. These observables can be expressed as the linear combination of CFT local scaling operators. After a finite size scaling that takes into account the data from different system sizes, the subleading contribution can be substracted and only the leading contribution are left. In this way, the lowest primaries in Ising CFT in each symmetry sector, \textit{viz.} $\mathbb{Z}_2$-odd $\sigma$ and $\mathbb{Z}_2$-even $\epsilon$, can be realised. The OPE coefficients are then evaluated by taking the inner product of a fuzzy sphere local observable with two CFT states $\langle\Phi_1|\Phi_2(\hat{\mathbf{n}})|\Phi_3\rangle$. This work computes 17 OPE coefficients of low-lying CFT primary fields with high accuracy, including 4 that has not being reported before. The rest are consistent with numerical bootstrap results. It is also worth noting that this work start to apply DMRG to the fuzzy sphere. The maximal system size is increased from $N_m=18$ by ED to $N_m=48$ by DMRG. 
+
+\paragraph{Correlation functions~\cite{Han2023Jun}}
+
+In addition to the OPE coefficients, the local observables can also be used to calculate correlation functions. By taking the inner product of two local observables (density operators) at a time displacement $\langle\Phi_1|\Phi_2(\hat{\mathbf{n}}_0)\Phi_3(\hat{\mathbf{n}},\tau)|\Phi_4\rangle$ with two CFT states, a general four-point function can be calculated. This piece of CFT data in practice cannot be derived from the rest. This work calculates this four-point function in 3d Ising CFT with DMRG. A non-trivial check of conformality, the crossing symmetry, is verified for the correlator $\langle\sigma\sigma\sigma\sigma\rangle$. The special case --- two-point functions by taking $\Phi_1=\Phi_4=\mathbb{I}$ --- are also studied and compared with the expected results by conformal symmetry. 
+
+\paragraph{Entropic $F$-function~\cite{Hu2024}}
+
+Beyond the correlators of local operators, a wealth of information can be learnt from the entanglement entropy and entanglement spectrum. A remarkable quantity is called the $F$-function, which is defined through the scaling behaviour of the entanglement entropy. Specifically, consider a quantum system that lives on $\mathbb{R}^2$. A circle with radius $R_d$ divides the system into inner part $A$ and outer part $B$. The entanglement entropy is defined and expected to scale with $R_d$ as \begin{equation}
+    S_A(R_d)=\operatorname{tr}_A\rho\log\rho=\alpha R_d/\delta-F 
+\end{equation}
+where $\delta$ is a UV-regulator. The constant part is known as the $F$-function of a 3d CFT. The $F$-function is proved to be RG-monotonic, \textit{i.e.}, along a renormalisation group flow from UV to IR, the value of $F$-function is non-increasing, analogous to the central charge in 2d CFTs. Despite its importance, it has never been calculated before through non-perturbative approaches in interacting 3d CFTs. This work has performed the first non-perturbative computation of $F$ function for paradigmatic 3d Ising CFT on fuzzy sphere. The sphere is cut in the real space into two crowns along a latitude circle $\theta$, and the entanglement entropy $S_A(\theta)$ as a function of $\theta$ is calculated. The $F$-function is extracted from the $S_A(\theta)$ in vicinity of the equator, and the result yields $F_A=0.0612(5)$ after a finite size scaling. 
+
+\paragraph{Conformal generators~\cite{Fardelli2024,Fan2024}}
+
+Within the generators of conformal symmetry, the $\mathrm{SO}(3)$ rotation and the dilatation are manifest and act as rotation and time translation on fuzzy sphere. The rest two, \textit{viz.} translation $P^\mu$ and special conformal transformation (SCT) $K^\mu$ needs to be emergent in the IR at the conformal point but broken along the RG flow. It is worthwhile to construct these IR generators by the UV operators on fuzzy sphere. These works invest in such construction with the help of stress tensor $T^{\mu\nu}$. The time component $T^{\tau\tau}$ of stress tensor equals the Hamiltonian density $\mathscr{H}$ and it integrates into the generator $\Lambda^\mu=P^\mu+K^\mu=\int\mathrm{d}\hat{\mathbf{n}}\,n^\mu\mathscr{H}$. The action of this generator send a scaling operator to other operators in the same multiplet with the number of partial derivatives increased or decreased by one. These works calculate the matrix elements of the generators $\Lambda^\mu$ and compare it with the theoretical values in the CFT and find good agreement, which is another non-trivial verification of conformal symmetry. Furthermore, the separate generators $P^\mu$ and $K^\mu$ can be obtained by considering the commutatator $[H,\Lambda^\mu]$, which is useful in determining the primaries. 
+
+\subsection{Realising various 3d CFTs}
+
+The second direction is to study various other CFTs beyond 3d Ising. Fuzzy sphere has revealed many new information about these theories~; the previously known results are also consistent with the fuzzy sphere. So far, the accessible CFTs include $\mathrm{SO}(5)$ deconfined criticality, $\mathrm{O}(3)$ Wilson-Fisher and a series of new theories with $\mathrm{Sp}(N)$ symmetry. 
+
+\paragraph{The $\mathrm{SO}(5)$ deconfined criticality~\cite{Zhou2023}}
+
+The first theory besides Ising CFT to which fuzzy sphere is applied is the $\mathrm{SO}(5)$ deconfined quantum critical point (DQCP). Deconfined quantum critical point (DQCP) is one of the pioneering example of phase transitions beyond Landau paradigm. It has led to numerous theoretical surprises including the emergent $\mathrm{SO}(5)$ symmetry and the duality between interacting theories. Despite extensive studies over the past two decades, its nature remains controversial. The two competing scenarios are (1) DQCP is truely critical, and (2) DQCP is pseudocritical, \textit{i.e.}, a weakly first-order phase transition that has approximate critical behaviour, and is controlled by a pair of complex fixed points very close to the pseudocritical region. 
+
+The DQCP can be conveniently studied on the fuzzy sphere by constructing a non-linear sigma model (NL$\sigma$M) on target space $S^4$ with a level-1 topological Wess-Zumino-Witten (WZW) term, which serves as a dual description of the DQCP with an exact $\mathrm{SO}(5)$ symmetry. The idea is to construct a four-flavour model with global symmetry $\mathrm{Sp}(2)/\mathbb{Z}_2=\mathrm{SO}(5)$ ($\mathbb{Z}_2$ means to gauge the pseudoreal representations). At half-filling, it can be described by a NL$\sigma$M on the Grassmannian $\tfrac{\mathrm{Sp}(2)}{\mathrm{Sp}(1)\times\mathrm{Sp}(1)}\cong S^4$ and the WZW level can be matched. This work provides evidence that the DQCP exhibits approximate conformal symmetry. This work has identified 19 conformal primaries and their 82 descendants. Furthermore, by examining the renormalisation group flow of the lowest symmetry singlet, this work demonstrates that the DQCP is more likely pseudo-critical, with the approximate conformal symmetry plausibly emerging from nearby complex fixed points. 
+
+\paragraph{The $\mathrm{O}(3)$ Wilson-Fisher~\cite{Han2023Dec}}
+
+The $\mathrm{O}(N)$ Wilson-Fisher theories are probably one of the most studied theories for 3d criticalities with wide range of applications. Specifically, this work focus on the $\mathrm{O}(3)$ WF CFT. The construction involves two copies of $\mathrm{SU}(2)$ ferromagnet with altogether 4 flavours. Briefly speaking, the model contains two competing terms~: (1) a $\mathrm{SU}(2)$ ferromagnetic interaction which favours a Heisenberg ferromagnetic phase where each of the two copies being half-filled and the symmetry-breaking order parameter lives on a $S^2$ manifold, (2) a transverse field which favours one of the two copies being completely filled, corresponding to a Heisenberg paramagnet. The transition between these two phases falls into the $\mathrm{O}(3)$ Wilson-Fisher universality. Through the energy spectrum at the transition, this work provides evidence that $\mathrm{O}(3)$ Wilson-Fisher fixed point exhibits conformal symmetry, as well as revealing a wealth of information about the CFT can be revealed, such as the instability to cubic anisotropy. This work also calculates several OPE coefficients. 
+
+\paragraph{A series of new $\mathrm{Sp}(N)$-symmetric CFTs~\cite{Zhou2024Oct}}
+
+The quest to discover new 3d CFTs has been intriguing for physicists. A virgin land on this quest is the parity-breaking CFTs. In 3d, the Chern-Simons-matter theories stand out as the most well known and possibly the only known type of parity-breaking CFTs. Fuzzy sphere is a promising platform to study these theories. This work makes a concrete construction by generalising the DQCP to the WZW-NL$\sigma$M on the target space of a general symplectic Grassmannian 
+\begin{equation}
+    \frac{\mathrm{Sp}(N)}{\mathrm{Sp}(M)\times\mathrm{Sp}(N-M)}.
+\end{equation}
+Several candidate Chern-Simons-matter theories are known to exist on its phase diagram which have $N$ flavour of gapless bosons or fermions coupled to a non-Abelian (\textit{viz.} $\mathrm{Sp}(1)$, $\mathrm{Sp}(2)$, etc.) Chern-Simons gauge field. On the fuzzy sphere, this WZW-NL$\sigma$M can be realised by a $2N$ layer model with $\mathrm{Sp}(N)$ global symmetry, and $2M$ out of the $2N$ layers are filled. This work numerically verifies the emergent conformal symmetry by observing the integer-spaced conformal multiplets and studying the finite-size scaling of the conformality. 
+
+\subsection{Studying conformal defects and boundaries}
+
+Apart from the bulk CFTs, fuzzy sphere can also be used to study their conformal defects and boundaries. Deforming a CFT with interactions living on a sub-dimensional defect may trigger a RG flow towards a non-trivial interacting IR fixed point. A defect IR theory that own a smaller conformal symmetry is called a defect CFT. The dCFTs own rich physical structure such as defect operators and bulk-to-defect correlation functions. Moreover, a bulk CFT can flow to several different dCFTs. So far, the accessible defects/boundaries include the magnetic line defect of 3d Ising CFT, including its defect operator spectrum, correlators, $g$-function, defect changing operators, its cusp, and the conformal boundaries of 3d Ising CFT. 
+
+\paragraph{Conformal magnetic line defect~\cite{Hu2023Aug}}
+
+This is the first work that studies conformal defects with fuzzy sphere. The simplest example of magnetic line defect of the 3d Ising CFT, where the defect line is completely polarised and the $\mathbb{Z}_2$ symmetry is explicitly broken. Taking a defect line along $z$-direction that passes the origin point, after the radial quantisation, this corresponds to the north and south poles of the sphere being polarised. Hence, to realise the magnetic line defect on fuzzy sphere, one only needs to apply a pinning magnetic field to the north and south poles (Since only the $m=+s$ orbital has non-zero amplitude at the north pole and $m=-s$ at the south pole due to the locality, one only need to pin the $m=\pm s$ orbitals). 
+
+This work demonstrates that the defect IR fixed point has emergent conformal symmetry $\mathrm{SO}(2,1)\times\mathrm{O}(2)$~: in the operator spectrum, there exists a displacement operator as the non-conservation of stress tensor at exactly $\Delta_\mathrm{D}=2$, and the defect primaries and descendants have integer spacing~; the bulk-to-defect one-point (1-pt) and two-point (2-pt) correlation functions follow a power law. This work has identified 6 low-lying defect primary operators and extract their scaling dimensions, as well as computing one-point bulk correlators and two-point bulk-defect correlators. 
+
+\paragraph{The $g$-function and defect changing operators~\cite{Zhou2024Jan}}
+
+This work studies the $g$-function of conformal defects and the defect creation and changing operators. Similar to the central charge and the $F$-function in bulk CFTs, there exists a RG-monotonic quantity called the $g$-function for the line defects that is non-increasing along the flow. It is defined as the ratio between the partition functions of the defect CFT and the bulk CFT. On the other hand, consider two semi-infinite magnetic line defects that are pinned towards opposite directions joint at one point, a defect changing operator lives at the joining point. Similarly, a defect creation operator lives at the endpoint of a semi-infinite line defect. The relevance of the defect changing operator is related to the stability of spontaneous symmetry-breaking (SSB) on the line defect. 
+
+This work realises the defect creation and changing operators for the Ising mangetic line defect by acting a pinning field at the north pole, and opposite pinning fields at the north and south poles, respectively. The scaling dimensions are calculated through state operator correspondence $\Delta_{\mathrm{creation}}=0.108(5),\Delta_{\mathrm{changing}}=0.84(5)$, indicating the instability of SSB on the Ising mangetic line. Moreover, this work shows that the $g$-function, along with many other CFT data, can be calculated by taking the overlaps between the eigenstates of different defect configurations. Most importantly, this paper has given the first non-perturbative result for the $g$-function $g=0.602(2)$. 
+
+\paragraph{Cusp~\cite{Cuomo2024}}
+
+A cusp is two semi-infinite defect lines joined at one point at an angle. This can be realised on fuzzy sphere through pinning fields at two points at an angle. This work studies the cusps through various theoretical and numerical approaches. In particular, on fuzzy sphere, this paper calculates the cusp anomalous dimension as a function of the angle for the Ising magnetic line defects, and verifies its relation with the Zamolodchikov norm of the displacement operator. 
+
+\paragraph{Conformal boundaries of 3d Ising CFT~\cite{Zhou2024Jul,Dedushenko2024}}
+
+Apart from line defects, boundaries are also important extended objects in CFT. For the Iisng CFT, there exists several conformal boundaries~: normal boundary CFT (bCFT) with explicitly broken $\mathbb{Z}_2$ symmetry, ordinary bCFT that is stable and has preserved $\mathbb{Z}_2$ symmetry, extraordinary bCFT with spontaneously broken $\mathbb{Z}_2$ symmetry, and special bCFT as the transition between ordinary and extraordinary bCFTs. These works focus on the normal and ordinary bCFTs and show that they can be realised by acting a polarising field on a hemisphere. By noting that the LLL orbitals are localised along latitude circles, the bCFTs can equivalently be realised by pinning the orbitals with $m<0$. By studying the operator spectrum, these works show numerical evidence for conformal symmetry and estimates the scaling dimensions of the conformal primaries. These works also calculates the bulk-to-boundary 1-pt and 2-pt functions and extract the corresponding OPE coefficients. Interestings, these works notice certain correspondence between the boundary energy spectrum and bulk entanglement spectrum through orbital cut. 
+
+\subsection{Other works on the fuzzy sphere}
+
+Besides the three directions of works, several other works push the boundary of our knowledge of and techniques for the fuzzy sphere. 
+
+\paragraph{Conformal perturbation~\cite{Lao2023}}
+
+The energy spectrum calculated numerically at finite size does not coincide with that of the CFT. Part of the finite-size correction comes from the higher irrelavant operators that are not exactly tuned to zero (\textit{e.g.}, in the Ising CFT, the irrelavent operators include $\epsilon', C_{\mu\nu\rho\sigma}, T'_{\mu\nu}$, \textit{etc.}, and the lowest singlets $\epsilon$ and $\epsilon'$ are tuned away through the two parameters). These irrelevant operators exert perturbations on the states and their energy. This paper captures this kind of correction by the conformal perturbation theory. By making use of the fact that the corrections from an irrelevant operator on the energy of the primary and its descendants are not independent, the coefficients of the irrelevant operators can be fitted. 
+
+Although this work is does not exactly carry out study on the fuzzy sphere, it opens up a new route of improving the precision of scaling dimensions on fuzzy sphere by making better use of the existing data, and the method to partly remove the finite-size correction through conformal perturbation theory is widely used by following works. 
+
+\paragraph{Quantum Monte Carlo on fuzzy sphere~\cite{Hofmann2023}}
+
+Up to the time of this work, the numerical methods that has been applied to fuzzy sphere include exact diagonalisation (ED) and density matrix renormalisation group (DMRG). This work further presents the numerical studies of fuzzy sphere with quantum Monte Carlo (QMC) simulation, which is known for its potential of studying criticalities in $(2+1)$ dimensions at larger system size. Specifically, this work makes use of the determinant quantum Monte Carlo (DQMC) method that converts the simulation of fermions into the simulation of bosonic auxiliary fields. To overcome the sign problem, this work considers two copies of the original model and constructs the Ising CFT on a 4-flavour model. This work determines the lowest energy spectra within each symmetry sector by calculating the time-displaced correlation functions. This work also calculates the equal-time correlation functions and compares them with the two-point functions of CFT. 
+
+\paragraph{Ising CFT on top of FQHE state~\cite{Voinea2024}}
+
+Up to the time of this work, all the constructions of CFTs on fuzzy sphere are based on the quantum Hall ferromagnet. Specifically, before the interaction is added, an integer number of the lowest Landau levels are fully occupied. This state has a finite charge gap that guarentees that the gapless spin degree of freedom do not strongly couple with the charge degree of freedom when one adds the interactions. 
+
+This work further explores the possibility to construct CFTs on other states with charge gap --- in particular, the Haldane-Laughlin states that captures the fractional quantum Hall effect (FQHE). Specifically, this work studies the fermionic LLL at fillings of $\nu=1/3$ and $1/5$. The model Hamiltonian contains (1) a dominant projection term that put the ground state on the Haldane-Laughlin state, and (2) an interaction term as a perturbation that drives the Ising-type phase transition. This work shows that the energy spectra at the critical point exhibit conformal symmetry. More noticeably, this work also makes the construction with respect to the bosonic LLL at a filling of $\nu=1/2$. 
+
+\section{Model construction}
+\label{sec:construct}
+
+In this section, we review the process to construct a model on fuzzy sphere and extract conformal data. We are especially devoted to the technical detail that is rarely covered by other literature. 
+
+\subsection{Projection onto the lowest Landau level}
+
+To build the setup of fuzzy sphere, we consider a sphere with radius $R$ and put a $4\pi s$-monopole at its centre. Consider free electrons moving on the sphere. The monopole will modify the single particle Hamiltonian. \begin{equation}
+    H_0=\frac{1}{2MR^2}(\partial^\mu+iA^\mu)^2
+\end{equation} where $\mu=\theta,\phi$ and we take 
+\begin{equation}
+    A_\theta=0,\quad A_\phi=-\frac{s}{R}\operatorname{ctg}\theta
+\end{equation}
+The eigenstates of the Hamiltonian are the monopole spherical harmonics 
+\begin{equation}
+    Y_{lm}^{(s)}(\hat{\mathbf{n}}),\quad l=s,s+1,\dots,\quad m=-l,\dots,l-1,l
+\end{equation}
+where $\hat{\mathbf{n}}$ is the unit vector of the point on the sphere with and the energies are
+\begin{equation}
+    E_l=\frac{1}{2MR^2}(l(l+1)-s^2)
+\end{equation}
+Each level, known as a Landau level, has a degeneracy of $(2l+1)$. Specifically, the wavefunctions on the lowest Landau level (LLL) $l=s$ is easy to write out~: 
+\begin{equation}
+    Y_{sm}^{(s)}(\hat{\mathbf{n}})=C_me^{im\phi}\cos^{s+m}\frac{\theta}{2}\sin^{s-m}\frac{\theta}{2},\quad C_m=\frac{1}{{\sqrt{4\pi\Beta(s+m+1,s-m+1)}}}
+\end{equation}
+where $C_m$ is the normalising factor, and $\Beta$ is the Euler's beta function. The LLL has a degeneracy $N_m=2s+1$. 
+
+We now consider $N_f$ flavours of fermions moving on the sphere, characterised by the second-quantised fermion operator $\hat{\psi}_f(\hat{\mathbf{n}})$, with a flavour index $f=1,\dots,N_f$. We partially fill the lowest Landau level and set the single energy gap to be much larger than the scale of interaction $H_0\gg H_\mathrm{int}$, so that the quantum fluctuation can be constrained on the lowest Landau level. In practice, we often fill integer number of flavours $N_e=kN_m$ ($k\in\mathbb{Z}$) so that a quantum Hall ferromagnet (\textit{i.e.}, the state where integer number of LLLs are filled) is preferred in the absence of interaction, for which the charge degree of freedom is gapped and will not couple strongly to the CFT degree of freedom in the presence of the interaction. 
+
+We then project the system onto the LLL. Technically, this can be done by write the fermion operators in terms of the annihilation operators of the LLL orbitals
+\begin{equation}
+    \hat{\psi}_f(\hat{\mathbf{n}})=\sum_{m=-s}^s Y^{(s)}_{sm}(\hat{\mathbf{n}})\hat{c}_{mf}
+\end{equation} 
+where $\hat{c}^{(\dagger)}_{mf}$ annihilates/creates an electron with $L^z$-quantum number $m$ at the $f$-th flavour of the lowest Landau level. In the following sections, we will omit the hats on the operators. 
+
+After the projection, we obtain a finite Hilbert space on which numerical simulation can be carried out. For the sake of numerical simulation, the system is analoguous to a length-$(2s+1)$ spin chain with long range interaction, where different Landau level orbitals behave like the lattice sites. The difference is that the $(2s+1)$ orbital forms a spin-$s$ representation of the $\mathrm{SO}(3)$ rotation group, and in this way the continuous rotation symmetry is preserved. The exact rotation symmetry reduces the UV effect and the finite-size effect, so that the numerical results are considerably accurate even at small system size. 
+
+The word « \textit{fuzzy} » means non-commutativity. Here the magnetic field results in a the non-commutativity of the coordinates. More concretely, we project write the coordinate operators as a matrix on the lowest Landau level 
+\begin{equation}
+    X^\mu_{m_1m_2}=\int\mathrm{d}^2\hat{\mathbf{n}}\,n^\mu \bar{Y}_{sm_1}^{(s)}(\hat{\mathbf{n}})Y_{sm_2}^{(s)}(\hat{\mathbf{n}})
+\end{equation}
+These matrices $\mathbf{X}^\mu$ ($\mu=x,y,z$) satisfy relation 
+\begin{equation}
+    \mathbf{X}_\mu\mathbf{X}^\mu=\frac{s}{s+1}\mathbb{I},\qquad [\mathbf{X}^\mu,\mathbf{X}^\nu]=\frac{1}{s+1}i\epsilon^{\mu\nu\rho}\mathbf{X}_\rho
+\end{equation}
+The first equation involves the radius $R$ of the sphere, and the second equation involves the magnetic length $l_B$ that determines the non-commutativity. An arbitrary scale factor can change these lengths but their ratio is fixed and scales as 
+\begin{equation}
+    R/l_B\sim\sqrt{s}\sim\sqrt{N_m}
+\end{equation} 
+We can take $l_B=1$ as the unit length. In this way, the radius scales with the square root of number of orbitals. The thermodynamic limit can be taken by $N_m\to\infty$, where a regular sphere is recovered. 
+
+\subsection{Density operator}
+
+Having constructed the single particle states, we then consider the interacting many-body Hamiltonian. The simplest building block is density operators, which are local fermion bilinears. 
+\begin{equation}
+    n_M(\hat{\mathbf{n}})=\psi_{f'}^\dagger(\hat{\mathbf{n}})M_{f'f}\psi_f(\hat{\mathbf{n}})
+\end{equation}
+Here the matrix insertion $M$ put the density operators at a certain representation of the flavour symmetry. For example, for a 2-flavour system, $M$ can be taken as the Pauli matrices $\mathbb{I},\sigma^x,\sigma^y,\sigma^z$~; for a system with $N_f$ flavours in the fundamental representation of $\mathrm{SU}(N_f)$ flavour symmetry, one can put $n_M$ in the singlet or adjoint representation 
+\begin{align}
+    n_S(\hat{\mathbf{n}})&=\psi_{c}^\dagger(\hat{\mathbf{n}})\psi^c(\hat{\mathbf{n}})\nonumber\\ 
+    n_a{}^b(\hat{\mathbf{n}})&=\psi_{a}^\dagger(\hat{\mathbf{n}})\psi^b(\hat{\mathbf{n}})-\tfrac{1}{N}\delta_{a}{}^b\psi_c^\dagger(\hat{\mathbf{n}})\psi^c(\hat{\mathbf{n}}
+\end{align} 
+Like the fermion operator, the density operator can also be expressed in the orbital space. 
+\begin{equation}
+    n_M(\hat{\mathbf{n}})=\sum_{lm}Y_{lm}(\hat{\mathbf{n}})n_{M,lm}
+\end{equation}
+Conversely, 
+\begin{align}
+    n_{M,lm}&=\int\mathrm{d}^2\hat{\mathbf{n}}\,\bar{Y}_{lm}n_M(\hat{\mathbf{n}})\nonumber\\
+    &=\int\mathrm{d}^2\hat{\mathbf{n}}\,\bar{Y}_{lm}\left(\sum_{m_1}\bar{Y}^{(s)}_{sm_1}c^\dagger_{m_1f_1}\right)M_{f_1f_2}\left(\sum_{m_2}Y^{(s)}_{sm_2}c_{m_1f_2}\right)\nonumber\\
+    &=\sum_{m_1m_2}c^\dagger_{m_1f_1}M_{f_1f_2}c_{m_1f_2}\int\mathrm{d}^2\hat{\mathbf{n}}\,\bar{Y}_{lm}\bar{Y}^{(s)}_{sm_1}Y^{(s)}_{sm_2}\nonumber\\
+    &=\sum_{m_1}c^\dagger_{m_1f_1}M_{f_1f_2}c_{m+m_1,f_2}\times\nonumber\\
+    &\qquad\qquad(-1)^{s+m+m_1}(2s+1)\sqrt{\frac{2l+1}{4\pi}}\begin{pmatrix}s&l&s\\m_1&m&-m_1-m\end{pmatrix}\begin{pmatrix}s&l&s\\m_1&m&-m_1-m\end{pmatrix}
+\end{align}
+Here we have used the properties of the monopole spherical harmonics\footnote{For more detail, one can refer to the Wikipedia page \url{https://en.wikipedia.org/wiki/Spin-weighted_spherical_harmonics}.}
+\begin{subequations}
+\begin{align}
+    \bar{Y}_{lm}^{s}&=(-1)^{s+m}Y_{l,-m}^{(-s)}\\
+    \int\mathrm{d}^2\hat{\mathbf{n}}\,Y_{lm}^{(s)}\bar{Y}_{lm}^{(s)}&=\delta_{ll'}\delta_{mm'}\\
+    \int\mathrm{d}^2\hat{\mathbf{n}}\,Y_{l_1m_1}^{(s_1)}Y_{l_2m_2}^{(s_2)}Y_{l_3m_3}^{(s_3)}&=\sqrt{\frac{(2l_1+1)(2l_2+1)(2l_3+1)}{4\pi}}\begin{pmatrix}l_1&l_2&l_3\\m_1&m_2&m_3\end{pmatrix}\begin{pmatrix}l_1&l_2&l_3\\-s_1&-s_2&-s_3\end{pmatrix}     
+\end{align} 
+\end{subequations}
+and $\begin{pmatrix}l_1&l_2&l_3\\m_1&m_2&m_3\end{pmatrix}$ is the $3j$-symbol\footnote{For more detail, one can refer to the Wikipedia page \url{https://en.wikipedia.org/wiki/3-j_symbol}.}. In this way, we have fully expressed the density operator in terms of the operators in the orbital space $c^{(\dagger)}_{mf}$. 
+
+\subsection{Density-density interaction}
+
+The most straightforward way to construct an interaction term is to add a density-density interaction potential $U(r)$. We note that this is not the simplest construction and we will present the simpler construction in terms of pseudopotentials in the next section. \begin{equation}
+    H_\mathrm{int}=\int\mathrm{d}^2\hat{\mathbf{n}}_1\,\mathrm{d}^2\hat{\mathbf{n}}_2\,U(|\hat{\mathbf{n}}_1-\hat{\mathbf{n}}_2|)n_M(\hat{\mathbf{n}}_1)n_M(\hat{\mathbf{n}}_2) 
+\end{equation} 
+The interacting potentials can be expanded in terms of the Legendre polynomials 
+\begin{equation}
+    U(|\mathbf{r}_{12}|)=\sum_l\tilde{U}_lP_l(\cos\theta_{12})=\sum_{lm}\frac{4\pi}{2l+1}\bar{Y}_{lm}(\hat{\mathbf{n}}_1)Y_{lm}(\hat{\mathbf{n}}_2)
+\end{equation} 
+where $\mathbf{r}_{12}=\hat{\mathbf{n}}_1-\hat{\mathbf{n}}_2$. Conversely \begin{equation}
+    \tilde{U}_l=\int\sin\theta_{12}\mathrm{d}\theta_{12}\,\frac{2l+1}{2}U(|\mathbf{r}_{12}|)P_l(\cos\theta_{12})
+\end{equation} 
+Specifically, for local and super-local interactions 
+\begin{align}
+    U(|\mathbf{r}_{12}|)&=\delta(\mathbf{r}_{12})&\tilde{U}_l&=2l+1\nonumber\\
+    U(|\mathbf{r}_{12}|)&=\nabla^2\delta(\mathbf{r}_{12})&\tilde{U}_l&=-l(l+1)(2l+1)     
+\end{align}
+By expanding the density operators into the orbital space and completing the integrals, 
+\begin{equation}
+    H_\mathrm{int}=\sum_{lm}\frac{4\pi \tilde{U}_l}{2l+1}n^\dagger_{M,lm}n_{M,lm}
+\end{equation} 
+
+With these ingrediants, we can now consider how to construct models. This comes down to matching the symmetry and phase diagram. \textit{E.g.}, for the Ising model, the $\mathbb{Z}_2$ global symmetry is realised as the exchange of the two flavours $\psi_\uparrow(\mathbf{r})\leftrightarrow\psi_\downarrow(\mathbf{r})$. We need a phase diagram with a paramagnetic (PM) phase where the $\mathbb{Z}_2$ symmetry is conserved and a ferromagnetic phase where the $\mathbb{Z}_2$ symmetry is spontaneously broken. The PM phase is favoured by a polarising term that resembles a transverse field
+\begin{equation*}
+    -h\int\mathrm{d}^2\hat{\mathbf{n}}\,n_x(\hat{\mathbf{n}})
+\end{equation*}
+and the FM phase where either of the two flavours is fully filled is favoured by a repulsion between the two flavours 
+\begin{equation*}
+    \int\mathrm{d}^2\hat{\mathbf{n}}_1\,\mathrm{d}^2\hat{\mathbf{n}}_2\,U(|\hat{\mathbf{n}}_1-\hat{\mathbf{n}}_2|)n_\uparrow(\hat{\mathbf{n}}_1)n_\downarrow(\hat{\mathbf{n}}_2) 
+\end{equation*} 
+where the density operators are defined as 
+\begin{equation*}
+    n_x(\hat{\mathbf{n}})=\psi^\dagger_\downarrow(\hat{\mathbf{n}})\psi_\uparrow(\hat{\mathbf{n}})+\mathrm{h.c.},\quad n_\uparrow=\psi^\dagger_\uparrow(\hat{\mathbf{n}})\psi_\uparrow(\hat{\mathbf{n}}),\quad n_\downarrow=\psi^\dagger_\downarrow(\hat{\mathbf{n}})\psi_\downarrow(\hat{\mathbf{n}}) 
+\end{equation*}
+and the potentials can be most conveniently taken as a combination of local and super-local interactions. Altogether the model Hamiltonian reads 
+\begin{equation}
+    H_\mathrm{int}=\int\mathrm{d}^2\hat{\mathbf{n}}_1\,\mathrm{d}^2\hat{\mathbf{n}}_2\,U(|\hat{\mathbf{n}}_1-\hat{\mathbf{n}}_2|)n_↑(\hat{\mathbf{n}}_1)n_\downarrow(\hat{\mathbf{n}}_2)-h\int\mathrm{d}^2\hat{\mathbf{n}}\,n_x(\hat{\mathbf{n}})
+    \label{eq:ising_hmt}
+\end{equation}
+By tuning the ratio between $h$ and $U(\mathbf{r}_{12})$, a phase transition described by the Ising CFT is realised. 
+
+\subsection{Interaction in terms of pseudopotentials}
+
+Another way that is much more convenient to construct the interactions is through Haldane pseudopotential. To explain the idea, we take the 3d Ising model as an example. We first classify all the fermion bilinears $\lambda_{mm'ff'}c_{mf}c_{m'f'}$. To simplify the discussion, we can take a specific isospin index $\lambda_{mm'}c_{m\uparrow}c_{m'\downarrow}$. The fermion bilinears can be classified into irreducible representations of $\mathrm{SO}(3)$ rotation symmetry. Since $c_{mf}$ carries the spin-$s$ representation, the spin of its bilinear ranges from $0$ to $2s$ and takes integer values. The spin-$(2s-l)$ combination reads 
+\begin{equation}
+    \Delta_{lm}=\sum_{m_1}\langle sm_1,s(m-m_1)|(2s-l)m\rangle c_{m_1,\uparrow}c_{m-m_1,\downarrow}
+\end{equation} 
+where $m=-(2s-l),\dots,(2s-l)$, and the Clebshbar-Gordan coefficients \footnote{For more detail, one can refer to the Wikipedia page \url{https://en.wikipedia.org/wiki/Clebshbar-Gordan_coefficients}.} is related to the $3j$-symbol by
+\begin{equation}
+    \langle l_1m_1,l_2m_2|lm\rangle=(-1)^{-l_1+l_2-m}\sqrt{2l+1}\begin{pmatrix}l_1&l_2&l\\m_1&m_2&-m\end{pmatrix}
+\end{equation}
+A four-fermion interaction term is formed by contracting these paring operators with its conjugate. 
+\begin{equation}
+    H=\sum_lU_lH_l,\quad H_l=\sum_m\Delta_{lm}^\dagger\Delta_{lm} 
+\end{equation} 
+Putting these altogether, the interaction Hamiltonian can be expressed as 
+\begin{equation}
+    H=\sum_{l,m_1m_2m_3m_4}U_lC^l_{m_1m_2m_3m_4}c^\dagger_{m_1\uparrow}c^\dagger_{m_2\downarrow}c_{m_3\downarrow}c_{m_4\uparrow}-h\sum_m(c_{m\uparrow}^\dagger c_{m\downarrow}+\mathrm{h.c.}) 
+\end{equation}
+where the matrix elements are 
+\begin{equation}
+    C^l_{m_1m_2m_3m_4}=\delta_{m_1+m_2,m_3+m_4}\langle sm_1,sm_2|(2s-l)(m_1+m_2)\rangle\langle sm_3,sm_4|(2s-l)(m_3+m_4)\rangle 
+    \label{eq:ps_pot_coeff}
+\end{equation} 
+The coupling strength $U_l$ of the spin-$(2s-l)$ channel is called the Haldane pseudopotentials. 
+
+We need also to consider the constraint that the two fermions must be anti-symmetrised~: for even $l$, the orbital index is symmetrised, so the spin index must be antisymmetrised, so the two fermions form a spin-singlet which is invariant under the $\mathrm{SU}(2)$ transformation~; for odd $l$, the orbital index is anti-symmetrised, so the spin index is symmetrised, breaking the flavour symmetry from $\mathrm{SU}(2)$ to $\mathbb{Z}_2$. Hence, an odd-$l$ pseudopotential must be added (This fact escapes the construction by density-density interaction). 
+
+The fermion bilinears with other isospin configurations $\lambda_{mm',\pm}(c_{m\uparrow}c_{m'\uparrow}\pm c_{m\downarrow}c_{m'\downarrow})$ can be analysed in a similar way. After that, we have enumerated all possible four-fermion interaction terms. 
+
+For systems with more complicated continuous symmetries, classification in terms of representation of flavour symmetry must also be considered, and the indices must be overall antisymmetrised. We explain that through the example of a $2N$-flavour system with $\mathrm{Sp}(N)$ global symmetry~\cite{}. The maximal flavour symmetry is $\mathrm{SU}(2N)$, so interactions must be added to break the symmetry from $\mathrm{SU}(2N)$ to $\mathrm{Sp}(N)$. The fermion operators live in the $\mathrm{Sp}(N)$ fundamental representation. We shall show that all the allowed terms are 
+\begin{multline}
+    H=\sum_{\substack{l\in\mathbb{Z}\\m_1m_2m_3m_4}}U_lC^l_{m_1m_2m_3m_4}c^\dagger_{m_1a}c^\dagger_{m_2b}c_{m_3b}c_{m_4a}\\
+    -\frac{1}{2}\sum_{\substack{l\in 2\mathbb{Z}\\m_1m_2m_3m_4}}V_lC^l_{m_1m_2m_3m_4}\Omega_{aa'}\Omega_{bb'}c^\dagger_{m_1a}c^\dagger_{m_2a'}c_{m_3b'}c_{m_4b} 
+\end{multline} 
+where $\Omega=\begin{pmatrix}0&\mathbb{I}_N\\-\mathbb{I}_N&0\end{pmatrix}$. 
+
+To find out all the four-fermion interactions allowed by the rotation symmetry $\mathrm{SO}(3)$ and flavour symmetry $\mathrm{Sp}(N)$, we classify all the fermion bilinears $c_{m_1a}c_{m_2b}$ into irreducible representations (irrep) of $\mathrm{SO}(3)\times\mathrm{Sp}(N)$. For each irrep, by contracting the bilinear with its Hermitian conjugate, we obtain an allowed four-fermion interaction term. Each fermion carries $\mathrm{SO}(3)$ spin-$s$ and $\mathrm{Sp}(N)$ fundamental. For the rotation symmetry $\mathrm{SO}(3)$, the bilinear can carry spin-$(2s-l)(l=0,\dots,2s)$ represetation~; for even $l$, the orbital indices are symmetrised~; for odd $l$, the orbital indices are antisymmetrised. For the flavour symmetry $\mathrm{Sp}(N)$, the bilinear can carry singlet $S$, traceless antisymmetric rank-2 tensor $A$ and symmetric rank-2 tensor $T$ representation~; for $S$ and $A$, the flavour indices are antisymmetrised~; for $T$, the flavour indices are symmetrised. As the two fermions altogether should be antisymmetrised, the allowed combinations are 
+
+\begin{enumerate}
+    \item $\mathrm{Sp}(N)$ singlet and $\mathrm{SO}(3)$ spin-$(2s-l)$ with even $l$, the bilinears are 
+    \begin{equation}
+        \Delta_{lm}=\sum_{m_1m_2}\langle sm_1,sm_2|(2s-l)m\rangle\Omega_{aa'}c_{m_1a}c_{m_2a'}\delta_{m,m_1+m_2} 
+    \end{equation} 
+    The corresponding interaction term $H_{S,l}=\sum_m\Delta_{lm}^\dagger\Delta_{lm}$ is the even-$l$ pseudopotential for the $V$-term. 
+    \item $\mathrm{Sp}(N)$ antisymmetric and $\mathrm{SO}(3)$ spin-$(2s-l)$ with even $l$, the bilinears are 
+    \begin{equation}
+        \Delta_{lm,[ab]}=\sum_{m_1m_2}\langle sm_1,sm_2|(2s-l)m\rangle\left(c_{m_1a}c_{m_2b}-c_{m_1b}c_{m_2a}-\tfrac{1}{N}\Omega_{ab}\Omega_{cc'}c_{m_1c'}c_{m_2c}\right)\delta_{m,m_1+m_2}.
+    \end{equation} 
+    The corresponding interaction term $H_{A,l}=\sum_m\Delta_{lm,[ab]}^\dagger\Delta_{lm,[ab]}$ is the even-$l$ pseudopotential for the $U$-term. 
+    \item $\mathrm{Sp}(N)$ symmetric and $\mathrm{SO}(3)$ spin-$(2s-l)$ with odd $l$, the bilinears are 
+    \begin{equation}
+        \Delta_{lm,(ab)}=\sum_{m_1m_2}\langle sm_1,sm_2|(2s-l)m\rangle\left(c_{m_1a}c_{m_2b}+c_{m_1b}c_{m_2a}\right)\delta_{m,m_1+m_2}.
+    \end{equation} 
+    The corresponding interaction term $H_{T,l}=\sum_m\Delta_{lm,(ab)}^\dagger\Delta_{lm,(ab)}$ is the odd-$l$ pseudopotential for the $U$-term. 
+\end{enumerate}
+
+In summary, all allowed interactions are the $U_l$ terms with both even and odd $l$, and the $V_l$ terms with only even $l$. 
+
+We also note that each pseudopotential can correspond to a profile of interaction potential functions. The conversion between the pseudopotentials $U_l$ and the Legendre expansion coefficients of the potential function $\tilde{U}_l$
+\begin{equation}
+    U(|\mathbf{r}_{12}|)=\sum_l\tilde{U}_lP_l(\cos\theta_{12})
+\end{equation} 
+is 
+\begin{equation} 
+    U_l=\sum_k \tilde{U}_k(-1)^l(2s+1)^2\begin{Bmatrix}2s-l&s&s\\k&s&s\end{Bmatrix}\begin{pmatrix}s&k&s\\-s&0&s\end{pmatrix}^2 
+\end{equation}
+where $\{\dots\}$ is the $6j$-symbol. Specifically, a local interaction contains only pseudopotential $U_0$~; a superlocal interaction of form $(\nabla^2)^l\delta(\mathbf{r}_{12})$ contains $U_0,U_1,\dots,U_l$. Here we give the expressions for the lowest pseudopotentials explicitly. 
+\begin{align}
+    U(|\mathbf{r}_{12}|)&=\delta(\mathbf{r}_{12})&U_0&=\frac{(2s+1)^2}{4s+1}\nonumber\\
+    U(|\mathbf{r}_{12}|)&=\nabla^2\delta(\mathbf{r}_{12})&U_0&=-\frac{s(2s+1)^2}{4s+1}&U_1&=\frac{s(2s+1)^2}{4s-1}.
+\end{align}
+More details are given in Ref.~\cite{Fan2024}. 
+
+\subsection{Operator spectrum and search for conformal point}
+
+Having introduced the construction of an interacting model on fuzzy sphere, we now turn to the verification of the conformal symmetry and the extraction of the CFT data. The most straightforward approach is to extract the scaling dimensions from the energy spectrum through the state-operator correspondence. Specifically, there is a one-to-one correspondence between the eigenstates of the Hamiltonian and the CFT operators. The state and its corresponding operator has the same $\mathrm{SO}(3)$ spin and representation under flavour symmetry, and the excitation energy of a state $|\Phi\rangle$ is proportional to the scaling dimension of the corresponding operator $\Delta_\Phi$ 
+\begin{equation}
+    E_\Phi-E_0=\frac{v}{R}\Delta_\Phi
+\end{equation}
+where $E_0$ is the ground state energy, $R$ is the radius of the sphere (here we take $R=\sqrt{N_m}$), and $v$ is the model-dependent speed of light. The constant $v/R$ can be determined through a calibration process, \textit{i.e.}, comparing the spectrum to some known properties of a CFT spectrum. The criteria to determine the conformal symmetry include 
+
+\begin{enumerate}
+    \item The existence of a conserved stress tensor $T^{\mu\nu}$. The stress tensor is the symmetry current of the translation transformation. It is known to be a singlet under the flavour symmetry, have spin-2 under $\mathrm{SO}(3)$ rotation and scaling dimension exactly $\Delta_{T^{\mu\nu}}=3$. 
+    \item The existence of a conserved flavour symmetry current $J^\mu$ if there is a continuous flavour symmetry. The symmetry current typically lives in the antisymmetric rank-2 tensor representation of the flavour symmetry. \textit{E.g.}, if the flavour symmetry is $\mathrm{U}(1)$, then the symmetry current has charge-0~; if the flavour symmetry is $\mathrm{O}(3)$, then the symmetry current has spin-1 and is odd under the improper $\mathbb{Z}_2$ transformation~; if the flavour symmetry is $\mathrm{O}(n)$ ($n\ge 4$) or $\mathrm{SU}(n)$ ($n\ge 3$), then the symmetry current lives in the antisymmetric rank-$2$ tensor representation. 
+    \item The organisation of the operator spectrum into conformal multiplets. All the levels in the spectrum of a CFT can be organised into the conformal primaries and their descendants. The descendants live in the same representation under the flavour symmetry as the primary, and the difference between the scaling dimensions of a primary and its descendant is an integer. Specifically, for a scalar primary $\Phi$, its descendants have the form 
+    \begin{equation*}
+        \Box^n\partial^{\mu_1}\partial^{\mu_2}\dots\partial^{\mu_l}\Phi-\textrm{(trace)},\qquad n,l=0,1,2,\dots
+    \end{equation*}
+    with $\mathrm{SO}(3)$ spin-$l$ and scaling dimension $\Phi+2n+l$, where $\Box=\partial_\mu\partial^\nu$. For a spinning primary $\Phi^{\mu_1\dots\mu_s}$, its descendants has the two forms~: 
+    \begin{equation*}
+        \Box^n\partial^{\nu_1}\dots\partial^{\nu_m}\partial_{\rho_1}\dots\partial_{\rho_k}\Phi^{\rho_1\dots\rho_{k}\mu_1\dots \mu_{s-k}},\qquad k=0,\dots,s,\ n,m=0,1,\dots
+    \end{equation*}
+    with scaling dimension $\Delta_\Phi+k+m+2n$ and $\mathrm{SO}(3)$ spin-$(s-k+m)$, and 
+    \begin{equation*}
+        \Box^n\partial^{\nu_1}\dots\partial^{\nu_m}\partial_{\rho_1}\dots\partial_{\rho_k}\epsilon^{\sigma}{}_{\tilde{\mu}\tilde{\nu}}\partial^{\tilde{\nu}}\Phi^{\rho_1\dots\rho_{k}\tilde{\mu}\mu_1\dots \mu_{s-k-1}},\qquad k=0,\dots,s-1,\ n,m=0,1,\dots
+    \end{equation*}
+    with scaling dimension $\Delta_\Phi+k+m+2n+1$ and $\mathrm{SO}(3)$ spin-$(s-k+m)$. For the second form, the fully antisymmetric tensor $\epsilon$ alters the parity. 
+\end{enumerate} 
+
+The most convenient way of determining the coefficient $v/R$ is by utilising criteria 1 or 2~: 
+\begin{equation}
+    \frac{v}{R}=\frac{E_{T^{\mu\nu}}-E_0}{3}\quad\textrm{or}\quad\frac{E_{J^\mu}-E_0}{2}
+\end{equation}
+Alternatively, one can define a cost function that depends on the tuning parameter and the speed of light and compares the scaling dimensions obtained from fuzzy sphere and the prediction by conformal symmetry. \textit{E.g.}, for the Ising CFT, the tuning parameters are the pseudopotentials $\{U_i\}$ and the transverse field $h$. The criteria for conformal symmetry we use include the stress tensor $T^{\mu\nu}$ and the descendants $\partial^\mu\sigma$, $\partial^\mu\partial^\nu\sigma$, $\Box\sigma$, $\partial^\mu\epsilon$. The cost function is the root-mean-square of the deviations of these criteria from the expectation of the conformal symmetry 
+\begin{multline}
+    Q(\{U_i\},h,v;N_m)=\frac{1}{N_s}\left[(\Delta_{T^{\mu\nu}}^{(\mathrm{FS})}-3)^2+(\Delta_{\partial^\mu\sigma}^{(\mathrm{FS})}-\Delta_\sigma^{(\mathrm{FS})}-1)^2\right.\\
+    \left.+(\Delta_{\partial^\mu\partial^\nu\sigma}^{(\mathrm{FS})}-\Delta_\sigma^{(\mathrm{FS})}-1)^2+(\Delta_{\Box\sigma}^{(\mathrm{FS})}-\Delta_\sigma^{(\mathrm{FS})}-1)^2+(\Delta_{\partial^\mu\epsilon}^{(\mathrm{FS})}-\Delta_\epsilon^{(\mathrm{FS})}-1)^2\right]
+\end{multline} 
+where $N_s=5$ is the number of criteria, the scaling dimensions of an operator $\Phi$ on the fuzzy sphere is determined as 
+\begin{equation}
+    \Delta_\Phi^{(\mathrm{FS})}(\{U_i\},h,v;N_m)=\frac{E_\Phi-E_0}{v/R}. 
+\end{equation} 
+The optimal conformal point and calibrator are determined by minimising this cost function for each system size $N_m$. Note that this optimal point depends on the system size. In order to do finite size scaling, if the CFT describes a phase transition, one could fix all but one parameters at the optimal point in the largest accessible system size and tune the last parameter to determine the critical point through a finite size scaling. 
+
+\subsection{Local observables}
+
+We have introduced how to determine the scaling dimensions from the energy spectrum. Beyond that, evaluating other CFT quantities requires realising local CFT operators on the fuzzy sphere. Any gapless local observables $\mathscr{O}(\hat{\mathbf{n}})$ on the fuzzy sphere can be written as the linear combination of CFT operators that lives in the same representation of flavour symmetry and parity. 
+\begin{equation}
+    \mathscr{O}(\hat{\mathbf{n}},\tau)=\sum_\alpha \lambda_\alpha\Phi^{(\mathrm{cyc.})}_\alpha(\hat{\mathbf{n}},\tau) 
+\end{equation} 
+Here special care should be taken for the CFT operator $\Phi^{(\mathrm{cyc.})}_\alpha(\hat{\mathbf{n}},\tau)$ on the cylinder. A conformal transformation produces a scale factor $\Lambda(\mathbf{r})^{\Delta_\Phi}$ to a primary operator $\Phi$. For the Weyl transformation from the flat spacetime to the cylinder, the scale factor is $\Lambda(\mathbf{r})=r/R$. Hence, 
+\begin{equation}
+    \Phi^{(\mathrm{cyc.})}_\alpha(\hat{\mathbf{n}},\tau)=\left(\frac{e^{\tau/R}}{R}\right)^{\Delta_{\Phi_\alpha}}\Phi_\alpha^{\mathrm{(flat)}}(\mathbf{r})
+\end{equation}
+For descendants, certain other factors may be produced, but the conversion factors still scale with the radius of the sphere as $R^{-\Delta}$ where $\Delta$ is the scaling dimension of the descendants. For simplicity, hereafter we focus on the equal-time correlators with $\tau=0$, for which $\Phi^{(\mathrm{cyc.})}_\alpha(\hat{\mathbf{n}})=R^{-\Delta_{\Phi_\alpha}}\Phi_\alpha^{\mathrm{(flat)}}(\mathbf{r})$. The operator with larger system size decays faster when increasing system size. 
+
+The simplest local observable is the density operator. 
+\begin{equation}
+    n^M(\hat{\mathbf{n}})=\sum_{f_1f_2}\psi_{f_1}^\dagger(\hat{\mathbf{n}})M_{f_1f_2}\psi_{f_2}(\hat{\mathbf{n}})=\sum_{m_1m_2f_1f_2}\bar{Y}^{(s)}_{sm_1}(\hat{\mathbf{n}})Y^{(s)}_{sm_2}(\hat{\mathbf{n}})c^\dagger_{m_1f_1}M_{f_1f_2}c_{m_2f_2}
+\end{equation} 
+The angular modes are 
+\begin{align}
+    n_M(\hat{\mathbf{n}})&=\sum_{lm}Y_{lm}(\hat{\mathbf{n}})n_{M,lm}\nonumber\\
+    n_{M,lm}&=\sum_{m_1}c^\dagger_{m_1f_1}M_{f_1f_2}c_{m+m_1,f_2}\nonumber\\
+    &\qquad\qquad\times(-1)^{s+m+m_1}(2s+1)\sqrt{\frac{2l+1}{4\pi}}\begin{pmatrix}s&l&s\\m_1&m&-m_1-m\end{pmatrix}\begin{pmatrix}s&l&s\\m_1&m&-m_1-m\end{pmatrix} 
+\end{align}
+From the CFT perspective, the density operators are the superpositions of scaling operators with corresponding quantum numbers, \textit{i.e.}, with the same representation under flavour symmetry and parity. 
+
+Take the Ising model as an example. 
+\begin{equation}
+    n^i(\hat{\mathbf{n}})=\Psi^\dagger(\hat{\mathbf{n}})\sigma^i\Psi(\hat{\mathbf{n}})=\sum_{m'm}\bar{Y}^{(s)}_{sm'}(\hat{\mathbf{n}})Y^{(s)}_{sm}(\hat{\mathbf{n}})\mathbf{c}^\dagger_{m'}\sigma^i\mathbf{c}_m 
+\end{equation} where $i=x,z$. In the leading order, they can be used as UV realisations of CFT operators $\sigma$ and $\epsilon$.
+\begin{align}
+    n^x(\hat{\mathbf{n}})&=\lambda_0+\lambda_\epsilon\epsilon(\hat{\mathbf{n}})+\lambda_{\partial^\mu\epsilon}\partial^\mu\epsilon(\hat{\mathbf{n}})+\lambda_{T^{\mu\nu}}T^{\mu\nu}(\hat{\mathbf{n}})+\dots&\epsilon_\mathrm{FS}&=\frac{n^x-\lambda_0}{\lambda_\epsilon}+\dots\nonumber\\
+    n^z(\hat{\mathbf{n}})&=\lambda_\sigma\sigma(\hat{\mathbf{n}})+\lambda_{\partial^\mu\sigma}\partial^\mu\epsilon(\hat{\mathbf{n}})+\lambda_{\partial^\mu\partial^\nu\sigma}\partial^\mu\partial^\nu\sigma(\hat{\mathbf{n}})+\dots&\sigma_\mathrm{FS}&=\frac{n^z}{\lambda_\sigma}+\dots 
+\end{align} 
+where the coefficients $\lambda_0,\lambda_\epsilon,\lambda_\sigma,\dots$ are model-dependent and need to be determined, and all the operators on the right hand side are defined on the cylinder. 
+
+We first consider the insertion of a single operator $\langle\Phi_1|\Phi_2(\hat{\mathbf{n}})|\Phi_3\rangle$. It helps us produce the OPE coefficients. For the simplest example of three scalars, \begin{equation}     f_{\Phi_1\Phi_2\Phi_3}=\lim_{r_\infty\to\infty}r_\infty^{-2\Delta_{\Phi_1}}\langle \Phi_1(x_\infty)\Phi_2(x)\Phi_3(0)\rangle_\mathrm{flat}=\langle\Phi_1|\Phi_2^{(\mathrm{flat})}(x)|\Phi_3\rangle \end{equation} where $x_\infty$ is a point on the sphere with radius $r_\infty$, $x$ is a point on the unit sphere, the states are defined as the operator acting on the origin point 
+\begin{equation} 
+    |\Phi_3\rangle=\Phi_3(0)|0\rangle 
+\end{equation} 
+and its Hermitian conjugate is defined as 
+\begin{equation}
+    \Phi_1^\dagger(\infty)=(\Phi_1(0))^\dagger=\lim_{r_\infty\to\infty}r_\infty^{2\Delta_{\Phi_1}}\Phi_1(x_\infty),\qquad     \langle\Phi_1|=\langle0|\Phi_1^\dagger(\infty) 
+\end{equation} 
+After the Weyl transformation from the flat spacetime to the cylinder, we obtain the expression on fuzzy sphere 
+\begin{equation}
+    f_{\Phi_1\Phi_2\Phi_3}=R^{\Delta_{\Phi_2}}\langle\Phi_1|\Phi^{(\mathrm{cyl.})}_2(\hat{\mathbf{n}})|\Phi_3\rangle.
+\end{equation} 
+The UV realisation of $\Phi_2$ contains many other operators with different spins. By integrating the correlation function against different spherical harmonics, \textit{i.e.}, take the angular modes of the operator inserted 
+\begin{equation}
+    \int\mathrm{d}\hat{\mathbf{n}}\,\bar{Y}_{lm}(\hat{\mathbf{n}})\langle\Phi_1|\Phi_2(\hat{\mathbf{n}})|\Phi_3\rangle=\langle\Phi_1|\Phi_{2,lm}|\Phi_3\rangle,
+\end{equation} 
+we can filter out the subleading contributions with different spin. For the spinning operators, this will also tell us about different OPE structures. By taking $\Phi_3=\mathbb{I}$, we can recover the two point functions 
+\begin{align}
+    \langle\Phi_2|\Phi_{2,00}|0\rangle&=R^{-\Phi_2}\nonumber\\
+    \Phi_2(\hat{\mathbf{n}})|0\rangle&=R^{-\Phi_2}\left[|\Phi_2\rangle+\lambda'_\mu(\hat{\mathbf{n}})|\partial^\mu\Phi_2\rangle+\lambda''(\hat{\mathbf{n}})|\Box\Phi_2\rangle+\lambda''_{\mu\nu}(\hat{\mathbf{n}})|\partial^\mu\partial^\nu\Phi_2\rangle\right]
+\end{align} 
+It is worthnoting acting a primary $\Phi_2(\hat{\mathbf{n}})$ on the vacuum will also produce various descendants in the multiplet. 
+
+In the example of Ising CFT, we first use the insertion of a single operator to determine the coefficients $\lambda_0,\lambda_\epsilon,\lambda_\sigma$. 
+\begin{equation}
+    \lambda_0=\frac{1}{\sqrt{4\pi}}\langle 0|n^x_{00}|0\rangle,\quad\lambda_\epsilon=\frac{R^{\Delta_\epsilon}}{\sqrt{4\pi}}\langle \epsilon|n^x_{00}|0\rangle,\quad\lambda_\sigma=\frac{R^{\Delta_\sigma}}{\sqrt{4\pi}}\langle \sigma|n^z_{00}|0\rangle
+\end{equation} 
+Take the OPE coefficient $f_{\sigma\sigma\epsilon}$ as an example. It can be expressed either as a one point function of $\sigma$ or $\epsilon$
+\begin{align}
+    f_{\sigma\sigma\epsilon}&=R^{\Delta_\sigma}\langle\epsilon|\sigma(\hat{\mathbf{n}})|\sigma\rangle=\frac{\langle\epsilon|n_{00}^z|\sigma\rangle}{\langle 0|n_{00}^z|\sigma\rangle}+\mathscr{O}(R^{-2})\nonumber\\     &=R^{\Delta_\epsilon}\langle\sigma|\epsilon(\hat{\mathbf{n}})|\sigma\rangle=\frac{\langle\sigma|n^x_{00}|\sigma\rangle-\langle0|n^x_{00}|0\rangle}{\langle\epsilon|n^x_{00}|0\rangle}+\mathscr{O}(R^{-(3-\Delta_\epsilon)}) 
+\end{align} 
+For the first line, the subleading contribution comes from the contribution of the descendant $\Box\sigma$ to $n_{00}^z$. As $\sigma(\hat{\mathbf{n}})$ scales as $R^{-\Delta_\sigma}$ and $\Box\sigma(\hat{\mathbf{n}})$ as $R^{-\Delta_\sigma-2}$, 
+\begin{align}
+    \langle\epsilon|n_{00}^z|\sigma\rangle&=f_{\sigma\sigma\epsilon}\lambda_\sigma R^{-\Delta_\sigma}(1+c_1R^{-2}+\dots)\nonumber\\
+    \langle\epsilon|n_{00}^z|\sigma\rangle&=\lambda_\sigma R^{-\Delta_\sigma}(1+c'_1R^{-2}+\dots)\nonumber\\
+    \frac{\langle\epsilon|n_{00}^z|\sigma\rangle}{\langle 0|n_{00}^z|\sigma\rangle}&=f_{\sigma\sigma\epsilon}+\mathscr{O}(R^{-2}) 
+\end{align} 
+Here $c_1$ and $c'_1$ are constant factors that represents the contribution of $\Box\sigma$ and does not scale with system size. Hence, the subleading contribution scales as $R^{-2}$. For the second line, the subleading contribution comes from the stress tensor $T^{\mu\nu}$. Similarly, the power of the scaling is the difference of the scaling dimension $R^{-(\Delta_{T^{\mu\nu}}-\Delta_\epsilon)}=R^{-(3-\Delta_\epsilon)}$. 
+
+We then proceed to the insertion of two operators. This can help us determine up to a four-point function. Through conformal transformation, any four point function can be expressed in the form of 
+\begin{equation}
+    \langle\Phi_1|\Phi^{\mathrm{(cyl.)}}_2(\hat{\mathbf{n}},\tau)\Phi^{\mathrm{(cyl.)}}_3(\hat{\mathbf{z}})|\Phi_4\rangle=\frac{e^{\Delta_{\Phi_2}\tau/R}}{R^{\Delta_{\Phi_2}+\Delta_{\Phi_3}}}\langle\Phi_1^\dagger(\infty)\Phi_2(\mathbf{r})\Phi_3(\hat{\mathbf{z}})\Phi_4(0)\rangle
+\end{equation} where the time-displaced operator can be defined as
+\begin{equation}
+    \Phi_2(\hat{\mathbf{n}},\tau)=e^{-H\tau}\Phi_2(\hat{\mathbf{n}})e^{H\tau}
+\end{equation} As a sanity check, By taking $\Phi_1=\Phi_4=\mathbb{I}$, $\Phi_2=\Phi_3$ and $\tau=0$, the two-point function on the unit sphere is recovered 
+\begin{multline}
+    \langle0|\Phi^{\mathrm{(cyl.)}}_2(\hat{\mathbf{n}})\Phi^{\mathrm{(cyl.)}}_2(\hat{\mathbf{z}})|0\rangle=R^{-2\Delta_{\Phi_2}}\langle\Phi_2(\hat{\mathbf{n}})\Phi_2(\hat{\mathbf{z}})\rangle\\=\frac{1}{R^{2\Delta_{\Phi_2}}|\hat{\mathbf{n}}-\hat{\mathbf{z}}|^{2\Delta_{\Phi_2}}}=\frac{1}{R^{2\Delta_{\Phi_2}}(1-\cos\theta)^{\Delta_{\Phi_2}}}.
+\end{multline}
+
+\subsection{Conformal generators}
+
+So far, in the conformal group, we know that the rotation and the dilatation is manifest on the fuzzy sphere. The rest, \textit{viz.} translation and SCT, are emergent. In this section, we consider how to express the generators of these emergent symmetries in terms of the microscopic operators. 
+
+A general Noether current and corresponding generator of the infinitesimal spacetime transformation $x^\mu\mapsto x^\mu+\epsilon^\mu(x)$ can be expressed in terms of the stress tensor 
+\begin{equation}
+    j_\epsilon^\mu(x)=\epsilon^\nu(x)T^\mu{}_\nu(x),\quad Q_\epsilon=\int_\Sigma\mathrm{d}^{d-1}x\,\sqrt{g}j_\epsilon^0(x) 
+\end{equation}
+Specifically, for the generators $P^\mu,K^\mu$ of translation and SCT in the embedded sphere
+\begin{equation}
+    P^\mu=\int\mathrm{d}^2\hat{\mathbf{n}}(n^\mu T^0{}_0+iT^{0\mu}),\quad K^\mu=\int\mathrm{d}^2\hat{\mathbf{n}}(n^\mu T^0{}_0-iT^{0\mu})
+\end{equation} 
+Hence, the conformal generator $\Lambda^\mu=P^\mu+K^\mu$ is the $l=1$ component of the Hamiltonian density $\mathscr{H}=T^0{}_0$
+\begin{equation}
+    \Lambda_m=P_m+K_m=\sqrt\frac{4\pi}{3}\int\mathrm{d}^2\hat{\mathbf{n}}\,\bar{Y}_{1m}(\hat{\mathbf{n}})\mathscr{H}(\hat{\mathbf{n}}).
+\end{equation}
+(Here the indices $\mu$ and $m$ are two equivalent way to express the components) By acting it on the the states, the number of derivatives is increased or decreased by $1$, \textit{e.g.}, for a primary $\Phi$
+\begin{align}
+    \Lambda^\mu|\Phi\rangle&=\mathrm{const.}\times|\partial^\mu\Phi\rangle\nonumber\\     \Lambda^\mu|\partial_\mu\Phi\rangle&=\mathrm{const.}\times|\Phi\rangle+\mathrm{const.}\times|\partial^\mu\partial^\nu\Phi\rangle+\mathrm{const.}\times|\Box\Phi\rangle
+\end{align}
+The derivation of the expression and the constant factors are calculated and given in Ref.~\cite{}.
+
+We then need to find the expression for the Hamiltonian density. For example, for Ising model, it is the local density operator and density-density interactions with some full derivatives 
+\begin{equation}
+    \mathscr{H}(\hat{\mathbf{n}})=n_z\left(g_0+g_1\nabla^2\right)n_z-hn_x+g_{D,1}\nabla^2n_x+g_{D,2}\nabla^2n_z^2+\dots
+\end{equation}
+where $g_{D,i}$ are undetermined constants that does not affect the Hamiltonian $H=\int\mathrm{d}^2\hat{\mathbf{n}}\,\mathscr{H}$. We have only listed a few examples of the allowed full derivatives. 
+
+To determine those constants, we consider another strategy by consider all the possible two-fermion and four-fermion operators that are singlet under flavour symmetry and spin-1 under $\mathrm{SO}(3)$. We consider the example of Ising CFT. The two-fermion terms include the density operactors 
+\begin{equation*}
+    n^x_{1m}\quad\textrm{and}\quad n^0_{1m}.
+\end{equation*}
+Similar to what we have done for Hamiltonian, the four-fermion operators can be obtained by combining the fermion bilinears $\Delta_{lm}$ 
+\begin{equation}
+    \sum_{\substack{l_1l_2m_1m_2}}\tilde{U}_{l_1l_2}\Delta^\dagger_{l_1m_1}\Delta_{l_2m_2}\langle (2s-l_1)(-m_1),(2s-l_2)m_2|1m\rangle
+\end{equation} 
+For $l_1\in2\mathbb{Z}$, the spin index in the pairing operator is anti-symmetrised~; For $l_1\in2\mathbb{Z}+1$, the spin index in the pairing operator is symmetrised. Therefore, $l_1-l_2\in2\mathbb{Z}$ for non-zero results. And since $|l_1-l_2|\leq 1$, we conclude $l_1=l_2$. so 
+
+\begin{equation}
+    \Lambda_m=\sum_{\substack{lm_1m_2}}\tilde{U}_{l}\Delta^\dagger_{lm_1}\Delta_{lm_2}\begin{pmatrix}2s-l&2s-l&1\\-m_1&m_2&m     \end{pmatrix}+\tilde{h}n^x_{1m}+\tilde{\mu}n^0_{1m} 
+\end{equation}
+Here, $\tilde{U}_l,\tilde{h},\tilde{\mu}$ are tuning parameters. 
+
+After obtaining $\Lambda^\mu=P^\mu+K^\mu$, the separate $P^\mu$ and $K^\mu$ can be obtained by considering the commutator with the dilatation generator $D$, which is proportional to the Hamiltonian. As $[D,P^\mu]=P^\mu$ and $[D,K^\mu]=-K^\mu$.
+\begin{align}
+    P^\mu&=\tfrac{1}{2}\Lambda^\mu+\tfrac{1}{2}[D,\Lambda^\mu]\nonumber\\
+    K^\mu&=\tfrac{1}{2}\Lambda^\mu-\tfrac{1}{2}[D,\Lambda^\mu].
+\end{align} 
+
+\section{Numerical methods}
+\label{sec:numerics}
+
+In this section, we briefly review the numerical methods supported in FuzzifiED, \textit{viz.} exact diagonalisation (ED) and density matrix renormalisation group (DMRG).
+
+\subsection{Exact diagonalisation}
+
+\subsection{Density matrix renormalisation group}
+
+\section{Getting started with FuzzifiED~: installation and usage}
+\label{sec:usage}
+
+The package FuzzifiED is implemented in the Julia language\footnote{The most intensive core functionalities are written in Fortran and wrapped by Julia interfaces, but the users are not required to have any interaction or knowledge with the Fortran part of the source code.}. Some useful links are given in Table~\ref{tbl:link}. To install the package, run the following command in the Julia REPL (Read-eval-print loop). 
+\begin{lstlisting}
+    using Pkg ; Pkg.add("FuzzifiED")
+\end{lstlisting}
+To use the package, include at the start of the Julia script
+\begin{lstlisting}
+    using FuzzifiED
+\end{lstlisting}
+To obtain the documentation for an interface, type \lstinline|?| followed by the keyword in the Julia REPL, \textit{e.g.}, \lstinline|?Confs|.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{l|l}
+        \hline\hline
+        Installation for Julia&\url{https://julialang.org/downloads}\\
+        Homepage&\url{https://www.fuzzified.world}\\
+        Documentation&\url{https://docs.fuzzified.world}\\
+        Julia source code&\url{https://github.com/FuzzifiED/FuzzifiED.jl}\\
+        JLL wrapper&\url{https://github.com/FuzzifiED/FuzzifiED_jll.jl}\\
+        Fortran source code&\url{https://github.com/FuzzifiED/FuzzifiED_Fortran}\\
+        Registry of the package&\url{https://juliahub.com/ui/Packages/General/FuzzifiED}\\
+        \hline\hline
+    \end{tabular}
+    \caption{Some useful links.}
+    \label{tbl:link}
+\end{table}
+
+\section{Exact diagonalisation (ED) with FuzzifiED}
+\label{sec:ed}
+
+In this section, we briefly describe the procedure for exact diagonalisation (ED) calculation and give an instruction for using FuzzifiED for ED. 
+
+\subsection{General description and convensions}
+
+
+
+To demonstrate the usage of FuzzifiED interfaces, in this section, we use an example that 
+\begin{enumerate}
+    \item calculates the lowest eigenstates in the symmetry sector $L^z=0$ and $(\mathscr{P},\mathscr{Z},\mathscr{R})=(+,+,+)$,
+    \item measures their total angular momenta, and 
+    \item calcultes the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$.
+\end{enumerate}
+The full code is collected in Appendices~\ref{app:code_ed1} and \ref{app:code_ed2}.
+
+Before we start, we need to specify some convensions we use.
+\begin{itemize}
+    \item A `flavour' is labelled by $f$. The number of flavours is $N_f$.
+    \item An `orbital' is specified by the magnetic quantum number labelled by $m$. The number of orbitals is $N_m=2s+1$.
+    \item A `site' is specific by both the flavour and the orbital index, labelled by $o=(f,m)$. The number of sites is $N_o=N_mN_f$.
+\end{itemize}
+
+\subsection{Constructing the configurations}
+\label{sec:ed_confs}
+
+The first step for the ED calculation is to construct the basis tha respects the symmetries of the Hamiltonian. This is divided into two steps : (1) generate the `configurations' that carry the diagonal quantum numbers, and (2) generate the `basis' that also carry the off-diagonal quantum numbers (under discrete transformations). The `\textit{configurations}' are the collection of states that can be written as direct product of occupied $|1\rangle$ or empty $|0\rangle$ on each site and carries certain diagonal quantum numbers (QNDiag). 
+
+The QNDiags that can be implemented are the charges of $\mathrm{U}(1)$ or $\mathbb{Z}_p$ symmetry that are in the form of 
+\begin{align}
+    Q&=\sum_oq_on_o&\mathrm{U}(1)&\textrm{ symmetry}\nonumber\\
+    Q&=\sum_oq_on_o\mod p&\mathbb{Z}_p&\textrm{ symmetry}
+\end{align}
+where $n_o=c^\dagger_oc_o$ is the particle number on each site, and $q_o$ is the charge that each orbital carries. In FuzzifiED, the QNDiags are recorded in the mutable type \lstinline|QNDiag|
+
+\begin{block}{\lstinline|QNDiag| --- Type}
+The type contains the fields
+\begin{itemize}
+    \item \lstinline|name :: String| --- the name of the diagonal quantum number\footnote{The name is only needed for conversion into quantum numbers in ITensor.}.
+    \item \lstinline|charge :: Vector{Int64}| --- the symmetry charge $q_o$ of each site.
+    \item \lstinline|modul :: Vector{Int64}| --- the modulus $p$, set to $1$ for $\mathrm{U}(1)$ QNDiags. 
+\end{itemize}
+and can be initialised by the method 
+\begin{lstlisting}
+    QNDiag([name :: String, ]charge :: Vector{Int64}[, modul :: Int64])
+\end{lstlisting}
+where the arguments in the brackets are facultative. 
+\end{block}
+
+In FuzzifiED, several useful QNDiags are built-in\footnote{For a more detailed description of the interfaces, refer to the documentation at \url{https://docs.fuzzified.world}.}
+\begin{itemize}
+    \item \lstinline|GetNeQNDiag(no :: Int64)| --- the numberof electrons ;
+    \item \lstinline|GetLz2QNDiag(nm :: Int64, nf :: Int64)| --- twice the angular momentum $2L_z$ ;
+    \item \lstinline|GetFlavQNDiag(nm :: Int64, nf :: Int64, qf :: Union{Dict{Int64, Int64}, Vector{Int64}}[, id :: Int64 = 1, modul :: Int64 = 1])|\footnote{In Julia, \lstinline[basicstyle=\ttfamily\scriptsize]|Union{A,B}| means that both the types $A$ and $B$ are acceptable. \textit{E.g.}, for $Q=n_{f=1}-n_{f=3}$ in a 4-flavour system, both \lstinline[basicstyle=\ttfamily\scriptsize]|qf = [1, 0, -1, 0]| or \lstinline[basicstyle=\ttfamily\scriptsize]|qf = Dict(1 => 1, 3 => -3)| are acceptable. } --- a linear combination of number of electrons in each flavour $Q=\sum_fq_fn_f$, where $\{q_f\}$ is stored in \lstinline|qf| in the format of either an array or a dictionary. 
+    \item \lstinline|GetZnfChargeQNDiag(nm :: Int64, nf :: Int64)| --- a $\mathbb{Z}_{N_f}$-charge $Q=\sum_{f=0}^{N_f-1}fn_f\mod N_f$.
+    \item \lstinline|GetPinOrbQNDiag(no :: Int64, pin_o :: Vector{Int64}[, id :: Int64 = 1])| --- the number of electrons in the subset of sites \lstinline|pin_o|. This quantity is useful for defects and boundaries. 
+\end{itemize}
+
+The configurations are recorded in the mutable type \lstinline|Confs|. 
+
+\begin{block}{\lstinline|Confs| --- Type}
+The mutable type contains the fields
+\begin{itemize}
+    \item \lstinline|no :: Int64| --- the number of sites.
+    \item \lstinline|ncf :: Int64| --- the number of configurations.
+    \item \lstinline|conf :: Vector{Int64}| is an array of length \lstinline|ncf| containing all the configurations. 
+    \item \lstinline|nor :: Int64|, \lstinline|lid :: Vector{Int64}| and \lstinline|rid :: Vector{Int64}| contain the information of Lin table that is used to inversely look up the index from the configuration. 
+\end{itemize}
+and can be constructed by the method 
+\begin{lstlisting}
+    Confs(no :: Int64, secd :: Vector{Int64}, qnd :: Vector{QNDiag})
+\end{lstlisting}
+where \lstinline|qnd| is the array of QNDiags, and \lstinline|secd| is the array of charges $Q$ of each QNDiag\footnote{In general, many methods in FuzzifiED admits keyword arguments \lstinline[basicstyle=\ttfamily\scriptsize]|num_th :: Int64| that specifies the number of threads and \lstinline[basicstyle=\ttfamily\scriptsize]|disp_std :: Bool| that specifies whether or not the log shall be displayed. Hereafter, we will omit these two arguments.}.
+\end{block}
+
+Here each configuration is stored as a binary number with $N_o$ bits. If the $o$-th site in the configuration is occupied, the $o-1$-th bit of the configuration is $1$; if the site is empty, then the bit is $0$. Besides the storation of the configuration, we also need an inverse look-up process that returns the index from the binary string. This is realised by a Lin table stored in \lstinline|lid| and \lstinline|rid|. The details are given in Appendix~\ref{app:data_lin}. 
+
+In the example of Ising model Eq.~\eqref{eq:ising_hmt}, there are two QNDiags, \textit{viz.} the particle number and the angular momentum. 
+\begin{align}
+    Q_1&=N_e,& q_{1,mf}&=1\nonumber\\
+    Q_2&=2L_z,&q_{2,mf}&=2m
+\end{align}
+The full code to generating the configurations in the $L_z=0$ sector is 
+\begin{lstlisting}
+    nm = 12
+    nf = 2
+    no = nm * nf
+    qnd = [ 
+        QNDiag(fill(1, no)), 
+        QNDiag([ 2 * m - nm - 1 for m = 1 : nm for f = 1 : nf ])
+    ]
+    cfs = Confs(no, [nm, 0], qnd)
+\end{lstlisting}
+Alternatively, using the built-in models, 
+\begin{lstlisting}
+    nm = 12
+    nf = 2
+    no = nm * nf
+    qnd = [ 
+        GetNeQNDiag(no), 
+        GetLz2QNDiag(nm, nf) 
+    ]
+    cfs = Confs(no, [nm, 0], qnd)
+\end{lstlisting}
+
+\subsection{Constructing the basis}
+
+Having constructed the configurations, we now construct the basis of the Hilbert space. The `\textit{basis}' is the collection of states that are linear combinations of the configurations, carry certain diagonal and $\mathbb{Z}_p$ off-diagonal quantum numbers (QNOffd). 
+
+The QNOffds that can be implemented are the $\mathbb{Z}_p$ symmetry that are in the form of 
+\begin{equation}
+    \mathscr{Z}:\ c_o\to \alpha_o^* c^{(p_o)}_{\pi_o},\quad c_o^\dagger\to \alpha_o c^{(1-p_o)}_{\pi_o}
+\end{equation}
+where we use a notation $c^{(1)}=c^\dagger$ and $c^{(0)}=c$ for convenience, $\pi_o$ is a permutation of the sites $1,\dots N_o$, $\alpha_o$ is a coefficient, and $p_o$ specified whether or not particle-hole transformation is performed for the site. Note that one must guarentee that all these transformations commute with each other and also commute with the diagonal quantum numbers. In FuzzifiED, the QNOffds are recorded in the mutable type \lstinline|QNOffd|. 
+
+\begin{block}{\lstinline|QNOffd| --- Type}
+The mutable type contains the fields
+\begin{itemize}
+    \item \lstinline|perm :: Vector{Int64}| --- a length-$N_o$ array that records the permutation $\pi_o$.
+    \item \lstinline|ph :: Vector{Int64}| --- a length-$N_o$ array that records $p_o$ to determine whether or not to perform a particle-hole transformation.
+    \item \lstinline|fac :: Vector{ComplexF64}| --- a length-$N_o$ array that records the factor $\alpha_o$ in the transformation.
+    \item \lstinline|cyc :: Int64| --- the cycle $p$. 
+\end{itemize}
+It can be initialised by the methods
+\begin{lstlisting}
+    QNOffd(perm :: Vector{Int64}[, ph :: Vector{Int64}][, fac :: Vector{ComplexF64}][, cyc :: Int64])
+    QNOffd(perm :: Vector{Int64}, ph_q :: Bool[, fac :: Vector{ComplexF64}])
+\end{lstlisting}
+By default \lstinline|ph| is set all 0, \lstinline|fac| is set to all 1 and \lstinline|cyc| is set to 2. If \lstinline|ph_q| is set to be true, \lstinline|ph| is set to all 1. 
+\end{block}
+
+In FuzzifiED, several useful QNOffds are built-in
+\begin{itemize}
+    \item \lstinline|GetParityQNOffd(nm :: Int64, nf :: Int64[, permf, fac])| --- the particle-hole transformation $\mathscr{P}:c^\dagger_{mf}\mapsto\alpha_fc_{m\pi_f}$, with the permutation of flavours $\pi_f$ and the factors $\alpha_f$ stored in \lstinline|permf| and \lstinline|fac| as either an array or a dictionary. 
+    \item \lstinline|GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf, fac][, cyc :: Int64])| --- the flavour permutation transformation $\mathscr{Z}:c^\dagger_{mf}\mapsto\alpha_fc_{m\pi_f}^\dagger$, with the permutation of flavours $\pi_f$ and the factors $\alpha_f$ stored in \lstinline|permf| and \lstinline|fac| as either an array or a dictionary, and the cycle stored in \lstinline|cyc|. 
+    \item \lstinline|GetRotyQNOffd(nm :: Int64, nf :: Int64)| --- the $\pi$-rotation with respect to the $y$-axis $\mathscr{R}:c^\dagger_{mf}\mapsto(-1)^{m+s}c_{(-m)f}^\dagger$
+\end{itemize}
+
+After implementing the QNOffds, a state in the new basis should look like 
+\begin{equation}
+    |I\rangle=\lambda_{i_{I1}}|i_{I1}\rangle+\lambda_{i_{I2}}|i_{I2}\rangle+\cdots+\lambda_{i_{Im_I}}|i_{Im_I}\rangle
+\end{equation}
+where the $|i\rangle$'s are configurations, and $|I\rangle$ is a linear combination of them. This process can be regarded as organising the configurations into groups of size $m_I$. In FuzzifiED, the basis $\{|I\rangle\}$ is recorded in the mutable type \lstinline|Basis|. 
+
+\begin{block}{\lstinline|Basis| --- Type}
+The mutable type contains the fields
+\begin{itemize}
+    \item \lstinline|cfs :: Confs| --- the configurations $\{|i\rangle\}$ that respect the QNDiags.
+    \item \lstinline|dim :: Int64| --- the dimension of the basis.
+    \item \lstinline|szz :: Int64| --- the maximum size $\max m_I$ of groups.
+    \item \lstinline|cfgr :: Vector{Int64}| --- an array of length \lstinline|cfs.ncf| and records which group $|I\rangle$ each configuration $|i\rangle$ belong to.
+    \item \lstinline|cffac :: Vector{ComplexF64}| --- an array of length \lstinline|cfs.ncf| and records the coefficients $\lambda_i$ of each configuration.
+    \item \lstinline|grel :: Matrix{Int64}| --- a \lstinline|szz|$\times$\lstinline|dim| matrix that records the configurations in each group $|i_{Ik}\rangle$ ($k=1,\dots,m_I$).
+    \item \lstinline|grsz :: Vector{Int64}| --- an array of length \lstinline|dim| that records the size $m_I$ of each group.
+\end{itemize}
+It can be initialised by the methods 
+\begin{lstlisting}
+    Basis(cfs :: Confs, secf :: Vector{ComplexF64}, qnf :: Vector{QNOffd})
+    Basis(cfs :: Confs)
+\end{lstlisting}
+where \lstinline|secf| records the eigenvalue of each transformation, typically in the form $e^{i2\pi q/p}$ where $p$ is the cycle and $q$ is the $\mathbb{Z}_p$ charge. 
+\end{block}
+
+In the example of Ising model Eq.~\eqref{eq:ising_hmt}, There are three $\mathbb{Z}_2$ symmetries, \textit{viz.} the particle-hole transformation $\mathscr{P}$, the $\pi$-rotation along the $y$-axis $\mathscr{R}_y$, and the flavour (Ising) symmetry $\mathscr{Z}$
+\begin{align}
+    \mathscr{P}:\ c^\dagger_{\sigma m}&\to\sigma c_{-\sigma,m}\nonumber\\
+    \mathscr{Z}:\ c^\dagger_{\sigma m}&\to c^\dagger_{-\sigma,m}\nonumber\\
+    \mathscr{R}_y:\ c^\dagger_{\sigma m}&\to c^\dagger_{\sigma,-m}
+\end{align}
+The code to generate the basis in the all-positive sector is 
+\begin{lstlisting}
+    qnf = [
+        QNOffd([ isodd(o) ? o + 1 : o - 1 for o = 1 : no], true, ComplexF64[ isodd(o) ? -1 : 1 for o = 1 : no]),
+        QNOffd([ isodd(o) ? o + 1 : o - 1 for o = 1 : no]),
+        QNOffd([ isodd(o) ? no - o : no + 2 - o for o = 1 : no], ComplexF64(-1) .^ (collect(0 : nm * nf - 1) .÷ nf))
+    ]
+    bs = Basis(cfs, [1, 1, 1], qnf) 
+\end{lstlisting}
+Alternatively, using the built-in functions
+\begin{lstlisting}
+    qnf = [ 
+        GetParityQNOffd(nm, 2, [2, 1], [-1, 1]), 
+        GetFlavPermQNOffd(nm, 2, [2, 1]), 
+        GetRotyQNOffd(nm, 2) 
+    ]
+    bs = Basis(cfs, [1, 1, 1], qnf)
+\end{lstlisting}
+
+\subsection{Recording the many-body operator terms}
+\label{sec:ed_opmat}
+
+Having constructed the basis, we now construct the many-body operators. A general many-body operator can be written as
+\begin{equation}
+    \Phi=\sum_{t=1}^{N_t}U_tc^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl_t})}_{o_{tl_t}}
+\end{equation}
+where $c^{(0)}=c$ and $c^{(1)}=c^\dagger$. In FuzzifiED, this is recorded as an array of \lstinline|Term|, and each \lstinline|Term| records the building block $Uc^{(p_{1})}_{o_{1}}c^{(p_{2})}_{o_{2}}\dots c^{(p_{l})}_{o_{l}}$. 
+
+\begin{block}{\lstinline|Term| --- Type}
+The mutable type contains the fields
+\begin{itemize}
+    \item \lstinline|coeff :: ComplexF64| --- the coefficient $U$.
+    \item \lstinline|cstr :: Vector{Int64}| --- a length-$2l$ array $\{p_1,o_1,p_2,o_2,… p_l,o_l\}$ recording the operator string.
+\end{itemize}
+It can be initialised by the method 
+\begin{lstlisting}
+    Term(coeff :: ComplexF64, cstr :: Vector{Int64})
+\end{lstlisting}
+The addition and multiplication of terms are supported, and the terms can be simplified by the method  
+\begin{lstlisting}
+    SimplifyTerms(tms :: Vector{Term})
+\end{lstlisting}
+After the simplification, the resulting terms satisfy 
+\begin{enumerate}
+    \item Each term is normal ordered --- the creation operator is in front of the annihilation operator ; the site index of the creation operators are in ascending order and the annihilation operators in descending order. 
+    \item Like terms are combined, and terms with zero coefficients are removed.
+\end{enumerate}
+\end{block}
+
+In FuzzifiED, several useful operator terms are built-in~:
+\begin{itemize}
+    \item \lstinline|GetDenIntTerms(nm :: Int64, nf :: Int64[, ps_pot :: Vector{<:Number}][, mat_a :: Matrix{<:Number}[, mat_b :: Matrix{<:Number}]]) :: Terms| --- the normal-ordered density-density interaction term in the Hamiltonian 
+    \begin{equation}
+        \sum_{l\{m_if_i\}}U_lC^l_{\{m_i\}}M^A_{f_1f_4}M^B_{f_2f_3}c^\dagger_{m_1f_1}c^\dagger_{m_2f_2}c_{m_3f_3}c_{m_4f_4}
+    \end{equation}
+    where $C^l_{\{m_i\}}$ is given in Eq.~\eqref{eq:ps_pot_coeff}.
+    \item \lstinline|GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}[, mat_b :: Matrix{<:Number}])| --- the normal-ordered pair-pair interaction term in the Hamiltonian 
+    \begin{equation}
+        \sum_{l\{m_if_i\}}U_lC^l_{\{m_i\}}M^A_{f_1f_2}M^B_{f_3f_4}c^\dagger_{m_1f_1}c^\dagger_{m_2f_2}c_{m_3f_3}c_{m_4f_4}.
+    \end{equation}
+    \item \lstinline|GetPolTerms(nm :: Int64, nf :: Int64[, mat :: Matrix{<:Number}])| --- the polarisation term in the Hamiltonian 
+    \begin{equation}
+        \sum_{mf_1f_2}c^\dagger_{mf_1}M_{f_1f_2}c_{mf_2}.
+    \end{equation}
+    \item \lstinline|GetL2Terms(nm :: Int64, nf :: Int64)| --- the total angular momentum. 
+    \item \lstinline|GetC2Terms(nm :: Int64, nf :: Int64, mat_gen :: Vector{Matrix{<:Number}})| --- the quadratic casimir 
+    \begin{equation}
+        C_2=\sum_{imm'\{f_i\}}\frac{(c^\dagger_{mf_1}G^i_{f_1f_2}c_{mf_2})(c^\dagger_{m'f_3}(G^i_{f_3f_4})^\dagger c_{m'f_4})}{\operatorname{tr}G_i^\dagger G_i}
+    \end{equation}
+    where $G^i$ are the generator matrices.
+\end{itemize}
+
+In the example of Ising model, the full code that records the Hamiltonian Eq.~\eqref{eq:ising_hmt} is 
+\begin{lstlisting}
+    using WignerSymbols
+    ps_pot = [ 4.75, 1.0 ] * 2.0
+    fld_h = 3.16
+    tms_hmt = Term[]
+    for m1 = 0 : nm - 1
+        f1 = 0
+        o1 = m1 * nf + f1 + 1
+        m1r = m1 - s
+        for m2 = 0 : nm - 1
+            f2 = 1
+            o2 = m2 * nf + f2 + 1
+            m2r = m2 - s
+            for m3 = 0 : nm - 1
+                f3 = 1
+                o3 = m3 * nf + f3 + 1
+                m3r = m3 - s
+                m4 = m1 + m2 - m3 
+                (m4 < 0 || m4 >= nm) && continue
+                f4 = 0
+                o4 = m4 * nf + f4 + 1
+                m4r = m4 - s
+                val = 0
+                for l in eachindex(ps_pot)
+                    (abs(m1r + m2r) > nm - l || abs(m3r + m4r) > nm - l) && break 
+                    val += ps_pot[l] * clebschgordan(s, m1r, s, m2r, nm - l) * clebschgordan(s, m4r, s, m3r, nm - l)
+                end 
+                tms_hmt += Terms(val, [1, o1, 1, o2, 0, o3, 0, o4])
+            end
+        end
+        o1x = o1 + 1
+        tms_hmt += Terms(-fld_h, [1, o1, 0, o1x])
+        tms_hmt += Terms(-fld_h, [1, o1x, 0, o1])
+    end
+\end{lstlisting}
+Alternatively, using the built-in functions
+\begin{lstlisting}
+    sg1 = [ 1 0 ; 0 0 ]
+    sg2 = [ 0 0 ; 0 1 ]
+    sgx = [ 0 1 ; 1 0 ]
+    ps_pot = [ 4.75, 1.0 ] * 2.0
+    fld_h = 3.16
+    tms_hmt = SimplifyTerms(
+        GetDenIntTerms(nm, 2, ps_pot, sg1, sg2)
+        - fld_h * GetPolTerms(nm, 2, sgx) 
+    )
+\end{lstlisting}
+
+We also need to construct the total angular momentum. It is defined as 
+\begin{equation}
+    L^2=L^+L^-+(L^z)^2-L^z,
+\end{equation}
+as $c_m$ carries the $\mathrm{SO}(3)$ spin-$s$ representation, 
+\begin{equation}
+    L^z=\sum_{mf}mc_m^\dagger c_m,\quad L^\pm=\sum_{mf}\sqrt{(s\mp m)(s\pm m+1)}c^\dagger_{m\pm 1}c_m
+\end{equation}
+we can first construt its building blocks and use the addition and multiplication of the terms
+\begin{lstlisting}
+    tms_lz = 
+        [ begin m = div(o - 1, nf)
+            Term(m - s, [1, o, 0, o])
+        end for o = 1 : no ]
+    tms_lp = 
+        [ begin m = div(o - 1, nf)
+            Term(sqrt(m * (nm - m)), [1, o, 0, o - nf])
+        end for o = nf + 1 : no ]
+    tms_lm = tms_lp' 
+    tms_l2 = SimplifyTerms(tms_lz * tms_lz - tms_lz + tms_lp * tms_lm)
+\end{lstlisting}
+Alternatively, using the built-in functions,
+\begin{lstlisting}
+    tms_l2 = GetL2Terms(nm, nf)
+\end{lstlisting}
+
+\subsection{Generating sparse matrix and finding eigenstates}
+
+Having gotten the terms in the many-body operator, we now need to generate the matrix elements given the initial and final basis and find its eigenstates. 
+
+In FuzzifiED, the mutable type \lstinline|Operator| records the terms together with information about its symmetry and the basis of the state it acts on and the basis of the resulting state. 
+
+\begin{block}{\lstinline|Operator| --- Type}
+The type can be initialised with the method 
+\begin{lstlisting}
+    Operator(bsd :: Basis[, bsf :: Basis], terms :: Vector{Term} ; red_q :: Int64, sym_q :: Int64)
+\end{lstlisting}
+where the arguments 
+\begin{itemize}
+    \item \lstinline|bsd :: Basis| --- the basis of the initial state.
+    \item \lstinline|bsf :: Basis| --- the basis of the final state. Facultative, the same as \lstinline|bsd| by default. 
+    \item \lstinline|terms :: Vector{Term}| --- the terms.
+    \item \lstinline|red_q :: Int64| --- a flag that records whether or not the conversion to a sparse martrix can be simplified : if \lstinline|bsd| and \lstinline|bsf| have exactly the same set of quantum numbers, and the operator fully respects the symmetries, then \lstinline|red_q = 1| ; otherwise \lstinline|red_q = 0| ; Facultative, if \lstinline|bsf| is not given, 1 by default, otherwise 0 by default.
+    \item \lstinline|sym_q :: Int64| --- the symmetry of the operator : if its corresponding matrix is Hermitian, then \lstinline|sym_q = 1| ; if it is symmetric, then \lstinline|sym_q = 2| ; otherwise \lstinline|sym_q = 0|. Facultative, if \lstinline|bsf| is not given, 1 by default, otherwise 0 by default.
+\end{itemize}
+\end{block}
+
+The sparse matrix is recorded in the format of compressed sparse column (CSC), which is described in detail in Appendix~\ref{app:data_csc}. In FuzzifiED, the sparse matrix is stored in the mutable type \lstinline|OpMat{T}|
+
+\begin{block}{\lstinline|OpMat{T}| --- Type}
+\noindent where \lstinline|T| is the type of the elements, it can either be \lstinline|ComplexF64| or \lstinline|Float64|. It contines the fields
+\begin{itemize}
+    \item \lstinline|dimd :: Int64|, \lstinline|dimf :: Int64|, \lstinline|nel :: Int64|, \lstinline|symq :: Int64| --- Parameters of the sparse matrix, the number of columns, rows, elements and the symmetry of matrix, respectively.
+    \item \lstinline|colptr :: Vector{Int64}| with length \lstinline|dimd :: Int64 + 1|.
+    \item \lstinline|rowid :: Vector{Int64}| with length \lstinline|nel|.
+    \item \lstinline|elval :: Vector{T}| with length \lstinline|nel|.
+\end{itemize}
+It can be generated from the method
+\begin{lstlisting}
+    OpMat[{T}](op :: Operator)
+\end{lstlisting}
+\end{block}
+
+The method \lstinline|GetEigensystem| calls the Arpack package to calculate the lowest eigenstates of sparse matrix. 
+
+\begin{block}{\lstinline|GetEigensystem| --- Method}
+\begin{lstlisting}
+    GetEigensystem(mat :: OpMat{T}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{T}) where T <: Union{ComplexF64, Float64} :: Tuple{Vector{T}, Matrix{T}}
+\end{lstlisting}
+The arguments are 
+\begin{itemize}
+    \item \lstinline|mat :: OpMat{T}| --- the matrix.
+    \item \lstinline|nst :: Int64| --- the number of eigenstates to be calculated.
+    \item \lstinline|tol :: Float64| --- the tolerence for the Arpack process. The default value is $10^{-8}$.
+    \item \lstinline|ncv :: Int64| --- an auxiliary parameter needed in the Arpack process. The default value is \lstinline|max(2 * nst, nst + 10)|.
+    \item \lstinline|initvec :: Vector{T}| --- the initial vector. If empty, a random initialisation shall be used. Facultative, empty by default.  
+\end{itemize}
+The output include two items
+\begin{itemize}
+    \item A length-\lstinline|nst| array recording the eigenvalues, and 
+    \item A \lstinline|dimd|$\times$\lstinline|nst| matrix where every column records an eigenstate. 
+\end{itemize}
+
+\end{block}
+
+In the example of Ising model, the full code to calculate the lowest $N_\mathrm{st}=10$ eigenstates from the basis and the terms is 
+\begin{lstlisting}
+    nst = 10
+    hmt = Operator(bs, tms_hmt)
+    hmt_mat = OpMat(hmt)
+    enrg, st = GetEigensystem(hmt_mat, nst)
+\end{lstlisting}
+
+\subsection{Inner product of states, operators and transformations}
+
+Having obtained the eigenstates, we need to make measurements on it. The simplest kind of measurements is the inner product of a many body operator with two states $\langle j|\mathscr{O}|i\rangle$. FuzzifiED supports the inner product and vector product of \lstinline|Operator| and \lstinline|OpMat{T}| with vectors that represent the state
+\begin{lstlisting}
+    (op :: Operator) * (st_d :: Vector{T}) :: Vector{T}
+    (mat :: OpMat{T}) * (st_d :: Vector{T}) :: Vector{T}
+    (st_f :: Vector{T}) * (op :: Operator) * (st_d :: Vector{T}) :: T
+    (st_f :: Vector{T}) * (mat :: OpMat{T}) * (st_d :: Vector{T}) :: T
+\end{lstlisting}
+For example, the code to measure the angular momenta of each state is
+\begin{lstlisting}
+    tms_l2 = GetL2Terms(nm, 2)
+    l2 = Operator(bs, tms_l2)
+    l2_mat = OpMat(l2)
+    l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
+\end{lstlisting}
+
+One might also need to act transformations on the state $\mathscr{Z}|i\rangle$. In FuzzifiED, the mutable type \lstinline|Transf| records the transformation together with the basis of the initial and final states 
+
+\begin{block}{\lstinline|Transf| --- Type}
+The type can be initialised from a \lstinline|QNOffd| by 
+\begin{lstlisting}
+    Transf(bsd :: Basis[, bsf :: Basis], qnf :: QNOffd)
+\end{lstlisting}
+where the arguments 
+\begin{itemize}
+    \item \lstinline|bsd :: Basis| --- the basis of the initial state.
+    \item \lstinline|bsf :: Basis| --- the basis of the final state. Facultative, the same as \lstinline|bsd| by default.
+    \item \lstinline|qnf :: QNOffd| --- records the transformation $c_o\to \alpha_o^* c^{(p_o)}_{\pi_o}$.
+\end{itemize}
+It can act on a state by 
+\begin{lstlisting}
+    (trs :: Transf) * (st_d :: Vector{T}) :: Vector{T}
+\end{lstlisting}
+\end{block}
+
+\subsection{Measuring local observables}
+
+\subsection{Measuring the entanglement}
+
+\subsection{Fuzzifino --- module for boson-fermion mixture}
+
+Fuzzifino is a module for ED calculation on the fuzzy sphere for systems with both bosons and fermions. The usage is similar to FuzzifiED, with new types `SQNDiag`, `SQNOffd`, `SConf`, `SBasis`, `STerm` and `SOperator` defined.
+
+\section{Density matrix renormalisation group (DMRG) with FuzzifiED}
+\label{sec:dmrg}
+
+\subsection{Format conversion to ITensor}
+
+\subsection{The EasySweep extension}
+
+The extension EasySweep facilitates the management of DMRG process. It automatically records the intermediate results and recover these results if a job is stopped and run again on HPC. It also manages the gradual increase of maximal bond dimensions and the determination of convergence by the criteria of energy. This extension contains the following functions :
+
+\begin{itemize}
+    \item \lstinline|GetMPOSites| returns the MPO and sites for given operator terms and a Hilbert space with given quantum numbers. The function first checks if the MPO and sites are already stored in a specified file. If they are already stored, they are read and returned. Otherwise the sites are generated from with the quantum numbers and the MPO is generated from the terms. The MPO and sites are then written into the file and returned. 
+    \item \lstinline|GetMPO| returns the MPO for given operator terms and a given set of sites. The function first checks if the MPO is already stored in a specified file. If it is already stored, it is read and returned. Otherwise MPO is generated from the terms. The MPO is then written into the file and returned. 
+    \item \lstinline|SweepOne| performs one round of DMRG sweeps for a given maximal bond dimensions $D_m$ and returns the energy and the MPS. The function first checks if the calculation has already been done and the results are already stored in a specified file. If they are already stored, they are read and returned. Otherwise the DMRG process is performed with a specified maximal bond dimension and number of sweeps. The sweeps are ended if the energy difference is less than a tolerence or some alternative criteria. The resulting energy and MPS are written into file and returned.
+    \item \lstinline|EasySweep| automatically performs several rounds of DMRG sweeps with increasing bond dimensions and returns energy and MPS. The function first checks the calculation has been partly done and the intermediate results have been stored in a specified file. The calculation is then picked up from the round that is previously stopped. The entire process is stopped if the energy difference between two rounds is less than a certain tolerence or the bond dimension of the result is less than $0.9$ times the maximal bond dimension. The resulting energy and MPS are written into file and returned.
+\end{itemize}
+
+\section{Practical examples with FuzzifiED}
+\label{sec:examples}
+
+FuzzifiED can help reproduce almost all the ED and DMRG results in fuzzy sphere works. We offer a series of examples that reproduces these results to help the users get started with the package. The code can be found in the \lstinline|examples| directory of the source code repository. 
+
+\begin{itemize}
+    \item \lstinline|ising_spectrum.jl| calculates the spectrum of 3d Ising model on fuzzy sphere at $N_m = 12$. For each $(P,Z,R)$ sector, 20 states are calculated. This example reproduces Table~I and Figure~4 in Ref.~\cite{Zhu2022}.
+    \item \lstinline|ising_phase_diagram.jl| calculates the phase diagram of fuzzy sphere Ising modelby calculating the order parameter $\langle M^2\rangle$. This example reproduces Figure~3 in Ref.~\cite{Zhu2022}.
+    \item \lstinline|ising_ope.jl| calculates various OPE coefficients at $N_m = 12$ by taking overlaps between CFT states and density operators and composite. This example reproduces Figure~2 and Table~I in Ref.~\cite{Hu2023Mar}.
+    \item \lstinline|ising_correlator.jl| calculates the $\sigma\sigma$ two-point function on sphere and the $\sigma\sigma\sigma\sigma$ four-point function on sphere, 0 and $\infty$. This example reproduces Figures 1c and 2a in Ref.~\cite{Han2023Jun}.
+    \item \lstinline|ising_optimisation.jl| defines a cost function as the square sum of the deviations of descendants and stress tensor to evaluate the conformal symmetry for Ising model and minimises this cost function to find the best parameter.
+    \item \lstinline|ising_full_spectrum.jl| calculates the full spectrum of 3d Ising model on fuzzy sphere at $N_m = 10$ for sector $(P,Z,R) = (1,1,1)$.
+    \item \lstinline|ising_space_entangle.jl| calculates the entanglement entropy of the Ising ground state along the real space cut of $\theta = 0.500π$ and $0.499π$ respectively, and use these two data to extract finite size $F$-function without sustracting the IQHE contribution. This example reproduces \cite{Hu2024}.
+    \item \lstinline|ising_orbital_entangle.jl| calculates the entanglement entropy of the Ising ground state along the orbital space cut at $m = 0$, and also the entanglement spectrum in the half-filled $l_z = 0, 1$ and  both $\mathbb{Z}_2$ sectors.
+    \item \lstinline|ising_generator.jl| examines the quality of conformal symmetry at $N_m = 12$ by examining the matrix elements of conformal generators $P^z + K^z$ and compare the states $(P^z + K^z)|\Phi⟩$ with the CFT expectations. This example reproduces Figure~7 in Ref.~\cite{Fardelli2024}.
+    \item \lstinline|defect_spectrum.jl| calculates the spectrum of magnetic line defect in 3d Ising model in $l_z = 0, P = ±1$ and $l_z = 1$ sectors, calibrated by bulk $T$. This example reproduces Table~I in Ref.~\cite{Hu2023Aug}.
+    \item \lstinline|defect_correlator.jl| calculates the 1-pt function $\sigma$ and 2-pt function $\sigma\hat{\phi}$ of magnetic line defect in 3d Ising model. The normalisation of the correlators require extra bulk data. This example reproduces Figure~4 in Ref.~\cite{Hu2023Aug}.
+    \item \lstinline|defect_changing.jl| calculates the spectrum of the defect creation and changing operators of the magnetic line defect in 3d Ising model. This example reproduces Table~2 and Figure~5 in Ref.~\cite{Zhou2024Jan}.
+    \item \lstinline|defect_overlap.jl| calculates the $g$-function of magnetic line defect in 3d Ising model using the ovelaps between the bulk, defect ground state and the lowest defect-creation state. This example reproduces Figure~6 in Ref.~\cite{Zhou2024Jan}.
+    \item \lstinline|cusp_dim.jl| calculates the scaling dimension of the cusp of the magnetic line defect in 3d Ising model as a function of the angle $\theta$. This example reproduces Table~2, upper panel in Ref.~\cite{Cuomo2024}.
+    \item \lstinline|surface_ordinary_spectrum.jl| calculates the spectrum of ordinary surface CFT in 3d Ising model calibrated by surface displacement operator $D$ in the orbital boundary scheme. This example reproduces Figures 3 and 4 in Ref.~\cite{Zhou2024Jul}.
+    \item \lstinline|surface_normal_spectrum.jl| calculates the spectrum of normal surface CFT in 3d Ising model calibrated by surface displacement operator $D$ in the orbital boundary scheme. This example reproduces Figure~5 in Ref.~\cite{Zhou2024Jul}.
+    \item \lstinline|o3_wf_spectrum.jl| calculates the spectrum of $\mathrm{O}(3)$ Wilson-Fisher CFT using the bilayer Heisenberg model. This example reproduces Table~I and Figure~2 in Ref.~\cite{Han2023Dec}.
+    \item \lstinline|so5_spectrum.jl| calculates the spectrum of SO(5) DQCP on fuzzy sphere. This example reproduces Table~II in Ref.~\cite{Zhou2023}.
+    \item \lstinline|sp3_spectrum.jl| calculates the spectrum of Sp(3) CFT on fuzzy sphere. This example reproduces Table~I in Ref.~\cite{Zhou2024Oct}.
+    \item \lstinline|ising_frac_fermion.jl| calculates the spectrum of 3d Ising model on fuzzy sphere for fermions at fractional filling $\nu = 1/3$. This example reproduces Figure~10 in Ref.~\cite{Voinea2024}.
+    \item \lstinline|ising_frac_boson.jl| calculates the spectrum of 3d Ising model on fuzzy sphere for bosons at fractional filling $\nu = 1/2$ with the module Fuzzifino. This example reproduces Figure~12a,~b in Ref.~\cite{Voinea2024}.
+    \item \lstinline|ising_spectrum_krylov.jl| calculates the spectrum of 3d Ising model on fuzzy sphere by calling the eigsolve function in KrylovKit.jl instead of Arpack.
+    \item \lstinline|ising_spectrum_cuda.jl| calculates the spectrum of 3d Ising model on fuzzy sphere for one sector by performing the sparse matrix multiplication on CUDA.
+\end{itemize}
+
+\acknowledgments
+
+We acknowledge Wenhan Guo, Andrew Liam Fitzpatrick, and Christian Voinea for their useful suggestions and their help in the development of the package. Z.Z. acknowledges support from the Natural Sciences and Engineering Research Council of Canada (NSERC) through Discovery Grants. Research at Perimeter Institute is supported in part by the Government of Canada through the Department of Innovation, Science and Industry Canada and by the Province of Ontario through the Ministry of Colleges and Universities.
+
+\appendix
+
+\section{Data structures in exact diagonalisation}
+
+In this appendix, we describe the two data structures that are used in the exact diagonalisation (ED) process, \textit{viz.} Lin table for the inverse look-up process that returns the index from the binary string and the compressed sparse column (CSC) that is used to store the sparse matrices. 
+
+\subsection{Construction of Lin table}
+\label{app:data_lin}
+
+In this section, we describe the construction of Lin table which is used for an inverse look-up process that returns the index $i$ from the binary string $conf_i$ described in Section~\ref{sec:ed_confs}. 
+
+Each binary string $conf_i$ is devided into a left part $l(conf_i)$ from the $N_{or}$-th bit to the $N_o-1$-th bit and a right part $r(conf_i)$ from the $0$-th bit to the $N_{or}-1$-th bit from the right. The cut $N_{or}$ is typically taken as $N_o/2$. Two arrays $lid$ and $rid$ with length $2^{N_o-N_{or}}$ and $2^{N_{or}}$ are constructed, such that 
+\begin{equation}
+    i=lid_{l(conf_i)}+rid_{r(conf_i)}
+\end{equation}
+As a simplest example for this, consider the configurations on 6 sites filled with 3 particles. The construction is listed in Table~\ref{tbl:lin_eg}.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{ccc|cccccc|cccccc}
+        \hline\hline
+        $c$&$lid_c$&$rid_c$&$i$&$conf_i$&$l_i$&$r_i$&$lid_{l_i}$&$rid_{r_i}$&$i$&$conf_i$&$l_i$&$r_i$&$lid_{l_i}$&$rid_{r_i}$\\
+        \hline
+        0& 1&0& 1&000111&0&7&1&0&11&100011&4&3&11&0\\
+        1& 2&0& 2&001011&1&3&2&0&12&100101&4&5&11&1\\
+        2& 5&1& 3&001101&1&5&2&1&13&100110&4&6&11&2\\
+        3& 8&0& 4&001110&1&6&2&2&14&101001&5&1&14&0\\
+        4&11&2& 5&010011&2&3&5&0&15&101010&5&2&14&1\\
+        5&14&1& 6&010101&2&5&5&1&16&101100&5&4&14&2\\
+        6&17&2& 7&010110&2&6&5&2&17&110001&6&1&17&0\\
+        7&20&0& 8&011001&3&1&8&0&18&110010&6&2&17&1\\
+         &  & & 9&011010&3&2&8&1&19&110100&6&4&17&2\\
+         &  & &10&011100&3&4&8&2&20&111000&7&0&20&0\\
+        \hline\hline
+    \end{tabular}
+    \caption{An example of explicit construction of the Lin table in the configurations on 6 sites filled with 3 particles. Here we use a shorthand notation $l_i=l(conf_i)$ and $r_i=r(conf_i)$}
+    \label{tbl:lin_eg}
+\end{table}
+
+\subsection{Compressed sparse column (CSC) sparse matrix} 
+\label{app:data_csc}
+
+In this section, we describe the storage of sparse matrices in the format of compressed sparse column (CSC), which is used in Section~\ref{sec:ed_opmat}. 
+
+In the CSC format, the matrix is stored in three arrays. We first index elements from $1$ to the number of elements $N_\mathrm{el}$ in the ascending order from the column to column, and in each column from row to row. 
+\begin{enumerate}
+    \item The array $colptr$ records the column index of each element. It is of length $N+1$ where $N$ is the number of columns. The first $N$ items record the index of the first element in each column. The last item records $N_\mathrm{el}+1$, so that the elements that belong to the $i$-th column have index from $colptr_i$ to $colptr_{i+1}-1$.
+    \item The array $rowid$ records the row index of each element and is of length $N_\mathrm{el}$.
+    \item The array $elval$ records the value of each element and is of length $N_\mathrm{el}$.
+\end{enumerate}
+We give a simple example in Table~\ref{tbl:csc_eg}.
+
+\begin{table}[htbp]
+    \centering
+    \begin{equation*}
+        M=\begin{pmatrix}
+            10&40&0&0\\
+            20&0&70&80\\
+            0&0&0&90\\
+            30&50&0&100\\
+            0&60&0&0\\
+        \end{pmatrix}
+    \end{equation*}
+    \begin{tabular}{c|cccccccccc}
+        \hline\hline
+        $i$&1&2&3&4&5&6&7&8&9&10\\
+        \hline
+        $colptr_i$&1&4&7&8&11\\
+        $rowid_i$&1&2&4&1&4&5&2&2&3&4\\
+        $elval_i$&10&20&30&40&50&60&70&80&90&100\\
+        \hline\hline
+    \end{tabular}
+    \caption{An example of the storing a $4\times 5$ matrix into the CSC format. }
+    \label{tbl:csc_eg}
+\end{table}
+
+\section{Tutorial code}
+\label{app:code}
+
+In Sections~\ref{sec:ed} and \ref{sec:dmrg}, we demonstrate the usage of FuzzifiED interfaces with an example that 
+\begin{enumerate}
+    \item calculates the lowest eigenstates in the symmetry sector $L^z=0$ and $(\mathscr{P},\mathscr{Z},\mathscr{R})=(+,+,+)$ (for DMRG, $\mathscr{Z}=+$ only),
+    \item measures their total angular momenta (for DMRG, the ground state only), and 
+    \item calcultes the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$.
+\end{enumerate}
+In this Appendix, we collect the full version of the codes, including
+\begin{enumerate}
+    \item the ED code that uses only the core functions, 
+    \item the ED code that uses the built-in models, 
+    \item the DMRG code that converts the format into ITensor, 
+    \item the DMRG code that uses the EasySweep extension. 
+\end{enumerate}
+
+\subsection{ED using core functions}
+\label{app:code_ed1}
+
+\begin{lstlisting}[numbers=left]
+    using FuzzifiED
+    using WignerSymbols
+
+    let
+
+    nf = 2
+    nm = 12
+    no = nf * nm
+    qnd = [ 
+        QNDiag(fill(1, no)), 
+        QNDiag([ (o - 1) ÷ nf * 2 - (nm - 1) for o = 1 : no ])
+    ]
+    cfs = Confs(no, [nm, 0], qnd)
+
+    qnf = [ 
+        QNOffd([ isodd(o) ? o + 1 : o - 1 for o = 1 : no], true, ComplexF64[ isodd(o) ? -1 : 1 for o = 1 : no]),
+        QNOffd([ isodd(o) ? o + 1 : o - 1 for o = 1 : no]),
+        QNOffd([ isodd(o) ? no - o : no + 2 - o for o = 1 : no], ComplexF64(-1) .^ (collect(0 : nm * nf - 1) .÷ nf))
+    ]
+    bs = Basis(cfs, [1, 1, 1], qnf) 
+
+    ps_pot = [ 4.75, 1. ] * 2.
+    h = 3.16
+    tms_hmt = Term[]
+    for m1 = 0 : nm - 1
+        f1 = 0
+        o1 = m1 * nf + f1 + 1
+        m1r = m1 - s
+        for m2 = 0 : nm - 1
+            f2 = 1
+            o2 = m2 * nf + f2 + 1
+            m2r = m2 - s
+            for m3 = 0 : nm - 1
+                f3 = 1
+                o3 = m3 * nf + f3 + 1
+                m3r = m3 - s
+                m4 = m1 + m2 - m3 
+                if (m4 < 0 || m4 >= nm) continue end
+                f4 = 0
+                o4 = m4 * nf + f4 + 1
+                m4r = m4 - s
+                val = ComplexF64(0)
+                for l in eachindex(ps_pot)
+                    if (abs(m1r + m2r) > nm - l || abs(m3r + m4r) > nm - l) break end 
+                    val += ps_pot[l] * (2 * nm - 2 * l + 1) * wigner3j(s, s, nm - l, m1r, m2r, -m1r - m2r) * wigner3j(s, s, nm - l, m4r, m3r, -m3r - m4r)
+                end 
+                tms_hmt += Terms(val, [1, o1, 1, o2, 0, o3, 0, o4])
+            end
+        end
+        o1x = o1 + 1
+        tms_hmt += Terms(-h, [1, o1, 0, o1x])
+        tms_hmt += Terms(-h, [1, o1x, 0, o1])
+    end
+
+    hmt = Operator(bs, tms_hmt)
+    hmt_mat = OpMat(hmt)
+    enrg, st = GetEigensystem(hmt_mat, 10)
+
+    tms_lz = 
+        [ begin m = div(o - 1, nf)
+            Term(m - s, [1, o, 0, o])
+        end for o = 1 : no ]
+    tms_lp = 
+        [ begin m = div(o - 1, nf)
+            Term(sqrt(m * (nm - m)), [1, o, 0, o - nf])
+        end for o = nf + 1 : no ]
+    tms_lm = tms_lp' 
+    tms_l2 = SimplifyTerms(tms_lz * tms_lz - tms_lz + tms_lp * tms_lm)
+    l2 = Operator(bs, tms_l2)
+    l2_mat = OpMat(l2)
+    l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
+    @show real(l2_val)
+    st_T = st[:, 3]
+    st_L2T = l2_mat * st[:, 3]
+    @show abs(st_L2T' * st_T) ^ 2 / ((st_T' * st_T) * (st_L2T' * st_L2T))
+
+    bs1 = Basis(cfs, [ 1, -1, 1 ], qnf) 
+    hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) 
+    hmt_mat = OpMat(hmt)
+    enrg1, st1 = GetEigensystem(hmt_mat, 10)
+    st_I = st[:, 1] 
+    st_e = st[:, 2] 
+    st_s = st1[:, 1]
+
+    tms_nz = Term[]
+    for m1 = 0 : nm - 1
+        o1u = 2 * m1 + 1
+        o1d = 2 * m1 + 2
+        push!(tms_nz, Term( 1 / nm, [1, o1u, 0, o1u]))
+        push!(tms_nz, Term(-1 / nm, [1, o1d, 0, o1d]))
+    end
+    nz = Operator(bs, bs1, tms_nz ; red_q = 1)
+    @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
+\end{lstlisting}
+
+\subsection{ED using built-in models}
+\label{app:code_ed2}
+
+\begin{lstlisting}[numbers=left]
+    using FuzzifiED
+    sg1 = [  1  0 ;  0  0 ]
+    sg2 = [  0  0 ;  0  1 ]
+    sgx = [  0  1 ;  1  0 ]
+    sgz = [  1  0 ;  0 -1 ]
+
+    nm = 12
+    qnd = [ 
+        GetNeQNDiag(2 * nm), 
+        GetLz2QNDiag(nm, 2) 
+    ]
+    cfs = Confs(2 * nm, [nm, 0], qnd)
+
+    qnf = [ 
+        GetParityQNOffd(nm, 2, [2, 1], [-1, 1]), 
+        GetFlavPermQNOffd(nm, 2, [2, 1]), 
+        GetRotyQNOffd(nm, 2) 
+    ]
+    bs = Basis(cfs, [1, 1, 1], qnf)
+
+    tms_hmt = SimplifyTerms(
+        GetDenIntTerms(nm, 2, 2 .* [4.75, 1.], sg1, sg2) - 
+        3.16 * GetPolTerms(nm, 2, sgx) 
+    )
+
+    hmt = Operator(bs, tms_hmt)
+    hmt_mat = OpMat(hmt)
+    enrg, st = GetEigensystem(hmt_mat, 10)
+    @show enrg
+
+    tms_l2 = GetL2Terms(nm, 2)
+    l2 = Operator(bs, tms_l2)
+    l2_mat = OpMat(l2)
+    l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
+    @show l2_val
+
+    st_T = st[:, 3]
+    st_L2T = l2_mat * st[:, 3]
+    @show abs(st_L2T' * st_T) ^ 2 / ((st_T' * st_T) * (st_L2T' * st_L2T))
+
+    bs1 = Basis(cfs, [1, -1, 1], qnf)
+    hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) 
+    hmt_mat = OpMat(hmt)
+    enrg1, st1 = GetEigensystem(hmt_mat, 10)
+    st_I = st[:, 1] 
+    st_e = st[:, 2] 
+    st_s = st1[:, 1]
+
+    obs_nz = GetDensityObs(nm, 2, sgz)
+    tms_nz = SimplifyTerms(GetComponent(obs_nz, 0.0, 0.0))
+    nz = Operator(bs, bs1, tms_nz ; red_q = 1) 
+    @show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
+\end{lstlisting}
+
+\subsection{DMRG using format conversion into ITensor}
+
+\begin{lstlisting}[numbers=left]
+    using FuzzifiED
+    using ITensors, ITensorMPS
+    FuzzifiED.ElementType = Float64
+    sgx = [  0  1 ;  1  0 ]
+    sgz = [  1  0 ;  0 -1 ]
+
+    nm = 12
+    nf = 2
+    no = nm * nf
+
+    sites = GetSites([
+        GetNeQNDiag(nm * nf), 
+        GetLz2QNDiag(nm, nf),
+        GetZnfChargeQNDiag(nm, nf)
+    ])
+    ps_pot = [4.75, 1.] ./ 2
+    tms_hmt = SimplifyTerms(
+        GetDenIntTerms(nm, 2, ps_pot) - 
+        GetDenIntTerms(nm, 2, ps_pot, sgx) - 
+        3.16 * GetPolTerms(nm, nf, sgz)
+    )
+    os = OpSum(tms_hmt)
+    mpo_hmt = MPO(os, sites)
+
+    cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
+    st0 = MPS(sites, string.(cf0))
+
+    Eg, stg = dmrg(mpo_hmt, st0 ; nsweeps = 10, maxdim = [10,20,50,100,200,500], noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], cutoff = [1E-8])
+    @show Eg
+\end{lstlisting}
+
+\subsection{DMRG with Easy Sweep}
+
+\begin{lstlisting}[numbers=left]
+    using FuzzifiED
+    using ITensors, ITensorMPS, HDF5
+    using ITensorMPOConstruction
+    const sgx = [  0  1 ;  1  0 ]
+    const sgz = [  1  0 ;  0 -1 ]
+
+    function MyMPO(os, sites)
+        operatorNames = [ "I", "C", "Cdag", "N" ]
+        opCacheVec = [ [OpInfo(ITensors.Op(name, n), sites[n]) for name in operatorNames] for n in eachindex(sites)  ]
+        return MPO_new(os, sites ; basis_op_cache_vec = opCacheVec)
+    end
+
+    nm = 12
+    nf = 2
+    no = nm * nf
+
+    path = "nm_$(nm)_tmp/"
+    mkpath(path)
+
+    ps_pot = [4.75, 1.] ./ 2
+    tms_hmt = SimplifyTerms(
+        GetDenIntTerms(nm, 2, ps_pot) - 
+        GetDenIntTerms(nm, 2, ps_pot, sgx) - 
+        3.16 * GetPolTerms(nm, 2, sgz)
+    )
+    qnd = [ 
+        GetNeQNDiag(no), 
+        GetLz2QNDiag(nm, nf), 
+        GetZnfChargeQNDiag(nm, nf) 
+    ]
+    hmt, sites = GetMPOSites("hmt", tms_hmt, qnd ; path, mpo_method = MyMPO)
+
+    cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
+    st0 = MPS(sites, string.(cf0))
+
+    Eg, stg = EasySweep("g", hmt, st0 ; path)
+    Ee, ste = EasySweep("e", hmt, st0 ; path, proj = ["g"])
+
+    cf1 = cf0
+    cf1[1] = 0
+    cf1[2] = 1
+    st1 = MPS(sites, string.(cf1))
+    Es, sts = EasySweep("s", hmt, st1 ; path)
+
+    tms_l2 = GetL2Terms(nm, 2)
+    l2 = GetMPO("l2", tms_l2, sites ; path, mpo_method = MyMPO)
+    @show inner(stg', l2, stg)
+\end{lstlisting}
+
+\appendix{Glossaries of interfaces in FuzzifiED}
+
+\bibliography{bib_fuzzy,bib_other}
+
+\end{document}
