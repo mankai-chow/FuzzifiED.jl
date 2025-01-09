@@ -240,7 +240,7 @@ end
 
 
 """
-    GetC2Terms(nm :: Int64, nf :: Int64, mat_gen :: Vector{<:AbstractMatrix{<:Number}}[, mat_tr :: Vector{<:AbstractMatrix{<:Number}}]) :: Terms
+    GetC2Terms(nm :: Int64, nf :: Int64, mat_gen :: Vector{Matrix{<:Number}}[, mat_tr :: Vector{Matrix{<:Number}}]) :: Terms
 
 Return the terms for the quadratic Casimir of the flavour symmetry.
 ```math

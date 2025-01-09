@@ -43,7 +43,7 @@ end
 
 
 """
-    SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function) :: SphereObs
+    SphereObs(s2 :: Int64, l2m :: Int64, comps :: Dict{Tuple{Int64, Int64}, Terms}) :: SphereObs
 
 initialises the observable from ``2s``, ``2l_{\\max}`` and a list of ``\\Phi_{lm}`` specified by a dictionary. 
 

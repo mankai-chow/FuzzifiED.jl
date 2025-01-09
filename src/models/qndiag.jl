@@ -15,7 +15,7 @@ GetNeQNDiag(no :: Int64) = QNDiag("Ne", fill(1, no))
 """ 
     GetLz2QNDiag(nm :: Int64, nf :: Int64) :: QNDiag 
 
-Return the QNDiag of the number of twice the angular momentum ``2L_z``, implemented as 
+Return the QNDiag of twice the angular momentum ``2L_z``, implemented as 
 ```julia
 QNDiag("Lz", collect(0 : nm * nf - 1) .÷ nf .* 2 .- (nm - 1))
 ```
@@ -53,7 +53,7 @@ GetFlavQNDiag(nm :: Int64, nf :: Int64, qf :: Union{Dict{Int64, Int64}, Vector{I
 
 Return the QNDiag of a ``ℤ_{N_f}``-charge, 
 ```math
-    Q = ∑_{f=0}^{N_f-1}fn_f\\ \\mathrm{mod}\\ N_f
+    Q = ∑_{f=0}^{N_f-1}fn_f\\mod N_f
 ```
 implemented as 
 ```julia
@@ -66,7 +66,7 @@ GetZnfChargeQNDiag(nm :: Int64, nf :: Int64) = QNDiag("QZ$nf", collect(0 : nm * 
 """ 
     GetPinOrbQNDiag(no :: Int64, pin_o :: Vector{Int64}[, id :: Int64 = 1]) :: QNDiag 
 
-Return the QNDiag of the number of electrons in the subset `pin_o`, implemented as
+Return the QNDiag of the number of electrons in the subset of sites `pin_o`, implemented as
 ```julia
 QNDiag("Npin\$i", [ o in pin_o ? 1 : 0 for o = 1 : no])
 ```

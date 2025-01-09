@@ -55,7 +55,7 @@ end
 
 
 """
-    GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf , fac][, cyc])
+    GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf, fac][, cyc :: Int64])
     
 Return the flavour permutaiton transformation 
 ```math
@@ -83,7 +83,7 @@ GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf :: Union{Dict{Int64, Int64}, V
 """
     GetRotyQNOffd(nm :: Int64, nf :: Int64)
     
-Return the ``π``-rotation along the ``y``-axis. 
+Return the ``π``-rotation with respect to the ``y``-axis. 
 ```math
     ℛ_y: c^†_{mf}↦(-)^{m+s}c^†_{-mf}
 ```

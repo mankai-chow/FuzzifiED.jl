@@ -25,7 +25,7 @@ end
 
 
 """
-    Transf(bsd :: Basis, bsf :: Basis, qnf :: QNOffd)
+    Transf(bsd :: Basis[, bsf :: Basis], qnf :: QNOffd)
 
 generates a transformation object from a QNOffd. 
 

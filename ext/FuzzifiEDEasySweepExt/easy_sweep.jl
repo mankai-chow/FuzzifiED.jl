@@ -151,7 +151,7 @@ TermsOrOpSum(os :: OpSum) = os
 
 # Function 
 
-This function returns the MPO and sites for a given operator and a Hilbert space with given quantum numbers. It first checks the file `op_\$(id).h5` in a specified repository. If the file exists, it will try to read the fields `mpo` and `sites` and return the MPO and Sites. Otherwise it will first generates the sites with the quantum numbers given in `qnu_o`, `qnu_name` and `modul` (these objects are often results of a function named `Get*Qnu`). Then it will generate the MPO with the terms of the operator given in `tms`. The MPO and sites will be written into the file `op_\$(id).h5` in the fields `mpo` and `sites`. 
+This function returns the MPO and sites for a given operator and a Hilbert space with given quantum numbers. It first checks the file `op_\$(id).h5` in a specified repository. If the file exists, it will try to read the fields `mpo` and `sites` and return the MPO and Sites. Otherwise it will first generates the sites with the quantum numbers given in `qnd`. Then it will generate the MPO with the terms of the operator given in `tms`. The MPO and sites will be written into the file `op_\$(id).h5` in the fields `mpo` and `sites`. 
 
 # Arguments 
 
