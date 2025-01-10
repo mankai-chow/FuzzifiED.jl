@@ -29,7 +29,7 @@ One can colloquially understand the state $|\Phi\rangle$ as the insertion of the
 ```math
     E_\Phi-E_0=\frac{v}{R}\Delta_\Phi
 ```
-where $E_0$ is the ground state energy, $R$ is the radius of the sphere, and $v$ is the speed of light that is dependent on the microscopic model and is the same for different states. With this property, one can calculate the scaling dimensions simply by obtaining the energy spectrum of the quantum Hamiltonian without doing complicated finite size scalings, and one can obtain the OPE coefficients simply from the inner product of a local operator. This process will be described in detail below.
+where $E_0$ is the ground state energy, $R$ is the radius of the sphere, and $v$ is the speed of light that is dependent on the microscopic model and is the same for different states. With this property, one can calculate the scaling dimensions simply by obtaining the energy spectrum of the quantum Hamiltonian without doing complicated finite size scalings, and one can obtain the OPE coefficients simply from the inner product of a local operator.
 
 Although the quantum Hamiltonians on a sphere enjoy the full rotation symmetry and the property of state-operator correspondence, it is difficult to put a lattice on the sphere due to the curvature (in particular the non-zero Euler characteristic), especially to recover an $\mathrm{SO}(3)$-symmetric theomodynamic limit. An alternative way we take is to fuzzify the sphere. We consider charged free particles moving on a sphere with a magnetic monopole with a flux $4\pi s$ ($s\in\mathbb{Z}/2$) placed at its centre. The monopole exerts a uniform magnetic field on the sphere, which modifies the single particle Hamiltonian and the single particle eigenstates. Now the single particle eigenstates form highly degenerate spherical Landau levels. The lowest Landau level has a degeneracy $(2s+1)$. By setting the single particle gap to be the leading energy scale, adding interactions, and projecting onto the lowest Landau level, we obtain a finite Hilbert space. For the sake of numerical simulation, the system is analoguous to a length-$(2s+1)$ spin chain with long range interaction, where different Landau level orbitals behave like the lattice sites. The difference is that the $(2s+1)$ orbital forms a spin-$s$ representation of the $\mathrm{SO}(3)$ rotation group, and in this way the continuous rotation symmetry is preserved. The word « fuzzy » means the non-commutativity, in our case, due to the presence of magnetic field. The non-commutativity provides a natural length scale which serves as a UV regulator of the quantum field theory. The radius of the sphere scales as $R\sim\sqrt s$. The thermodynic limit can be taken as $s\to\infty$, and we then recover a regular sphere without non-commutativity. 
 
@@ -185,7 +185,7 @@ To build the setup of fuzzy sphere, we consider a sphere with radius $R$ and put
 ```math
     H_0=\frac{1}{2MR^2}(\partial^\mu+iA^\mu)^2
 ```
-where $\mu=\theta,\phi$ and we take 
+where $\mu=\theta,\phi$ and the gauge connection is taken as
 ```math
     A_\theta=0,\quad A_\phi=-\frac{s}{R}\operatorname{ctg}\theta
 ```
@@ -193,11 +193,11 @@ The eigenstates of the Hamiltonian are the monopole spherical harmonics
 ```math
     Y_{lm}^{(s)}(\hat{\mathbf{n}}),\quad l=s,s+1,\dots,\quad m=-l,\dots,l-1,l
 ```
-where $\hat{\mathbf{n}}$ is the unit vector of the point on the sphere with and the energies are
+where $\hat{\mathbf{n}}$ is the unit vector of the point on the sphere specified by angular coordinates $\theta$ and $\phi$, and the energies are
 ```math
     E_l=\frac{1}{2MR^2}(l(l+1)-s^2)
 ```
-Each level, known as a Landau level, has a degeneracy of $(2l+1)$. Specifically, the wavefunctions on the lowest Landau level (LLL) $l=s$ is easy to write out :
+Each level, known as a Landau level, has a degeneracy $(2l+1)$. Specifically, the wavefunctions on the lowest Landau level (LLL) $l=s$ is easy to write out :
 ```math
     Y_{sm}^{(s)}(\hat{\mathbf{n}})=C_me^{im\phi}\cos^{s+m}\frac{\theta}{2}\sin^{s-m}\frac{\theta}{2},\quad C_m=\frac{1}{{\sqrt{4\pi\Beta(s+m+1,s-m+1)}}}
 ```
@@ -229,7 +229,7 @@ We can take $l_B=1$ as the unit length. In this way, the radius scales with the 
 
 ### Density operator
 
-Having constructed the single particle states, we then consider the interacting many-body Hamiltonian. The simplest building block is density operators, which are local fermion bilinears. 
+Having constructed the single particle states, we then consider the interacting many-body Hamiltonian. The simplest building block is the density operators, _i.e._, local fermion bilinears. 
 ```math
     n_M(\hat{\mathbf{n}})=\psi_{f'}^\dagger(\hat{\mathbf{n}})M_{f'f}\psi_f(\hat{\mathbf{n}})
 ```
@@ -265,7 +265,7 @@ and $\begin{pmatrix}l_1&l_2&l_3\\m_1&m_2&m_3\end{pmatrix}$ is the [$3j$-symbol](
 
 ### Density-density interaction
 
-The most straightforward way to construct an interaction term is to add a density-density interaction potential $U(r)$. We note that this is not the simplest construction and we will present the simpler construction in terms of pseudopotentials in the next section. 
+The most straightforward way to construct an interaction term is to add a density-density interaction potential with a potential function. We note that this is not the simplest construction and we will present the simpler construction in terms of pseudopotentials in the next section. 
 ```math
     H_\mathrm{int}=\int\mathrm{d}^2\hat{\mathbf{n}}_1\,\mathrm{d}^2\hat{\mathbf{n}}_2\,U(|\hat{\mathbf{n}}_1-\hat{\mathbf{n}}_2|)n_M(\hat{\mathbf{n}}_1)n_M(\hat{\mathbf{n}}_2)
 ```
@@ -273,7 +273,7 @@ The interacting potentials can be expanded in terms of the Legendre polynomials
 ```math
     U(|\mathbf{r}_{12}|)=\sum_l\tilde{U}_lP_l(\cos\theta_{12})=\sum_{lm}\frac{4\pi}{2l+1}\bar{Y}_{lm}(\hat{\mathbf{n}}_1)Y_{lm}(\hat{\mathbf{n}}_2)
 ```
-where $\mathbf{r}_{12}=\hat{\mathbf{n}}_1-\hat{\mathbf{n}}_2$. Conversely
+where $\mathbf{r}_{12}=\hat{\mathbf{n}}_1-\hat{\mathbf{n}}_2$ and $|\mathbf{r}_{12}|=2\sin\theta_{12}/2$. Conversely 
 ```math
     \tilde{U}_l=\int\sin\theta_{12}\mathrm{d}\theta_{12}\,\frac{2l+1}{2}U(|\mathbf{r}_{12}|)P_l(\cos\theta_{12})
 ```
@@ -299,7 +299,7 @@ and the FM phase where either of the two flavours is fully filled is favoured by
 ```
 where the density operators are defined as 
 ```math
-    n_x(\hat{\mathbf{n}})=\psi^\dagger_\downarrow(\hat{\mathbf{n}})\psi_\uparrow(\hat{\mathbf{n}})+\mathrm{h.c.},\quad n_\uparrow=\psi^\dagger_\uparrow(\hat{\mathbf{n}})\psi_\uparrow(\hat{\mathbf{n}}),\quad n_\downarrow=\psi^\dagger_\downarrow(\hat{\mathbf{n}})\psi_\downarrow(\hat{\mathbf{n}})
+    n_x(\hat{\mathbf{n}})=\psi^\dagger_\downarrow(\hat{\mathbf{n}})\psi_\uparrow(\hat{\mathbf{n}})+\psi^\dagger_\uparrow(\hat{\mathbf{n}})\psi_\downarrow(\hat{\mathbf{n}}),\quad n_\uparrow=\psi^\dagger_\uparrow(\hat{\mathbf{n}})\psi_\uparrow(\hat{\mathbf{n}}),\quad n_\downarrow=\psi^\dagger_\downarrow(\hat{\mathbf{n}})\psi_\downarrow(\hat{\mathbf{n}})
 ```
 and the potentials can be most conveniently taken as a combination of local and super-local interactions. Altogether the model Hamiltonian reads
 ```math
@@ -437,11 +437,7 @@ The angular modes are
 ```
 From the CFT perspective, the density operators are the superpositions of scaling operators with corresponding quantum numbers, _i.e._, with the same representation under flavour symmetry and parity. 
 
-Take the Ising model as an example.
-```math
-    n^i(\hat{\mathbf{n}})=\Psi^\dagger(\hat{\mathbf{n}})\sigma^i\Psi(\hat{\mathbf{n}})=\sum_{m'm}\bar{Y}^{(s)}_{sm'}(\hat{\mathbf{n}})Y^{(s)}_{sm}(\hat{\mathbf{n}})\mathbf{c}^\dagger_{m'}\sigma^i\mathbf{c}_m
-```
-where $i=x,z$. In the leading order, they can be used as UV realisations of CFT operators $\sigma$ and $\epsilon$. 
+Take the Ising model as an example. Consider the density operators $n^x$ and $n^z$ with matrix insertion $M=\sigma^x,\sigma^z$. In the leading order, they can be used as UV realisations of CFT operators $\sigma$ and $\epsilon$. 
 ```math
 \begin{aligned}
     n^x(\hat{\mathbf{n}})&=\lambda_0+\lambda_\epsilon\epsilon(\hat{\mathbf{n}})+\lambda_{\partial^\mu\epsilon}\partial^\mu\epsilon(\hat{\mathbf{n}})+\lambda_{T^{\mu\nu}}T^{\mu\nu}(\hat{\mathbf{n}})+\dots&\epsilon_\mathrm{FS}&=\frac{n^x-\lambda_0}{\lambda_\epsilon}+\dots\\
@@ -454,7 +450,7 @@ We first consider the insertion of a single operator $\langle\Phi_1|\Phi_2(\hat{
 ```math
     f_{\Phi_1\Phi_2\Phi_3}=\lim_{r_\infty\to\infty}r_\infty^{-2\Delta_{\Phi_1}}\langle \Phi_1(x_\infty)\Phi_2(x)\Phi_3(0)\rangle_\mathrm{flat}=\langle\Phi_1|\Phi_2^{(\mathrm{flat})}(x)|\Phi_3\rangle
 ```
-where $x_\infty$ is a point on the sphere with radius $r_\infty$, $x$ is a point on the unit sphere, the states are defined as the operator acting on the origin point 
+where $x_\infty$ is a point on the sphere with radius $r_\infty$, $x$ is a point on the unit sphere, the states are obtained from acting the operator at the origin point on the vacuum state
 ```math
 \begin{aligned}
     |\Phi_3\rangle&=\Phi_3(0)|0\rangle
@@ -462,8 +458,7 @@ where $x_\infty$ is a point on the sphere with radius $r_\infty$, $x$ is a point
 ```
 and its Hermitian conjugate is defined as 
 ```math
-    \Phi_1^\dagger(\infty)=(\Phi_1(0))^\dagger=\lim_{r_\infty\to\infty}r_\infty^{2\Delta_{\Phi_1}}\Phi_1(x_\infty),\qquad
-    \langle\Phi_1|=\langle0|\Phi_1^\dagger(\infty)
+    \Phi_1^\dagger(\infty)=(\Phi_1(0))^\dagger=\lim_{r_\infty\to\infty}r_\infty^{2\Delta_{\Phi_1}}\Phi_1(x_\infty),\qquad\langle\Phi_1|=\langle0|\Phi_1^\dagger(\infty)
 ```
 After the Weyl transformation from the flat spacetime to the cylinder, we obtain the expression on fuzzy sphere 
 ```math
@@ -527,7 +522,7 @@ A general Noether current and corresponding generator of the infinitesimal space
 ```
 Specifically, for the generators $P^\mu,K^\mu$ of translation and SCT in the embedded sphere
 ```math
-    P^\mu=\int\mathrm{d}^2\hat{\mathbf{n}}(n^\mu T^0{}_0+iT^{0\mu}),\quad K^\mu=\int\mathrm{d}^2\hat{\mathbf{n}}(n^\mu T^0{}_0-iT^{0\mu})
+    P^\mu=\int\mathrm{d}^2\hat{\mathbf{n}}\,(n^\mu T^0{}_0+iT^{0\mu}),\quad K^\mu=\int\mathrm{d}^2\hat{\mathbf{n}}\,(n^\mu T^0{}_0-iT^{0\mu})
 ```
 Hence, the conformal generator $\Lambda^\mu=P^\mu+K^\mu$ is the $l=1$ component of the Hamiltonian density $\mathscr{H}=T^0{}_0$
 ```math
