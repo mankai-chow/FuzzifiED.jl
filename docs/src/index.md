@@ -1,19 +1,29 @@
 # FuzzifiED.jl
 
-The package FuzzifiED is designed to do exact diagonalisation (ED) calculations on the fuzzy sphere, and also facilitates the DMRG calculations by ITensor. It can also be used for generic fermionic and bosonic models. Using this package, you can reproduce almost all the ED results in fuzzy sphere works.
+Since its proposal, the fuzzy sphere regularisation has made significant contribution to the study of 3d CFTs. This Julia package FuzzifiED is aimed at simplifying the numerical calculations on the fuzzy sphere. It facilitates the exact diagonalisation (ED) calculations as well as the density matrix renormalisation group (DMRG) with the help of ITensor. It can also be used for generic fermionic and bosonic models. This package features the following characteristics : 
 
-If this package is helpful in your research, we would appreciate it if you mention in the acknowledgement. If you have any questions, please contact Zheng Zhou (周正) at [fuzzified@zhengzhou.page](mailto:fuzzified@zhengzhou.page).
+* Versatality : FuzzifiED can help reproduce almost all the ED and DMRG results in fuzzy sphere works, and it is easy and flexible for the adaption to new models. 
+* Usability : Julia interfaces make the code intuitive and short. To help the users get started, we have also provided [a collection of examples](@ref List-of-examples).
+* Efficiency : FuzzifiED can produce results on reasonable system sizes within minutes.
+* Open source : The code for FuzzifiED is fully open source. 
 
-## Install
+A PDF version of the documentation is provided at [this link](https://docs.fuzzified.world/assets/FuzzifiED_Documentation.pdf). If you have any questions, please contact Zheng Zhou (周正) at [physics@zhengzhou.page](mailto:physics@zhengzhou.page).
 
-To install the package, please first enter Julia by entering in the command line `julia`, and then enter the commands
+## Installation
+
+To install the package, run the following command in the Julia REPL (read-eval-print loop) (To enter Julia REPL, simply type `julia` in the command line) 
 ```julia
 using Pkg ; Pkg.add("FuzzifiED")
 ```
-Include at the start of your Julia script
+To use the package, include at the start of the Julia script
 ```julia
 using FuzzifiED
 ```
+To obtain the documentation for an interface, type `?` followed by the keyword in the Julia REPL, _e.g._, `?Confs`.
+
+## Citation
+
+If this package is helpful in your research, we would appreciate it if you mention in the acknowledgement. We have also provided a BibTeX file that includes all the works on the fuzzy sphere works at [this link](https://docs.fuzzified.world/assets/bib_fuzzy.bib).
 
 ## Useful information
 
@@ -24,10 +34,8 @@ using Pkg
 Pkg.add(url="https://github.com/FuzzifiED/FuzzifiED_jll.jl")
 Pkg.add(url="https://github.com/FuzzifiED/FuzzifiED.jl")
 ```
-- We are migrating the GitHub repositories from the personal account to the organisation account FuzzifiED. The old repositories will still be accessible. 
-- Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook. _N.b._, you may need to install the package `IJulia` by hand to use Jupyter notebook ; in Jupyter notebooks, you may need to define how many threads OpenMP uses by hand in `FuzzifiED.NumThreads`.
+- Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook.
 - The package is under active development, so certain interfaces may get changed, superceded or obsolete. We are sorry for any possible inconvenience. 
-- For the DMRG calculation, due to the change of interface in update of ITensors v0.7, now both package `ITensors` and `ITensorMPS` need to be installed. 
 - The supporting Fortran code for ED is stored at the GitHub Repo at [FuzzifiED/FuzzifiED_Fortran](https://github.com/FuzzifiED/FuzzifiED_Fortran).
 
 ## Outline 

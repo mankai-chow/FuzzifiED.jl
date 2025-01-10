@@ -41,6 +41,7 @@
 \RequirePackage{indentfirst}
 \RequirePackage[section]{placeins}
 \RequirePackage{ifxetex}
+\RequirePackage[nottoc,notlot,notlof]{tocbibind}
 \ifchangefont
   \iftimesfont
     \RequirePackage{newtxtext}
@@ -100,7 +101,7 @@
 \newcommand\acknowledgments{\section*{Acknowledgments}}
 \newcommand\notoc{\notoctrue}
 \newcommand\preprint[1]{\gdef\@preprint{\hfill #1}}
-
+\renewcommand{\bibname}{References}
 
 
 %Equivalent to ``\footnote'', but can be used inside the \author macro

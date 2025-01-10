@@ -19,7 +19,7 @@ using FuzzifiED.Fuzzifino
 makedocs(sitename = "FuzzifiED.jl", 
     pages = ["Home" => "index.md", 
         "Introduction" => "intro.md",
-        "Examples" => "example.md",
+        "Tutorial" => "tutorial.md",
         "Core functions" => "core.md",
         "Built-in models" => "models.md",
         "ITensor extension" => "itensors.md",

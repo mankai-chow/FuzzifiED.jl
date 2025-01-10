@@ -12,10 +12,11 @@
 \title{FuzzifiED}
 \subtitle{Toolkit to close the gap for fuzzy sphere numerics}
 \date{1 March, 2025}
-\author{Zheng Zhou 周正}
-\affiliation{Perimeter Institute for Theoretical Physics, Waterloo, Ontario N2L 2Y5, Canada}
-\affiliation{Department of Physics and Astronomy, University of Waterloo, Waterloo, Ontario N2L 3G1, Canada}
-\emailAdd{physics@zhengzhou.page}
+%\author{Zheng Zhou 周正}
+%\last\author{Yin-Chen He}
+%\affiliation{Perimeter Institute for Theoretical Physics, Waterloo, Ontario N2L 2Y5, Canada}
+%\affiliation{Department of Physics and Astronomy, University of Waterloo, Waterloo, Ontario N2L 3G1, Canada}
+%\emailAdd{physics@zhengzhou.page}
 \abstract{Since its proposal, the fuzzy sphere regularisation has made significant contribution to the study of 3d CFTs. The Julia package FuzzifiED is aimed at simplifying the numerical calculations on the fuzzy sphere. It facilitates the exact diagonalisation (ED) calculations as well as the density matrix renormalisation group (DMRG) with the help of ITensor. It can also be used for generic fermionic and bosonic models. This documentation gives a general introduction to the fuzzy sphere regularisation and a detailed instruction for using the package for numerical calculations.}
 \extra{\textit{Documentation}~:~\url{https://docs.fuzzified.world}\\\textit{Source code}~:~\url{https://github.com/FuzzifiED/FuzzifiED.jl}}
 
@@ -23,20 +24,17 @@
 
 \maketitle
 
-\section{Introduction}
-\label{sec:intro}
-
-\subsection{Purpose and outline}
+\section{Purpose and outline}
 
 Since its proposal, the fuzzy sphere regularisation has made significant contribution to the study of 3d CFTs~\cite{Zhu2022,Hu2023Mar,Han2023Jun,Zhou2023,Lao2023,Hu2023Aug,Hofmann2023,Han2023Dec,Zhou2024Jan,Hu2024,Cuomo2024,Zhou2024Jul,Dedushenko2024,Fardelli2024,Fan2024,Zhou2024Oct,Voinea2024}. The Julia package FuzzifiED is aimed at simplifying the numerical calculations on the fuzzy sphere. It facilitates the exact diagonalisation (ED) calculations as well as the density matrix renormalisation group (DMRG) with the help of ITensor~\cite{ITensor}. It can also be used for generic fermionic and bosonic models. This package features the following characteristics~: 
 \begin{enumerate}
-    \item Versatality : FuzzifiED can help reproduce almost all the ED and DMRG results in fuzzy sphere works, and it is easy to adapt to new models. 
-    \item Usability : Julia interfaces make the code intuitive and short. To help the users get started, we have also provided a collection of examples.
-    \item Efficiency : FuzzifiED can produce results on reasonable system sizes within minutes.
+    \item Versatality~: FuzzifiED can help reproduce almost all the ED and DMRG results in fuzzy sphere works, and it is easy and flexible for the adaption to new models. 
+    \item Usability~: Julia interfaces make the code intuitive and short. To help the users get started, we have also provided a collection of examples.
+    \item Efficiency~: FuzzifiED can produce results on reasonable system sizes within minutes.
     \item Open source~: The code for FuzzifiED is fully open source. 
 \end{enumerate}
 
-This documentation gives a general introduction to the fuzzy sphere regularisation and a detailed instruction for numerical calculations with FuzzifiED. The rest of this documentation is organised as the follows~: Sections~\ref{sec:intro}--\ref{sec:numerics} are devoted to a general introduction to the fuzzy sphere regularisation and the numerical methods applied to it~; Sections~\ref{sec:usage}--\ref{sec:examples} give a detailed instruction for numerical calculation with the package FuzzifiED. 
+This documentation gives a general introduction to the fuzzy sphere regularisation and a detailed instruction for numerical calculations with FuzzifiED. The rest of this documentation is organised as the follows~: The Part~\ref{pt:intro} (Sections~\ref{sec:intro}--\ref{sec:numerics}) is devoted to an introduction to the fuzzy sphere regularisation and the numerical methods applied to it~; The Part~\ref{pt:numerics} (Sections~\ref{sec:usage}--\ref{sec:examples}) gives a detailed instruction for numerical calculation with the package FuzzifiED. 
 \begin{itemize}
     \item In the rest of Section~\ref{sec:intro}, we make a brief introduction to the conformal field theories in dimensions $d\ge 3$ and the fuzzy sphere regularisation. 
     \item In Section~\ref{sec:review}, we review the existing works related to the fuzzy sphere. 
@@ -47,6 +45,13 @@ This documentation gives a general introduction to the fuzzy sphere regularisati
     \item In Section~\ref{sec:dmrg}, we give an instruction on performing DMRG calculation with FuzzifiED. 
     \item In Section~\ref{sec:examples}, we present a collection of practical examples that reproduce many existing results.
 \end{itemize}
+
+\clearpage
+\part{Introduction to fuzzy sphere}
+\label{pt:intro}
+
+\section{Introduction}
+\label{sec:intro}
 
 \subsection{Conformal field theory}
 
@@ -588,6 +593,10 @@ Although the fuzzy sphere deals with $(2+1)$-dimensional quantum systems, the ba
 
 In FuzzifiED, we use the ITensor Package in Julia to perform the DMRG calculations. 
 
+\clearpage
+\part{Numerical calculation with FuzzifiED}
+\label{pt:numerics}
+
 \section{Getting started with FuzzifiED~: installation and usage}
 \label{sec:usage}
 
@@ -639,11 +648,28 @@ To demonstrate the usage of FuzzifiED interfaces, in this section, we use an exa
 \end{enumerate}
 The full code is collected in Appendices~\ref{app:code_ed1} and \ref{app:code_ed2}.
 
-Before we start, we need to specify some convensions we use.
+\subsection{Setup}
+\label{sec:ed_setup}
+
+Before starting the calculation, we need to input the setup for the system, including the number of flavours $N_f$, orbitals $N_m$ and sites $N_o$ 
 \begin{itemize}
     \item A `flavour' is labelled by $f$. The number of flavours is $N_f$.
     \item An `orbital' is specified by the magnetic quantum number labelled by $m$. The number of orbitals is $N_m=2s+1$.
-    \item A `site' is specific by both the flavour and the orbital index, labelled by $o=(f,m)$. The number of sites is $N_o=N_mN_f$.
+    \item A `site' is specific by both the flavour and the orbital index $o=(f,m)$. The number of sites is $N_o=N_mN_f$. In practice, we label the sites with an integer from $1$ to $N_o$. We store the sites in an ascending order of first $m$ and then $f$~: $o=(m+s)N_f+f$.
+\end{itemize}
+
+In the example of Ising model with $s=5.5$,
+\begin{lstlisting}
+    nm = 12
+    nf = 2
+    no = nm * nf
+\end{lstlisting}
+
+FuzzifiED also provides three environment parameters that defines how FuzzifiED works.
+\begin{itemize}
+    \item \lstinline|FuzzifiED.ElementType| --- set the default type of the operator elements, either \lstinline|ComplexF64| or \lstinline|Float64|.
+    \item \lstinline|FuzzifiED.NumThreads| --- an integer to define how many threads OpenMP uses.
+    \item \lstinline|FuzzifiED.SilentStd| --- a flag to determine whether logs of the FuzzifiED functions should be turned off. 
 \end{itemize}
 
 \subsection{Constructing the configurations}
@@ -656,7 +682,7 @@ The QNDiags supported by FuzzifiED are the charges of $\mathrm{U}(1)$ or $\mathb
     Q&=\sum_oq_on_o&\mathrm{U}(1)&\textrm{ symmetry}\nonumber\\
     Q&=\sum_oq_on_o\mod p&\mathbb{Z}_p&\textrm{ symmetry}
 \end{align}
-where $n_o=c^\dagger_oc_o$ is the particle number on each site, and $q_o$ is the charge that each orbital carries. In FuzzifiED, the QNDiags are recorded in the mutable type \lstinline|QNDiag|
+where $n_o=c^\dagger_oc_o$ is the particle number on each site, and $q_o$ is the charge that each orbital carries. FuzzifiED restricts $q_o$ to be integer-valued. In FuzzifiED, the QNDiags are recorded in the mutable type \lstinline|QNDiag|.
 
 \begin{block}{\lstinline|QNDiag| --- Type}
 The type contains the fields
@@ -707,9 +733,6 @@ In the example of Ising model Eq.~\eqref{eq:ising_hmt}, there are two QNDiags, \
 \end{align}
 The full code to generating the configurations in the $L_z=0$ sector is 
 \begin{lstlisting}
-    nm = 12
-    nf = 2
-    no = nm * nf
     qnd = [ 
         QNDiag(fill(1, no)), 
         QNDiag([ 2 * m - nm - 1 for m = 1 : nm for f = 1 : nf ])
@@ -718,9 +741,6 @@ The full code to generating the configurations in the $L_z=0$ sector is
 \end{lstlisting}
 Alternatively, using the built-in models, 
 \begin{lstlisting}
-    nm = 12
-    nf = 2
-    no = nm * nf
     qnd = [ 
         GetNeQNDiag(no), 
         GetLz2QNDiag(nm, nf) 
@@ -779,7 +799,7 @@ The mutable type contains the fields
     \item \lstinline|grel :: Matrix{Int64}| --- a \lstinline|szz|$\times$\lstinline|dim| matrix that records the configurations in each group $|i_{Ik}\rangle$ ($k=1,\dots,m_I$).
     \item \lstinline|grsz :: Vector{Int64}| --- an array of length \lstinline|dim| that records the size $m_I$ of each group.
 \end{itemize}
-It can be initialised by the methods 
+It can be constructed by the methods 
 \begin{lstlisting}
     Basis(cfs :: Confs, secf :: Vector{ComplexF64}, qnf :: Vector{QNOffd})
     Basis(cfs :: Confs)
@@ -817,7 +837,7 @@ Alternatively, using the built-in functions
 
 Having constructed the basis, we now construct the many-body operators. A general many-body operator can be written as
 \begin{equation}
-    \Phi=\sum_{t=1}^{N_t}U_tc^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl_t})}_{o_{tl_t}}
+    \mathscr{O} =\sum_{t=1}^{N_t}U_tc^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl_t})}_{o_{tl_t}}
 \end{equation}
 where $c^{(0)}=c$ and $c^{(1)}=c^\dagger$. In FuzzifiED, this is recorded as an array of \lstinline|Term|, and each \lstinline|Term| records the building block $Uc^{(p_{1})}_{o_{1}}c^{(p_{2})}_{o_{2}}\dots c^{(p_{l})}_{o_{l}}$. 
 
@@ -982,7 +1002,7 @@ It can be generated from the method
 \subsection{Finding eigenstates}
 \label{sec:ed_diag}
 
-After generating the sparse matrix, the method \lstinline|GetEigensystem| calls the Arpack package to calculate its lowest eigenstates. 
+After generating the sparse matrix, the method \lstinline|GetEigensystem| uses the Fortran Arpack package to calculate its lowest eigenstates. 
 
 \begin{block}{\lstinline|GetEigensystem| --- Method}
 \begin{lstlisting}
@@ -1089,7 +1109,7 @@ Several important types of spherical observables are built-in in FuzzifiED
     \item \lstinline|GetPairingObs| returns the pair operator $\Delta_M(\hat{\mathbf{n}})=\sum_{ff'}\psi_{f}(\hat{\mathbf{n}})M_{ff'}\psi_{f'}$. 
 \end{itemize} 
 
-In the example of Ising model, to calculate the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$, one need to first calculate the eigenstates in the $\mathscr{Z}=-$ sector
+In the example of Ising model, to calculate the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$, one need to first calculate the eigenstates in the $\mathbb{Z}_2$-odd sector
 \begin{lstlisting}
     bs1 = Basis(cfs, [1, -1, 1], qnf)
     hmt1 = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) 
@@ -1401,10 +1421,11 @@ FuzzifiED can help reproduce almost all the ED and DMRG results in fuzzy sphere 
     \item \lstinline|ising_spectrum_cuda.jl| calculates the spectrum of 3d Ising model on fuzzy sphere for one sector by performing the sparse matrix multiplication on CUDA.
 \end{itemize}
 
-\acknowledgments
+% \acknowledgments
 
-We acknowledge Wenhan Guo, Andrew Liam Fitzpatrick, and Christian Voinea for their useful suggestions and their help in the development of the package. Z.Z. acknowledges support from the Natural Sciences and Engineering Research Council of Canada (NSERC) through Discovery Grants. Research at Perimeter Institute is supported in part by the Government of Canada through the Department of Innovation, Science and Industry Canada and by the Province of Ontario through the Ministry of Colleges and Universities.
+% We acknowledge Wenhan Guo, Andrew Liam Fitzpatrick, and Christian Voinea for their useful suggestions and their help in the development of the package. Z.Z. acknowledges support from the Natural Sciences and Engineering Research Council of Canada (NSERC) through Discovery Grants. Research at Perimeter Institute is supported in part by the Government of Canada through the Department of Innovation, Science and Industry Canada and by the Province of Ontario through the Ministry of Colleges and Universities.
 
+\clearpage
 \appendix
 
 \section{Data structures in exact diagonalisation}
@@ -1859,6 +1880,7 @@ In this Appendix, we collect the full version of the codes, including
     \href{}{\lstinline|stms ^ \#|}\\
 \end{multicols}
 
+\clearpage
 \bibliography{bib_fuzzy,bib_other}
 
 \end{document}
