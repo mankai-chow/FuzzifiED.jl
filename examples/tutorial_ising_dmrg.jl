@@ -1,6 +1,5 @@
 # In this tutorial, we show how to combine FuzzifiED and ITensor to do DMRG calculations on fuzzy sphere. 
-# We show how to construct ITensor objects such as Sites and OpSum from FuzzifiED interfaces, 
-# and how to convert ITensor objects back to Confs and Terms to benchmark DMRG results with ED. 
+# We show how to construct ITensor objects such as Sites and OpSum from FuzzifiED interfaces.
 
 using FuzzifiED
 using ITensors, ITensorMPS
@@ -24,21 +23,43 @@ tms_hmt = SimplifyTerms(
     GetDenIntTerms(nm, 2, ps_pot, σx) - 
     3.16 * GetPolTerms(nm, nf, σz)
 )
-os = OpSum(tms_hmt)
-@time mpo_hmt = MPO(os, sites)
+os_hmt = OpSum(tms_hmt)
+@time hmt = MPO(os_hmt, sites)
 
+# Initial ℤ₂-even state
 cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
 st0 = MPS(sites, string.(cf0))
+# Initial ℤ₂-odd state
+cf1 = [ (isodd(o) == o > 2) ? 1 : 0 for o = 1 : no ]
+st1 = MPS(sites, string.(cf1))
 
-# Calculate the ground state energy by DMRG
-Eg, stg = dmrg(mpo_hmt, st0 ; nsweeps = 10, maxdim = [10,20,50,100,200,500], noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], cutoff = [1E-8])
-@show Eg
+# Ground state : lowest ℤ₂-even
+EI, stI = dmrg(hmt, st0 ; 
+    nsweeps = 10, 
+    maxdim = [10,20,50,100,200,500], 
+    noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], 
+    cutoff = [1E-8])
+# ϵ-state : second ℤ₂-even
+Ee, ste = dmrg(hmt, [stI], st0 ; 
+    nsweeps = 10, 
+    maxdim = [10,20,50,100,200,500], 
+    noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], 
+    cutoff = [1E-8], 
+    weight = 100)
+# σ-state : lowest ℤ₂-odd
+Es, sts = dmrg(hmt, st1 ; 
+    nsweeps = 10, 
+    maxdim = [10,20,50,100,200,500], 
+    noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], 
+    cutoff = [1E-8])
 
-# Convert sites and OpSum back to do ED and compare the results
-cfs = Confs(sites, cf0)
-bs = Basis(cfs)
-tms_hmt1 = Terms(os)
-hmt = Operator(bs, tms_hmt1)
-hmt_mat = OpMat(hmt)
-enrg, st = GetEigensystem(hmt_mat, 10)
-@show enrg
+# Measure ground state angular momentum
+tms_l2 = GetL2Terms(nm, 2)
+l2 = MPO(OpSum(tms_l2))
+val_l2I = inner(stI', l2, stI)
+
+# Measure OPE coefficient f_{σσϵ}
+obs_nx = GetDensityObs(nm, 2, sgx)
+tms_nx00 = SimplifyTerms(GetComponent(obs_nx, 0.0, 0.0))
+nx00 = MPO(OpSum(tms_nx00))
+f_sse = abs(inner(sts', nx00, ste) / inner(sts', nx00, stI))

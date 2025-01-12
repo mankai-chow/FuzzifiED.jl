@@ -12,6 +12,8 @@ const σx = [  0  1 ;  1  0 ]
 FuzzifiED.ElementType = Float64
 ≈(x, y) = abs(x - y) < eps(Float32)
 
+let
+
 nm = 10
 qnd = [ 
     GetNeQNDiag(2 * nm), 
@@ -45,10 +47,11 @@ end
 ent_entropy = Dict{Float64, Float64}()
 θ1 = 0.500 * π
 θ2 = 0.499 * π
+qnd_a = qnd
+qnf_a = [GetFlavPermQNOffd(nm, 2, [2, 1])]
 for θ in (θ1, θ2)
-    amp_oa = vcat([ sqrt(beta_inc(1 + m, nm - m, (cos(θ) + 1) / 2)[1]) for f = 1 : 2, m = 0 : nm - 1]...) ;
-    amp_ob = vcat([ sqrt(beta_inc(1 + m, nm - m, (cos(θ) + 1) / 2)[2]) for f = 1 : 2, m = 0 : nm - 1]...) ;
-    ent_spec = GetEntSpec(st_g, bs, secd_lst, secf_lst ; qnd_a = qnd, qnf_a = [GetFlavPermQNOffd(nm, 2, [2, 1])], amp_oa, amp_ob)
+    amp_oa = [ sqrt(beta_inc(m, nm - m + 1, (cos(θ) + 1) / 2)[1]) for f = 1 : 2 for m = 1 : nm]
+    ent_spec = GetEntSpec(st_g, bs, secd_lst, secf_lst ; qnd_a, qnf_a, amp_oa)
 
     eig_rho = vcat(values(ent_spec)...)
     tr_rho = sum(eig_rho)
@@ -58,3 +61,5 @@ for θ in (θ1, θ2)
 end
 F = (ent_entropy[θ1] * sin(θ2) - ent_entropy[θ2] * sin(θ1)) / (sin(θ1) - sin(θ2))
 @show F
+
+end

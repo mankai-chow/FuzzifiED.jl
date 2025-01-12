@@ -53,3 +53,8 @@ Es, sts = EasySweep("s", hmt, st1 ; path)
 tms_l2 = GetL2Terms(nm, 2)
 l2 = GetMPO("l2", tms_l2, sites ; path, mpo_method = MyMPO)
 @show inner(stg', l2, stg)
+
+obs_nz = GetDensityObs(nm, 2, sgz)
+tms_nz00 = SimplifyTerms(GetComponent(obs_nz, 0.0, 0.0))
+nz00 = GetMPO("nz00", tms_nz00, sites ; path, mpo_method = MyMPO)
+f_sse = abs((sts' * nz00 * ste) / (sts' * nz00 * stI))

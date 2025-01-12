@@ -73,4 +73,5 @@ st_s = st1[:, 1]
 obs_nz = GetDensityObs(nm, 2, σz)
 tms_nz = SimplifyTerms(GetComponent(obs_nz, 0.0, 0.0))
 nz = Operator(bs, bs1, tms_nz ; red_q = 1) 
-@show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
+f_sse = abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
+@show f_sse

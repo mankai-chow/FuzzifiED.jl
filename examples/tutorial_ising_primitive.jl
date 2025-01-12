@@ -52,38 +52,29 @@ using WignerSymbols
 ps_pot = [ 4.75, 1. ] * 2.
 h = 3.16
 tms_hmt = Term[]
-# Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
-for m1 = 0 : nm - 1
-    f1 = 0
-    o1 = m1 * nf + f1 + 1
-    m1r = m1 - s
-    for m2 = 0 : nm - 1
-        f2 = 1
-        o2 = m2 * nf + f2 + 1
-        m2r = m2 - s
-        for m3 = 0 : nm - 1
-            f3 = 1
-            o3 = m3 * nf + f3 + 1
-            m3r = m3 - s
-            m4 = m1 + m2 - m3 
-            if (m4 < 0 || m4 >= nm) continue end
-            f4 = 0
-            o4 = m4 * nf + f4 + 1
-            m4r = m4 - s
-            # Calculate the matrix element val from pseudopotentials
-            val = ComplexF64(0)
-            for l in eachindex(ps_pot)
-                if (abs(m1r + m2r) > nm - l || abs(m3r + m4r) > nm - l) break end 
-                val += ps_pot[l] * (2 * nm - 2 * l + 1) * wigner3j(s, s, nm - l, m1r, m2r, -m1r - m2r) * wigner3j(s, s, nm - l, m4r, m3r, -m3r - m4r)
-            end 
-            # Record the interaction term val, "Cdag", o1, "Cdag", o2, "C", o3, "C", o4
-            tms_hmt += Terms(val, [1, o1, 1, o2, 0, o3, 0, o4])
-        end
-    end
-    o1x = o1 + 1
+# Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m
+m = zeros(Int64, 4)
+for m[1] = 0 : nm - 1, m[2] = 0 : nm - 1, m[3] = 0 : nm - 1
+    m[4] = m[1] + m[2] - m[3]
+    (m[4] < 0 || m[4] >= nm) && continue
+    f = [0, 1, 1, 0]
+    o = m .* nf .+ f .+ 1
+    mr = m .- s
+    
+    # Calculate the matrix element val from pseudopotentials
+    val = ComplexF64(0)
+    for l in eachindex(ps_pot)
+        (abs(mr[1] + mr[2]) > nm - l || abs(mr[3] + mr[4]) > nm - l) && break 
+        val += ps_pot[l] * (2 * nm - 2 * l + 1) * wigner3j(s, s, nm - l, mr[1], mr[2], -mr[1] - mr[2]) * wigner3j(s, s, nm - l, mr[4], mr[3], -mr[3] - mr[4])
+    end 
+    # Record the interaction term val, "Cdag", o1, "Cdag", o2, "C", o3, "C", o4
+    tms_hmt += Terms(val, [1, o[1], 1, o[2], 0, o[3], 0, o[4]])
+end 
+for m = 0 : nm - 1
+    o = m * nf .+ [1, 2]
     # Record the transverse field term
-    tms_hmt += Terms(-h, [1, o1, 0, o1x])
-    tms_hmt += Terms(-h, [1, o1x, 0, o1])
+    tms_hmt += Terms(-h, [1, o[1], 0, o[2]])
+    tms_hmt += Terms(-h, [1, o[2], 0, o[1]])
 end
 
 
@@ -142,16 +133,17 @@ st_e = st[:, 2] # epsilon state
 st_s = st1[:, 1]
 
 # Record the density operator n^z
-tms_nz = Term[]
-for m1 = 0 : nm - 1
-    o1u = 2 * m1 + 1
-    o1d = 2 * m1 + 2
-    push!(tms_nz, Term( 1 / nm, [1, o1u, 0, o1u]))
-    push!(tms_nz, Term(-1 / nm, [1, o1d, 0, o1d]))
+tms_nz00 = Term[]
+for m = 0 : nm - 1
+    o = m * nf .+ [1, 2]
+    # Record the transverse field term
+    tms_nz00 += Terms( 1 / nm, [1, o[1], 0, o[1]])
+    tms_nz00 += Terms(-1 / nm, [1, o[2], 0, o[2]])
 end
 # The nz operator sends a state in bs (+) to bs1 (-)
-nz = Operator(bs, bs1, tms_nz ; red_q = 1)
+nz00 = Operator(bs, bs1, tms_nz00 ; red_q = 1)
 # Measuring the finite size OPE
-@show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
+f_sse = abs((sts' * nz00 * ste) / (sts' * nz00 * stI))
+@show f_sse
 
 end
