@@ -2,13 +2,18 @@
 
 To demonstrate the usage of FuzzifiED interfaces for ED and DMRG, in this section, we use a tutorial that calculates the eigenstates for the Ising model on fuzzy sphere. Specifically, it
 
-* calculates the lowest eigenstates in the symmetry sector $L^z=0$ and $(\mathcal{P},\mathcal{Z},\mathcal{R})=(+,+,+)$,
-* measures their total angular momenta, and 
-* calcultes the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$.
+1. calculates the lowest eigenstates in the symmetry sector $L^z=0$ and $(\mathcal{P},\mathcal{Z},\mathcal{R})=(+,+,+)$,
+2. measures their total angular momenta, and 
+3. calcultes the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$.
 
-The examples can be found in the directory [`examples`](https://github.com/FuzzifiED/FuzzifiED.jl/tree/main/examples). Two versions of the ED code are provided. The first uses the built-in functions for quantum numbers and operators to calculate the observables and is stored in [`tutorial_ising.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising.jl). The second uses only the core functions and is stored in [`tutorial_ising_primitive.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_primitive.jl). Two versions of the DMRG code are provided. The first converts the information of the model into ITensor format and use ITensor for DMRG calculation and is stored in [`tutorial_ising_dmrg.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg.jl). The second uses the [`EasySweep`](@ref) extension and is stored in [`tutorial_ising_dmrg_easysweep.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg_easysweep.jl). 
+Four versions of the tutorial code are provided : 
 
-We also append in the end [a list of given examples](@ref List-of-examples) at the end of the page.
+1. [`tutorial_ising.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising.jl) -- the ED code that uses the built-in models.
+2. [`tutorial_ising_primitive.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_primitive.jl) -- The ED code that uses only the core functions.
+3. [`tutorial_ising_dmrg.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg.jl) -- the DMRG code that converts the format into ITensor.
+4. [`tutorial_ising_dmrg_easysweep.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg_easysweep.jl) -- the DMRG code that uses the EasySweep extension.
+
+The examples can be found in the directory [`examples`](https://github.com/FuzzifiED/FuzzifiED.jl/tree/main/examples). We also append in the end [a list of given examples](@ref List-of-examples) at the end of the page. 
 
 ## Exact diagonalisation (ED) with FuzzifiED
 
@@ -585,13 +590,6 @@ f_sse = abs(inner(sts', nx00, ste) / inner(sts', nx00, stI))
 ```
 
 ## List of examples
-
-The examples of FuzzifiED can be found in the repository [`examples`](https://github.com/FuzzifiED/FuzzifiED.jl/tree/main/examples). Apart from the tutorials that we have introduced above 
-
-* [`tutorial_ising.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising.jl) does the ED calculation of Ising model through the built-in models. 
-* [`tutorial_ising_primitive.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_primitive.jl) does the ED calculation of Ising model through the primitive functions.
-* [`tutorial_ising_dmrg.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg.jl) does the DMRG calculation of Ising model through the `dmrg` function in ITensor.
-* [`tutorial_ising_dmrg_easysweep.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/tutorial_ising_dmrg_easysweep.jl) does the DMRG calculation of Ising model through the `EasySweep` function which wraps ITensor.
 
 We offer a series of other examples that reproduces various achievements of fuzzy sphere. For a more detailed summary of the background, see the [Review of existing work](@ref). 
 
