@@ -1,6 +1,7 @@
-# In this tutorial, we use the primitive interfaces to do the same calculation of Ising model on fuzzy sphere as the `tutorial_ising.jl` example. 
-# We show how to construct diagonal and off-diagonal quantum numbers on your own, 
-# and construct Hamiltonian, total angular momentum and density operators. 
+# This tutorial contains the ED code that uses only the core functions. It
+# 1. calculates the lowest eigenstates in the symmetry sector L^z=0 and (𝒫,𝒵,ℛ)=(+,+,+),
+# 2. measures their total angular momenta, and 
+# 3. calcultes the OPE coefficient f_{σσϵ}=⟨σ|n^z_{00}|ϵ⟩/⟨σ|n^z_{00}|0⟩
 
 using FuzzifiED
 
@@ -108,10 +109,6 @@ l2 = Operator(bs, tms_l2)
 # Calculate the inner product for each eigenstate
 @time "Measure L2" l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 @show real(l2_val)
-# Verify whether T is an eigenstate of L^2
-st_T = st[:, 3]
-st_L2T = l2_mat * st[:, 3]
-@show abs(st_L2T' * st_T) ^ 2 / ((st_T' * st_T) * (st_L2T' * st_L2T))
 
 
 #======================================
@@ -119,18 +116,15 @@ MEASURE THE DENSITY OPERATOR OBSERVABLE
 ======================================#
 
 # Repeat the calculation for the Z_2 odd sector (with subscript 1)
-qnz_s1 = Basis(cfs, [1, -1, 1], qnf) # Change only the discrete quantum numbers and generate the basis
-@time "Initialise Basis Z" bs1 = Basis(cfs, [ 1, -1, 1 ], qnf) 
-@show bs1.dim 
-hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
-@time "Initialise Hamiltonian" hmt_mat = OpMat(hmt)
-@show hmt_mat.nel
-@time "Diagonalise Hamiltonian" enrg1, st1 = GetEigensystem(hmt_mat, 10)
-@show real(enrg1)
+bs_m = Basis(cfs, [ 1, -1, 1 ], qnf) 
+hmt_m = Operator(bs_m, bs_m, tms_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
+hmt_mat_m = OpMat(hmt_m)
+enrg_m, st_m = GetEigensystem(hmt_mat_m, 10)
+@show real(enrg_m)
 # Record the identity, sigma and epsilon states 
-st_I = st[:, 1] # ground state
-st_e = st[:, 2] # epsilon state
-st_s = st1[:, 1]
+st0 = st[:, 1] # ground state
+ste = st[:, 2] # epsilon state
+sts = st_m[:, 1]
 
 # Record the density operator n^z
 tms_nz00 = Term[]
@@ -140,10 +134,10 @@ for m = 0 : nm - 1
     tms_nz00 += Terms( 1 / nm, [1, o[1], 0, o[1]])
     tms_nz00 += Terms(-1 / nm, [1, o[2], 0, o[2]])
 end
-# The nz operator sends a state in bs (+) to bs1 (-)
-nz00 = Operator(bs, bs1, tms_nz00 ; red_q = 1)
+# The nz operator sends a state in bs (+) to bs_m (-)
+nz00 = Operator(bs, bs_m, tms_nz00 ; red_q = 1)
 # Measuring the finite size OPE
-f_sse = abs((sts' * nz00 * ste) / (sts' * nz00 * stI))
+f_sse = abs((sts' * nz00 * ste) / (sts' * nz00 * st0))
 @show f_sse
 
 end

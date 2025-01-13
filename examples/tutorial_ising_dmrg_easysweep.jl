@@ -1,7 +1,8 @@
-# In this tutorial, we show how to use the tools EasySweep to manage DMRG sweeps and store intermediate results 
-# so that the task can be restored if they are interrupted due to the time limit.
-# We calculate and store the MPO for Hamiltonian and angular momentum, 
-# and calculate two Z_2-even states, ground state and epsilon, and one Z_2 odd state sigma. 
+# This tutorial contains the DMRG code that uses the EasySweep extension. It
+# 1. calculates the lowest eigenstates in the symmetry sector L^z=0 and 𝒵=+,
+# 2. measures their total angular momenta (for DMRG, the ground state only), and 
+# 3. calcultes the OPE coefficient f_{σσϵ}=⟨σ|n^z_{00}|ϵ⟩/⟨σ|n^z_{00}|0⟩
+
 # We recommend the unregistered package ITensorMPOConstruction to construct MPO. 
 # The following command is used to install the package :
 #     using Pkg; Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.git")
@@ -25,12 +26,14 @@ no = nm * nf
 path = "nm_$(nm)_tmp/"
 mkpath(path)
 
+# Input the Hamiltonian
 ps_pot = [4.75, 1.] ./ 2
 tms_hmt = SimplifyTerms(
     GetDenIntTerms(nm, 2, ps_pot) - 
     GetDenIntTerms(nm, 2, ps_pot, σx) - 
     3.16 * GetPolTerms(nm, 2, σz)
 )
+# Input the quantum numbers
 qnd = [ 
     GetNeQNDiag(no), 
     GetLz2QNDiag(nm, nf), 
@@ -38,23 +41,27 @@ qnd = [
 ]
 hmt, sites = GetMPOSites("hmt", tms_hmt, qnd ; path, mpo_method = MyMPO)
 
-cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
-st0 = MPS(sites, string.(cf0))
+# Initial ℤ₂-even state
+cfi_p = [ isodd(o) ? 1 : 0 for o = 1 : no ]
+sti_p = MPS(sites, string.(cfi_p))
+# Initial ℤ₂-odd state
+cfi_m = [ (isodd(o) == (o > 2)) ? 1 : 0 for o = 1 : no ]
+sti_m = MPS(sites, string.(cfi_m))
 
-Eg, stg = EasySweep("g", hmt, st0 ; path)
-Ee, ste = EasySweep("e", hmt, st0 ; path, proj = ["g"])
+# Generate the three state
+E0, st0 = EasySweep("0", hmt, sti_p ; path)
+Ee, ste = EasySweep("e", hmt, sti_p ; path, proj = ["0"])
+Es, sts = EasySweep("s", hmt, sti_m ; path)
 
-cf1 = cf0
-cf1[1] = 0
-cf1[2] = 1
-st1 = MPS(sites, string.(cf1))
-Es, sts = EasySweep("s", hmt, st1 ; path)
-
+# Measure the angular momentum of the ground state
 tms_l2 = GetL2Terms(nm, 2)
 l2 = GetMPO("l2", tms_l2, sites ; path, mpo_method = MyMPO)
-@show inner(stg', l2, stg)
+val_l20 = inner(st0', l2, st0)
+@show val_l20
 
-obs_nz = GetDensityObs(nm, 2, sgz)
-tms_nz00 = SimplifyTerms(GetComponent(obs_nz, 0.0, 0.0))
-nz00 = GetMPO("nz00", tms_nz00, sites ; path, mpo_method = MyMPO)
-f_sse = abs((sts' * nz00 * ste) / (sts' * nz00 * stI))
+# Measure OPE coefficient f_{σσϵ}
+obs_nx = GetDensityObs(nm, 2, σx)
+tms_nx00 = SimplifyTerms(GetComponent(obs_nx, 0.0, 0.0))
+nx00 = GetMPO("nx00", tms_nx00, sites ; path, mpo_method = MyMPO)
+f_sse = abs(inner(sts', nx00, ste) / inner(sts', nx00, st0))
+@show f_sse

@@ -1,5 +1,7 @@
-# In this tutorial, we show how to combine FuzzifiED and ITensor to do DMRG calculations on fuzzy sphere. 
-# We show how to construct ITensor objects such as Sites and OpSum from FuzzifiED interfaces.
+# This tutorial contains the DMRG code that converts the format into ITensor. It
+# 1. calculates the lowest eigenstates in the symmetry sector L^z=0 and 𝒵=+,
+# 2. measures their total angular momenta (for DMRG, the ground state only), and 
+# 3. calcultes the OPE coefficient f_{σσϵ}=⟨σ|n^z_{00}|ϵ⟩/⟨σ|n^z_{00}|0⟩
 
 using FuzzifiED
 using ITensors, ITensorMPS
@@ -27,27 +29,27 @@ os_hmt = OpSum(tms_hmt)
 @time hmt = MPO(os_hmt, sites)
 
 # Initial ℤ₂-even state
-cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
-st0 = MPS(sites, string.(cf0))
+cfi_p = [ isodd(o) ? 1 : 0 for o = 1 : no ]
+sti_p = MPS(sites, string.(cfi_p))
 # Initial ℤ₂-odd state
-cf1 = [ (isodd(o) == o > 2) ? 1 : 0 for o = 1 : no ]
-st1 = MPS(sites, string.(cf1))
+cfi_m = [ (isodd(o) == (o > 2)) ? 1 : 0 for o = 1 : no ]
+sti_m = MPS(sites, string.(cfi_m))
 
 # Ground state : lowest ℤ₂-even
-EI, stI = dmrg(hmt, st0 ; 
+E0, st0 = dmrg(hmt, sti_p ; 
     nsweeps = 10, 
     maxdim = [10,20,50,100,200,500], 
     noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], 
     cutoff = [1E-8])
 # ϵ-state : second ℤ₂-even
-Ee, ste = dmrg(hmt, [stI], st0 ; 
+Ee, ste = dmrg(hmt, [st0], sti_p ; 
     nsweeps = 10, 
     maxdim = [10,20,50,100,200,500], 
     noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], 
     cutoff = [1E-8], 
     weight = 100)
 # σ-state : lowest ℤ₂-odd
-Es, sts = dmrg(hmt, st1 ; 
+Es, sts = dmrg(hmt, sti_m ; 
     nsweeps = 10, 
     maxdim = [10,20,50,100,200,500], 
     noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], 
@@ -55,11 +57,13 @@ Es, sts = dmrg(hmt, st1 ;
 
 # Measure ground state angular momentum
 tms_l2 = GetL2Terms(nm, 2)
-l2 = MPO(OpSum(tms_l2))
-val_l2I = inner(stI', l2, stI)
+l2 = MPO(OpSum(tms_l2), sites)
+val_l20 = inner(st0', l2, st0)
+@show val_l20
 
 # Measure OPE coefficient f_{σσϵ}
-obs_nx = GetDensityObs(nm, 2, sgx)
+obs_nx = GetDensityObs(nm, 2, σx)
 tms_nx00 = SimplifyTerms(GetComponent(obs_nx, 0.0, 0.0))
-nx00 = MPO(OpSum(tms_nx00))
-f_sse = abs(inner(sts', nx00, ste) / inner(sts', nx00, stI))
+nx00 = MPO(OpSum(tms_nx00), sites)
+f_sse = abs(inner(sts', nx00, ste) / inner(sts', nx00, st0))
+@show f_sse
