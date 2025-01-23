@@ -50,7 +50,7 @@ ent_entropy = Dict{Float64, Float64}()
 qnd_a = qnd
 qnf_a = [GetFlavPermQNOffd(nm, 2, [2, 1])]
 for θ in (θ1, θ2)
-    amp_oa = [ sqrt(beta_inc(m, nm - m + 1, (cos(θ) + 1) / 2)[1]) for f = 1 : 2 for m = 1 : nm]
+    amp_oa = [ sqrt(beta_inc(m, nm - m + 1, (cos(θ) + 1) / 2)[1]) for m = 1 : nm for f = 1 : 2]
     ent_spec = GetEntSpec(st_g, bs, secd_lst, secf_lst ; qnd_a, qnf_a, amp_oa)
 
     eig_rho = vcat(values(ent_spec)...)
