@@ -1,6 +1,6 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{timesjhep}
-\LoadClass[11pt]{article}
+\LoadClass[11pt,twoside]{article}
 
 \newif\ifnotoc\notocfalse
 \newif\ifemailadd\emailaddfalse
@@ -369,7 +369,9 @@
 \newcommand\ps@myplain{
 \pagenumbering{arabic}
 \renewcommand\@oddfoot{\hfill-- \thepage\ --\hfill}
-\renewcommand\@oddhead{}}
+\renewcommand\@oddhead{}
+\renewcommand\@evenfoot{\hfill-- \thepage\ --\hfill}
+\renewcommand\@evenhead{}}
 \let\ps@plain=\ps@myplain
 
 
