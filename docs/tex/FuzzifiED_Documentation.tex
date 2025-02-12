@@ -8,9 +8,8 @@
 
 \title{FuzzifiED}
 \subtitle{Julia package to close the gap for fuzzy sphere numerics}
-\date{28 January, 2025}
+\date{12 Febuary, 2025}
 \author{Zheng Zhou 周正}
-%\last\author{Yin-Chen He}
 \affiliation{Perimeter Institute for Theoretical Physics, Waterloo, Ontario N2L 2Y5, Canada}
 \affiliation{Department of Physics and Astronomy, University of Waterloo, Waterloo, Ontario N2L 3G1, Canada}
 \emailAdd{physics@zhengzhou.page}
@@ -23,7 +22,7 @@
 
 \section{Purpose and outline}
 
-Since its proposal, the fuzzy sphere regularisation has made significant contributions to the study of 3d CFTs~\cite{Zhu2022,Hu2023Mar,Han2023Jun,Zhou2023,Lao2023,Hu2023Aug,Hofmann2023,Han2023Dec,Zhou2024Jan,Hu2024,Cuomo2024,Zhou2024Jul,Dedushenko2024,Fardelli2024,Fan2024,Zhou2024Oct,Voinea2024}. The Julia package FuzzifiED aims at simplifying the numerical calculations on the fuzzy sphere. It facilitates the exact diagonalisation (ED) calculations as well as the density matrix renormalisation group (DMRG) with the help of ITensor~\cite{ITensor}. It can also apply to generic fermionic and bosonic models. This package features the following characteristics~: 
+Since its proposal, the fuzzy sphere regularisation has made significant contributions to the study of 3d CFTs~\cite{Zhu2022,Hu2023Mar,Han2023Jun,Zhou2023,Lao2023,Hu2023Aug,Hofmann2023,Han2023Dec,Zhou2024Jan,Hu2024,Cuomo2024,Zhou2024Jul,Dedushenko2024,Fardelli2024,Fan2024,Zhou2024Oct,Voinea2024,Yang2025,Han2025}. The Julia package FuzzifiED aims at simplifying the numerical calculations on the fuzzy sphere. It facilitates the exact diagonalisation (ED) calculations as well as the density matrix renormalisation group (DMRG) with the help of ITensor~\cite{ITensor}. It can also apply to generic fermionic and bosonic models. This package features the following characteristics~: 
 \begin{enumerate}
     \item Versatality~: FuzzifiED can help reproduce almost all the ED and DMRG results in fuzzy sphere works, and it is easy to adapt to new models. 
     \item Usability~: Julia interfaces~\cite{Julia} make the code intuitive and concise. To help the users get started, we have also provided a collection of examples.
@@ -144,6 +143,10 @@ The quest to discover new 3d CFTs has been intriguing for physicists. A virgin l
 \end{equation}
 Several candidate Chern-Simons-matter theories are known to exist on its phase diagram with $N$ flavour of gapless bosons or fermions coupled to a non-Abelian (\textit{viz.}~$\mathrm{Sp}(1)$, $\mathrm{Sp}(2)$, etc.) Chern-Simons gauge field~\cite{Komargodski2017QCD}. On the fuzzy sphere, this WZW-NL$\sigma$M can be realised by a $2N$ layer model with $\mathrm{Sp}(N)$ global symmetry, and $2M$ out of the $2N$ layers are filled. This work numerically verifies the emergent conformal symmetry by observing the integer-spaced conformal multiplets and studying the finite-size scaling of the conformality. 
 
+\paragraph{The 3-state Potts model~\cite{Yang2025}}
+
+The Potts models describe transitions that spontaneously break $S_Q$ symmetries where $Q\in\mathbb{Z}$ is known as the number of states. In 2d, the transitions with $Q\leq Q_c=4$ are continuous and captured by CFTs~\cite{Dotsenko1984Potts}, while $Q>Q_c$ are first order. Specifically, 2d 5-state Potts transition is pseudocritical and described by a pair of complex CFTs in its vicinity~\cite{Tang2024Potts} in a similar manner with $\mathrm{SO}(5)$ DQCP. In 3d, the 3-state Potts model is found to be first-order~\cite{Barkema1991Potts,Chester2022Potts}. This work constructs a 3-flavour model on the fuzzy sphere with $S_3$ permutation symmetry between layers. The interacting Hamiltonian resembles the Ising model. Interestingly, this work finds out that the transition point of the 3d 3-state Potts model, despite being probably first-order, exhibits approximate conformal symmetry, indicating that there might be an underlying CFT describing it. However, it is difficult to determine the nature of the transition from the operator spectrum (specifically, from the relevance of the second singlet $\epsilon'$) due to the complicated finite size effect.
+
 \subsection{Studying conformal defects and boundaries}
 
 Apart from the bulk CFTs, the fuzzy sphere can also be used to study their conformal defects and boundaries. Deforming a CFT with interactions living on a sub-dimensional defect may trigger a RG flow towards a non-trivial interacting IR fixed point. A defect IR theory with a smaller conformal symmetry is called a defect CFT~\cite{Billo2013Defect,Billo2016Defect}. The dCFTs have rich physical structures, such as defect operators and bulk-to-defect correlation functions. Moreover, a bulk CFT can flow to several different dCFTs. Similarly, deformation on the boundary may trigger a flow towards a boundary CFT (bCFT). So far, the accessible defects/boundaries include the magnetic line defect of 3d Ising CFT, including its defect operator spectrum, correlators~\cite{Hu2023Aug}, $g$-function, defect changing operators~\cite{Zhou2024Jul}, its cusp~\cite{Cuomo2024}, and the conformal boundaries of 3d Ising CFT~\cite{Zhou2024Jul,Dedushenko2024}. 
@@ -187,6 +190,10 @@ Until this work, the numerical methods that have been applied to the fuzzy spher
 Until this work, all the constructions of CFTs on the fuzzy sphere were based on the quantum Hall ferromagnet. Specifically, before the interaction is added, an integer number of the lowest Landau levels is fully occupied. This state has a finite charge gap that guarentees that the gapless spin degree of freedom do not strongly couple with the charge degree of freedom when one adds the interactions. 
 
 This work further explores the possibility of constructing CFTs on other states with charge gap --- in particular, the Haldane-Laughlin states that capture the fractional quantum Hall effect (FQHE)~\cite{Haldane1983LLL,Laughlin1983FQHE}. Specifically, this work studies the fermionic LLL at fillings of $\nu=1/3$ and $1/5$. The model Hamiltonian contains (1) a dominant projection term that puts the ground state on the Haldane-Laughlin state, and (2) an interaction term as a perturbation that drives the Ising-type phase transition. This work shows that the energy spectra at the critical point exhibit conformal symmetry. More noticeably, this work also makes the construction with respect to the bosonic LLL at a filling of $\nu=1/2$. 
+
+\paragraph{Fuzzy circle~\cite{Han2025}}
+
+Besides the fuzzy sphere $S^2$, the regularisation with the lowest Landau level can also be used for other manifolds or even dimensions. This work studies the 2d CFT on a `fuzzy circle'. Although Landau levels can only be defined on even space dimensions~\cite{Hasebe2020Landau}, one can reach odd space dimensions by compactifying one of the even dimensions. Specifically, this work constructs the LLL on a thin torus $T^2$ and sends one of the lengths to infinity while fixing the other. In this way, a circle $S^1$ is recovered in the thermodynamic limit. This work constructs the 2d Ising and 3-state Potts CFTs on the fuzzy circle and compares the operator spectrum and OPE coefficients with the Virasoro multiplet structure and the exactly solvable minimal models.
 
 \section{Model construction}
 \label{sec:construct}
@@ -1421,6 +1428,7 @@ FuzzifiED can help reproduce almost all the ED and DMRG results in fuzzy sphere 
     \item \linkexample{sp3\_spectrum.jl} calculates the spectrum of Sp(3) CFT on fuzzy sphere. This example reproduces Table~I in Ref.~\cite{Zhou2024Oct}.
     \item \linkexample{ising\_frac\_fermion.jl} calculates the spectrum of 3d Ising model on fuzzy sphere for fermions at fractional filling $\nu = 1/3$. This example reproduces Figure~10 in Ref.~\cite{Voinea2024}.
     \item \linkexample{ising\_frac\_boson.jl} calculates the spectrum of 3d Ising model on fuzzy sphere for bosons at fractional filling $\nu = 1/2$ with the module Fuzzifino. This example reproduces Figure~12a,~b in Ref.~\cite{Voinea2024}.
+    \item \linkexample{potts\_specturm.jl} calculates the spectrum of 3d Potts model on fuzzy sphere. This example reproduces Table I and Figure 4 in Ref.~\cite{Yang2025}
     \item \linkexample{ising\_spectrum\_krylov.jl} calculates the spectrum of 3d Ising model on fuzzy sphere by calling the \lstinline|eigsolve| function in \lstinline|KrylovKit.jl| instead of Arpack.
     \item \linkexample{ising\_spectrum\_cuda.jl} calculates the spectrum of 3d Ising model on fuzzy sphere for one sector by performing the sparse matrix multiplication on CUDA.
 \end{itemize}
