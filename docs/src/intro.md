@@ -115,6 +115,12 @@ The quest to discover new 3d CFTs has been intriguing for physicists. A virgin l
 ```
 Several candidate Chern-Simons-matter theories are known to exist on its phase diagram which have $N$ flavour of gapless bosons or fermions coupled to a non-Abelian (_viz._ $\mathrm{Sp}(1)$, $\mathrm{Sp}(2)$, etc.) Chern-Simons gauge field. On the fuzzy sphere, this WZW-NLσM can be realised by a $2N$ layer model with $\mathrm{Sp}(N)$ global symmetry, and $2M$ out of the $2N$ layers are filled. This work numerically verifies the emergent conformal symmetry by observing the integer-spaced conformal multiplets and studying the finite-size scaling of the conformality. 
 
+##### [The 3-state Potts model](@id Yang2025)
+
+> __[Yang 2025]__ Microscopic study of 3d Potts phase transition via fuzzy sphere regularisation, Shuai Yang, Yan-Guang Yue, Yin Tang, Chao Han, Wei Zhu, and Yan Chen, [arXiv:2501.14320](https://arxiv.org/abs/2501.14320)
+
+The Potts models describe transitions that spontaneously break $S_Q$ symmetries where $Q\in\mathbb{Z}$ is known as the number of states. In 2d, the transitions with $Q\leq Q_c=4$ are continuous and captured by CFTs, while $Q>Q_c$ are first order. Specifically, 2d 5-state Potts transition is pseudocritical and described by a pair of complex CFTs in its vicinity in a similar manner with $\mathrm{SO}(5)$ DQCP. In 3d, the 3-state Potts model is found to be first-order. This work constructs a 3-flavour model on the fuzzy sphere with $S_3$ permutation symmetry between layers. The interacting Hamiltonian resembles the Ising model. Interestingly, this work finds out that the transition point of the 3d 3-state Potts model, despite being probably first-order, exhibits approximate conformal symmetry, indicating that there might be an underlying CFT describing it. However, it is difficult to determine the nature of the transition from the operator spectrum (specifically, from the relevance of the second singlet $\epsilon'$) due to the complicated finite size effect.
+
 ### Studying conformal defects and boundaries
 
 Apart from the bulk CFTs, fuzzy sphere can also be used to study their conformal defects and boundaries. Deforming a CFT with interactions living on a sub-dimensional defect may trigger a RG flow towards a non-trivial interacting IR fixed point. A defect IR theory that own a smaller conformal symmetry is called a defect CFT. The dCFTs own rich physical structure such as defect operators and bulk-to-defect correlation functions. Moreover, a bulk CFT can flow to several different dCFTs. So far, the accessible defects/boundaries include the magnetic line defect of 3d Ising CFT, including its defect operator spectrum, correlators, $g$-function, defect changing operators, its cusp, and the conformal boundaries of 3d Ising CFT.
@@ -174,6 +180,12 @@ Up to the time of this work, the numerical methods that has been applied to fuzz
 Up to the time of this work, all the constructions of CFTs on fuzzy sphere are based on the quantum Hall ferromagnet. Specifically, before the interaction is added, an integer number of the lowest Landau levels are fully occupied. This state has a finite charge gap that guarentees that the gapless spin degree of freedom do not strongly couple with the charge degree of freedom when one adds the interactions. 
 
 This work further explores the possibility to construct CFTs on other states with charge gap -- in particular, the Haldane-Laughlin states that captures the fractional quantum Hall effect (FQHE). Specifically, this work studies the fermionic LLL at fillings of $\nu=1/3$ and $1/5$. The model Hamiltonian contains (1) a dominant projection term that put the ground state on the Haldane-Laughlin state, and (2) an interaction term as a perturbation that drives the Ising-type phase transition. This work shows that the energy spectra at the critical point exhibit conformal symmetry. More noticeably, this work also makes the construction with respect to the bosonic LLL at a filling of $\nu=1/2$. 
+
+##### [Fuzzy circle](@id Han2025)
+
+> __[Han 2025]__ Quantum phase transitions on the noncommutative circle, Chao Han, and Wei Zhu, [Phys. Rev. B __111__, 085113 (2025)](https://doi.org/10.1103/PhysRevB.111.085113)
+
+Besides the fuzzy sphere $S^2$, the regularisation with the lowest Landau level can also be used for other manifolds or even dimensions. This work studies the 2d CFT on a `fuzzy circle'. Although Landau levels can only be defined on even space dimensions~\cite{Hasebe2020Landau}, one can reach odd space dimensions by compactifying one of the even dimensions. Specifically, this work constructs the LLL on a thin torus $T^2$ and sends one of the lengths to infinity while fixing the other. In this way, a circle $S^1$ is recovered in the thermodynamic limit. This work constructs the 2d Ising and 3-state Potts CFTs on the fuzzy circle and compares the operator spectrum and OPE coefficients with the Virasoro multiplet structure and the exactly solvable minimal models.
 
 ## Model construction 
 
