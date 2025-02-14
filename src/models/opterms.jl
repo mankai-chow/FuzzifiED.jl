@@ -4,6 +4,8 @@ export GetIntMatrix, GetDenIntTerms, GetPairIntTerms, GetPolTerms, GetL2Terms, G
 """
     GetIntMatrix(nm :: Int64, ps_pot :: Vector{<:Number}) :: Array{ComplexF64, 3}
 
+Gives the interaction matrix ``U_{m_1,m_2,m_3,m_4}`` from the pseudopotentials.
+    
 # Argument
 
 * `nm :: Int64` is the number of orbitals.

@@ -15,6 +15,7 @@ using HDF5
 using KrylovKit
 using FuzzifiED
 using FuzzifiED.Fuzzifino
+using FuzzifiED.FuzzyManifolds
 
 makedocs(sitename = "FuzzifiED.jl", 
     pages = ["Home" => "index.md", 
@@ -25,6 +26,7 @@ makedocs(sitename = "FuzzifiED.jl",
         "ITensor extension" => "itensors.md",
         "Other extensions" => "extension.md", 
         "Fuzzifino" => "fuzzifino.md",
+        "Fuzzy Manifolds" => "manifolds.md",
         "Releases" => "releases.md"],
     format = Documenter.HTML(
         assets = ["assets/serif.css", "assets/favicon.ico"], 
