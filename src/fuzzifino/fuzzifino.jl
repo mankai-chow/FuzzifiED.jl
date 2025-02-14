@@ -1,25 +1,12 @@
+export Fuzzifino
+
 module Fuzzifino
 
 using FuzzifiED_jll
 using FuzzifiED
 using LinearAlgebra
 
-import Base.:+
-import Base.:-
-import Base.:*
-import Base.:/
-import Base.:÷
-import Base.:^
-import Base.zero
-import Base.adjoint
-import FuzzifiED.NormalOrder
-import FuzzifiED.SimplifyTerms
-import FuzzifiED.OpMat
-import FuzzifiED.NumThreads
-import FuzzifiED.StateDecompMat
-import FuzzifiED.GetEntSpec
-import FuzzifiED.SilentStd
-import FuzzifiED.ElementType
+import FuzzifiED: NumThreads, SilentStd, ElementType
 
 """
     FuzzifiED.Fuzzifino.Libpathino :: String = FuzzifiED_jll.LibpathFuzzifino
@@ -29,27 +16,12 @@ define path of the Fortran library `libfuzzifino.so`. You do not need to modify 
 Libpathino :: String = FuzzifiED_jll.LibpathFuzzifino
 
 include("sqn.jl")
-export SQNDiag
-export SQNOffd
-
 include("sconfs.jl")
-export SConfs
-
 include("sbasis.jl")
-export SBasis
-
 include("sterm.jl")
-export STerm
-export STerms
-
 include("soperator.jl")
-export SOperator
-
 include("sopmat.jl")
-
 include("stransf.jl")
-export STransf
-
 include("sentangle.jl")
 
 end

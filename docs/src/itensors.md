@@ -22,7 +22,7 @@ ITensors.space( :: SiteType"FuzzyFermion"; o :: Int, qnd :: Vector{QNDiag})
 
 The `Sites` objects in ITensor can be converted to a QNDiags and Confs with the QNs extracted. 
 ```@docs
-Vector{QNDiag}(sites :: Vector{Index{Vector{Pair{QN, Int64}}}})
+GetQNDiags(sites :: Vector{Index{Vector{Pair{QN, Int64}}}})
 Confs(sites :: Vector{Index{Vector{Pair{QN, Int64}}}}, sec_qn :: QN)
 ```
 Conversely, the  `Sites` objects in ITensors can also be generated from a set of diagonal quantum numbers 

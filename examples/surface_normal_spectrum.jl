@@ -24,7 +24,7 @@ fld_pin = [ sum([ int_mat[m1, m2, m2] for m2 = nm + 1 : 2 * nm]) for m1 = 1 : nm
 
 tms_hmt = SimplifyTerms(
     GetDenIntTerms(nm * 2, 2, 2 .* [4.75, 1.], σ1, σ2 ; m_kept = collect(1 : nm))
-    + GetPolTerms(nm, 2 ; mat = σ1, fld_m = fld_pin)
+    + GetPolTerms(nm, 2, σ1 ; fld_m = fld_pin)
     - 3.16 * GetPolTerms(nm, 2, σx) 
 )
 

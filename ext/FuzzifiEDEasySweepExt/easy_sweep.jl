@@ -1,3 +1,5 @@
+import FuzzifiED: SweepOne, EasySweep, GetMPOSites, GetMPO
+
 mutable struct EasySweepObserver <: AbstractObserver
     e_tol :: Float64
     e_last :: Float64
@@ -141,7 +143,7 @@ function EasySweep(id :: String, hmt :: MPO, st00 :: MPS ; path :: String = "./"
     return E1, st1
 end
 
-TermsOrOpSum(tms :: Terms) = OpSumFromTerms(tms)
+TermsOrOpSum(tms :: Terms) = OpSum(tms)
 TermsOrOpSum(os :: OpSum) = os
 
 """
@@ -149,7 +151,7 @@ TermsOrOpSum(os :: OpSum) = os
 
 # Function 
 
-This function returns the MPO and sites for a given operator and a Hilbert space with given quantum numbers. It first checks the file `op_\$(id).h5` in a specified repository. If the file exists, it will try to read the fields `mpo` and `sites` and return the MPO and Sites. Otherwise it will first generates the sites with the quantum numbers given in `qnu_o`, `qnu_name` and `modul` (these objects are often results of a function named `Get*Qnu`). Then it will generate the MPO with the terms of the operator given in `tms`. The MPO and sites will be written into the file `op_\$(id).h5` in the fields `mpo` and `sites`. 
+This function returns the MPO and sites for a given operator and a Hilbert space with given quantum numbers. It first checks the file `op_\$(id).h5` in a specified repository. If the file exists, it will try to read the fields `mpo` and `sites` and return the MPO and Sites. Otherwise it will first generates the sites with the quantum numbers given in `qnd`. Then it will generate the MPO with the terms of the operator given in `tms`. The MPO and sites will be written into the file `op_\$(id).h5` in the fields `mpo` and `sites`. 
 
 # Arguments 
 
@@ -169,7 +171,7 @@ function GetMPOSites(id :: String, tms :: Union{Terms, OpSum}, qnd :: Vector{QND
         close(f)
         println("FINISHED READING OPERATOR $(id)")
     else
-        sites = SitesFromQNDiag(qnd)
+        sites = GetSites(qnd)
         os = TermsOrOpSum(tms)
 
         @time "GENERATE OPERATOR $(id) MPO" mpo = mpo_method(os, sites)

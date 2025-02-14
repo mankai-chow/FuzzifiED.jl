@@ -1,3 +1,7 @@
+export Term, Terms
+export ParticleHole, NormalOrder, SimplifyTerms
+
+
 """
     Term
 
@@ -40,8 +44,8 @@ The zero and identity terms are defined.
 """
 const Terms = Vector{Term}
 Vector{T}(coeff :: Number, cstr :: Vector{Int64}) where T <: Term = [Term(coeff, cstr)]
-zero( :: Type{Terms}) = Term[]
-one( :: Type{Terms}) = Terms(1, [-1, -1])
+Base.zero( :: Type{Terms}) = Term[]
+Base.one( :: Type{Terms}) = Terms(1, [-1, -1])
 
 
 """
@@ -52,16 +56,16 @@ one( :: Type{Terms}) = Terms(1, [-1, -1])
 
 Return the product of a collection of terms with a number. 
 """
-function *(fac :: Number, tms :: Terms)
+function Base.:*(fac :: Number, tms :: Terms)
     return [ Term(fac * tm.coeff, tm.cstr) for tm in tms ]
 end
-function -(tms :: Terms)
+function Base.:-(tms :: Terms)
     return (-1) * tms
 end
-function *(tms :: Terms, fac :: Number)
+function Base.:*(tms :: Terms, fac :: Number)
     return fac * tms
 end
-function /(tms :: Terms, fac :: Number)
+function Base.:/(tms :: Terms, fac :: Number)
     return (1 / fac) * tms
 end
 
@@ -72,13 +76,13 @@ end
 
 Return the naive sum of two series of terms by taking their union. 
 """
-function +(tms1 :: Terms, tms2 :: Terms)
+function Base.:+(tms1 :: Terms, tms2 :: Terms)
     return [ tms1 ; tms2 ]
 end
-function -(tms1 :: Terms, tms2 :: Terms)
+function Base.:-(tms1 :: Terms, tms2 :: Terms)
     return tms1 + (-tms2)
 end
-function +(tms1 :: Terms, tms2 :: Vararg{Terms})
+function Base.:+(tms1 :: Terms, tms2 :: Vararg{Terms})
     return tms1 + +(tms2...)
 end
 
@@ -89,14 +93,14 @@ end
 
 Return the naive product of two series of terms or the power of one terms. The number of terms equals the product of the number of terms in `tms1` and `tms2`. For each term in `tms1` ``Uc^{(p_1)}_{o_1}…`` and `tms2` ``U'c^{(p'_1)}_{o'_1}…``, a new term is formed by taking ``UU'c^{(p_1)}_{o_1}… c^{(p'_1)}_{o'_1}…``.
 """
-function *(tms1 :: Terms, tms2 :: Terms)
+function Base.:*(tms1 :: Terms, tms2 :: Terms)
     return Terms(vcat([ Term(tm1.coeff * tm2.coeff, [tm1.cstr ; tm2.cstr])
         for tm1 in tms1, tm2 in tms2 ]...))
 end
-function *(tms1 :: Terms, tms2 :: Vararg{Terms})
+function Base.:*(tms1 :: Terms, tms2 :: Vararg{Terms})
     return tms1 * *(tms2...)
 end
-function ^(tms :: Terms, pow :: Int64)
+function Base.:^(tms :: Terms, pow :: Int64)
     if pow == 1
         return tms
     else
@@ -104,7 +108,7 @@ function ^(tms :: Terms, pow :: Int64)
     end
 end
 
-function adjoint(tm :: Term)
+function Base.adjoint(tm :: Term)
     nc = length(tm.cstr)
     cstr1 = [ isodd(i) ? 1 - tm.cstr[nc - i] : tm.cstr[nc + 2 - i] for i = 1 : nc]
     return Term(conj(tm.coeff), cstr1)
@@ -115,7 +119,7 @@ end
 
 Return the Hermitian conjugate of a series of terms. For each term ``Uc^{(p_1)}_{o_1}c^{(p_2)}_{o_2}… c^{(p_l)}_{o_l}``, the adjoint is ``\\bar{U}c^{(1-p_l)}_{o_l}… c^{(1-p_2)}_{o_2}c^{(1-p_1)}_{o_1}``.
 """
-function adjoint(tms :: Terms)
+function Base.adjoint(tms :: Terms)
     return adjoint.(tms)
 end
 
@@ -218,23 +222,4 @@ function SimplifyTerms(tms :: Terms ; cutoff :: Float64 = eps(Float64)) :: Terms
         for (cstr_i, coeff_i) in dict_tms_i if abs(coeff_i) > cutoff
     ]
     return tms_f
-end
-
-function SimplifyTermsOld(tms_t :: Terms) :: Terms
-    # 
-    tms = deepcopy(tms_t)
-    #
-    
-    tms1 = vcat(NormalOrder.(tms)...)
-    sort!(tms1, by = tm -> sum([(tm.cstr[i] + π) * exp(i) for i in eachindex(tm.cstr)]))
-    i = 1
-    while i < length(tms1)
-        if (tms1[i].cstr == tms1[i + 1].cstr)
-            tms1[i].coeff += tms1[i + 1].coeff
-            deleteat!(tms1, i + 1)
-        else
-            i = i + 1
-        end
-    end
-    return filter(tm -> abs(tm.coeff) > 1E-13, tms1)
 end

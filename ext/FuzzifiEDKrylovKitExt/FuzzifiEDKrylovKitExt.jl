@@ -2,9 +2,8 @@ module FuzzifiEDKrylovKitExt
 
 using KrylovKit
 using FuzzifiED
-import FuzzifiED.GetEigensystemKrylov
-import FuzzifiED.NumThreads
-import FuzzifiED.SilentStd
+import FuzzifiED: GetEigensystemKrylov
+import FuzzifiED: NumThreads, SilentStd
 
 
 """

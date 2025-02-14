@@ -1,3 +1,6 @@
+export Confs, GetConfId 
+
+
 """
     Confs
 

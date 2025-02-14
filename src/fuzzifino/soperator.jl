@@ -1,3 +1,6 @@
+export SOperator
+
+
 """
     SOperator
     
@@ -61,7 +64,7 @@ Measure the action of an operator on a state. `st_d` must be of length `op.bsd.d
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
-function *(op :: SOperator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, disp_std = !SilentStd)
+function Base.:*(op :: SOperator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, disp_std = !SilentStd)
     st_f = Vector{ComplexF64}(undef, op.bsf.dim)
     binom_d = [ binomial(i + j, i) for i = 0 : op.bsd.cfs.nebm, j = 0 : op.bsd.cfs.nob]
     binom_f = [ binomial(i + j, i) for i = 0 : op.bsf.cfs.nebm, j = 0 : op.bsf.cfs.nob]
@@ -71,7 +74,7 @@ function *(op :: SOperator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, di
     op.ntm :: Ref{Int64}, op.nc :: Ref{Int64}, op.cstrs :: Ref{Int64}, op.coeffs :: Ref{ComplexF64}, op.red_q :: Ref{Int64}, ComplexF64.(st_d) :: Ref{ComplexF64}, st_f :: Ref{ComplexF64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing 
     return st_f
 end
-function *(op :: SOperator, st_d :: Vector{Float64} ; num_th = NumThreads, disp_std = !SilentStd)
+function Base.:*(op :: SOperator, st_d :: Vector{Float64} ; num_th = NumThreads, disp_std = !SilentStd)
     st_f = Vector{ComplexF64}(undef, op.bsf.dim)
     binom_d = [ binomial(i + j, i) for i = 0 : op.bsd.cfs.nebm, j = 0 : op.bsd.cfs.nob]
     binom_f = [ binomial(i + j, i) for i = 0 : op.bsf.cfs.nebm, j = 0 : op.bsf.cfs.nob]
@@ -94,7 +97,7 @@ Measuring the inner product between two states and an operator. `st_d` must be o
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 """
-function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op :: SOperator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, disp_std = !SilentStd)
+function Base.:*(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op :: SOperator, st_d :: Vector{ComplexF64} ; num_th = NumThreads, disp_std = !SilentStd)
     ovl_ref = Ref{ComplexF64}(0)
     binom_d = [ binomial(i + j, i) for i = 0 : op.bsd.cfs.nebm, j = 0 : op.bsd.cfs.nob]
     binom_f = [ binomial(i + j, i) for i = 0 : op.bsf.cfs.nebm, j = 0 : op.bsf.cfs.nob]
@@ -104,7 +107,7 @@ function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, op ::
     op.ntm :: Ref{Int64}, op.nc :: Ref{Int64}, op.cstrs :: Ref{Int64}, op.coeffs :: Ref{ComplexF64}, op.red_q :: Ref{Int64}, ComplexF64.(st_d) :: Ref{ComplexF64}, ComplexF64.(st_fp') :: Ref{ComplexF64}, ovl_ref :: Ref{ComplexF64}, num_th :: Ref{Int64}, (disp_std ? 1 : 0) :: Ref{Int64}) :: Nothing 
     return ovl_ref[]
 end
-function *(st_fp :: LinearAlgebra.Adjoint{Float64, Vector{Float64}}, op :: SOperator, st_d :: Vector{Float64} ; num_th = NumThreads, disp_std = !SilentStd)
+function Base.:*(st_fp :: LinearAlgebra.Adjoint{Float64, Vector{Float64}}, op :: SOperator, st_d :: Vector{Float64} ; num_th = NumThreads, disp_std = !SilentStd)
     ovl_ref = Ref{ComplexF64}(0)
     binom_d = [ binomial(i + j, i) for i = 0 : op.bsd.cfs.nebm, j = 0 : op.bsd.cfs.nob]
     binom_f = [ binomial(i + j, i) for i = 0 : op.bsf.cfs.nebm, j = 0 : op.bsf.cfs.nob]

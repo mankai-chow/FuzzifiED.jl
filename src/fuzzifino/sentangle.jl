@@ -1,3 +1,6 @@
+import FuzzifiED: StateDecompMat, GetEntSpec
+
+
 """
     StateDecompMat(st :: Vector{<:Number}, bs0 :: SBasis, bsa :: SBasis, bsb :: SBasis, amp_ofa :: Vector{<:Number}, amp_oba :: Vector{<:Number}, amp_ofb :: Vector{<:Number}, amp_obb :: Vector{<:Number}) :: Matrix{ComplexF64}
 

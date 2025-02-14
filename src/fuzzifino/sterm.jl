@@ -1,3 +1,7 @@
+import FuzzifiED: NormalOrder, SimplifyTerms
+export STerm, STerms
+
+
 """
     STerm 
     
@@ -35,8 +39,8 @@ Gives a `STerms` with a single `STerm`.
 """
 const STerms = Vector{STerm}
 Base.Vector{T}(coeff :: Number, cstr :: Vector{Int64}) where T <: STerm = [STerm(coeff, cstr)]
-zero( :: Type{STerms}) = STerm[]
-one( :: Type{STerms}) = STerms(1, [-1, -1])
+Base.zero( :: Type{STerms}) = STerm[]
+Base.one( :: Type{STerms}) = STerms(1, [-1, -1])
 
 """
     *(fac :: Number, tms :: STerms) :: STerms
@@ -46,16 +50,16 @@ one( :: Type{STerms}) = STerms(1, [-1, -1])
 
 Return the product of a collection of STerms with a number. 
 """
-function *(fac :: Number, tms :: STerms)
+function Base.:*(fac :: Number, tms :: STerms)
     return [ STerm(fac * tm.coeff, tm.cstr) for tm in tms ]
 end
-function -(tms :: STerms)
+function Base.:-(tms :: STerms)
     return (-1) * tms
 end
-function *(tms :: STerms, fac :: Number)
+function Base.:*(tms :: STerms, fac :: Number)
     return fac * tms
 end
-function /(tms :: STerms, fac :: Number)
+function Base.:/(tms :: STerms, fac :: Number)
     return (1 / fac) * tms
 end
 
@@ -66,13 +70,13 @@ end
 
 Return the naive sum of two series of STerms by taking their union. 
 """
-function +(tms1 :: STerms, tms2 :: STerms)
+function Base.:+(tms1 :: STerms, tms2 :: STerms)
     return [ tms1 ; tms2 ]
 end
-function -(tms1 :: STerms, tms2 :: STerms)
+function Base.:-(tms1 :: STerms, tms2 :: STerms)
     return tms1 + (-tms2)
 end
-function +(tms1 :: STerms, tms2 :: Vararg{STerms})
+function Base.:+(tms1 :: STerms, tms2 :: Vararg{STerms})
     return tms1 + +(tms2...)
 end
 
@@ -83,14 +87,14 @@ end
 
 Return the naive product of two series of STerms or the power of one STerms. The number of STerms equals the product of the number of STerms in `tms1` and `tms2`. For each STerm in `tms1` ``Ua^{(p_1)}_{o_1}…`` and `tms2` ``U'a^{(p'_1)}_{o'_1}…``, a new STerm is formed by taking ``UU'a^{(p_1)}_{o_1}… a^{(p'_1)}_{o'_1}…``
 """
-function *(tms1 :: STerms, tms2 :: STerms)
+function Base.:*(tms1 :: STerms, tms2 :: STerms)
     return STerms(vcat([ STerm(tm1.coeff * tm2.coeff, [tm1.cstr ; tm2.cstr])
         for tm1 in tms1, tm2 in tms2 ]...))
 end
-function *(tms1 :: STerms, tms2 :: Vararg{STerms})
+function Base.:*(tms1 :: STerms, tms2 :: Vararg{STerms})
     return tms1 * *(tms2...)
 end
-function ^(tms :: STerms, pow :: Int64)
+function Base.:^(tms :: STerms, pow :: Int64)
     if pow == 1
         return tms
     else
@@ -98,7 +102,7 @@ function ^(tms :: STerms, pow :: Int64)
     end
 end
 
-function adjoint(tm :: STerm)
+function Base.adjoint(tm :: STerm)
     nc = length(tm.cstr)
     cstr1 = [ isodd(i) ? 1 - tm.cstr[nc - i] : tm.cstr[nc + 2 - i] for i = 1 : nc]
     return STerm(conj(tm.coeff), cstr1)
@@ -109,7 +113,7 @@ end
 
 Return the Hermitian conjugate of a series of STerms. For each STerm ``Ua^{(p_1)}_{o_1}a^{(p_2)}_{o_2}… a^{(p_l)}_{o_l}``, the adjoint is ``\\bar{U}a^{(1-p_l)}_{o_l}… a^{(1-p_2)}_{o_2}a^{(1-p_1)}_{o_1}``
 """
-function adjoint(tms :: STerms)
+function Base.adjoint(tms :: STerms)
     return adjoint.(tms)
 end
 

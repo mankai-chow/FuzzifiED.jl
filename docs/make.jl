@@ -1,5 +1,5 @@
 #=
-julia --color=yes --project make.jl && rm -r publish/*/* && mv -f build/* publish && rm -r build && cd publish && git commit -a -m "a" && git push
+julia --color=yes --project make.jl && rm -r publish/*/* && mv -f build/* publish && rm -r build && cd publish && git commit -a -m "a" && git push && cd ..
 =#
 push!(LOAD_PATH,"../src/")
 push!(LOAD_PATH,"../ext/")
@@ -15,16 +15,18 @@ using HDF5
 using KrylovKit
 using FuzzifiED
 using FuzzifiED.Fuzzifino
+using FuzzifiED.FuzzyManifolds
 
 makedocs(sitename = "FuzzifiED.jl", 
     pages = ["Home" => "index.md", 
         "Introduction" => "intro.md",
-        "Examples" => "example.md",
+        "Tutorial" => "tutorial.md",
         "Core functions" => "core.md",
         "Built-in models" => "models.md",
         "ITensor extension" => "itensors.md",
         "Other extensions" => "extension.md", 
         "Fuzzifino" => "fuzzifino.md",
+        "Fuzzy Manifolds" => "manifolds.md",
         "Releases" => "releases.md"],
     format = Documenter.HTML(
         assets = ["assets/serif.css", "assets/favicon.ico"], 

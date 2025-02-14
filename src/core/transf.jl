@@ -1,3 +1,6 @@
+export Transf
+
+
 """
     Transf 
 
@@ -22,7 +25,7 @@ end
 
 
 """
-    Transf(bsd :: Basis, bsf :: Basis, qnf :: QNOffd)
+    Transf(bsd :: Basis[, bsf :: Basis], qnf :: QNOffd)
 
 generates a transformation object from a QNOffd. 
 
@@ -47,7 +50,7 @@ Act a transformation on a state. `st_d` must be of length `trs.bsd.dim`. Returns
 
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 """
-function *(trs :: Transf, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
+function Base.:*(trs :: Transf, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
     st_f = Vector{ComplexF64}(undef, trs.bsf.dim)
     @ccall Libpath.__bs_MOD_action_trs(trs.bsd.cfs.no :: Ref{Int64}, trs.bsd.cfs.nor :: Ref{Int64}, 
     trs.bsd.cfs.ncf :: Ref{Int64}, trs.bsd.dim :: Ref{Int64}, trs.bsd.cfs.conf :: Ref{Int64}, trs.bsd.cfs.lid :: Ref{Int64}, trs.bsd.cfs.rid :: Ref{Int64}, trs.bsd.szz :: Ref{Int64}, trs.bsd.cfgr :: Ref{Int64}, trs.bsd.cffac :: Ref{ComplexF64}, trs.bsd.grel :: Ref{Int64}, trs.bsd.grsz :: Ref{Int64}, 
@@ -55,7 +58,7 @@ function *(trs :: Transf, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
     trs.perm :: Ref{Int64}, trs.ph :: Ref{Int64}, trs.fac :: Ref{ComplexF64}, ComplexF64.(st_d) :: Ref{ComplexF64}, st_f :: Ref{ComplexF64}, num_th :: Ref{Int64}) :: Nothing 
     return st_f
 end
-function *(trs :: Transf, st_d :: Vector{Float64} ; num_th = NumThreads)
+function Base.:*(trs :: Transf, st_d :: Vector{Float64} ; num_th = NumThreads)
     st_f = Vector{ComplexF64}(undef, trs.bsf.dim)
     @ccall Libpath.__bs_MOD_action_trs(trs.bsd.cfs.no :: Ref{Int64}, trs.bsd.cfs.nor :: Ref{Int64}, 
     trs.bsd.cfs.ncf :: Ref{Int64}, trs.bsd.dim :: Ref{Int64}, trs.bsd.cfs.conf :: Ref{Int64}, trs.bsd.cfs.lid :: Ref{Int64}, trs.bsd.cfs.rid :: Ref{Int64}, trs.bsd.szz :: Ref{Int64}, trs.bsd.cfgr :: Ref{Int64}, trs.bsd.cffac :: Ref{ComplexF64}, trs.bsd.grel :: Ref{Int64}, trs.bsd.grsz :: Ref{Int64}, 

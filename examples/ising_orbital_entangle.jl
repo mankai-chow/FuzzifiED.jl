@@ -61,6 +61,8 @@ ent_spec_m = hcat(sort([ [sec.secd_a[2] / 2, -log(val)]
     if sec.secd_a[1] == nm ÷ 2 && sec.secf_a[1] == -1
     for val in vals 
 ], by = p -> p[2])...)
+display(permutedims(ent_spec_p[:, 1:20]))
+display(permutedims(ent_spec_m[:, 1:20]))
 # To plot the entanglement spectrum, uncomment the following lines 
 # using Plots 
 # scatter(ent_spec_p[1, :], ent_spec_p[2, :])

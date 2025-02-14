@@ -1,3 +1,5 @@
+import FuzzifiED: OpMat
+
 function OpMat{T}(op :: SOperator ; num_th = NumThreads, disp_std = !SilentStd) where T <: ComplexF64
     colptr = Vector{Int64}(undef, op.bsd.dim + 1)
     nel_ref = Ref{Int64}(0)

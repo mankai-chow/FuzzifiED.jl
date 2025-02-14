@@ -1,8 +1,11 @@
-# In this tutorial, we use the primitive interfaces to do the same calculation of Ising model on fuzzy sphere as the `tutorial_ising.jl` example. 
-# We show how to construct diagonal and off-diagonal quantum numbers on your own, 
-# and construct Hamiltonian, total angular momentum and density operators. 
+# This tutorial contains the ED code that uses only the core functions. It
+# 1. calculates the lowest eigenstates in the symmetry sector L^z=0 and (𝒫,𝒵,ℛ)=(+,+,+),
+# 2. measures their total angular momenta, and 
+# 3. calcultes the OPE coefficient f_{σσϵ}=⟨σ|n^z_{00}|ϵ⟩/⟨σ|n^z_{00}|0⟩
 
 using FuzzifiED
+
+let
 
 #================================================
 IMPLEMENT THE DIAGONAL QNS AND GENERATE THE CONFS
@@ -10,10 +13,9 @@ IMPLEMENT THE DIAGONAL QNS AND GENERATE THE CONFS
 
 # Inputing the basic setups
 nf = 2
-nm = 8
+nm = 12
 no = nf * nm
 s = .5 * (nm - 1)
-ne = div(no, 2)
 # Record the QNDiag
 qnd = [ 
     # Number of electrons Ne
@@ -21,7 +23,7 @@ qnd = [
     # Twice angular momentum 2Lz
     QNDiag([ (o - 1) ÷ nf * 2 - (nm - 1) for o = 1 : no ])
 ]
-cfs = Confs(no, [ne, 0], qnd)
+cfs = Confs(no, [nm, 0], qnd)
 @show cfs.ncf
 
 
@@ -51,38 +53,29 @@ using WignerSymbols
 ps_pot = [ 4.75, 1. ] * 2.
 h = 3.16
 tms_hmt = Term[]
-# Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
-for m1 = 0 : nm - 1
-    f1 = 0
-    o1 = m1 * nf + f1 + 1
-    m1r = m1 - s
-    for m2 = 0 : nm - 1
-        f2 = 1
-        o2 = m2 * nf + f2 + 1
-        m2r = m2 - s
-        for m3 = 0 : nm - 1
-            f3 = 1
-            o3 = m3 * nf + f3 + 1
-            m3r = m3 - s
-            m4 = m1 + m2 - m3 
-            if (m4 < 0 || m4 >= nm) continue end
-            f4 = 0
-            o4 = m4 * nf + f4 + 1
-            m4r = m4 - s
-            # Calculate the matrix element val from pseudopotentials
-            val = ComplexF64(0)
-            for l in eachindex(ps_pot)
-                if (abs(m1r + m2r) > nm - l || abs(m3r + m4r) > nm - l) break end 
-                val += ps_pot[l] * (2 * nm - 2 * l + 1) * wigner3j(s, s, nm - l, m1r, m2r, -m1r - m2r) * wigner3j(s, s, nm - l, m4r, m3r, -m3r - m4r)
-            end 
-            # Record the interaction term val, "Cdag", o1, "Cdag", o2, "C", o3, "C", o4
-            tms_hmt += Terms(val, [1, o1, 1, o2, 0, o3, 0, o4])
-        end
-    end
-    o1x = o1 + 1
+# Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m
+m = zeros(Int64, 4)
+for m[1] = 0 : nm - 1, m[2] = 0 : nm - 1, m[3] = 0 : nm - 1
+    m[4] = m[1] + m[2] - m[3]
+    (m[4] < 0 || m[4] >= nm) && continue
+    f = [0, 1, 1, 0]
+    o = m .* nf .+ f .+ 1
+    mr = m .- s
+    
+    # Calculate the matrix element val from pseudopotentials
+    val = ComplexF64(0)
+    for l in eachindex(ps_pot)
+        (abs(mr[1] + mr[2]) > nm - l || abs(mr[3] + mr[4]) > nm - l) && break 
+        val += ps_pot[l] * (2 * nm - 2 * l + 1) * wigner3j(s, s, nm - l, mr[1], mr[2], -mr[1] - mr[2]) * wigner3j(s, s, nm - l, mr[4], mr[3], -mr[3] - mr[4])
+    end 
+    # Record the interaction term val, "Cdag", o1, "Cdag", o2, "C", o3, "C", o4
+    tms_hmt += Terms(val, [1, o[1], 1, o[2], 0, o[3], 0, o[4]])
+end 
+for m = 0 : nm - 1
+    o = m * nf .+ [1, 2]
     # Record the transverse field term
-    tms_hmt += Terms(-h, [1, o1, 0, o1x])
-    tms_hmt += Terms(-h, [1, o1x, 0, o1])
+    tms_hmt += Terms(-h, [1, o[1], 0, o[2]])
+    tms_hmt += Terms(-h, [1, o[2], 0, o[1]])
 end
 
 
@@ -116,10 +109,6 @@ l2 = Operator(bs, tms_l2)
 # Calculate the inner product for each eigenstate
 @time "Measure L2" l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 @show real(l2_val)
-# Verify whether T is an eigenstate of L^2
-st_T = st[:, 3]
-st_L2T = l2_mat * st[:, 3]
-@show abs(st_L2T' * st_T) ^ 2 / ((st_T' * st_T) * (st_L2T' * st_L2T))
 
 
 #======================================
@@ -127,28 +116,28 @@ MEASURE THE DENSITY OPERATOR OBSERVABLE
 ======================================#
 
 # Repeat the calculation for the Z_2 odd sector (with subscript 1)
-qnz_s1 =  # Change only the discrete quantum numbers and generate the basis
-@time "Initialise Basis Z" bs1 = Basis(cfs, [ 1, -1, 1 ], qnf) 
-@show bs1.dim 
-hmt = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
-@time "Initialise Hamiltonian" hmt_mat = OpMat(hmt)
-@show hmt_mat.nel
-@time "Diagonalise Hamiltonian" enrg1, st1 = GetEigensystem(hmt_mat, 10)
-@show real(enrg1)
+bs_m = Basis(cfs, [ 1, -1, 1 ], qnf) 
+hmt_m = Operator(bs_m, bs_m, tms_hmt ; red_q = 1, sym_q = 1) # Generate and diagonalise Hamiltonian in the new basis
+hmt_mat_m = OpMat(hmt_m)
+enrg_m, st_m = GetEigensystem(hmt_mat_m, 10)
+@show real(enrg_m)
 # Record the identity, sigma and epsilon states 
-st_I = st[:, 1] # ground state
-st_e = st[:, 2] # epsilon state
-st_s = st1[:, 1]
+st0 = st[:, 1] # ground state
+ste = st[:, 2] # epsilon state
+sts = st_m[:, 1]
 
 # Record the density operator n^z
-tms_nz = Term[]
-for m1 = 0 : nm - 1
-    o1u = 2 * m1 + 1
-    o1d = 2 * m1 + 2
-    push!(tms_nz, Term( 1 / nm, [1, o1u, 0, o1u]))
-    push!(tms_nz, Term(-1 / nm, [1, o1d, 0, o1d]))
+tms_nz00 = Term[]
+for m = 0 : nm - 1
+    o = m * nf .+ [1, 2]
+    # Record the transverse field term
+    tms_nz00 += Terms( 1 / nm, [1, o[1], 0, o[1]])
+    tms_nz00 += Terms(-1 / nm, [1, o[2], 0, o[2]])
 end
-# The nz operator sends a state in bs (+) to bs1 (-)
-nz = Operator(bs, bs1, tms_nz ; red_q = 1)
+# The nz operator sends a state in bs (+) to bs_m (-)
+nz00 = Operator(bs, bs_m, tms_nz00 ; red_q = 1)
 # Measuring the finite size OPE
-@show abs((st_s' * nz * st_e) / (st_s' * nz * st_I))
+f_sse = abs((sts' * nz00 * ste) / (sts' * nz00 * st0))
+@show f_sse
+
+end

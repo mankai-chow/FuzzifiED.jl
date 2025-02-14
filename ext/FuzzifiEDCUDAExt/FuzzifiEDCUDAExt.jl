@@ -6,8 +6,7 @@ using SparseArrays
 using FuzzifiED
 using KrylovKit
 
-import FuzzifiED.GetEigensystemCuda
-import FuzzifiED.SilentStd
+import FuzzifiED: GetEigensystemCuda, SilentStd
 
 """
     CUSPARSE.CuSparseMatrixCSC(mat :: OpMat{ComplexF64})

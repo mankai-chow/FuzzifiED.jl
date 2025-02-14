@@ -1,3 +1,6 @@
+export OpMat, GetEigensystem
+
+
 """
     OpMat{ComplexF64}
     OpMat{Float64}
@@ -122,12 +125,12 @@ Measure the action of a sparse matrix on a state. `st_d` must be of length `mat.
 
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 """
-function *(mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
+function Base.:*(mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
     st_f = Vector{ComplexF64}(undef, mat.dimf)
     @ccall Libpath.__diag_MOD_vec_prod(mat.dimd :: Ref{Int64}, mat.dimf :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{ComplexF64}, st_d :: Ref{ComplexF64}, st_f :: Ref{ComplexF64}, num_th :: Ref{Int64}) :: Nothing
     return st_f
 end
-function *(mat :: OpMat{Float64}, st_d :: Vector{Float64} ; num_th = NumThreads)
+function Base.:*(mat :: OpMat{Float64}, st_d :: Vector{Float64} ; num_th = NumThreads)
     st_f = Vector{Float64}(undef, mat.dimf)
     @ccall Libpath.__diag_re_MOD_vec_prod_re(mat.dimd :: Ref{Int64}, mat.dimf :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{Float64}, real.(st_d) :: Ref{Float64}, st_f :: Ref{Float64}, num_th :: Ref{Int64}) :: Nothing
     return st_f
@@ -144,12 +147,12 @@ Measuring the inner product between two states and a sparse matrix. `st_d` must 
 
 * `num_th :: Int64`, the number of threads. Facultative, `NumThreads` by default. 
 """
-function *(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
+function Base.:*(st_fp :: LinearAlgebra.Adjoint{ComplexF64, Vector{ComplexF64}}, mat :: OpMat{ComplexF64}, st_d :: Vector{ComplexF64} ; num_th = NumThreads)
     ovl_ref = Ref{ComplexF64}(0)
     @ccall Libpath.__diag_MOD_scal_prod(mat.dimd :: Ref{Int64}, mat.dimf :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{ComplexF64}, st_d :: Ref{ComplexF64}, st_fp' :: Ref{ComplexF64}, ovl_ref :: Ref{ComplexF64}, num_th :: Ref{Int64}) :: Nothing
     return ovl_ref[]
 end
-function *(st_fp :: LinearAlgebra.Adjoint{Float64, Vector{Float64}}, mat :: OpMat{Float64}, st_d :: Vector{Float64} ; num_th = NumThreads)
+function Base.:*(st_fp :: LinearAlgebra.Adjoint{Float64, Vector{Float64}}, mat :: OpMat{Float64}, st_d :: Vector{Float64} ; num_th = NumThreads)
     ovl_ref = Ref{Float64}(0)
     @ccall Libpath.__diag_re_MOD_scal_prod_re(mat.dimd :: Ref{Int64}, mat.dimf :: Ref{Int64}, mat.sym_q :: Ref{Int64}, mat.nel :: Ref{Int64}, mat.colptr :: Ref{Int64}, mat.rowid :: Ref{Int64}, mat.elval :: Ref{Float64}, st_d :: Ref{Float64}, st_fp' :: Ref{Float64}, ovl_ref :: Ref{Float64}, num_th :: Ref{Int64}) :: Nothing
     return ovl_ref[]

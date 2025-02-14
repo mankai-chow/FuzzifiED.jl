@@ -1,3 +1,6 @@
+export GetParityQNOffd, GetFlavPermQNOffd, GetRotyQNOffd
+
+
 function PermDictOrVector(perm_dict :: Dict{Int64, Int64}, nf :: Int64)
     perm = collect(1 : nf)
     for (f, f1) in perm_dict
@@ -52,7 +55,7 @@ end
 
 
 """
-    GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf , fac][, cyc])
+    GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf, fac][, cyc :: Int64])
     
 Return the flavour permutaiton transformation 
 ```math
@@ -65,7 +68,7 @@ Return the flavour permutaiton transformation
 * `fac :: Dict{Int64, <: Number}` or `Vector{<: Number}` gives the factor ``α_f``. It is either a vector of all vectors, or a dictionary of all non-unity elements. Facultative, all unity by default. 
 * `cyc :: Int64` is the period of the permutation. 
 """
-function GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf :: Union{Dict{Int64, Int64}, Vector{Vector{Int64}}, Vector{Int64}},  fac :: Union{Dict{Int64, <: Number}, Vector{<: Number}} = Dict{Int64, ComplexF64}(), cyc :: Int64 = 2)
+function GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf :: Union{Dict{Int64, Int64}, Vector{Vector{Int64}}, Vector{Int64}}, fac :: Union{Dict{Int64, <: Number}, Vector{<: Number}} = Dict{Int64, ComplexF64}(), cyc :: Int64 = 2)
     permf1 = PermDictOrVector(permf, nf)
     fac1 = ComplexF64.(DictOrVectorPhase(fac, nf))
     return QNOffd(
@@ -80,7 +83,7 @@ GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf :: Union{Dict{Int64, Int64}, V
 """
     GetRotyQNOffd(nm :: Int64, nf :: Int64)
     
-Return the ``π``-rotation along the ``y``-axis. 
+Return the ``π``-rotation with respect to the ``y``-axis. 
 ```math
     ℛ_y: c^†_{mf}↦(-)^{m+s}c^†_{-mf}
 ```

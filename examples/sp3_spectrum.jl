@@ -31,14 +31,14 @@ cfs = Confs(no, [ne, 0, 0, 0, 0], qnd)
 Ω = [ i - j == nf / 2 ? 1 : 0 for i = 1 : nf, j = 1 : nf ]
 tms_l2 = GetL2Terms(nm, nf)
 tms_c2 = SimplifyTerms(
-    GetDenIntTerms(nm, nf ; ps_pot = [isodd(m) ? -.5 : 0 for m = 1 : nm]) + 
-    GetPairIntTerms(nm, nf ; ps_pot = [isodd(m) ? -1.0 : 0 for m = 1 : nm], mat_a = Ω)
+    GetDenIntTerms(nm, nf, [isodd(m) ? -.5 : 0 for m = 1 : nm]) + 
+    GetPairIntTerms(nm, nf, [isodd(m) ? -1.0 : 0 for m = 1 : nm], Ω)
 )
 push!(tms_c2, Term(ne * (ne + nf) / 4, [-1, -1]))
 tms_c2 = SimplifyTerms(tms_c2)
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, nf ; ps_pot = [1.0, 0.26435143448887427, 0.06520453215339449]) -
-    GetPairIntTerms(nm, nf ; ps_pot = [0.3798431681470266, 0.0, -0.02191234730375343], mat_a = Ω)
+    GetDenIntTerms(nm, nf, [1.0, 0.26435143448887427, 0.06520453215339449]) -
+    GetPairIntTerms(nm, nf, [0.3798431681470266, 0.0, -0.02191234730375343], Ω)
 )
 result = []
 for R in (1, -1), (Z1, Z2, Z3) in ((1,1,1), (1,1,-1), (-1,-1,1), (-1,-1,-1)), X in (1,-1)

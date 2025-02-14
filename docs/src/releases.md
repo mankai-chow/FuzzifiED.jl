@@ -1,5 +1,11 @@
 # Release notes 
 
+#### Version 1.0.0
+
+- Add support for torus. 
+- Add example for Potts. 
+- Fix bugs.
+
 ## Version 0.x
 
 ### Version 0.10
