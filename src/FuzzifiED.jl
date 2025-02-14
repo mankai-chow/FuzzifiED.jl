@@ -22,6 +22,7 @@ include("models/sphere_obs.jl")
 include("models/ang_modes.jl")
 
 include("fuzzifino/fuzzifino.jl")
+include("manifolds/manifolds.jl")
 
 export GetSites, GetQNDiags, TruncateQNDiag
 function GetSites end
