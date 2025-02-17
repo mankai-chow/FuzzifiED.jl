@@ -32,7 +32,7 @@ Before starting the calculation, we need to input the setup for the system, incl
 
 * A 'flavour' is labelled by $f$. The number of flavours is $N_f$.
 * An 'orbital' is specified by the magnetic quantum number labelled by $m$. The number of orbitals is $N_m=2s+1$.
-* A 'site' is specific by both the flavour and the orbital index $o=(f,m)$. The number of sites is $N_o=N_mN_f$. In practice, we label the sites with an integer from $1$ to $N_o$. We store the sites in an ascending order of first $m$ and then $f$~: $o=(m+s)N_f+f$.
+* A 'site' is specific by both the flavour and the orbital index $o=(f,m)$. The number of sites is $N_o=N_mN_f$. In practice, we label the sites with an integer from $1$ to $N_o$. We store the sites in an ascending order of first $m$ and then $f$ : $o=(m+s)N_f+f$.
 
 In the example of Ising model with $s=5.5$,
 ```julia
@@ -72,9 +72,6 @@ Q_2&=2L_z,&q_{2,m\sigma}&=2m
 ```
 The full code to generating the configurations in the $L_z=0$ sector is 
 ```julia
-nm = 12
-nf = 2
-no = nm * nf
 qnd = [ 
     QNDiag(fill(1, no)), 
     QNDiag([ 2 * m - nm - 1 for m = 1 : nm for f = 1 : nf ])
@@ -83,9 +80,6 @@ cfs = Confs(no, [nm, 0], qnd)
 ```
 Alternatively, using the built-in models, 
 ```julia
-nm = 12
-nf = 2
-no = nm * nf
 qnd = [ 
     GetNeQNDiag(no), 
     GetLz2QNDiag(nm, nf) 
@@ -128,11 +122,13 @@ The code to generate the basis in the all-positive sector is
 ```julia
 qnf = [
     # Parity (Particle-hole)
-    QNOffd([ isodd(o) ? o + 1 : o - 1 for o = 1 : no], true, ComplexF64[ isodd(o) ? -1 : 1 for o = 1 : no]),
+    QNOffd([ (m - 1) * nf + [2, 1][f] for m = 1 : nm for f = 1 : nf ], true, 
+        ComplexF64[ [-1, 1][f] for m = 1 : nm for f = 1 : nf ]),
     # Flavour symmetry
-    QNOffd([ isodd(o) ? o + 1 : o - 1 for o = 1 : no]),
+    QNOffd([ (m - 1) * nf + [2, 1][f] for m = 1 : nm for f = 1 : nf ]),
     # Y-axis pi-rotation
-    QNOffd([ isodd(o) ? no - o : no + 2 - o for o = 1 : no], ComplexF64(-1) .^ (collect(0 : nm * nf - 1) .÷ nf))
+    QNOffd([ (nm - m) * nf + f for m = 1 : nm for f = 1 : nf], 
+        ComplexF64[ iseven(m) ? 1 : -1 for m = 1 : nm for f = 1 : nf ])
 ]
 bs = Basis(cfs, [1, 1, 1], qnf) 
 ```
@@ -159,7 +155,7 @@ Term(coeff :: ComplexF64, cstr :: Vector{Int64})
 ```
 The addition and multiplication of terms are supported, and the terms can be simplified by the method [`SimplifyTerms`](@ref)
 ```julia
-(tms :: Vector{Term})
+SimplifyTerms(tms :: Vector{Term})
 ```
 In FuzzifiED, several useful operator terms are [built-in](@ref Operators-on-fuzzy-sphere).
 
@@ -197,15 +193,15 @@ end
 ```
 Alternatively, using the built-in functions
 ```julia
-sg1 = [ 1 0 ; 0 0 ]
-sg2 = [ 0 0 ; 0 1 ]
-sgx = [ 0 1 ; 1 0 ]
-sgz = [ 1 0 ; 0 -1]
+σ1 = [ 1 0 ; 0 0 ]
+σ2 = [ 0 0 ; 0 1 ]
+σx = [ 0 1 ; 1 0 ]
+σz = [ 1 0 ; 0 -1]
 ps_pot = [ 4.75, 1.0 ] * 2.0
 fld_h = 3.16
 tms_hmt = SimplifyTerms(
-    GetDenIntTerms(nm, 2, ps_pot, sg1, sg2)
-    - fld_h * GetPolTerms(nm, 2, sgx) 
+    GetDenIntTerms(nm, 2, ps_pot, σ1, σ2)
+    - fld_h * GetPolTerms(nm, 2, σx) 
 )
 ```
 
@@ -219,14 +215,8 @@ as $c_m$ carries the $\mathrm{SO}(3)$ spin-$s$ representation,
 ```
 we can first construt its building blocks and use the addition and multiplication of the terms
 ```julia
-tms_lz = 
-    [ begin m = div(o - 1, nf)
-        Term(m - s, [1, o, 0, o])
-    end for o = 1 : no ]
-tms_lp = 
-    [ begin m = div(o - 1, nf)
-        Term(sqrt(m * (nm - m)), [1, o, 0, o - nf])
-    end for o = nf + 1 : no ]
+tms_lz = [ Term(m - s - 1, [1, (m - 1) * nf + f, 0, (m - 1) * nf + f]) for m = 1 : nm for f = 1 : nf ]
+tms_lp = [ Term(sqrt((nm - m) * m), [1, m * nf + f, 0, (m - 1) * nf + f]) for m = 1 : nm - 1 for f = 1 : nf ]
 tms_lm = tms_lp' 
 tms_l2 = SimplifyTerms(tms_lz * tms_lz - tms_lz + tms_lp * tms_lm)
 ```
@@ -326,11 +316,7 @@ sort!(result, by = st -> real(st[1]))
 enrg_0 = result[1][1]
 enrg_T = filter(st -> st[2] ≊ 6 && st[3] ≊ 1 && st[4] ≊ 1, result)[1][1]
 result_dim = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
-for P in (1, -1), Z in (1, -1)
-    display(permutedims(hcat(
-        filter(st -> st[4] ≊ P && st[5] ≊ Z, result_dim)...
-    )))
-end
+display(permutedims(hcat(result_dim...)))
 ```
 
 ### Measuring local observables
@@ -348,24 +334,24 @@ In FuzzifiED, they are stored in the type [`SphereObs`](@ref) and can be initial
 SphereObs(s2 :: Int64, l2m :: Int64, get_comp :: Function)
 SphereObs(s2 :: Int64, l2m :: Int64, comps :: Dict)
 ```
-Their adjoint, addition, multiplication and [Laplacian](@ref) are supported. The related functions are [`StoreComps`](@ref) that stores all the components, [`GetComponent`](@ref) and [`GetPointValue`](@ref) that evaluate a spherical component $\mathcal{O}_{lm}$ or value at one point $\mathcal{O}(\hat{\mathbf{n}})$. Several important types of spherical observables are built-in in FuzzifiED, _viz._, [electron](@ref GetElectronObs), [density operator](@ref GetDensityObs) and [pairing operator](@ref GetPairingObs)
+Their adjoint, addition, multiplication and [Laplacian](@ref) are supported. The related functions are [`StoreComps`](@ref) that stores all the components, [`GetComponent`](@ref) and [`GetPointValue`](@ref) that evaluate a spherical component $\mathcal{O}_{lm}$ or value at one point $\mathcal{O}(\hat{\mathbf{n}})$. Several important types of spherical observables are built-in in FuzzifiED, _viz._, [electron](@ref GetElectronObs), [density operator](@ref GetDensityObs) and [pairing operator](@ref GetPairingObs).
 
 In the example of Ising model, to calculate the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$, one need to first calculate the eigenstates in the $\mathbb{Z}_2$-odd sector
 ```julia
-bs1 = Basis(cfs, [1, -1, 1], qnf)
-hmt1 = Operator(bs1, bs1, tms_hmt ; red_q = 1, sym_q = 1) 
-hmt_mat1 = OpMat(hmt1)
-enrg1, st1 = GetEigensystem(hmt_mat1, 10)
-stI = st[:, 1] 
+bs_m = Basis(cfs, [1, -1, 1], qnf)
+hmt_m = Operator(bs_m, bs_m, tms_hmt ; red_q = 1, sym_q = 1) 
+hmt_mat_m = OpMat(hmt_m)
+enrg_m, st_m = GetEigensystem(hmt_mat_m, 10)
+st0 = st[:, 1] 
 ste = st[:, 2] 
-sts = st1[:, 1]
+sts = st_m[:, 1]
 ```
 and then construct the density operator
 ```julia
-obs_nz = GetDensityObs(nm, 2, sgz)
+obs_nz = GetDensityObs(nm, 2, σz)
 tms_nz00 = SimplifyTerms(GetComponent(obs_nz, 0.0, 0.0))
-nz00 = Operator(bs, bs1, tms_nz00 ; red_q = 1) 
-f_sse = abs((sts' * nz00 * ste) / (sts' * nz00 * stI))
+nz00 = Operator(bs, bs_m, tms_nz00 ; red_q = 1) 
+f_sse = abs((sts' * nz00 * ste) / (sts' * nz00 * st0))
 ```
 
 Besides the spherical observable, we also provide a type [`AngModes`](@ref) that superposes under the rule of angular momentum superposition instead of spherical harmonics triple integral
@@ -387,13 +373,13 @@ The detail of the calculation is given in [PRB 85, 125308 (2012)](https://dx.doi
     c^\dagger_o=\alpha_oc^\dagger_{o,A}+\beta_mc^\dagger_{o,B}
 ```
 where $|\alpha_o|^2+|\beta_o|^2=1$. For the cut in orbital space $m_c$, 
-\begin{equation*}
+```math
     \alpha_{mf}=\Theta(m_c-m)
-\end{equation*}
+```
 where $\Theta$ is the Heaviside function ; for the cut in real space along latitude circle $\theta_c$,
-\begin{equation*}
+```math
     \alpha_{mf}=\Beta_{\cos^2\theta_c/2}(s-m+1,s+m+1)^{1/2}
-\end{equation*}
+```
 where $\Beta$ is the incomplete beta function. 
 
 To calculate the reduced density matrix, we decompose the state into the direct-product basis of two subsystems
@@ -404,16 +390,16 @@ where the indices $K_0\in\mathcal{H},I_A\in\mathscr{H_A},J_B\in\mathscr{H_B}$ ar
 ```math
     \rho_A=\mathbf{M}\mathbf{M}^\dagger
 ```
-and the entanglement spectrum can be obtained from the SVD decomposition of the $\mathbf{M}$ matrix. Like the Hamiltonian, the $\mathbf{M}$ matrix is block diagonal, and each block carries different quantum numbers of the Hilbert spaces of $A$ and $B$ subsystem~\footnote{The $M_{IJ}$ and $\alpha_o$ in our convention is equivalent to $\mathcal{F}_{m,A}$ and $R_{\mu\nu}^A$ in the convension of Ref.~\cite{Sterdyniak2011Entanglement}, the conversions are $\alpha_{mf}=\sqrt{\mathscr{F}_{m,A}}$ and $M_{IJ}=R_{\mu\nu}^A/\sqrt{p}$.}. 
+and the entanglement spectrum can be obtained from the SVD decomposition of the $\mathbf{M}$ matrix. Like the Hamiltonian, the $\mathbf{M}$ matrix is block diagonal, and each block carries different quantum numbers of the Hilbert spaces of $A$ and $B$ subsystem. 
 
-In FuzzifiED, the decomposition of states into matrix $M_{I_AJ_B}$ is done by the funciton [StateDecompMat](@ref), and the calculation of entanglement spectrum is done by the funciton [GetEntSpec](@ref)
+In FuzzifiED, the decomposition of states into matrix $M_{I_AJ_B}$ is done by the funciton [StateDecompMat](@ref), and the calculation of entanglement spectrum is done by the funciton [GetEntSpec](@ref).
 
 In the example of Ising model, to calculate the entanglement entropy cut from the equator, we first need to specify the quantum numbers of the subsystems : the conservation of $N_e$, $L_z$ and the $\mathbb{Z}_2$ symmetry.
 ```julia
 qnd_a = [ GetNeQNDiag(no), GetLz2QNDiag(nm, nf) ]
 qnf_a = [ GetFlavPermQNOffd(nm, nf, [2, 1]) ]
 ```
-we then specify the sectors to calculate : The number of electrons in subsystem $A$ run from $0$ to $N_m$~; the angular momenta in subsystem $A$ can take all permitted values~; for subsystem $B$, $N_{e,B}=N_m-N_{e,A}$, $L_{z,B}=-L_{z,A}$~; the $\mathbb{Z}_2$ sectors of the two subsystems are the same. 
+we then specify the sectors to calculate : The number of electrons in subsystem $A$ run from $0$ to $N_m$ ; the angular momenta in subsystem $A$ can take all permitted values ; for subsystem $B$, $N_{e,B}=N_m-N_{e,A}$, $L_{z,B}=-L_{z,A}$ ; the $\mathbb{Z}_2$ sectors of the two subsystems are the same. 
 ```julia
 secd_lst = Vector{Vector{Int64}}[]
 for nea = 0 : nm 
@@ -449,7 +435,7 @@ Practically, the `dmrg` function in ITensor package automatically uses DMRG to o
 * construct a MPO representing the Hamiltonian on the sites from a set of terms (or OpSum in ITensor), and 
 * construct an initial MPS on the sites in the desired symmetry sector.
 
-In FuzzifiED, a new SiteType [`"FuzzyFermion"`](@ref ITensors.space) is defined that behaves similar to the built-in `"Fermion"` type and the set of sites can be generated by the function [`GetSites`](@ref)
+In FuzzifiED, a new SiteType [`"FuzzyFermion"`](@ref ITensors.space) is defined that behaves similar to the built-in `"Fermion"` type and the set of sites can be generated by the function [`GetSites`](@ref).
 
 In the example of Ising model, for convenience we exchange the Pauli matrices $\sigma^x$ and $\sigma^z$ so that the two flavours carry $\mathbb{Z}_2$-charge $0$ and $1$. The sites can be constructed by 
 ```julia
@@ -465,13 +451,13 @@ sites = GetSites([
 
 In ITensor, the MPO is generated from an OpSum and the sites. The [OpSum](@ref) can be directly converted from the array of terms. In the example of Ising model, 
 ```julia
-sgx = [  0  1 ;  1  0 ]
-sgz = [  1  0 ;  0 -1 ]
+σx = [  0  1 ;  1  0 ]
+σz = [  1  0 ;  0 -1 ]
 ps_pot = [4.75, 1.] ./ 2
 tms_hmt = SimplifyTerms(
     GetDenIntTerms(nm, 2, ps_pot) - 
-    GetDenIntTerms(nm, 2, ps_pot, sgx) - 
-    3.16 * GetPolTerms(nm, nf, sgz)
+    GetDenIntTerms(nm, 2, ps_pot, σx) - 
+    3.16 * GetPolTerms(nm, nf, σz)
 )
 os_hmt = OpSum(tms_hmt)
 hmt = MPO(os_hmt, sites)
@@ -479,39 +465,50 @@ hmt = MPO(os_hmt, sites)
 
 To calculate the $\mathbb{Z}_2$-even $L^z=0$ sector, the initial state can be taken as the all the $\mathbb{Z}_2$-even sites being filled and all the $\mathbb{Z}_2$-odd sites being empty. (Note that ITensor takes the string `"1"` instead of the number `1` as occupied and `"0"` instead of `0` as filled.) 
 ```julia
-cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
-st0 = MPS(sites, string.(cf0))
+cfi_p = [ [1, 0][f] for m = 1 : nm for f = 1 : nf ]
+sti_p = MPS(sites, string.(cfi_p))
 ```
 
 Having these ingrediants ready, we can call the `dmrg` function. To ensure performance, the maximal bond dimension should be increased gradually and the noise decreased gradually to 0. An example that deals with maximal bond dimension 500 is 
 ```julia
-EI, stI = dmrg(hmt, st0 ; nsweeps = 10, maxdim = [10,20,50,100,200,500], noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], cutoff = [1E-8])
+E0, st0 = dmrg(hmt, sti_p ; 
+    nsweeps = 10, 
+    maxdim = [10,20,50,100,200,500], 
+    noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], 
+    cutoff = [1E-8])
 ```
 To generate a $\mathbb{Z}_2$-odd initial state, we can simply flip the spin on the first orbital
 ```julia
-cf1 = cf0 
-cf1[1] = 0
-cf1[2] = 1
-st1 = MPS(sites, string.(cf1))
-Es, sts = dmrg(hmt, st1 ; nsweeps = 10, maxdim = [10,20,50,100,200,500], noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], cutoff = [1E-8])
+cfi_m = [ m == 1 ? [0, 1][f] : [1, 0][f] for m = 1 : nm for f = 1 : nf ]
+sti_m = MPS(sites, string.(cfi_m))
+Es, sts = dmrg(hmt, sti_m ; 
+    nsweeps = 10, 
+    maxdim = [10,20,50,100,200,500], 
+    noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], 
+    cutoff = [1E-8])
 ```
 The first excited $\mathbb{Z}_2$-even state can be generated by adding a projector $w|0\rangle\langle0|$ to the MPO 
 ```julia
-Ee, ste = dmrg(hmt, [stI], st0 ; nsweeps = 10, maxdim = [10,20,50,100,200,500], noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], cutoff = [1E-8], weight = 100)`
+Ee, ste = dmrg(hmt, [st0], sti_p ; 
+    nsweeps = 10, 
+    maxdim = [10,20,50,100,200,500], 
+    noise = [1E-4,3E-5,1E-5,3E-6,1E-6,3E-7], 
+    cutoff = [1E-8], 
+    weight = 100)
 ```
 
 The inner product can be measured by the ITensor function `inner`. For example, to measure the angular momentum $L^2$ of the ground state,
 ```julia
 tms_l2 = GetL2Terms(nm, 2)
-l2 = MPO(OpSum(tms_l2))
-val_l2I = inner(stI', l2, stI)
+l2 = MPO(OpSum(tms_l2), sites)
+val_l20 = inner(st0', l2, st0)
 ```
 To measure the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^x_{00}|\epsilon\rangle/\langle \sigma|n^x_{00}|0\rangle$. (Note that the indices $x$ and $z$ have already been exchanged here.)
 ```julia
-obs_nx = GetDensityObs(nm, 2, sgx)
+obs_nx = GetDensityObs(nm, 2, σx)
 tms_nx00 = SimplifyTerms(GetComponent(obs_nx, 0.0, 0.0))
-nx00 = MPO(OpSum(tms_nx00))
-f_sse = abs(inner(sts', nx00, ste) / inner(sts', nx00, stI))
+nx00 = MPO(OpSum(tms_nx00), sites)
+f_sse = abs(inner(sts', nx00, ste) / inner(sts', nx00, st0))
 ```
 
 ### The EasySweep extension
@@ -526,8 +523,8 @@ using Pkg ; Pkg.add(url="https://github.com/ITensor/ITensorMPOConstruction.jl.gi
 using FuzzifiED
 using ITensors, ITensorMPS, HDF5
 using ITensorMPOConstruction
-const sgx = [  0  1 ;  1  0 ]
-const sgz = [  1  0 ;  0 -1 ]
+const σx = [  0  1 ;  1  0 ]
+const σz = [  1  0 ;  0 -1 ]
 
 function MyMPO(os, sites)
     operatorNames = [ "I", "C", "Cdag", "N" ]
@@ -547,8 +544,8 @@ Like the previous section, we first put in the terms for Hamiltonian and the QND
 ps_pot = [4.75, 1.] ./ 2
 tms_hmt = SimplifyTerms(
     GetDenIntTerms(nm, 2, ps_pot) - 
-    GetDenIntTerms(nm, 2, ps_pot, sgx) - 
-    3.16 * GetPolTerms(nm, 2, sgz)
+    GetDenIntTerms(nm, 2, ps_pot, σx) - 
+    3.16 * GetPolTerms(nm, 2, σz)
 )
 qnd = [ 
     GetNeQNDiag(no), 
@@ -562,31 +559,29 @@ hmt, sites = GetMPOSites("hmt", tms_hmt, qnd ; path, mpo_method = MyMPO)
 ```
 To generate the initial MPS that respects the $\mathbb{Z}_2$ symmetry, we can use a direct product state. 
 ```julia
-cf0 = [ isodd(o) ? 1 : 0 for o = 1 : no ]
-st0 = MPS(sites, string.(cf0))
-cf1 = cf0
-cf1[1] = 0
-cf1[2] = 1
-st1 = MPS(sites, string.(cf1))
+cfi_p = [ [1, 0][f] for m = 1 : nm for f = 1 : nf ]
+sti_p = MPS(sites, string.(cfi_p))
+cfi_m = [ m == 1 ? [0, 1][f] : [1, 0][f] for m = 1 : nm for f = 1 : nf ]
+sti_m = MPS(sites, string.(cfi_m))
 ```
 The lowest eigenenergies and the eigenstate MPSs $|0\rangle,|\sigma\rangle,|\epsilon\rangle$ can be easily generated by the function `EasySweep`.
 ```julia
-EI, stI = EasySweep("g", hmt, st0 ; path)
-Ee, ste = EasySweep("e", hmt, st0 ; path, proj = ["g"])
-Es, sts = EasySweep("s", hmt, st1 ; path)
+E0, st0 = EasySweep("0", hmt, sti_p ; path)
+Ee, ste = EasySweep("e", hmt, sti_p ; path, proj = ["0"])
+Es, sts = EasySweep("s", hmt, sti_m ; path)
 ```
 To measure the angular momentum $L^2$ of the ground state, we generate the MPO for $L^2$.
 ```julia
 tms_l2 = GetL2Terms(nm, 2)
 l2 = GetMPO("l2", tms_l2, sites ; path, mpo_method = MyMPO)
-val_l2I = inner(stI', l2, stI)
+val_l20 = inner(st0', l2, st0)
 ```
 Similarly, to measure the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^x_{00}|\epsilon\rangle/\langle \sigma|n^x_{00}|0\rangle$
 ```julia
-obs_nx = GetDensityObs(nm, 2, sgx)
+obs_nx = GetDensityObs(nm, 2, σx)
 tms_nx00 = SimplifyTerms(GetComponent(obs_nx, 0.0, 0.0))
 nx00 = GetMPO("nx00", tms_nx00, sites ; path, mpo_method = MyMPO)
-f_sse = abs(inner(sts', nx00, ste) / inner(sts', nx00, stI))
+f_sse = abs(inner(sts', nx00, ste) / inner(sts', nx00, st0))
 ```
 
 ## List of examples

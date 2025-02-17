@@ -49,6 +49,7 @@ Pages = [
     "itensors.md",
     "extension.md",
     "fuzzifino.md",
+    "manifolds.md",
     "releases.md"
 ]
 Depth = 2
@@ -67,7 +68,7 @@ Depth = 2
 * __[Zhou 2024Jan]__ The ``g``-function and defect changing operators from wavefunction overlap on a fuzzy sphere, Zheng Zhou, Davide Gaiotto, Yin-Chen He, Yijian Zou, [arXiv:2401.00039](https://arxiv.org/abs/2401.00039), [SciPost Phys. __17__, 021 (2024)](https://doi.org/10.21468/SciPostPhys.17.1.021).
 * __[Hu 2024]__ Entropic ``F``-function of 3d Ising conformal field theory via the fuzzy sphere regularisation, Liangdong Hu, Wei Zhu, and Yin-Chen He, [arXiv:2401.17362](https://arxiv.org/abs/2401.17362).
 * __[Cuomo 2024]__ Impurities with a cusp : general theory and 3d Ising, Gabriel Cuomo, Yin-Chen He, Zohar Komargodski, [arXiv:2406.10186](https://arxiv.org/abs/2406.10186). 
-* __[Zhou 2024Jul]__ Studying the 3d Ising surface CFTs on the fuzzy sphere, Zheng Zhou, and Yijian Zou, [arXiv:2407.15914](https://arxiv.org/abs/2407.15914).
+* __[Zhou 2024Jul]__ Studying the 3d Ising surface CFTs on the fuzzy sphere, Zheng Zhou, and Yijian Zou, [arXiv:2407.15914](https://arxiv.org/abs/2407.15914), [SciPost Phys. __18__, 031 (2025)](https://doi.org/10.21468/SciPostPhys.18.1.031).
 * __[Dedushenko 2024]__ Ising BCFTs from the fuzzy hemisphere, Mykola Dedushenko, [arXiv:2407.15948](https://arxiv.org/abs/2407.15948).
 * __[Fardelli 2024]__ Constructing the infrared conformal generators on the fuzzy sphere, Giulia Fardelli, A. Liam Fitzpatrick, and Emanuel Katz, [arXiv:2409.02998](https://arxiv.org/abs/2409.02998).
 * __[Fan 2024]__ Note on explicit construction of conformal generators on the fuzzy sphere, Ruihua Fan, [arXiv:2409.08257](https://arxiv.org/abs/2409.08257).
@@ -84,6 +85,7 @@ Pages = [
     "models.md",
     "itensors.md",
     "extension.md",
-    "fuzzifino.md"
+    "fuzzifino.md",
+    "manifolds.md"
 ]
 ```

@@ -1,6 +1,9 @@
 # Fuzzy manifolds
 
-FuzzyManifolds is a module to support calculations on other manifolds regularised by lowest Landau level besides sphere. The supported manifolds include torus $T^2$. 
+FuzzyManifolds is a module to support calculations on other geometry regularised by lowest Landau level besides sphere. The supported geometries include torus $T^2$. Other geometries (_e.g._, disk) can be added upon request. To use the module, include also at the start of your Julia script
+```julia
+using FuzzifiED.FuzzyManifolds
+```
 
 ## Torus 
 
