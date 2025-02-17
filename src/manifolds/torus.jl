@@ -15,6 +15,7 @@ GetTorusLz2QNDiag(nm :: Int64, nf :: Int64) = QNDiag("Lz", [2 * m - 1 + mod(nm, 
 function LaguerrePsPot(ps_pot :: Vector{<:Number}, q2 :: Number)
     lag = zeros(Float64, length(ps_pot))
     lag[1] = 1.0
+    (length(ps_pot) == 1) && return sum(lag .* ps_pot)
     lag[2] = 1.0 - q2
     for k = 1 : length(ps_pot) - 2 
         lag[k + 2] = ((2 * k + 1 - q2) * lag[k + 1] - k * lag[k]) / (k + 1)
@@ -29,7 +30,7 @@ end
 
 Gives the interaction matrix ``U_{m_1m_2m_3m_4}`` from the pseudopotentials.
 ```math
-    U_{m_1m_2m_3m_4}=δ'_{m_1+m_2,m_3+m_4}\\frac{1}{N_m}∑_{l,𝐪}δ'_{m_1-m_4,t}V_lL_l(q^2)e^{-q^2/2}e^{2πis(m_1-m_3)/N_m}
+    U_{m_1m_2m_3m_4}=δ'_{m_1+m_2,m_3+m_4}\\frac{1}{N_m}∑_{l,𝐪}δ'_{m_1-m_4,t}U_lL_l(q^2)e^{-q^2/2}e^{2πis(m_1-m_3)/N_m}
 ```
 where ``𝐪=(2πs/L_x,2πt/L_y), s,t∈ℤ``, ``L_xL_y=2πN_m`` and the Kronecker ``δ`` is defined in a sense of mod ``N_m``
 
