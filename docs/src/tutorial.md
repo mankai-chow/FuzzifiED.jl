@@ -15,7 +15,7 @@ Four versions of the tutorial code are provided :
 
 The examples can be found in the directory [`examples`](https://github.com/FuzzifiED/FuzzifiED.jl/tree/main/examples). We also append in the end [a list of given examples](@ref List-of-examples) at the end of the page. 
 
-## Exact diagonalisation (ED) with FuzzifiED
+## ED with FuzzifiED
 
 In this section, we briefly describe the procedure for exact diagonalisation (ED) calculation and give an instruction for using FuzzifiED for ED. 
 
@@ -425,7 +425,7 @@ eig_rho = vcat(values(ent_spec)...)
 ent_entropy = -sum(eig_rho .* log.(eig_rho))
 ```
 
-## DMRG calculations with FuzzifiED
+## DMRG with FuzzifiED
 
 Having introduced ED, we now turn to density matrix renormalisation group (DMRG) that deals with larger systems. We briefly describe its procedure  and give an instruction for using FuzzifiED for DMRG. 
 

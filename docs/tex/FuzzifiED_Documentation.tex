@@ -4,17 +4,18 @@
 \usepackage{multicol}
 \setmonofont{Monaspace Xenon}
 \lstset{basicstyle=\footnotesize\ttfamily,breaklines=true,numbers=none,numberstyle=\scriptsize,numbersep=-1.5em,keywordstyle=\bfseries,morekeywords={baremodule,begin,break,catch,const,continue,do,else,elseif,end,export,false,finally,for,function,global,if,import,let,local,macro,module,quote,return,struct,true,try,using,while}}
-\newenvironment{block}[1]{\vspace{0.4\baselineskip}\hrule\vspace{0.10\baselineskip}\hrule\vspace{0.30\baselineskip}{\bfseries #1}\vspace{0.2\baselineskip}\hrule\vspace{0.3\baselineskip}}{\vspace{0.2\baselineskip}\hrule\vspace{0.10\baselineskip}\hrule\vspace{0.5\baselineskip}}
+\newenvironment{block}[1]{\vspace{0.4\baselineskip}\hrule height 2\arrayrulewidth\vspace{\doublerulesep}\hrule\vspace{0.30\baselineskip}{\bfseries #1}\vspace{0.2\baselineskip}\hrule\vspace{0.3\baselineskip}}{\vspace{0.2\baselineskip}\hrule\vspace{\doublerulesep}\hrule height 2\arrayrulewidth\vspace{0.5\baselineskip}}
+\renewcommand{\baselinestretch}{1.46}
 
 \title{FuzzifiED}
 \subtitle{Julia package for numerics on the fuzzy sphere}
-\date{13 Febuary, 2025}
+\date{18 Febuary, 2025}
 \author{Zheng Zhou 周正}
 \affiliation{Perimeter Institute for Theoretical Physics, Waterloo, Ontario N2L 2Y5, Canada}
 \affiliation{Department of Physics and Astronomy, University of Waterloo, Waterloo, Ontario N2L 3G1, Canada}
-\emailAdd{physics@zhengzhou.page}
-\abstract{Since its proposal, the fuzzy sphere regularisation has made significant contribution to the study of 3d CFTs. The Julia package FuzzifiED aims at simplifying the numerical calculations on the fuzzy sphere. It facilitates the exact diagonalisation (ED) calculations as well as the density matrix renormalisation group (DMRG) with the help of ITensor. It can also be used for generic fermionic and bosonic models. This documentation gives a review of the fuzzy sphere regularisation and an instruction for using the package for numerical calculations.}
-\extra{\textit{Documentation}~:~\url{https://docs.fuzzified.world}\\\textit{Source code}~:~\url{https://github.com/FuzzifiED/FuzzifiED.jl}}
+\emailAdd{physics@zhengzhou.page} 
+\abstract{The Julia package \emph{FuzzifiED} aims at simplifying the numerical calculations on the fuzzy sphere. It facilitates exact diagonalisation (ED) and density matrix renormalisation group (DMRG) calculations. It can also apply to generic fermionic and bosonic models. This documentation provides a review of the fuzzy sphere regularisation and an instruction for using the package for numerical calculations.}
+\extra{\textit{Documentation}~: \url{https://docs.fuzzified.world}\\\textit{Source code}~: \url{https://github.com/FuzzifiED/FuzzifiED.jl}}
 
 \begin{document}
 
@@ -22,15 +23,15 @@
 
 \section{Purpose and outline}
 
-Since its proposal, the fuzzy sphere regularisation has made significant contributions to the study of 3d CFTs~\cite{Zhu2022,Hu2023Mar,Han2023Jun,Zhou2023,Lao2023,Hu2023Aug,Hofmann2023,Han2023Dec,Zhou2024Jan,Hu2024,Cuomo2024,Zhou2024Jul,Dedushenko2024,Fardelli2024,Fan2024,Zhou2024Oct,Voinea2024,Yang2025,Han2025}. The Julia package FuzzifiED aims at simplifying the numerical calculations on the fuzzy sphere. It facilitates the exact diagonalisation (ED) calculations as well as the density matrix renormalisation group (DMRG) with the help of ITensor~\cite{ITensor}. It can also apply to generic fermionic and bosonic models. This package features the following characteristics~: 
+Since its proposal, the fuzzy sphere regularisation has made significant contributions to the study of 3d CFTs~\cite{Zhu2022,Hu2023Mar,Han2023Jun,Zhou2023,Lao2023,Hu2023Aug,Hofmann2023,Han2023Dec,Zhou2024Jan,Hu2024,Cuomo2024,Zhou2024Jul,Dedushenko2024,Fardelli2024,Fan2024,Zhou2024Oct,Voinea2024,Yang2025,Han2025}. The Julia package FuzzifiED aims at simplifying the numerical calculations on the fuzzy sphere. It facilitates the exact diagonalisation (ED) calculations as well as the density matrix renormalisation group (DMRG) with the help of ITensor~\cite{ITensor}. It can also apply to generic fermionic and bosonic models. This package offers the following features~: 
 \begin{enumerate}
-    \item Versatality~: FuzzifiED can help reproduce almost all the ED and DMRG results in fuzzy sphere works, and it is easy to adapt to new models. 
-    \item Usability~: Julia interfaces~\cite{Julia} make the code intuitive and concise. To help the users get started, we have also provided a collection of examples.
-    \item Efficiency~: FuzzifiED can produce results on reasonable system sizes within minutes.
-    \item Open source~: The code for FuzzifiED is fully open source. 
+    \item Versatility~: FuzzifiED can reproduce nearly all ED and DMRG results from fuzzy sphere research. It is also designed to be easily adaptable to new models.
+    \item Usability~: With an intuitive Julia interface~\cite{Julia}, writing and understanding the code is straightforward. To help users get started, we provide a collection of examples.
+    \item Efficiency~: FuzzifiED produces results on reasonable system sizes within minutes.
+    \item Open source~: The FuzzifiED codebase is freely available under the MIT License, welcoming reviews and contributions.
 \end{enumerate}
 
-This documentation gives a review of the fuzzy sphere regularisation and an instruction for numerical calculations with FuzzifiED. The rest of this documentation is organised as follows~: The Part~\ref{pt:intro} (Sections~\ref{sec:intro}--\ref{sec:numerics}) is devoted to a review of the fuzzy sphere regularisation and the numerical methods applied to it, mainly targeting at providing the necessary technical information for those who want to get started with the research on fuzzy sphere. The Part~\ref{pt:numerics} (Sections~\ref{sec:usage}--\ref{sec:examples}) gives a detailed instruction for numerical calculation with the package FuzzifiED. 
+This documentation provides a review of the fuzzy sphere regularisation and an instruction for numerical calculations with FuzzifiED. The rest of this documentation is organised as follows~: The Part~\ref{pt:intro} (Sections~\ref{sec:intro}--\ref{sec:numerics}) is devoted to a review of the fuzzy sphere regularisation and the numerical methods applied to it, mainly targeting at providing the necessary technical information for those who want to get started with the research on fuzzy sphere. The Part~\ref{pt:numerics} (Sections~\ref{sec:usage}--\ref{sec:examples}) gives a detailed instruction for numerical calculation with the package FuzzifiED. 
 \begin{itemize}
     \item In Section~\ref{sec:intro}, we briefly introduce the conformal field theories in dimensions $d\ge 3$ and the fuzzy sphere regularisation. 
     \item In Section~\ref{sec:review}, we review the existing works related to the fuzzy sphere. 
@@ -40,6 +41,10 @@ This documentation gives a review of the fuzzy sphere regularisation and an inst
     \item In Section~\ref{sec:ed}, we give an instruction for performing ED calculation with FuzzifiED. 
     \item In Section~\ref{sec:dmrg}, we give an instruction for performing DMRG calculation with FuzzifiED. 
     \item In Section~\ref{sec:examples}, we present a collection of practical examples that reproduce many existing results.
+    \item In Appendix~\ref{app:data}, we present the specialised data structures we use in the ED calculation. 
+    \item In Appendix~\ref{app:manifolds}, we present the Landau level and pseudopotentials on the torus. 
+    \item In Appendix~\ref{app:code}, we give a collection of the ED and DMRG tutorial codes.
+    \item In Appendix~\ref{app:glossary}, we list a glossary for all the interfaces in FuzzifiED to facilitate searching. 
 \end{itemize}
 
 \cleardoublepage
@@ -65,7 +70,7 @@ Among these higher dimensional CFTs, we mainly focus on $d=3$, as many Lagrangia
 
 \subsection{Fuzzy sphere}
 
-In addition to these existing approaches, the \textit{`fuzzy sphere regularisation'} has recently emerged as a new powerful method to study 3d CFTs. The idea is to put an interacting quantum Hamiltonian on a 2-sphere $S^2$. This geometry preserves the full rotation symmetry (on the contrary, lattice models often only preserve a discrete subgroup). Moreover, when the system is tuned to a critical point or critical phase, combined with the time evolution direction, the system is described by a quantum field theory living on a generalised cylinder $S^2\times\mathbb{R}$, a manifold that is conformally equivalent to flat spacetime through the Weyl transformation
+In addition to these existing approaches, the \emph{`fuzzy sphere regularisation'} has recently emerged as a new powerful method to study 3d CFTs. The idea is to put an interacting quantum Hamiltonian on a 2-sphere $S^2$. This geometry preserves the full rotation symmetry (on the contrary, lattice models often only preserve a discrete subgroup). Moreover, when the system is tuned to a critical point or critical phase, combined with the time evolution direction, the system is described by a quantum field theory living on a generalised cylinder $S^2\times\mathbb{R}$, a manifold that is conformally equivalent to flat spacetime through the Weyl transformation
 \begin{equation}
     (\hat{\mathbf{n}},\tau)\in S^2\times\mathbb{R}\ \longmapsto\ r\hat{\mathbf{n}}\in\mathbb{R}^3,\qquad r=e^{\tau/R}
 \end{equation}
@@ -234,7 +239,7 @@ where $\hat{c}^{(\dagger)}_{mf}$ annihilates/creates an electron with $L^z$-quan
 
 After the projection, we obtain a finite Hilbert space on which numerical simulations can be carried out. For this purpose, the system is analogous to a length-$(2s+1)$ spin chain with long-range interaction, where different Landau level orbitals behave like the lattice sites. The difference is that the $(2s+1)$ orbital forms a spin-$s$ representation of the $\mathrm{SO}(3)$ rotation group, and in this way the continuous rotation symmetry is preserved. The exact rotation symmetry shortens the RG flow from the UV to the IR and reduces the finite-size effect, so that the numerical results are considerably accurate even at a small system size. 
 
-The word `\textit{fuzzy}' means non-commutativity~\cite{Madore1991Fuzzy}. Here, the magnetic field results in the non-commutativity of the coordinates. More concretely, we write the coordinate operators as a matrix on the lowest Landau level 
+The word `\emph{fuzzy}' means non-commutativity~\cite{Madore1991Fuzzy}. Here, the magnetic field results in the non-commutativity of the coordinates. More concretely, we write the coordinate operators as a matrix on the lowest Landau level 
 \begin{equation}
     X^\mu_{m_1m_2}=\int\mathrm{d}^2\hat{\mathbf{n}}\,n^\mu \bar{Y}_{sm_1}^{(s)}(\hat{\mathbf{n}})Y_{sm_2}^{(s)}(\hat{\mathbf{n}}).
 \end{equation}
@@ -329,7 +334,7 @@ where the density operators are defined as
 \end{equation*}
 and the potentials can be most conveniently taken as a combination of local and super-local interactions. Altogether, the model Hamiltonian reads 
 \begin{equation}
-    H_\mathrm{int}=\int\mathrm{d}^2\hat{\mathbf{n}}_1\,\mathrm{d}^2\hat{\mathbf{n}}_2\,U(|\hat{\mathbf{n}}_1-\hat{\mathbf{n}}_2|)n_↑(\hat{\mathbf{n}}_1)n_\downarrow(\hat{\mathbf{n}}_2)-h\int\mathrm{d}^2\hat{\mathbf{n}}\,n_x(\hat{\mathbf{n}}).
+    H_\mathrm{int}=\int\mathrm{d}^2\hat{\mathbf{n}}_1\,\mathrm{d}^2\hat{\mathbf{n}}_2\,U(|\hat{\mathbf{n}}_1-\hat{\mathbf{n}}_2|)n_\uparrow(\hat{\mathbf{n}}_1)n_\downarrow(\hat{\mathbf{n}}_2)-h\int\mathrm{d}^2\hat{\mathbf{n}}\,n_x(\hat{\mathbf{n}}).
     \label{eq:ising_hmt}
 \end{equation}
 By tuning the ratio between $h$ and $U(\mathbf{r}_{12})$, a phase transition described by the Ising CFT is realised. 
@@ -378,7 +383,7 @@ where $\{\dots\}$ is the $6j$-symbol. Specifically, a local interaction $\delta(
     U(|\mathbf{r}_{12}|)&=\delta(\mathbf{r}_{12})&U_0&=\frac{(2s+1)^2}{4s+1}\nonumber\\
     U(|\mathbf{r}_{12}|)&=\nabla^2\delta(\mathbf{r}_{12})&U_0&=-\frac{s(2s+1)^2}{4s+1}&U_1&=\frac{s(2s+1)^2}{4s-1}.
 \end{align}
-More details are given in Ref.~\cite{Fan2024}. 
+More details are given in Ref.~\cite{Fan2024}. We also note that the construction for interaction Hamiltonian with pseudopotentials is not restricted to sphere. \textit{E.g.}, on torus, the interaction can also be parametrise by pseudopotentials. More details are given in Appendix~\ref{app:manifolds}.
 
 For systems with more complicated continuous symmetries, classification in terms of representation of flavour symmetry must also be considered, and the indices must be overall antisymmetrised. We explain that through the example of a $2N$-flavour system with $\mathrm{Sp}(N)$ global symmetry~\cite{Zhou2024Oct}. The maximal flavour symmetry is $\mathrm{SU}(2N)$, so interactions must be added to break the symmetry from $\mathrm{SU}(2N)$ to $\mathrm{Sp}(N)$. The fermion operators $c_{ma}$ live in the $\mathrm{Sp}(N)$ fundamental representation, where $a$ is the $\mathrm{Sp}(N)$ index. We shall show that all the allowed terms are 
 \begin{multline}
@@ -590,7 +595,7 @@ Briefly speaking, the Arnoldi algorithm~\cite{Arnoldi1951} is an iterative metho
     \mathcal{K}_r(H,|i\rangle)=\operatorname{span}\left\{|i\rangle,H|i\rangle,H^2|i\rangle,\dots,H^{n-1}|i\rangle\right\}.
 \end{equation}
 
-The ED calculation can be optimised in several ways. The storage of the Hamiltonian matrix may be compressed by data structure tailored for sparse matrix such as compressed sârse column (CSC). The Hamiltonian matrix is usually block diagonal due to the symmetry of the Hamiltonian. The Hilbert space is divided into several sectors that carry different representations under the symmetry, and acting the Hamiltonian on a state in a sector results in a state in the same sector. \textit{E.g.}, in the ED calculation for the Ising model on the fuzzy sphere, the symmetries we can use include two $\mathrm{U}(1)$ symmetries, \textit{viz.}~the conservation of particle number and the angular momentum in the $z$-direction, and three $\mathbb{Z}_2$ symmetries, \textit{viz.}~the Ising $\mathbb{Z}_2$ flavour symmetry, the particle-hole symmetry and the $\pi$-rotation along the $y$-axis\footnote{So far, FuzzifiED only supports $\mathrm{U}(1)$ and $\mathbb{Z}_p$ symmetries. We are still trying to implement non-abelian symmetries.}.
+The ED calculation can be optimised in several ways. The storage of the Hamiltonian matrix may be compressed by data structure tailored for sparse matrix such as compressed sparse column (CSC). The Hamiltonian matrix is usually block diagonal due to the symmetry of the Hamiltonian. The Hilbert space is divided into several sectors that carry different representations under the symmetry, and acting the Hamiltonian on a state in a sector results in a state in the same sector. \textit{E.g.}, in the ED calculation for the Ising model on the fuzzy sphere, the symmetries we can use include two $\mathrm{U}(1)$ symmetries, \textit{viz.}~the conservation of particle number and the angular momentum in the $z$-direction, and three $\mathbb{Z}_2$ symmetries, \textit{viz.}~the Ising $\mathbb{Z}_2$ flavour symmetry, the particle-hole symmetry and the $\pi$-rotation along the $y$-axis\footnote{So far, FuzzifiED only supports $\mathrm{U}(1)$ and $\mathbb{Z}_p$ symmetries. We are still trying to implement non-abelian symmetries.}.
 
 The ED method enjoys several advantages, including (1) the full knowledge of the eigenstate wavefunction and (2) the ability to access relatively high excited states. However, despite these optimisations, the dimension of the Hilbert space scales exponentially with the number of orbitals. This results in exponentially growing space and time complexity. \textit{E.g.}, for the Ising model on the fuzzy sphere, for $N_m=14$, the dimension of Hilbert space $\dim\mathcal{H}=1.8\times10^5$ and the number of elements in the Hamiltonian is $N_
 \mathrm{el}=1.1\times 10^7$~; for $N_m=16$, the numbers have already grown to $\dim\mathcal{H}=2.2\times10^6$ and $N_\textrm{el}=2.1\times 10^8$, which translates to a memory demand of $3.1$ gigabytes. 
@@ -689,7 +694,7 @@ FuzzifiED also provides three environment parameters~:
 \subsection{Constructing the configurations}
 \label{sec:ed_confs}
 
-The first step for the ED calculation is to construct the basis that respects the symmetries of the Hamiltonian. This is divided into two procedures~: (1) to generate the `configurations' that carry the diagonal quantum numbers, and (2) to generate the `basis' that also carries the off-diagonal quantum numbers (under discrete transformations). The `\textit{configurations}' are the collection of states that can be written as a direct product of occupied $|1\rangle$ or empty $|0\rangle$ on each site and carries certain diagonal quantum numbers (QNDiag). 
+The first step for the ED calculation is to construct the basis that respects the symmetries of the Hamiltonian. This is divided into two procedures~: (1) to generate the `configurations' that carry the diagonal quantum numbers, and (2) to generate the `basis' that also carries the off-diagonal quantum numbers (under discrete transformations). The `\emph{configurations}' are the collection of states that can be written as a direct product of occupied $|1\rangle$ or empty $|0\rangle$ on each site and carries certain diagonal quantum numbers (QNDiag). 
 
 The QNDiags supported by FuzzifiED are the charges of $\mathrm{U}(1)$ or $\mathbb{Z}_p$ symmetry in the form of 
 \begin{align}
@@ -765,7 +770,7 @@ Alternatively, using the built-in models,
 \subsection{Constructing the basis}
 \label{sec:ed_basis}
 
-Having constructed the configurations, we now construct the basis of the Hilbert space. The `\textit{basis}' is the collection of states that are linear combinations of the configuration carrying certain diagonal and $\mathbb{Z}_p$ off-diagonal quantum numbers (QNOffd). 
+Having constructed the configurations, we now construct the basis of the Hilbert space. The `\emph{basis}' is the collection of states that are linear combinations of the configuration carrying certain diagonal and $\mathbb{Z}_p$ off-diagonal quantum numbers (QNOffd). 
 
 The QNOffds supported by FuzzifiED are the $\mathbb{Z}_p$ symmetries in the form of 
 \begin{equation}
@@ -853,7 +858,7 @@ Alternatively, using the built-in functions
 
 Having constructed the basis, we now construct the many-body operators. A general many-body operator can be written as
 \begin{equation}
-    \mathscr{O} =\sum_{t=1}^{N_t}U_tc^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl_t})}_{o_{tl_t}}
+    \mathcal{O} =\sum_{t=1}^{N_t}U_tc^{(p_{t1})}_{o_{t1}}c^{(p_{t2})}_{o_{t2}}\dots c^{(p_{tl_t})}_{o_{tl_t}}
 \end{equation}
 where $c^{(0)}=c$ and $c^{(1)}=c^\dagger$. In FuzzifiED, this is recorded as an array of \lstinline|Term|, and each \lstinline|Term| records the building block $Uc^{(p_{1})}_{o_{1}}c^{(p_{2})}_{o_{2}}\dots c^{(p_{l})}_{o_{l}}$. 
 
@@ -861,7 +866,7 @@ where $c^{(0)}=c$ and $c^{(1)}=c^\dagger$. In FuzzifiED, this is recorded as an 
 The mutable type contains the fields
 \begin{itemize}
     \item \lstinline|coeff :: ComplexF64| --- the coefficient $U$.
-    \item \lstinline|cstr :: Vector{Int64}| --- a length-$2l$ array $\{p_1,o_1,p_2,o_2,… p_l,o_l\}$ recording the operator string.
+    \item \lstinline|cstr :: Vector{Int64}| --- a length-$2l$ array $\{p_1,o_1,p_2,o_2,\dots p_l,o_l\}$ recording the operator string.
 \end{itemize}
 It can be initialised by the method 
 \begin{lstlisting}
@@ -1054,7 +1059,8 @@ where \lstinline|T| is the type of the elements. For example, the code to measur
     l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in eachindex(enrg)]
 \end{lstlisting}
 
-One might also need to act transformations on the state $\mathcal{Z}|i\rangle$. In FuzzifiED, the mutable type \lstinline|Transf| records the transformation together with the basis of the initial and final states 
+One might also need to act transformations on the state $\mathcal{Z}|i\rangle$. In FuzzifiED, the mutable type \lstinline|Transf| records the transformation to
+\renewcommand{\baselinestretch}{1.46}gether with the basis of the initial and final states 
 
 \begin{block}{\href{https://docs.fuzzified.world/core/\#FuzzifiED.Transf}{\lstinline|Transf|} --- Type}
 The type can be initialised from a \lstinline|QNOffd| by 
@@ -1133,7 +1139,7 @@ and then construct the density operator
 
 Besides the spherical observable, we also provide a type \href{https://docs.fuzzified.world/models/\#FuzzifiED.AngModes}{\lstinline|AngModes|} that superposes under the rule of angular momentum superposition instead of spherical harmonics triple integral
 \begin{equation}
-    (\mathscr{A}_1\mathscr{A}_2)_{lm}=\sum_{l_1m_1l_2m_2}(\mathcal{A}_1)_{l_1m_1}(\mathcal{A}_2)_{l_2m_2}\langle l_1m_1l_2m_2|lm\rangle.
+    (\mathcal{A}_1\mathcal{A}_2)_{lm}=\sum_{l_1m_1l_2m_2}(\mathcal{A}_1)_{l_1m_1}(\mathcal{A}_2)_{l_2m_2}\langle l_1m_1l_2m_2|lm\rangle.
 \end{equation}
 The interfaces are similar.
 
@@ -1164,11 +1170,11 @@ To calculate the reduced density matrix, we decompose the state into the direct-
 \begin{equation}
     |\Psi\rangle=\sum_{K_0}v_{K_0}|K_0\rangle=\sum_{I_AJ_B}M_{I_AJ_B}|I_A\rangle|J_B\rangle
 \end{equation}
-where the indices $K_0\in\mathcal{H},I_A\in\mathscr{H_A},J_B\in\mathscr{H_B}$ are in the overall Hilbert space and the Hilbert space of subsystem $A$ and $B$. The density matrix is then 
+where the indices $K_0\in\mathcal{H},I_A\in\mathcal{H_A},J_B\in\mathcal{H_B}$ are in the overall Hilbert space and the Hilbert space of subsystem $A$ and $B$. The density matrix is then 
 \begin{equation}
     \rho_A=\mathbf{M}\mathbf{M}^\dagger
 \end{equation}
-and the entanglement spectrum can be obtained from the SVD decomposition of the $\mathbf{M}$ matrix. Like the Hamiltonian, the $\mathbf{M}$ matrix is block diagonal, and each block carries different quantum numbers of the Hilbert spaces of $A$ and $B$ subsystem\footnote{The $M_{IJ}$ and $\alpha_o$ in our convention is equivalent to $\mathcal{F}_{m,A}$ and $R_{\mu\nu}^A$ in the convention of Ref.~\cite{Sterdyniak2011RealEnt}, the conversions are $\alpha_{mf}=\sqrt{\mathscr{F}_{m,A}}$ and $M_{IJ}=R_{\mu\nu}^A/\sqrt{p}$.}. 
+and the entanglement spectrum can be obtained from the SVD decomposition of the $\mathbf{M}$ matrix. Like the Hamiltonian, the $\mathbf{M}$ matrix is block diagonal, and each block carries different quantum numbers of the Hilbert spaces of $A$ and $B$ subsystem\footnote{The $M_{IJ}$ and $\alpha_o$ in our convention is equivalent to $\mathcal{F}_{m,A}$ and $R_{\mu\nu}^A$ in the convention of Ref.~\cite{Sterdyniak2011RealEnt}, the conversions are $\alpha_{mf}=\sqrt{\mathcal{F}_{m,A}}$ and $M_{IJ}=R_{\mu\nu}^A/\sqrt{p}$.}. 
 
 In FuzzifiED, the decomposition of state vector $v_{K_0}$ into matrix $M_{I_AJ_B}$ is done by the function \lstinline|StateDecompMat|, and the calculation of entanglement spectrum is done by the function \lstinline|GetEntSpec|
 
@@ -1235,6 +1241,17 @@ Fuzzifino is a module for ED calculation on the fuzzy sphere for systems with bo
     \item For each configuration, a boson part and a fermion part are stored. The boson configurations are indexed in ascending order from the last site to the first site. A maximal total occupation should be given. The details are given in Appendix~\ref{app:data_boson}.
     \item The operator string in a term is still stored in the form $\{p_1,o_1,p_2,o_2,\dots,p_l,o_l\}$, but now positive $o$ represents fermions, and negative $o$ represents boson with site number $|o|$. The bosonic creation and annihilation operator acts with an additional factor, \textit{e.g.}, $b^\dagger|n\rangle=\sqrt{n+1}|n+1\rangle,b|n\rangle=\sqrt{n}|n-1\rangle$ for a single site.
 \end{itemize}
+
+\subsection{FuzzyManifolds --- module for other geometries}
+\label{sec:ed_manifolds}
+
+Apart from the sphere, FuzzifiED also support the calculation for interacting particles on the lowest Landau level on a torus. The procedure is similar to sphere, except for two differences~:
+\begin{itemize}
+    \item The orbitals are now labelled by a $\mathbb{Z}_{N_m}$ number $m=1,\dots,N_m$, and $m$ and $m+N_m$ are identified. Correspondingly, the conservation of angular momentum $L^z$ is now modified into a $\mathbb{Z}_{N_m}$ translation symmetry with $\sum_{mf}mN_{mf}\mod N_m$ conserved. The \href{https://docs.fuzzified.world/manifolds/#FuzzifiED.FuzzyManifolds.GetTorusLz2QNDiag-Tuple{Int64,\%20Int64}}{\lstinline|GetTorusLz2QNDiag|} function constructs the corresponding QNDiag.
+    \item The interacting potentials are still labelled by the pseudopotentials in a similar sense, but the matrix $C_{m_1m_2m_3m_4}^l$ is different. The \href{https://docs.fuzzified.world/manifolds/#FuzzifiED.FuzzyManifolds.GetTorusDenIntTerms}{\lstinline|GetTorusDenIntTerms|} and \href{https://docs.fuzzified.world/manifolds/#FuzzifiED.FuzzyManifolds.GetTorusPairIntTerms}{\lstinline|GetTorusPairIntTerms |}functions generate the density-density interaction terms and the pair-pair interaction terms from the pseudopotentials.
+\end{itemize}
+
+The detail of the setup is given in Appendix~\ref{app:manifolds}.
 
 \section{Density matrix renormalisation group}
 \label{sec:dmrg}
@@ -1417,16 +1434,16 @@ FuzzifiED can help reproduce almost all the ED and DMRG results in fuzzy sphere 
 
 \newcommand{\linkexample}[1]{\href{https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/#1}{\lstinline|#1|}}
 
-\begin{itemize}
+\begin{enumerate}
     \item \linkexample{ising\_spectrum.jl} calculates the spectrum of 3d Ising model on fuzzy sphere at $N_m = 12$. For each $(\mathcal{P},\mathcal{Z},\mathcal{R})$ sector, 20 states are calculated. This example reproduces Table~I and Figure~4 in Ref.~\cite{Zhu2022}.
     \item \linkexample{ising\_phase\_diagram.jl} calculates the phase diagram of fuzzy sphere Ising model by calculating the order parameter $\langle M^2\rangle$. This example reproduces Figure~3 in Ref.~\cite{Zhu2022}.
     \item \linkexample{ising\_ope.jl} calculates various OPE coefficients at $N_m = 12$ by taking overlaps between CFT states and density operators and composite. This example reproduces Figure~2 and Table~I in Ref.~\cite{Hu2023Mar}.
     \item \linkexample{ising\_correlator.jl} calculates the $\sigma\sigma$ two-point function on sphere and the $\sigma\sigma\sigma\sigma$ four-point function on sphere, 0 and $\infty$. This example reproduces Figures 1c and 2a in Ref.~\cite{Han2023Jun}.
     \item \linkexample{ising\_optimisation.jl} defines a cost function as the square sum of the deviations of descendants and stress tensor to evaluate the conformal symmetry for the Ising model and minimises this cost function to find the best parameter.
-    \item \linkexample{ising\_full\_spectrum.jl} calculates the full spectrum of 3d Ising model on fuzzy sphere at $N_m = 10$ for sector $(\mathcal{P},\mathcal{Z},\mathcal{R}) = (1,1,1)$.
-    \item \linkexample{ising\_space\_entangle.jl} calculates the entanglement entropy of the Ising ground state along the real space cut of $\theta = 0.500π$ and $0.499π$ respectively, and use these two data to extract finite size $F$-function without subtracting the IQHE contribution. This example reproduces \cite{Hu2024}.
+    \item \linkexample{ising\_full\_spectrum.jl} calculates the full spectrum of 3d Ising model on fuzzy sphere at $N_m = 10$ for sector $(\mathcal{P},\mathcal{Z},\mathcal{R}) = (+,+,+)$.
+    \item \linkexample{ising\_space\_entangle.jl} calculates the entanglement entropy of the Ising ground state along the real space cut of $\theta = 0.500\pi$ and $0.499\pi$ respectively, and use these two data to extract finite size $F$-function without subtracting the IQHE contribution. This example reproduces Figure 3 in Ref.~\cite{Hu2024}.
     \item \linkexample{ising\_orbital\_entangle.jl} calculates the entanglement entropy of the Ising ground state along the orbital space cut at $m = 0$, and also the entanglement spectrum in the half-filled $l_z = 0,1$ and both $\mathbb{Z}_2$ sectors.
-    \item \linkexample{ising\_generator.jl} examines the quality of conformal symmetry at $N_m = 12$ by examining the matrix elements of conformal generators $P^z + K^z$ and compare the states $(P^z + K^z)\Phi⟩$ with the CFT expectations. This example reproduces Figure~7 in Ref.~\cite{Fardelli2024}.
+    \item \linkexample{ising\_generator.jl} examines the quality of conformal symmetry at $N_m = 12$ by examining the matrix elements of conformal generators $P^z + K^z$ and compare the states $(P^z + K^z)|\Phi\rangle$ with the CFT expectations. This example reproduces Figure~7 in Ref.~\cite{Fardelli2024}.
     \item \linkexample{defect\_spectrum.jl} calculates the spectrum of magnetic line defect in 3d Ising model in $l_z=0,\mathcal{P}=\pm 1$ and $l_z = 1$ sectors, calibrated by bulk $T$. This example reproduces Table~I in Ref.~\cite{Hu2023Aug}.
     \item \linkexample{defect\_correlator.jl} calculates the 1-pt function $\sigma$ and 2-pt function $\sigma\hat{\phi}$ of magnetic line defect in 3d Ising model. The normalisation of the correlators requires extra bulk data. This example reproduces Figure~4 in Ref.~\cite{Hu2023Aug}.
     \item \linkexample{defect\_changing.jl} calculates the spectrum of the defect creation and changing operators of the magnetic line defect in 3d Ising model. This example reproduces Table~2 and Figure~5 in Ref.~\cite{Zhou2024Jan}.
@@ -1435,18 +1452,19 @@ FuzzifiED can help reproduce almost all the ED and DMRG results in fuzzy sphere 
     \item \linkexample{surface\_ordinary\_spectrum.jl} calculates the spectrum of ordinary surface CFT in 3d Ising model calibrated by surface displacement operator $D$ in the orbital boundary scheme. This example reproduces Figures 3 and 4 in Ref.~\cite{Zhou2024Jul}.
     \item \linkexample{surface\_normal\_spectrum.jl} calculates the spectrum of normal surface CFT in 3d Ising model calibrated by surface displacement operator $D$ in the orbital boundary scheme. This example reproduces Figure~5 in Ref.~\cite{Zhou2024Jul}.
     \item \linkexample{o3\_wf\_spectrum.jl} calculates the spectrum of $\mathrm{O}(3)$ Wilson-Fisher CFT using the bilayer Heisenberg model. This example reproduces Table~I and Figure~2 in Ref.~\cite{Han2023Dec}.
-    \item \linkexample{so5\_spectrum.jl} calculates the spectrum of SO(5) DQCP on fuzzy sphere. This example reproduces Table~II in Ref.~\cite{Zhou2023}.
-    \item \linkexample{sp3\_spectrum.jl} calculates the spectrum of Sp(3) CFT on fuzzy sphere. This example reproduces Table~I in Ref.~\cite{Zhou2024Oct}.
+    \item \linkexample{so5\_spectrum.jl} calculates the spectrum of $\mathrm{SO}(5)$ DQCP on fuzzy sphere. This example reproduces Table~II in Ref.~\cite{Zhou2023}.
+    \item \linkexample{sp3\_spectrum.jl} calculates the spectrum of $\mathrm{Sp}(3)$ CFT on fuzzy sphere. This example reproduces Table~I in Ref.~\cite{Zhou2024Oct}.
     \item \linkexample{ising\_frac\_fermion.jl} calculates the spectrum of 3d Ising model on fuzzy sphere for fermions at fractional filling $\nu = 1/3$. This example reproduces Figure~10 in Ref.~\cite{Voinea2024}.
     \item \linkexample{ising\_frac\_boson.jl} calculates the spectrum of 3d Ising model on fuzzy sphere for bosons at fractional filling $\nu = 1/2$ with the module Fuzzifino. This example reproduces Figure~12a,~b in Ref.~\cite{Voinea2024}.
-    \item \linkexample{potts\_specturm.jl} calculates the spectrum of 3d Potts model on fuzzy sphere. This example reproduces Table I and Figure 4 in Ref.~\cite{Yang2025}
+    \item \linkexample{potts\_spectrum.jl} calculates the spectrum of 3d Potts model on fuzzy sphere. This example reproduces Table I and Figure 4 in Ref.~\cite{Yang2025}.
+    \item \linkexample{circle\_ising.jl} calculates the spectrum of 2d Ising CFT on a fuzzy thin torus. This example reproduces Figure 4 and Tables I--III in Ref.~\cite{Han2025}.
     \item \linkexample{ising\_spectrum\_krylov.jl} calculates the spectrum of 3d Ising model on fuzzy sphere by calling the \lstinline|eigsolve| function in \lstinline|KrylovKit.jl| instead of Arpack.
     \item \linkexample{ising\_spectrum\_cuda.jl} calculates the spectrum of 3d Ising model on fuzzy sphere for one sector by performing the sparse matrix multiplication on CUDA.
-\end{itemize}
+\end{enumerate}
 
 \acknowledgments
 
-We extend our deepest gratitude to Yin-Chen He, who provided meticulous testing, unwavering support, and invaluable guidance throughout the development of the package. We also thank Wenhan Guo, Andrew Liam Fitzpatrick, and Christian Voinea for their suggestions and contributions to the package. 
+We extend our deepest gratitude to Yin-Chen He, who provided meticulous testing, unwavering support, and invaluable guidance throughout the development of the package. We also thank Wenhan Guo, Andrew Liam Fitzpatrick, Christian Voinea, Liangdong Hu and Wei Zhu for their suggestions and contributions to the package. 
 
 Z.Z. acknowledges support from the Natural Sciences and Engineering Research Council of Canada (NSERC) through Discovery Grants. Research at Perimeter Institute is supported in part by the Government of Canada through the Department of Innovation, Science and Industry Canada and by the Province of Ontario through the Ministry of Colleges and Universities.
 
@@ -1454,6 +1472,7 @@ Z.Z. acknowledges support from the Natural Sciences and Engineering Research Cou
 \appendix
 
 \section{Data structures in exact diagonalisation}
+\label{app:data}
 
 In this appendix, we describe several data structures used in the exact diagonalisation (ED) process, \textit{viz.}~the Lin table for the reverse look-up process that returns the index from the binary string, the compressed sparse column (CSC) format to store the sparse matrices, and the indexing of boson configurations. 
 
@@ -1563,6 +1582,61 @@ The reverse look-up is realised by a similar Lin-table, with the left part and r
 \end{equation} 
 
 \FloatBarrier
+
+\section{Landau levels and pseudopotentials on the torus}
+\label{app:manifolds}
+
+In this section, we describe the construction of Landau levels and pseudopotentials on the torus~\cite{Yoshioka1983Torus,Haldane1985Torus,Haldane1987Torus}, mentioned in Sections~\ref{sec:construct_pspot} and \ref{sec:ed_manifolds}.
+
+\subsection{Lowest Landau level}
+
+The torus is nothing else than a $l_x\times l_y$ rectangle with periodic boundary conditions, \textit{i.e.}, $x\sim x+l_x$ and $y\sim y+l_y$. We adopt the Landau gauge $A_x=0,A_y=xB$ and set the magnetic length as the unit length $l_B=1$. In this way, the number of orbitals is $N_m=l_xl_y/2\pi$. The lowest Landau level wavefunctions are labelled by the momenta along $y$ direction $m$
+\begin{equation}
+    \phi_m(x,y)=\textrm{constant}\times\sum_{n=-\infty}^\infty\exp\left[-\tfrac{1}{2}(x-X_m+nl_x)^2+iX_m(y+kl_y)\right]
+\end{equation}
+where $m=1,\dots,N_m$, and
+\begin{equation*}
+    X_m=2\pi m/l_y.
+\end{equation*}
+Each orbital is localised in vicinity of a stripe $x=X_m$. We can then similarly project the fermion operators onto the lowest Landau level 
+\begin{equation}
+    \hat{\psi}_{f}(\mathbf{r})=\hat{\phi}_m(\mathbf{r})\hat{c}_{mf},\quad\mathbf{r}=(x,y)
+\end{equation}
+
+\subsection{Many-body interaction}
+
+The simplest many-body interaction term is the density-density interaction with a potential function. Omitting the flavour index, it can be expressed as
+\begin{equation}
+    H_\mathrm{int}=\frac{1}{N_m^2}\int\mathrm{d}^2\mathbf{r}_1\mathrm{d}^2\mathbf{r}_2\,U(\mathbf{r}_1-\mathbf{r}_2)n(\mathbf{r}_1)n(\mathbf{r}_2),\qquad n(\mathbf{r})=\psi^\dagger(\mathbf{r})\psi(\mathbf{r})
+\end{equation}
+The interaction potential can be expanded into Fourier modes 
+\begin{equation}
+    U(\mathbf{r})=\sum_\mathbf{q}U_\mathbf{q}e^{i\mathbf{q}\cdot\mathbf{r}}
+\end{equation}
+where the allowed momenta are labelled by two integers $s$ and $t$
+\begin{equation}
+    \mathbf{q}=(2\pi s/a,2\pi t/b)
+\end{equation}
+After performing the spacial integrals, the Hamiltonian is expressed in the orbital space as\footnote{In many literature, the summation excludes the origin point $\mathbf{q}=(0,0)$, but here the interaction of background charge in fact plays certain role.}
+\begin{equation}
+    H_\mathrm{int}=\sum_{m_1m_2m_3m_4}\sum_\mathbf{q}\frac{U_\mathbf{q}}{2N_m}e^{iq_x(X_{m_1}-X_{m_3})}e^{-q^2/2}\delta'_{t,m_1-m_4}\delta'_{m_1+m_2,m_3+m_4}c^\dagger_{m_1}c^\dagger_{m_2}c_{m_3}c_{m_4}
+\end{equation}
+where the Kronecker delta is defined in a sense of mod $N_m$
+\begin{equation*}
+    \delta'_{m,n}=\left\{\begin{aligned}
+        &1,&&m=n\mod N_m\\
+        &0,&&\textrm{otherwise.}
+    \end{aligned}\right.
+\end{equation*}
+The interactions can alternatively be organised into pseudopotentials $U_l$, describing the energy cost of a pair of electrdons with relative angular momentum $l$.
+\begin{equation}
+    U_l=\int\frac{\mathrm{d}^2\mathbf{q}}{2\pi}V_\mathbf{q}e^{-q^2}L_l(q^2)
+\end{equation}
+where $L_l$ is the Laguerre polynomial. Finally, the interaction Hamiltonian reads
+\begin{align}
+    H_\mathrm{int}&=\sum_{lm_1m_2m_3m_4}U_lC_{m_1m_2m_3m_4}^l c^\dagger_{m_1}c^\dagger_{m_2}c_{m_3}c_{m_4}\nonumber\\
+    C_{m_1m_2m_3m_4}^l&=\frac{1}{N_m}\sum_\textbf{q}e^{iq_x(X_{m_1}-X_{m_3})}e^{-q^2/2}L_l(q^2)\delta'_{t,m_1-m_4}\delta'_{m_1+m_2,m_3+m_4}.
+\end{align}
 
 \section{Tutorial code}
 \label{app:code}
@@ -1829,8 +1903,9 @@ In this Appendix, we collect the full version of the codes, including
 \end{lstlisting}
 
 \section{Glossary for interfaces in FuzzifiED}
+\label{app:glossary}
 
-\begin{multicols}{3}
+\begin{multicols}{2}
     \noindent
     \href{https://docs.fuzzified.world/models/\#FuzzifiED.AngModes}{\lstinline|AngModes|}\\
     \href{https://docs.fuzzified.world/core/\#FuzzifiED.Basis}{\lstinline|Basis|}\\
@@ -1871,6 +1946,10 @@ In this Appendix, we collect the full version of the codes, including
     \href{https://docs.fuzzified.world/itensors/\#FuzzifiED.GetQNDiags-Tuple{Vector{Index{Vector{Pair{QN,\%20Int64}}}}}}{\lstinline|GetQNDiags|}\\
     \href{https://docs.fuzzified.world/models/\#FuzzifiED.GetRotyQNOffd-Tuple{Int64,\%20Int64}}{\lstinline|GetRotyQNOffd|}\\
     \href{https://docs.fuzzified.world/itensors/\#FuzzifiED.GetSites-Tuple{Vector{QNDiag}}}{\lstinline|GetSites|}\\
+    \href{https://docs.fuzzified.world/manifolds/#FuzzifiED.FuzzyManifolds.GetTorusDenIntTerms}{\lstinline|GetTorusDenIntTerms|}\\
+    \href{https://docs.fuzzified.world/manifolds/#FuzzifiED.FuzzyManifolds.GetTorusIntMatrix-Tuple{Int64,\%20Number,\%20Vector{\%3C:Number}}}{\lstinline|GetTorusIntMatrix|}\\
+    \href{https://docs.fuzzified.world/manifolds/#FuzzifiED.FuzzyManifolds.GetTorusLz2QNDiag-Tuple{Int64,\%20Int64}}{\lstinline|GetTorusLz2QNDiag|}\\
+    \href{https://docs.fuzzified.world/manifolds/#FuzzifiED.FuzzyManifolds.GetTorusPairIntTerms}{\lstinline|GetTorusPairIntTerms|}\\
     \href{https://docs.fuzzified.world/models/\#FuzzifiED.GetZnfChargeQNDiag-Tuple{Int64,\%20Int64}}{\lstinline|GetZnfChargeQNDiag|}\\
     \href{https://docs.fuzzified.world/models/\#FuzzifiED.Laplacian-Tuple{SphereObs}}{\lstinline|Laplacian|}\\
     \href{https://docs.fuzzified.world/core/\#FuzzifiED.Libpath}{\lstinline|FuzzifiED.Libpath|}\\
