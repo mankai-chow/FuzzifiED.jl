@@ -118,5 +118,6 @@ looks up a the weight of a configuration in a state.
 """
 function GetConfWeight(bs :: Basis, st :: Union{Vector{ComplexF64}, Vector{Float64}}, cf :: Int64)
     id = GetConfId(bs.cfs, cf)
+    (bs.cfgr[id] == -1) && return zero(st[1])
     return st[bs.cfgr[id]] * bs.cffac[id]
 end
