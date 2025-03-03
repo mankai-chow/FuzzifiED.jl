@@ -26,7 +26,7 @@ This method calls the `eigsolve` from Julia `KrylovKit.jl` package instead of Ar
 # Output
 
 * A length-`nst` array that has the same type as `mat` recording the eigenvalues, and 
-* A `dimd`\\*`nst` matrix that has the same type as `mat` where every column records an eigenstate. 
+* A `dimd`×`nst` matrix that has the same type as `mat` where every column records an eigenstate. 
 """
 function GetEigensystemKrylov(mat :: OpMat{T}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), initvec = rand(T, mat.dimd), num_th = NumThreads, disp_std = !SilentStd, kwargs...) where T <: Union{ComplexF64,Float64}
     kwargs1 = haskey(kwargs, :krylovdim) ? kwargs : (kwargs..., krylovdim = ncv)

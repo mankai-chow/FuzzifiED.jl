@@ -40,7 +40,7 @@ This method uses Julia `KrylovKit` package to calculate the lowest eigenstates o
 # Output
 
 * A length-`nst` array that has the same type as `mat` recording the eigenvalues, and 
-* A `dimd`\\*`nst` matrix that has the same type as `mat` where every column records an eigenstate. 
+* A `dimd`×`nst` matrix that has the same type as `mat` where every column records an eigenstate. 
 """
 function GetEigensystemCuda(mat :: OpMat{T}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), initvec = CUDA.rand(T, mat.dimd), disp_std = !SilentStd, kwargs...) where T <: Union{Float64, ComplexF64}
     kwargs1 = haskey(kwargs, :krylovdim) ? kwargs : (kwargs..., krylovdim = ncv)

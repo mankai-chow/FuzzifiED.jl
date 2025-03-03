@@ -42,7 +42,7 @@ where ``𝐪=(2πs/L_x,2πt/L_y), s,t∈ℤ``, ``L_xL_y=2πN_m`` and the Kroneck
 * `aspect_ratio :: Number` is the ratio ``L_y/L_x``. Facultative, at most one of `lx` and `aspect_ratio` is given. If both are omitted, ``L_x=L_y`` is taken. 
 
 # Output
-* A `nm`\\*`nm`\\*`nm` array giving the interaction matrix ``U_{m_1m_2m_3m_4}`` where ``m_4=m_1+m_2-m_3\\mod N_m``.
+* A `nm`×`nm`×`nm` array giving the interaction matrix ``U_{m_1m_2m_3m_4}`` where ``m_4=m_1+m_2-m_3\\mod N_m``.
 """
 function GetTorusIntMatrix(nm :: Int64, lx :: Number, ps_pot :: Vector{<:Number})
     int_el = zeros(ComplexF64, nm, nm, nm)
@@ -80,8 +80,8 @@ Return the normal-ordered density-density term in the Hamiltonian
 * `nf :: Int64` is the number of flavours.
 * `lx :: Number` is the length along ``x``-direction. Facultative.
 * `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``. 
-* `mat_a :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^A_{ff'}``. Facultative, ``I_{N_f}`` by default. 
-* `mat_b :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^B_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
+* `mat_a :: Matrix{<:Number}` is a `nf`×`nf` matrix specifying ``M^A_{ff'}``. Facultative, ``I_{N_f}`` by default. 
+* `mat_b :: Matrix{<:Number}` is a `nf`×`nf` matrix specifying ``M^B_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
 * `aspect_ratio :: Number` is the ratio ``L_y/L_x``. Facultative, at most one of `lx` and `aspect_ratio` is given. If both are omitted, ``L_x=L_y`` is taken. 
 """
 function GetTorusDenIntTerms(nm :: Int64, nf :: Int64, lx :: Number, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number} = Matrix{Float64}(I, nf, nf), mat_b :: Matrix{<:Number} = Matrix(mat_a'))
@@ -124,8 +124,8 @@ Return the normal-ordered pair-pair interaction term in the Hamiltonian
 * `nf :: Int64` is the number of flavours.
 * `lx :: Number` is the length along ``x``-direction. Facultative.
 * `ps_pot :: Vector{<:Number}` is a list of numbers specifying the pseudopotentials for the interacting matrix ``U_{m_1m_2m_3m_4}``. 
-* `mat_a :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^A_{ff'}``. Facultative, ``I_{N_f}`` by default. 
-* `mat_b :: Matrix{<:Number}` is a `nf`\\*`nf` matrix specifying ``M^B_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
+* `mat_a :: Matrix{<:Number}` is a `nf`×`nf` matrix specifying ``M^A_{ff'}``. Facultative, ``I_{N_f}`` by default. 
+* `mat_b :: Matrix{<:Number}` is a `nf`×`nf` matrix specifying ``M^B_{ff'}``. Facultative, the Hermitian conjugate of `mat_a` by default. 
 * `m_kept :: Vector{Int64}` is a list of orbitals that range from 1 to `nm`. Facultative, if specified, only terms for which all ``m_i`` are in the list are kept. 
 * `aspect_ratio :: Number` is the ratio ``L_y/L_x``. Facultative, at most one of `lx` and `aspect_ratio` is given. If both are omitted, ``L_x=L_y`` is taken. 
 """

@@ -16,7 +16,7 @@ where ``|i⟩`` is a direct product state, _i.e._, the configurations ``|i_{Ik}�
 * `szz :: Int64` records the maximum size ``\\max m_g`` of groups.
 * `cfgr :: Vector{Int64}` is a vector of length `cfs.ncf` and records which group ``|I⟩`` each configuration ``|i⟩`` belong to.
 * `cffac :: Vector{ComplexF64}` is a vector of length `cfs.ncf` and records the coefficients ``λ_i`` of each configuration.
-* `grel :: Matrix{Int64}` is a `szz`\\*`dim` matrix that records the configurations in each group ``|i_{Ik}⟩ (k = 1,…,m_I)``
+* `grel :: Matrix{Int64}` is a `szz`×`dim` matrix that records the configurations in each group ``|i_{Ik}⟩ (k = 1,…,m_I)``
 * `grsz :: Vector{Int64}` is a vector of length `dim` that records the size ``m_I`` of each group.
 """
 mutable struct SBasis
