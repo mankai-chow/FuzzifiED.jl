@@ -1,6 +1,7 @@
 # This example calculates the spectrum of 2d Ising CFT on a fuzzy thin torus. 
 # This example reproduces Figure 4 and Tables I--III in Phys. Rev. B 111, 085113 (2025)
 # On my table computer, this calculation takes 2.324 s
+# We acknowlege Wei Zhu for his help in reproducing the results. 
 
 using FuzzifiED
 using FuzzifiED.FuzzyManifolds
