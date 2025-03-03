@@ -55,7 +55,7 @@ end
 
 
 """
-    GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf, fac][, cyc :: Int64])
+    GetFlavPermQNOffd(nm :: Int64, nf :: Int64, permf[, fac][, cyc :: Int64])
     
 Return the flavour permutaiton transformation 
 ```math
