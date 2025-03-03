@@ -15,7 +15,6 @@ Gives the interaction matrix ``U_{m_1,m_2,m_3,m_4}`` from the pseudopotentials.
 * A `nm`×`nm`×`nm` array giving the interaction matrix ``U_{m_1,m_2,m_3,-m_1-m_2-m_3}``.
 """
 function GetIntMatrix(nm :: Int64, ps_pot :: Vector{<:Number})
-    ## N = 2s+1, get V[i,j,k,l]
     int_el = zeros(ComplexF64, nm, nm, nm)
     s = .5 * (nm - 1)
     for m1 in 1 : nm 
@@ -63,7 +62,6 @@ function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, ma
     no = nm * nf
     int_el = GetIntMatrix(nm, ps_pot)
     tms = Term[]
-    # Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
     for o1 = 1 : no
         m1 = div(o1 - 1, nf) + 1
         f1 = mod(o1 - 1, nf) + 1
@@ -73,8 +71,6 @@ function GetDenIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, ma
             f2 = mod(o2 - 1, nf) + 1
             if (o1 == o2) continue end
             if (m2 ∉ m_kept) continue end
-            # if (f1 < f2) continue end # f1 >= f2
-            # if (f1 == f2 && m1 <= m2) continue end 
             for o3 = 1 : no
                 m3 = div(o3 - 1, nf) + 1
                 f3 = mod(o3 - 1, nf) + 1
@@ -143,7 +139,6 @@ function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, m
     no = nm * nf
     int_el = GetIntMatrix(nm, ps_pot)
     tms = Term[]
-    # Go through all the m1-up, m2-down, m3-down, m4-up and m4 = m1 + m2 - m3
     for o1 = 1 : no
         m1 = div(o1 - 1, nf) + 1
         f1 = mod(o1 - 1, nf) + 1
@@ -154,8 +149,6 @@ function GetPairIntTerms(nm :: Int64, nf :: Int64, ps_pot :: Vector{<:Number}, m
             if (m2 ∉ m_kept) continue end
             if (o1 == o2) continue end
             if (abs(mat_a[f1, f2]) < 1E-13) continue end 
-            # if (f1 < f2) continue end # f1 >= f2
-            # if (f1 == f2 && m1 <= m2) continue end 
             for o3 = 1 : no
                 m3 = div(o3 - 1, nf) + 1
                 f3 = mod(o3 - 1, nf) + 1
@@ -236,7 +229,6 @@ function GetL2Terms(nm :: Int64, nf :: Int64)
         end for o = nf + 1 : no ]
     tms_lm = tms_lp' 
     tms_l2 = tms_lz * tms_lz - tms_lz + tms_lp * tms_lm
-    # Initialise the L2 operator
     return SimplifyTerms(tms_l2)
 end
 
