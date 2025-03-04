@@ -4,9 +4,9 @@
 
 ### Version 1.0
 
-#### Version 1.0.0 (14 Febuary, 2025)
+#### Version 1.0.0 (1 March, 2025)
 
-- Prepare for the release of the documentation.
+- Release together with the documentation.
 - Add support for torus. 
 - Add example for Potts. 
 - Fix bugs.

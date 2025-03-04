@@ -1721,7 +1721,6 @@ In this appendix, we collect the full version of the codes, including
     tms_nz00 = Term[]
     for m = 0 : nm - 1
         o = m * nf .+ [1, 2]
-        # Record the transverse field term
         tms_nz00 += Terms( 1 / nm, [1, o[1], 0, o[1]])
         tms_nz00 += Terms(-1 / nm, [1, o[2], 0, o[2]])
     end

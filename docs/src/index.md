@@ -1,11 +1,11 @@
 # FuzzifiED.jl
 
-Since its proposal, the fuzzy sphere regularisation has made significant contribution to the study of 3d CFTs. This Julia package FuzzifiED is aimed at simplifying the numerical calculations on the fuzzy sphere. It facilitates the exact diagonalisation (ED) calculations as well as the density matrix renormalisation group (DMRG) with the help of ITensor. It can also be used for generic fermionic and bosonic models. This package features the following characteristics : 
+Since its proposal, the fuzzy sphere regularisation has made significant contributions to the study of 3d CFTs. The Julia package FuzzifiED aims at simplifying the numerical calculations on the fuzzy sphere. It supports exact diagonalisation (ED) calculations, as well as the density matrix renormalisation group (DMRG) using the ITensor library. FuzzifiED can also apply to generic fermionic and bosonic models. This package offers the following features : 
 
-* Versatality : FuzzifiED can help reproduce almost all the ED and DMRG results in fuzzy sphere works, and it is easy and flexible for the adaption to new models. 
-* Usability : Julia interfaces make the code intuitive and short. To help the users get started, we have also provided [a collection of examples](@ref List-of-examples).
-* Efficiency : FuzzifiED can produce results on reasonable system sizes within minutes.
-* Open source : The code for FuzzifiED is fully open source. 
+* Versatility : FuzzifiED can reproduce nearly all the ED and DMRG results from fuzzy sphere research. Its flexible design also makes it straightforward to adapt to new models.
+* Usability : The expressive Julia interface simplifies coding and comprehension. To help users get started, we provide [a collection of examples](@ref List-of-examples).
+* Efficiency : FuzzifiED produces results on reasonable system sizes within minutes.
+* Open source : The FuzzifiED codebase is freely available under the MIT License, welcoming reviews and contributions from the wider community.
 
 A PDF version of the documentation is provided at [this link](https://docs.fuzzified.world/assets/FuzzifiED_Documentation.pdf). If you have any questions, please contact Zheng Zhou (周正) at [physics@zhengzhou.page](mailto:physics@zhengzhou.page).
 
@@ -23,20 +23,28 @@ To obtain the documentation for an interface, type `?` followed by the keyword i
 
 ## Citation
 
-If this package is helpful in your research, we would appreciate it if you mention in the acknowledgement. We have also provided a BibTeX file that includes all the works on the fuzzy sphere works at [this link](https://docs.fuzzified.world/assets/bib_fuzzy.bib).
+If this package is helpful in your research, please cite the package as : 
+
+> FuzzifiED -- Toolkit for numerics on the fuzzy sphere, Zheng Zhou, [arXiv:2503.00100](https://arxiv.org/abs/2503.00100).
+
+We have also provided a BibTeX file that includes all the works on the fuzzy sphere works at [this link](https://docs.fuzzified.world/assets/bib_fuzzy.bib).
 
 ## Useful information
 
-- Download Julia at [this link](https://julialang.org/downloads/). 
-- We have registered FuzzifiED at Julia General Registry. The package regisitry may have some delay, to bring up to date, use `Pkg.Registry.update()`, or install from the github repositories 
+* Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook.
+* The package regisitry may have some delay. If you encounter trouble at installation, to bring the registry up to date, use `Pkg.Registry.update()`, or install from the GitHub repos.
 ```Julia
 using Pkg
 Pkg.add(url="https://github.com/FuzzifiED/FuzzifiED_jll.jl")
 Pkg.add(url="https://github.com/FuzzifiED/FuzzifiED.jl")
 ```
-- Jupyter Notebook is highly recommended as it allows you to run Julia (and Python) just like running a Mathematica notebook.
-- The package is under active development, so certain interfaces may get changed, superceded or obsolete. We are sorry for any possible inconvenience. 
-- The supporting Fortran code for ED is stored at the GitHub Repo at [FuzzifiED/FuzzifiED_Fortran](https://github.com/FuzzifiED/FuzzifiED_Fortran).
+* Please find following some useful links.
+    - Installation for Julia : <https://julialang.org/downloads>
+    - Homepage : <https://www.fuzzified.world>
+    - Julia source code : <https://github.com/FuzzifiED/FuzzifiED.jl>
+    - JLL wrapper : <https://github.com/FuzzifiED/FuzzifiED_jll.jl>
+    - Fortran source code : <https://github.com/FuzzifiED/FuzzifiED_Fortran>
+    - Registry of the package : <https://juliahub.com/ui/Packages/General/FuzzifiED>
 
 ## Outline 
 
