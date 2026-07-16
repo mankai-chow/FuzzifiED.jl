@@ -67,7 +67,7 @@ end
 function ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Vector{Vector{Int64}}}, modul :: Vector{Int64} = fill(1, length(sec_tot)))
     id_sec_tot = Vector{Int64}[]
     for isec in Iterators.product(eachindex.(sec_pt)...)
-        seci_tot = sum([ sec_pt[i][isec[i]] for i ∈ eachindex(modul) ])
+        seci_tot = sum([ sec_pt[p][isec[p]] for p ∈ eachindex(sec_pt) ])
         EquivSec(seci_tot, sec_tot, modul) && push!(id_sec_tot, collect(isec))
     end
     return sort(id_sec_tot)

@@ -22,8 +22,9 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
     Threads.@threads :greedy for (isec, jsec, d) in collect(Iterators.product(eachindex(cpspf.idsec), eachindex(cpspd.idsec), 1 : nd))
         chh = ch[d]
         pfh = mod.(cpd[id_tc[d]].sec[1, :], 2)
-        pfi = [ mod(cpspd.sgsp[p].sec[isec][1], 2) for p = 1 : np]
-        pftot = sum([pfi[p] * sum(pfh[p + 1 : end]) for p = 1 : np]) % 2
+        idsecj = cpspd.idsec[jsec]
+        pfj = [ mod(cpspd.sgsp[p].sec[idsecj[p]][1], 2) for p = 1 : np]
+        pftot = sum([pfj[p] * sum(pfh[p + 1 : end]) for p = 1 : np]) % 2
 
         jst = cpspd.ptr_ch[jsec] - 1
         ist = cpspf.ptr_ch[isec] - 1

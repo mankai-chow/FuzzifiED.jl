@@ -47,7 +47,7 @@ function BuildSegSpace(no :: Int64, sec :: Vector{Vector{Int64}}, qnd :: Vector{
                     flag = true 
                     break
                 end
-                !flag && continue
+                flag || continue
                 if (isempty(l_rng[isec]) || l_rng[isec][end] ≠ l)
                     push!(l_rng[isec], l)
                     push!(ptr_st[isec], index)

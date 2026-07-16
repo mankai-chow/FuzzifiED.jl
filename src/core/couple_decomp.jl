@@ -95,7 +95,7 @@ function ContactCouple(obs :: Vector{SphereObs}, sec :: Matrix{Int64}, ltot :: I
             coeffi *= clebschgordan(chi[2, p - 1]/2, -s2_ptsum[p - 1]/2, chi[1, p]/2, -s2[p]/2, chi[2, p]/2, -s2_ptsum[p]/2)
         end
         flag || continue
-        coeffi *= √(prod(chi[1, :] .+ 1) / (ltot + 1) / (4π) ^ (np - 2)) * FuzzifiED.ObsNormRadSq
+        coeffi *= √(prod(chi[1, :] .+ 1) / (ltot + 1)) * FuzzifiED.ObsNormRadSq
         push!(ch, chi)
         push!(coeff, coeffi)
     end
