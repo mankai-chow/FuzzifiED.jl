@@ -16,9 +16,8 @@ end
 
 include("core/seg_space.jl")
 include("core/comp_space.jl")
+include("core/couple_decomp.jl")
 include("core/seg_operator.jl")
 include("core/comp_operator.jl")
-
-include("model/recouple.jl")
 
 end # module FuzzifiEDFullRotation

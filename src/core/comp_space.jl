@@ -1,4 +1,4 @@
-export CompSpace
+export CompSpace, BuildCompSpace
 export EquivSec, ComposeSec, FindCouplingChannels
 
 mutable struct CompSpace{T <: Union{Float64, ComplexF64}}
@@ -13,7 +13,7 @@ mutable struct CompSpace{T <: Union{Float64, ComplexF64}}
     ptr_st :: Vector{Vector{Int64}}
 end
 
-function CompSpace(sgsp :: Vector{SegSpace{T}}, idsec :: Vector{Vector{Int64}}, ltot :: Int64) where T <: Union{Float64, ComplexF64}
+function BuildCompSpace(sgsp :: Vector{SegSpace{T}}, idsec :: Vector{Vector{Int64}}, ltot :: Int64) where T <: Union{Float64, ComplexF64}
     np = length(sgsp)
     chs = [ Matrix{Int64}[] for _ ∈ idsec]
     ptr_ch = Int64[1]
@@ -43,10 +43,10 @@ function CompSpace(sgsp :: Vector{SegSpace{T}}, idsec :: Vector{Vector{Int64}}, 
     return CompSpace{T}(np, nch, dim, ltot, sgsp, idsec, chs, ptr_ch, ptr_st)
 end
 
-function CompSpace(sgsp :: Vector{SegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64, modul :: Vector{Int64} = fill(1, length(sec_tot))) where T <: Union{Float64, ComplexF64}
+function BuildCompSpace(sgsp :: Vector{SegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64, modul :: Vector{Int64} = fill(1, length(sec_tot))) where T <: Union{Float64, ComplexF64}
     sec_pt = [ sgspi.sec for sgspi in sgsp]
     idsec = ComposeSec(sec_tot, sec_pt, modul)
-    return CompSpace(sgsp, idsec, ltot)
+    return BuildCompSpace(sgsp, idsec, ltot)
 end
 
 function EquivSec(sec1 :: Vector{Int64}, sec2 :: Vector{Int64}, modul :: Vector{Int64})

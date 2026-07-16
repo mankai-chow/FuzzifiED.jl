@@ -1,4 +1,4 @@
-export SegSpace
+export SegSpace, BuildSegSpace
 
 mutable struct SegSpace{T <: Union{Float64, ComplexF64}}
     sec :: Vector{Vector{Int64}}
@@ -11,7 +11,7 @@ mutable struct SegSpace{T <: Union{Float64, ComplexF64}}
     sts1 :: Vector{Matrix{T}}
 end
 
-function SegSpace(no :: Int64, sec :: Vector{Vector{Int64}}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = 0 * one(Terms), c2_rng :: Vector{Float64} = [0.0] ; eltype = FuzzifiED.ElementType)
+function BuildSegSpace(no :: Int64, sec :: Vector{Vector{Int64}}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = 0 * one(Terms), c2_rng :: Vector{Float64} = [0.0] ; eltype = FuzzifiED.ElementType)
     nsec = length(sec)
     cfs = Vector{Confs}(undef, nsec)
     cfs1 = Vector{Confs}(undef, nsec)

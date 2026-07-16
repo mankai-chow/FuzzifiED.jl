@@ -1,4 +1,4 @@
-export SegOperator
+export SegOperator, BuildSegOperator, BuildSegOperators
 
 mutable struct SegOperator{T <: Union{Float64, ComplexF64}}
     sgspd :: SegSpace
@@ -8,7 +8,7 @@ mutable struct SegOperator{T <: Union{Float64, ComplexF64}}
     elmat :: Vector{Matrix{Float64}}
 end
 
-function SegOperator(sgspd :: SegSpace, sgspf :: SegSpace, amd :: AngModes, ll :: Int64, secop :: Vector{Int64}, modul :: Vector{Int64} = fill(1, length(sgspd.sec[1])) ; eltype = FuzzifiED.ElementType, num_th = 1)
+function BuildSegOperator(sgspd :: SegSpace, sgspf :: SegSpace, amd :: AngModes, ll :: Int64, secop :: Vector{Int64}, modul :: Vector{Int64} = fill(1, length(sgspd.sec[1])) ; eltype = FuzzifiED.ElementType, num_th = 1)
     index = 0
     colptr = zeros(Int64, length(sgspd.sec) + 1)
     colptr[1] = 1 
@@ -76,3 +76,20 @@ function SegOperator(sgspd :: SegSpace, sgspf :: SegSpace, amd :: AngModes, ll :
     end
     return SegOperator{eltype}(sgspd, sgspf, colptr, rowid, elmat)
 end
+
+function BuildSegOperators(sgspd :: Vector{SegSpace{T}}, sgspf :: Vector{SegSpace{T}}, cpd :: Vector{CoupleDecomp}, modul :: Vector{Int64} = fill(1, length(sgspd[1].sec[1]))) where T <: Union{Float64, ComplexF64}
+    id_tc = vcat([ fill(i, length(cpd[i].ch)) for i in eachindex(cpd)]...)
+    ch = vcat([ cpd[i].ch for i in eachindex(cpd) ]...)
+    coeff = vcat([ cpd[i].coeff for i in eachindex(cpd) ]...)
+    nd = length(id_tc)
+    np = length(sgspd)
+    sgop = Matrix{SegOperator}(undef, np, nd)
+    Threads.@threads :greedy for (p, d) in collect(Iterators.product(1 : np, 1 : nd))
+        amd = cpd[id_tc[d]].amd[p]
+        secop = cpd[id_tc[d]].sec[:, p]
+        ll = ch[d][1, p]
+        sgop[p, d] = BuildSegOperator(sgspd[p], sgspf[p], amd, ll, secop, modul)
+    end
+    return sgop
+end
+BuildSegOperators(sgspd :: Vector{SegSpace{T}}, cpd :: Vector{CoupleDecomp}, modul :: Vector{Int64} = fill(1, length(sgspd[1].sec[1]))) where T <: Union{Float64, ComplexF64} = BuildSegOperators(sgspd, sgspd, cpd, modul)
