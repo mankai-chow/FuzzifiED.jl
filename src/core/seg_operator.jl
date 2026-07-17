@@ -5,7 +5,7 @@ mutable struct SegOperator{T <: Union{Float64, ComplexF64}}
     sgspf :: SegSpace 
     colptr :: Vector{Int64}
     rowid :: Vector{Int64}
-    elmat :: Vector{Matrix{Float64}}
+    elmat :: Vector{Matrix{T}}
 end
 
 function BuildSegOperator(sgspd :: SegSpace, sgspf :: SegSpace, amd :: AngModes, ll :: Int64, secop :: Vector{Int64}, modul :: Vector{Int64} = fill(1, length(sgspd.sec[1])) ; eltype = FuzzifiED.ElementType, num_th = 1)
@@ -13,7 +13,7 @@ function BuildSegOperator(sgspd :: SegSpace, sgspf :: SegSpace, amd :: AngModes,
     colptr = zeros(Int64, length(sgspd.sec) + 1)
     colptr[1] = 1 
     rowid = Int64[]
-    elmat = Matrix{Float64}[]
+    elmat = Matrix{eltype}[]
 
     for j in eachindex(sgspd.sec)
         secd = sgspd.sec[j]
@@ -80,7 +80,6 @@ end
 function BuildSegOperators(sgspd :: Vector{SegSpace{T}}, sgspf :: Vector{SegSpace{T}}, cpd :: Vector{CoupleDecomp}, modul :: Vector{Int64} = fill(1, length(sgspd[1].sec[1]))) where T <: Union{Float64, ComplexF64}
     id_tc = vcat([ fill(i, length(cpd[i].ch)) for i in eachindex(cpd)]...)
     ch = vcat([ cpd[i].ch for i in eachindex(cpd) ]...)
-    coeff = vcat([ cpd[i].coeff for i in eachindex(cpd) ]...)
     nd = length(id_tc)
     np = length(sgspd)
     sgop = Matrix{SegOperator}(undef, np, nd)
