@@ -13,21 +13,23 @@ sec_tot = [ne, 0]
 
 n_mod = GetDensityMod(nm, 1, [1;;])
 c_obs = GetElectronObs(nm, 1, 1)
-cpd_hmt = (2 * CoupleDecomp([ n_mod, n_mod ], ConvPsPot(RecouplePsPot((nm-1)/2, [4.75, 1.0]))..., [ 0 0 ; 0 0 ])
-    - 3.16 * ContactCouple([c_obs', c_obs], [ 1 -1 ; 0 0 ])
-    + 3.16 * ContactCouple([c_obs, c_obs'], [ -1 1 ; 0 0 ]))
+cpd_int = 2 * CoupleDecomp([ n_mod, n_mod ], ConvPsPot(RecouplePsPot((nm-1)/2, [4.75, 1.0]))..., [ 0 0 ; 0 0 ])
+cpd_nx = ContactCouple([c_obs', c_obs], [ 1 -1 ; 0 0 ]) - ContactCouple([c_obs, c_obs'], [ -1 1 ; 0 0 ])
+
+cpd_hmt = PrepareCouple(cpd_int - 3.16 * cpd_nx)
 tms_lzlp_pt = GetLpLzTerms(nm, 1) 
 
 sgsp = BuildSegSpace(nm, sec_pt, qnd_pt, tms_lzlp_pt)
 sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt)
 result = []
-for l in 0 : 2
-    @show l
-    cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, 2l)
+for ltot in 0 : 2
+    ll = Int64(2ltot)
+    cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, ll)
+    @show ltot, cpsp.dim
     cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
     enrg, st = GetEigensystem(cpop_hmt, 10)
     for i in eachindex(enrg)
-        push!(result, [enrg[i] / √(2l + 1), l])
+        push!(result, [enrg[i] / √(ll + 1), ltot])
     end
 end
 

@@ -1,5 +1,6 @@
 export CoupleDecomp
 export RecouplePsPot, ConvPsPot, ContactCouple, SingleSegCouple
+export PrepareCouple
 
 mutable struct CoupleDecomp
     amd :: Vector{AngModes}
@@ -33,18 +34,18 @@ function Base.:-(cpd1 :: Union{CoupleDecomp, Vector{CoupleDecomp}}, cpd2 :: Unio
 end
 
 function RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ps_pot0 :: Dict)
-    Lmin = max(abs(s1 - s3), abs(s2 - s4))
-    Lmax = min(s1 + s3, s2 + s4)
+    Lmin = max(abs(s1 - s4), abs(s2 - s3))
+    Lmax = min(s1 + s4, s2 + s3)
     ps_pot1 = Dict{Float64, ComplexF64}()
     for L in Lmin : Lmax
         W = 0.0
         for (J, V) in ps_pot0
             (abs(s1 - s2) ≤ J ≤ s1 + s2) || continue
             (abs(s3 - s4) ≤ J ≤ s3 + s4) || continue
-            sixj = Float64(wigner6j(s1, s2, J, s4, s3, L))
+            sixj = Float64(wigner6j(s1, s2, J, s3, s4, L))
             sixj == 0.0 && continue
-            iseven(L) || (sixj = -sixj)
-            #iseven(round(Int, s2 + s3 + J + L)) || (sixj = -sixj)
+            #iseven(L) || (sixj = -sixj)
+            sixj *= (1.0im) ^ Int(-2J)
             W += (2J + 1) * sixj * V
         end
         ps_pot1[L] = W
@@ -52,7 +53,7 @@ function RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, p
     return ps_pot1
 end
 function RecouplePsPot(s :: Number, ps_pot :: Vector{<:Number}) 
-    ps_pot0 = Dict([ 2s + 1 - i => ps_pot[i] * (-1) ^ (i - 1) for i ∈ eachindex(ps_pot)])
+    ps_pot0 = Dict([ 2s + 1 - i => ps_pot[i] for i ∈ eachindex(ps_pot)])
     return RecouplePsPot(s, s, s, s, ps_pot0)
 end
 
@@ -61,8 +62,8 @@ function ConvPsPot(ps_pot0 :: Dict)
     coeff = ComplexF64[]
     for (J, V) in ps_pot0
         J2 = Int64(2 * J)
-        push!(ch, [2J  2J ; 2J  0])
-        push!(coeff, V * √(J2 + 1))
+        push!(ch, [J2  J2 ; J2  0])
+        push!(coeff, V * √(J2 + 1) * (1.0im) ^ (J2))
     end
     return ch, coeff
 end
@@ -117,3 +118,21 @@ function SingleSegCouple(np :: Int64, p :: Int64, tms :: Terms, sec :: Vector{In
     amdp = AngModes(0, Dict((0, 0) => tms))
     return SingleSegCouple(np, p, amdp, 0, sec)
 end
+
+function PrepareCouple(cpd :: CoupleDecomp ; eltype = FuzzifiED.ElementType)
+    amd1 = AngModes[]
+    ph = 1.0 + 0.0im
+    for amdi in cpd.amd
+        amdi1 = StoreComps(amdi)
+        if (eltype == Float64)
+            coeff1 = collect(amdi1.comps)[1][2][1].coeff
+            if (abs(coeff1.re / coeff1.im) < 1E-4)
+                amdi1 *= 1.0im 
+                ph *= -1.0im
+            end
+        end
+        push!(amd1, amdi1)
+    end
+    return CoupleDecomp(amd1, cpd.ch, cpd.coeff .* ph, cpd.sec)
+end
+PrepareCouple(cpd :: Vector{CoupleDecomp} ; eltype = FuzzifiED.ElementType) = PrepareCouple.(cpd ; eltype)
