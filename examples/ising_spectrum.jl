@@ -6,8 +6,10 @@ nm = 12
 nf = 2
 ne = nm
 
-qnd_pt = [ GetNeQNDiag(nm), 
-    GetLz2QNDiag(nm, 1)] 
+qnd_pt = [ 
+    GetNeQNDiag(nm), 
+    GetLz2QNDiag(nm, 1)
+] 
 sec_pt = [ [ne1, ((nm + 1) * ne1) % 2] for ne1 = 0 : ne]
 sec_tot = [ne, 0]
 
@@ -22,14 +24,14 @@ tms_lzlp_pt = GetLpLzTerms(nm, 1)
 sgsp = BuildSegSpace(nm, sec_pt, qnd_pt, tms_lzlp_pt)
 sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt)
 result = []
-for ltot in 0 : 2
-    ll = Int64(2ltot)
+for l in 0 : 2
+    ll = Int64(2l)
     cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, ll)
-    @show ltot, cpsp.dim
+    @show l, cpsp.dim
     cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
     enrg, st = GetEigensystem(cpop_hmt, 10)
     for i in eachindex(enrg)
-        push!(result, [enrg[i] / √(ll + 1), ltot])
+        push!(result, [enrg[i] / √(2l + 1), l])
     end
 end
 
