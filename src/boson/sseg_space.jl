@@ -11,7 +11,7 @@ mutable struct SSegSpace{T <: Union{Float64, ComplexF64}}
     sts1 :: Vector{Matrix{T}}
 end
 
-function BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Vector{Vector{Int64}}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms = 0 * one(STerms), c2_rng :: Vector{Float64} = [0.0] ; eltype = FuzzifiED.ElementType)
+function BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Vector{Vector{Int64}}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms = 0 * one(STerms), c2_rng :: Vector{Float64} = [0.0] ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
     nsec = length(sec)
     cfs = Vector{SConfs}(undef, nsec)
     cfs1 = Vector{SConfs}(undef, nsec)
@@ -21,18 +21,18 @@ function BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :
     ptr_st = [ Int64[] for _ ∈ sec ]
     l_lookup = [ Dict{Int64, Int64}() for _ ∈ sec ]
     tms_l2 = GetL2STerms(tms_lzlp)
-    Threads.@threads for isec ∈ eachindex(sec)
+    BLAS.set_num_threads(num_th)
+    for isec ∈ eachindex(sec)
         seci = sec[isec]
-        cfs[isec] = SConfs(nof, nob, nebm[isec], seci, qnd ; num_th = 1)
-
+        cfs[isec] = SConfs(nof, nob, nebm[isec], seci, qnd ; num_th)
         bs = SBasis(cfs[isec])
 
-        l2_mat = Matrix(OpMat(SOperator(bs, tms_l2), num_th = 1))
-        c2_mat = Matrix(OpMat(SOperator(bs, tms_c2), num_th = 1))
-        _, st = eigen(Hermitian(l2_mat + √2 * c2_mat))
+        l2c2_mat = Matrix(OpMat(SOperator(bs, √2 * tms_l2 + tms_c2) ; num_th))
+        l2c2_val, st = eigen(Hermitian(l2c2_mat))
 
-        l2_val = vec(sum(conj.(st) .* (l2_mat * st) ; dims = 1))
-        c2_val = vec(sum(conj.(st) .* (c2_mat * st) ; dims = 1))
+        l2_mat = OpMat(SOperator(bs, tms_l2) ; num_th)
+        l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in axes(st, 2)]
+        c2_val = l2c2_val .- √2 .* l2_val
         l_val = round.(Int64, sqrt.(real.(4 * l2_val) .+ 1) .- 1)
 
         ls = sort(unique(l_val))
@@ -65,13 +65,15 @@ function BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :
         if (seci[2] == 0)
             seci1 = deepcopy(seci)
             seci1[2] = 2
-            cfs1[isec] = SConfs(nof, nob, nebm[isec], seci1, qnd ; num_th = 1)
+            cfs1[isec] = SConfs(nof, nob, nebm[isec], seci1, qnd ; num_th)
             bs1 = SBasis(cfs1[isec])
             lp = SOperator(bs, bs1, tms_lzlp[2])
             lp_mat = Matrix(OpMat(lp))
             sts1[isec] = lp_mat * sts[isec]
         end
+        #println("SECTOR $(seci), TOTAL DIMENSION $(bs.dim), SELECTED DIMENSION $(index - 1).")
     end
+    BLAS.set_num_threads(1)
     ptr_sec = cumsum([ptr_st[isec][end] - 1 for isec ∈ eachindex(sec)])
     for isec = 2 : length(sec)
         ptr_st[isec] .+= ptr_sec[isec - 1]

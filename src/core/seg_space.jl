@@ -11,7 +11,7 @@ mutable struct SegSpace{T <: Union{Float64, ComplexF64}}
     sts1 :: Vector{Matrix{T}}
 end
 
-function BuildSegSpace(no :: Int64, sec :: Vector{Vector{Int64}}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = 0 * one(Terms), c2_rng :: Vector{Float64} = [0.0] ; eltype = FuzzifiED.ElementType)
+function BuildSegSpace(no :: Int64, sec :: Vector{Vector{Int64}}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = 0 * one(Terms), c2_rng :: Vector{Float64} = [0.0] ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
     nsec = length(sec)
     cfs = Vector{Confs}(undef, nsec)
     cfs1 = Vector{Confs}(undef, nsec)
@@ -21,18 +21,20 @@ function BuildSegSpace(no :: Int64, sec :: Vector{Vector{Int64}}, qnd :: Vector{
     ptr_st = [ Int64[] for _ ∈ sec ]
     l_lookup = [ Dict{Int64, Int64}() for _ ∈ sec ]
     tms_l2 = GetL2Terms(tms_lzlp)
-    Threads.@threads for isec ∈ eachindex(sec)
+    BLAS.set_num_threads(num_th)
+    for isec ∈ eachindex(sec)
         seci = sec[isec]
-        cfs[isec] = Confs(no, seci, qnd ; num_th = 1)
+        cfs[isec] = Confs(no, seci, qnd ; num_th)
 
         bs = Basis(cfs[isec])
 
-        l2_mat = Matrix(OpMat(Operator(bs, tms_l2), num_th = 1))
-        c2_mat = Matrix(OpMat(Operator(bs, tms_c2), num_th = 1))
-        _, st = eigen(Hermitian(l2_mat + √2 * c2_mat))
+        l2c2_mat = Matrix(OpMat(Operator(bs, √2 * tms_l2 + tms_c2) ; num_th))
+        l2c2_val, st = eigen(Hermitian(l2c2_mat))
 
-        l2_val = vec(sum(conj.(st) .* (l2_mat * st) ; dims = 1))
-        c2_val = vec(sum(conj.(st) .* (c2_mat * st) ; dims = 1))
+
+        l2_mat = OpMat(Operator(bs, tms_l2) ; num_th)
+        l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in axes(st, 2)]
+        c2_val = l2c2_val .- √2 .* l2_val
         l_val = round.(Int64, sqrt.(real.(4 * l2_val) .+ 1) .- 1)
 
         ls = sort(unique(l_val))
@@ -65,7 +67,7 @@ function BuildSegSpace(no :: Int64, sec :: Vector{Vector{Int64}}, qnd :: Vector{
         if (seci[2] == 0)
             seci1 = deepcopy(seci)
             seci1[2] = 2
-            cfs1[isec] = Confs(no, seci1, qnd ; num_th = 1)
+            cfs1[isec] = Confs(no, seci1, qnd ; num_th)
             bs1 = Basis(cfs1[isec])
             lp = Operator(bs, bs1, tms_lzlp[2])
             lp_mat = Matrix(OpMat(lp))
