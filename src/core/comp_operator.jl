@@ -51,14 +51,29 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
     coeff = vcat([ cpd[i].coeff for i in eachindex(cpd) ]...)
     nd = length(id_tc)
     np = cpspd.np
+    modul = cpspd.sgsp[1].sec_modul
     
     mat9j = Array{Float64}(undef, cpspf.nch, cpspd.nch, nd)
     Threads.@threads :greedy for (isec, jsec, d) in collect(Iterators.product(axes(cpspf.idsec, 2), axes(cpspd.idsec, 2), 1 : nd))
-        chh = ch[d]
-        pfh = mod.(cpd[id_tc[d]].sec[1, :], 2)
         idsecj = cpspd.idsec[:, jsec]
-        pfj = [ mod(cpspd.sgsp[p].sec[1, idsecj[p]], 2) for p = 1 : np]
+        idseci = cpspf.idsec[:, isec]
+        secj = reduce(hcat, [ cpspd.sgsp[p].sec[:, idsecj[p]] for p = 1 : np])
+        seci = reduce(hcat, [ cpspf.sgsp[p].sec[:, idseci[p]] for p = 1 : np])
+        sech = cpd[id_tc[d]].sec
+        
+        flag = true 
+        for p = 1 : np
+            if (!EquivSec(seci[:, p], secj[:, p] .+ sech[:, p], modul))
+                flag = false
+                break
+            end
+        end
+        flag || continue
+
+        pfh = mod.(sech[1, :], 2)
+        pfj = mod.(secj[1, :], 2)
         pftot = sum([pfj[p] * sum(pfh[p + 1 : end]) for p = 1 : np]) % 2
+        chh = ch[d]
 
         jst = cpspd.ptr_ch[jsec] - 1
         ist = cpspf.ptr_ch[isec] - 1

@@ -42,7 +42,7 @@ end
 
 """
     BuildCompSpace(sgsp :: Vector{SegSpace{T}}, idsec :: Matrix{Int64}, ltot :: Int64) :: CompSpace
-    BuildCompSpace(sgsp :: Vector{SegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64, modul :: Vector{Int64}) :: CompSpace
+    BuildCompSpace(sgsp :: Vector{SegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64) :: CompSpace
 
 constructs a [CompSpace](@ref CompSpace) from the segment spaces of the parts with total angular momentum `ltot`. For every composite sector it enumerates, through [FindCouplingChannels](@ref FindCouplingChannels), all the ways of coupling the per-part angular momenta into ``l_{\\text{tot}}``, and computes the resulting dimensions and pointers.
 
@@ -54,8 +54,7 @@ constructs a [CompSpace](@ref CompSpace) from the segment spaces of the parts wi
 
 In the second form the composite sectors are found automatically with [ComposeSec](@ref ComposeSec) from
 
-* `sec_tot :: Vector{Int64}` the target total diagonal quantum numbers, and
-* `modul :: Vector{Int64}` the moduli used to match the quantum numbers. Facultative, all ``1`` by default.
+* `sec_tot :: Vector{Int64}` the target total diagonal quantum numbers.
 
 # Output
 
@@ -91,8 +90,9 @@ function BuildCompSpace(sgsp :: Vector{SegSpace{T}}, idsec :: Matrix{Int64}, lto
     return CompSpace{T}(np, nch, dim, ltot, sgsp, idsec, chs, ptr_ch, ptr_st)
 end
 
-function BuildCompSpace(sgsp :: Vector{SegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64, modul :: Vector{Int64} = fill(1, length(sec_tot))) where T <: Union{Float64, ComplexF64}
+function BuildCompSpace(sgsp :: Vector{SegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64) where T <: Union{Float64, ComplexF64}
     sec_pt = [ sgspi.sec for sgspi in sgsp]
+    modul = sgsp[1].sec_modul
     idsec = ComposeSec(sec_tot, sec_pt, modul)
     return BuildCompSpace(sgsp, idsec, ltot)
 end

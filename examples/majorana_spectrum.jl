@@ -37,14 +37,14 @@ cpd_bb = SingleSegSCouple(2, 2, ContractMod(b' * b', b * b, 2s-1), [0, 0, 0, 0])
 cpd_μ = SingleSegSCouple(2, 1, STerms(GetPolTerms(nmf, 1, [1;;])), [0, 0, 0, 0])
 cpd_hmt = PrepareCouple(2.0 * cpd_fb + 1.0 * cpd_bb - 0.3 * cpd_hop)
 
-sgsp_f = BuildSSegSpace(nmf, 1, nebm_f, sec_f, qnd_f, tms_lzlp_f)
-sgsp_b = BuildSSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0])
-sgop_hmt = BuildSSegOperators([sgsp_f, sgsp_b], cpd_hmt, [2, 1, 1, 1])
+sgsp_f = BuildSSegSpace(nmf, 1, nebm_f, sec_f, qnd_f, tms_lzlp_f, modul)
+sgsp_b = BuildSSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0], modul)
+sgop_hmt = BuildSSegOperators([sgsp_f, sgsp_b], cpd_hmt)
 result = []
 for ltot = 0 : 1/2 : 2
     ll = Int64(2ltot)
     sec_tot = [nmf + ll%2, 0, ne, 0]
-    cpsp = BuildSCompSpace([sgsp_f, sgsp_b], sec_tot, ll, modul)
+    cpsp = BuildSCompSpace([sgsp_f, sgsp_b], sec_tot, ll)
     @show ltot, cpsp.dim
     cpop_hmt = BuildSCompOperator(cpsp, cpd_hmt, sgop_hmt)
     enrg, st = GetEigensystem(cpop_hmt, 10)

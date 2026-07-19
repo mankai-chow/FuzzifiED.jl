@@ -25,7 +25,7 @@ mutable struct SSegOperator{T <: Union{Float64, ComplexF64}}
 end
 
 """
-    BuildSSegOperator(sgspd :: SSegSpace, sgspf :: SSegSpace, amd :: SAngModes, ll :: Int64, secop :: Vector{Int64}, modul :: Vector{Int64} ; eltype :: Type, num_th :: Int64) :: SSegOperator
+    BuildSSegOperator(sgspd :: SSegSpace, sgspf :: SSegSpace, amd :: SAngModes, ll :: Int64, secop :: Vector{Int64} ; eltype :: Type, num_th :: Int64) :: SSegOperator
 
 constructs a [SSegOperator](@ref SSegOperator) for the spherical spherical-symmetric operator `amd` of rank `ll` acting on a single segment. For every pair of sectors related by the quantum number shift `secop`, and every pair of ``l``-multiplets allowed by the triangle rule, it computes the reduced matrix element from the full matrix element via the Wigner—Eckart theorem by dividing out the phase and the ``3j``-symbol. When the ``3j``-symbol vanishes (for ``m_1=m_2=0`` and ``l>0``) the reduced matrix element is instead recovered from the ``m=1`` components, using the ``L^z=1`` states ``L^+|L,0⟩=\\sqrt{l(l+1)}|l,1⟩`` stored in the segment space.
 
@@ -35,7 +35,6 @@ constructs a [SSegOperator](@ref SSegOperator) for the spherical spherical-symme
 * `amd :: SAngModes` is the spherical spherical-symmetric operator.
 * `ll :: Int64` is twice the rank ``2l`` of the spherical-symmetric operator.
 * `secop :: Vector{Int64}` is the change of quantum numbers induced by the operator ; a final sector matches an initial sector when `secd .+ secop` is equivalent to it.
-* `modul :: Vector{Int64}` are the moduli used to match the quantum numbers. Facultative, all ``1`` by default.
 * `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `FuzzifiED.ElementType` by default.
 * `num_th :: Int64` is the number of threads. Facultative, ``1`` by default.
 
@@ -43,12 +42,13 @@ constructs a [SSegOperator](@ref SSegOperator) for the spherical spherical-symme
 
 * `sgop :: SSegOperator` is the resulting segment operator.
 """
-function BuildSSegOperator(sgspd :: SSegSpace, sgspf :: SSegSpace, amd :: SAngModes, ll :: Int64, secop :: Vector{Int64}, modul :: Vector{Int64} = fill(1, size(sgspd.sec, 1)) ; eltype = FuzzifiED.ElementType, num_th = 1)
+function BuildSSegOperator(sgspd :: SSegSpace, sgspf :: SSegSpace, amd :: SAngModes, ll :: Int64, secop :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = 1)
     index = 0
     colptr = zeros(Int64, size(sgspd.sec, 2) + 1)
     colptr[1] = 1
     rowid = Int64[]
     elmat = Matrix{eltype}[]
+    modul = sgspd.sec_modul
 
     for j in axes(sgspd.sec, 2)
         secd = sgspd.sec[:, j]
@@ -108,7 +108,7 @@ function BuildSSegOperator(sgspd :: SSegSpace, sgspf :: SSegSpace, amd :: SAngMo
 end
 
 """
-    BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}[, sgspf :: Vector{SSegSpace{T}}], cpd :: Vector{SCoupleDecomp}[, modul :: Vector{Int64}]) :: Matrix{SSegOperator}
+    BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}[, sgspf :: Vector{SSegSpace{T}}], cpd :: Vector{SCoupleDecomp}) :: Matrix{SSegOperator}
 
 constructs, in parallel, all the [SSegOperators](@ref SSegOperator) required to assemble the composite operators described by the coupling decompositions `cpd`.
 
@@ -117,13 +117,12 @@ constructs, in parallel, all the [SSegOperators](@ref SSegOperator) required to 
 * `sgspd :: Vector{SSegSpace{T}}` is the list of the initial segment spaces.
 * `sgspf :: Vector{SSegSpace{T}}` is the list of the final segment spaces. Facultative, the same as `sgspd` by default.
 * `cpd :: Vector{SCoupleDecomp}` is the list of coupling decompositions, _e. g._, an assembled Hamiltonian.
-* `modul :: Vector{Int64}` are the moduli used to match the quantum numbers. Facultative, all ``1`` by default.
 
 # Output
 
 * `sgop :: Matrix{SSegOperator}` is a matrix of segment operators of size ``N_p×N_d``, where ``N_p`` is the number of parts and ``N_d`` the total number of channels of `cpd`. It is passed together with the same `cpd` to [BuildSCompOperator](@ref BuildSCompOperator).
 """
-function BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, sgspf :: Vector{SSegSpace{T}}, cpd :: Vector{SCoupleDecomp}, modul :: Vector{Int64} = fill(1, size(sgspd[1].sec, 1))) where T <: Union{Float64, ComplexF64}
+function BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, sgspf :: Vector{SSegSpace{T}}, cpd :: Vector{SCoupleDecomp}) where T <: Union{Float64, ComplexF64}
     id_tc = vcat([ fill(i, length(cpd[i].ch)) for i in eachindex(cpd)]...)
     ch = vcat([ cpd[i].ch for i in eachindex(cpd) ]...)
     coeff = vcat([ cpd[i].coeff for i in eachindex(cpd) ]...)
@@ -134,8 +133,8 @@ function BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, sgspf :: Vector{SSegS
         amd = cpd[id_tc[d]].amd[p]
         secop = cpd[id_tc[d]].sec[:, p]
         ll = ch[d][1, p]
-        sgop[p, d] = BuildSSegOperator(sgspd[p], sgspf[p], amd, ll, secop, modul)
+        sgop[p, d] = BuildSSegOperator(sgspd[p], sgspf[p], amd, ll, secop)
     end
     return sgop
 end
-BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, cpd :: Vector{SCoupleDecomp}, modul :: Vector{Int64} = fill(1, size(sgspd[1].sec, 1))) where T <: Union{Float64, ComplexF64} = BuildSSegOperators(sgspd, sgspd, cpd, modul)
+BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, cpd :: Vector{SCoupleDecomp}) where T <: Union{Float64, ComplexF64} = BuildSSegOperators(sgspd, sgspd, cpd)

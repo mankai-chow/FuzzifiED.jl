@@ -23,6 +23,7 @@ where ``α`` is the multiplicity of the sector. For each multiplet only one stat
 """
 mutable struct SegSpace{T <: Union{Float64, ComplexF64}}
     sec :: Matrix{Int64}
+    sec_modul :: Vector{Int64}
     l_rng :: Vector{Vector{Int64}}
     l_lookup :: Vector{Dict{Int64, Int64}}
     ptr_st :: Vector{Vector{Int64}}
@@ -56,7 +57,7 @@ For each sector the operator ``\\sqrt{2}L^2+C_2`` is built and diagonalised ; th
 
 * `sgsp :: SegSpace` is the resulting [SegSpace](@ref SegSpace) object.
 """
-function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = zero(Terms), c2_rng :: Vector{Float64} = [0.0] ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
+function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = zero(Terms), c2_rng :: Vector{Float64} = [0.0], sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
     nsec = size(sec, 2)
     cfs = Vector{Confs}(undef, nsec)
     cfs1 = Vector{Confs}(undef, nsec)
@@ -122,5 +123,6 @@ function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag},
     for isec = 2 : nsec
         ptr_st[isec] .+= ptr_sec[isec - 1]
     end
-    return SegSpace{eltype}(sec, l_rng, l_lookup, ptr_st, cfs, cfs1, sts, sts1)
+    return SegSpace{eltype}(sec, sec_modul, l_rng, l_lookup, ptr_st, cfs, cfs1, sts, sts1)
 end
+BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, modul :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads) = BuildSegSpace(no, sec, qnd, tms_lzlp, zero(Terms), [0.0], modul)
