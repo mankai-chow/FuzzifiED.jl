@@ -1,6 +1,26 @@
 export SCoupleDecomp
 export ContactSCouple, SingleSegSCouple
+# The pseudopotential helpers RecouplePsPot and ConvPsPot are type agnostic and
+# shared with the fermionic code in `couple_decomp.jl`.
 
+"""
+    SCoupleDecomp
+
+The mutable type `SCoupleDecomp` records the decomposition of couplings into channels of direct-producted spherical-symmetric actions onto each part. _E. g._ for bipartite and tri-partite systems, each coupling channel may take the form
+```math
+\\begin{aligned}
+    [𝒪]_{(l_1l_2)l}&=[𝒪_1]_{l_1}⊗[𝒪_2]_{l_2}&𝒪_{lm}&=[𝒪_1]_{l_1l_1}[𝒪_2]_{l_2m_2}⟨l_1m_1,l_2m_2|lm⟩\\\\
+    [𝒪]_{((l_1l_2)l_{12}l_3)l}&=([𝒪_1]_{l_1}⊗[𝒪_2]_{l_2})_{l_{12}}[𝒪_3]_{l_3}&𝒪_{lm}&=[𝒪_1]_{l_1l_1}[𝒪_2]_{l_2m_2}[𝒪_3]_{l_3m_3}⟨l_1m_1,l_2m_2|l_{12}m_{12}⟩⟨l_{12}m_{12},l_3m_3|lm⟩
+\\end{aligned}
+```
+
+# Fields
+
+* `amd :: Vector{SAngModes}` records, for each part `p`, the spherical-symmetric action on that part, stored as an `SAngModes` object.
+* `ch :: Vector{Matrix{Int64}}` is the list of coupling channels.
+* `coeff :: Vector{ComplexF64}` is the coefficient of each channel.
+* `sec :: Matrix{Int64}` records the change of quantum numbers that the term induces : `sec[iqn, p]` is the shift of the `iqn`-th diagonal quantum number on part `p`.
+"""
 mutable struct SCoupleDecomp
     amd :: Vector{SAngModes}
     ch :: Vector{Matrix{Int64}}
@@ -8,10 +28,23 @@ mutable struct SCoupleDecomp
     sec :: Matrix{Int64} # sec[iqn, p]
 end
 
+"""
+    SCoupleDecomp(amd :: Vector{SAngModes}, ch :: Matrix{Int64}, sec :: Matrix{Int64}) :: SCoupleDecomp
+
+constructs a single-channel `SCoupleDecomp` with unit coefficient from the operators `amd`, a single coupling channel `ch` and the quantum number shift `sec`.
+"""
 function SCoupleDecomp(amd :: Vector{SAngModes}, ch :: Matrix{Int64}, sec :: Matrix{Int64})
     return SCoupleDecomp(amd, [ch], [1.0], sec)
 end
 
+"""
+    cpd1 + cpd2 :: Vector{SCoupleDecomp}
+    cpd1 - cpd2 :: Vector{SCoupleDecomp}
+    -cpd :: Vector{SCoupleDecomp}
+    fac * cpd :: Vector{SCoupleDecomp}
+
+enable the linear combination of coupling decompositions.
+"""
 function Base.:+(cpd1 :: Union{SCoupleDecomp, Vector{SCoupleDecomp}}, cpd2 :: Union{SCoupleDecomp, Vector{SCoupleDecomp}})
     return [ cpd1 ; cpd2 ]
 end
@@ -36,6 +69,24 @@ function Fuzzifino.SAngModes(obs :: SSphereObs)
     return SAngModes(obs.l2m, obs.get_comp)
 end
 
+"""
+    ContactSCouple(obs :: Vector{SSphereObs}, sec :: Matrix{Int64}, ltot :: Int64) :: SCoupleDecomp
+
+constructs a [SCoupleDecomp](@ref SCoupleDecomp) for a contact term, _i. e._ the product of one spherical observable per part evaluated at the same point on the sphere
+```math
+    ∫\\mathrm{d}^2𝐫\\,√{4π}Ȳ_{lm}(𝐫)\\,n_1(𝐫)n_2(𝐫)⋯n_{N_p}(𝐫)
+```
+
+# Arguments
+
+* `obs :: Vector{SSphereObs}` is the list of spherical observables, one per part.
+* `sec :: Matrix{Int64}` records the change of quantum numbers, `sec[iqn, p]` for the `iqn`-th quantum number on part `p`.
+* `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}`` of the term. Facultative, ``0`` (a scalar) by default.
+
+# Output
+
+* `cpd :: SCoupleDecomp` is the resulting coupling decomposition.
+"""
 function ContactSCouple(obs :: Vector{SSphereObs}, sec :: Matrix{Int64}, ltot :: Int64 = 0)
     amd = SAngModes.(obs)
     np = length(obs)
@@ -67,6 +118,26 @@ function ContactSCouple(obs :: Vector{SSphereObs}, sec :: Matrix{Int64}, ltot ::
     return SCoupleDecomp(amd, ch, coeff, sec)
 end
 
+"""
+    SingleSegSCouple(np :: Int64, p :: Int64, amdp :: SAngModes, l :: Int64, secp :: Vector{Int64}) :: SCoupleDecomp
+    SingleSegSCouple(np :: Int64, p :: Int64, tms :: STerms, sec :: Vector{Int64}) :: SCoupleDecomp
+
+constructs a [SCoupleDecomp](@ref SCoupleDecomp) for a term that acts as a nontrivial operator on a single part `p` and as the identity on all the other parts. This is used, _e. g._, for a single-part chemical potential or on-site interaction.
+
+# Arguments
+
+* `np :: Int64` is the number of parts.
+* `p :: Int64` is the index of the part on which the operator acts.
+* `amdp :: SAngModes` is the spherical tensor operator acting on part ``p`.
+* `l :: Int64` is twice the rank ``2l`` of the operator on part `p`.
+* `secp :: Vector{Int64}` is the change of quantum numbers on part `p`.
+
+In the second form the operator is a scalar (rank ``0``) given directly as a list of terms `tms :: STerms`, and `sec` is its quantum number shift.
+
+# Output
+
+* `cpd :: SCoupleDecomp` is the resulting coupling decomposition.
+"""
 function SingleSegSCouple(np :: Int64, p :: Int64, amdp :: SAngModes, l :: Int64, secp :: Vector{Int64})
     amd1 = SAngModes(0, Dict((0, 0) => one(STerms)))
     amd = [amd1 for p = 1 : np]
@@ -83,6 +154,21 @@ function SingleSegSCouple(np :: Int64, p :: Int64, tms :: STerms, sec :: Vector{
     return SingleSegSCouple(np, p, amdp, 0, sec)
 end
 
+"""
+    PrepareCouple(cpd :: SCoupleDecomp ; eltype :: Type) :: SCoupleDecomp
+    PrepareCouple(cpd :: Vector{SCoupleDecomp} ; eltype :: Type) :: Vector{SCoupleDecomp}
+
+prepares a coupling decomposition for the construction of operators by pre-storing the components of each `SAngModes` and, when `eltype == Float64`, rotating any purely imaginary operator by ``i`` while compensating the phase in the coefficients, so that all the matrix elements can be represented with real numbers. This should be called once on an assembled operator before it is passed to [BuildSSegOperators](@ref BuildSSegOperators).
+
+# Arguments
+
+* `cpd :: SCoupleDecomp` or `Vector{SCoupleDecomp}` is the coupling decomposition to be prepared.
+* `eltype :: Type` is the target matrix element type, either `Float64` or `ComplexF64`. Facultative, `FuzzifiED.ElementType` by default.
+
+# Output
+
+* the prepared coupling decomposition, of the same shape as the input.
+"""
 function PrepareCouple(cpd :: SCoupleDecomp ; eltype = FuzzifiED.ElementType)
     amd1 = SAngModes[]
     ph = 1.0 + 0.0im
