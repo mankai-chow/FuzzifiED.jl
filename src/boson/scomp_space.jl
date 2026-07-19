@@ -21,12 +21,12 @@ Angular momenta are stored as twice their value so that they remain integers.
 * `np :: Int64` is the number of parts.
 * `nch :: Int64` is the total number of coupling channels summed over all composite sectors.
 * `dim :: Int64` is the total dimension of the composite space.
-* `ltot :: Int64` is twice the total angular momentum ``2L_{\\text{tot}}``.
+* `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}``.
 * `sgsp :: Vector{SSegSpace{T}}` is the list of the [SSegSpaces](@ref SSegSpace) of the parts.
 * `idsec :: Matrix{Int64}` is the list of composite sector indices. It takes two indices `idsec[p, isec]` where `isec` is the index of the composite sector and `p` is the index of the part. The sector is then given by `sgsp[p].sec[idsec[p, isec]]`.
 * `chs :: Vector{Vector{Matrix{Int64}}}` records, for each composite sector, the list of angular momentum coupling channels. Each channel is stored as a ``2×N_p`` matrix, where the first row is the angular momentum of each part ``2L_p``, and the second row is the accumulated angular momentum ``2L_{12⋯p}`` of the first ``p`` parts. It takes two indices `chs[isec][ich]` where the `isec` is the index of the composite sector and `ich` is the index of the channel within the sector.
-* `ptr_ch :: Vector{Int64}` are the pointers that delimit, in the global channel numbering, the channels of each composite sector.
-* `ptr_st :: Vector{Vector{Int64}}` records, for each composite sector, the pointers that delimit the block of basis states of each channel.
+* `ptr_ch :: Vector{Int64}` are the pointers that delimit the channels of each composite sector.
+* `ptr_st :: Vector{Vector{Int64}}` records the pointers that delimit the states of each channel.
 """
 mutable struct SCompSpace{T <: Union{Float64, ComplexF64}}
     np :: Int64
@@ -44,13 +44,13 @@ end
     BuildSCompSpace(sgsp :: Vector{SSegSpace{T}}, idsec :: Matrix{Int64}, ltot :: Int64) :: SCompSpace
     BuildSCompSpace(sgsp :: Vector{SSegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64, modul :: Vector{Int64}) :: SCompSpace
 
-constructs a [SCompSpace](@ref SCompSpace) from the segment spaces of the parts with total angular momentum `ltot`. For every composite sector it enumerates, through [FindCouplingChannels](@ref FindCouplingChannels), all the ways of coupling the per-part angular momenta into ``L_{\\text{tot}}``, and computes the resulting dimensions and pointers.
+constructs a [SCompSpace](@ref SCompSpace) from the segment spaces of the parts with total angular momentum `ltot`. For every composite sector it enumerates, through [FindCouplingChannels](@ref FindCouplingChannels), all the ways of coupling the per-part angular momenta into ``l_{\\text{tot}}``, and computes the resulting dimensions and pointers.
 
 # Arguments
 
 * `sgsp :: Vector{SSegSpace{T}}` is the list of the [SSegSpaces](@ref SSegSpace) of the parts.
 * `idsec :: Matrix{Int64}` is the list of composite sector indices. It takes two indices `idsec[p, isec]`.
-* `ltot :: Int64` is twice the total angular momentum ``2L_{\\text{tot}}``.
+* `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}``.
 
 In the second form the composite sectors are found automatically with [ComposeSec](@ref ComposeSec) from
 

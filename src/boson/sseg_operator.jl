@@ -4,11 +4,11 @@ export SSegOperator, BuildSSegOperator, BuildSSegOperators
     SSegOperator{Float64}
     SSegOperator{ComplexF64}
 
-The mutable type `SSegOperator` stores the action of a spherical-symmetric operator from an initial [SSegSpace](@ref SSegSpace) to a final SSegSpace. By virtue of the Wigner–Eckart theorem, the full ``m``-dependence is factored out and only the reduced matrix elements ``⟨l_2‖[Φ]_l‖l_1⟩`` — independent of ``l^z`` — need to be kept, and
+The mutable type `SSegOperator` stores the action of a spherical-symmetric operator from an initial [SSegSpace](@ref SSegSpace) to a final SSegSpace. By virtue of the Wigner—Eckart theorem, the full ``m``-dependence is factored out and only the reduced matrix elements ``⟨l_2‖[Φ]_l‖l_1⟩`` — independent of ``l^z`` — need to be kept, and
 ```math
     ⟨l_2m_2|[Φ]_{lm}|l_1m_1⟩=(-1)^{l_2-m_2}\\begin{pmatrix}l_2&l&l_1\\\\-m_2&m&m_1\\end{pmatrix}⟨l_2‖[Φ]_l‖l_1⟩
 ```
-The matrix ``⟨\\{Q\\}_2l_2α_2‖[Φ]_l‖\\{Q\\}_1l_1α_1⟩`` is stored in blocks of SQNDiag — for given set of sectors ``\\{Q\\}_{12}``, the matrix elements ``M_{l_2α_2,l_1α_1}`` are stored.
+The matrix ``⟨\\{Q\\}_2l_2α_2‖[Φ]_l‖\\{Q\\}_1l_1α_1⟩`` is stored in blocks of SQNDiag — for given sectors ``\\{Q\\}_{12}``, the matrix elements ``M_{l_2α_2,l_1α_1}`` are stored.
 
 # Fields
 
@@ -27,7 +27,7 @@ end
 """
     BuildSSegOperator(sgspd :: SSegSpace, sgspf :: SSegSpace, amd :: SAngModes, ll :: Int64, secop :: Vector{Int64}, modul :: Vector{Int64} ; eltype :: Type, num_th :: Int64) :: SSegOperator
 
-constructs a [SSegOperator](@ref SSegOperator) for the spherical spherical-symmetric operator `amd` of rank `ll` acting on a single segment. For every pair of sectors related by the quantum number shift `secop`, and every pair of ``L``-multiplets allowed by the triangle rule, it computes the reduced matrix element from the full matrix element via the Wigner–Eckart theorem by dividing out the phase and the ``3j``-symbol. When the ``3j``-symbol vanishes (for ``m_1=m_2=0`` and ``l>0``) the reduced matrix element is instead recovered from the ``m=1`` components, using the ``L^z=1`` states ``L^+|L,0⟩=√{l(l+1)}|l,1⟩`` stored in the segment space.
+constructs a [SSegOperator](@ref SSegOperator) for the spherical spherical-symmetric operator `amd` of rank `ll` acting on a single segment. For every pair of sectors related by the quantum number shift `secop`, and every pair of ``l``-multiplets allowed by the triangle rule, it computes the reduced matrix element from the full matrix element via the Wigner—Eckart theorem by dividing out the phase and the ``3j``-symbol. When the ``3j``-symbol vanishes (for ``m_1=m_2=0`` and ``l>0``) the reduced matrix element is instead recovered from the ``m=1`` components, using the ``L^z=1`` states ``L^+|L,0⟩=\\sqrt{l(l+1)}|l,1⟩`` stored in the segment space.
 
 # Arguments
 

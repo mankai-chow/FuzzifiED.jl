@@ -4,22 +4,22 @@ export SSegSpace, BuildSSegSpace
     SSegSpace{Float64}
     SSegSpace{ComplexF64}
 
-The mutable type `SSegSpace` stores the Hilbert space of a single segment (part) of a boson–fermion mixed system, block-diagonalised into multiplets of definite total angular momentum ``l`` and, facultatively, definite flavour Casimir ``C_2``.
+The mutable type `SSegSpace` stores the Hilbert space of a single segment (part) of a boson—fermion mixed system, block-diagonalised into multiplets of definite total angular momentum ``l`` and, facultatively, definite flavour Casimir ``C_2``.
 ```math
     |\\{Q\\}C_2,lm,α⟩
 ```
-where α is the multiplicity of the sector. For each multiplet only one state with representative``m`` is  is stored ; the remaining partners of the multiplet are recovered on demand through the ladder operators. Throughout this type the angular momenta are stored as twice their value (_i. e._ ``2l``, ``2m``) so that they remain integers.
+where ``α`` is the multiplicity of the sector. For each multiplet only one state with representative ``m`` is stored. Throughout this type the angular momenta are stored as twice their value (_i. e._ ``2l``, ``2m``) so that they remain integers.
 
 # Fields
 
 * `sec :: Matrix{Int64}` collects the diagonal quantum number (`SQNDiag`) sectors that are diagonalised. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the SQNDiag and `isec` is the index of the sector.
 * `l_rng :: Vector{Vector{Int64}}` records, for each sector, the sorted list of the values of ``2l`` that appear. It takes two indices `l_rng[isec][il]`.
 * `l_lookup :: Vector{Dict{Int64, Int64}}` gives, for each sector, a dictionary that maps a value of ``2l`` to its index in `l_rng`.
-* `ptr_st :: Vector{Vector{Int64}}` records, for each sector, the pointers that delimit the block of states of each ``L`` : the multiplets of angular momentum `l_rng[isec][il]` occupy the columns `ptr_st[isec][il] - ptr_st[isec][1] + 1 : ptr_st[isec][il + 1] - ptr_st[isec][1]` of `sts[isec]`. The pointers are shifted by a cumulative offset so that they are unique across sectors.
+* `ptr_st :: Vector{Vector{Int64}}` records, for each sector, the pointers that delimit the block of states of each ``l`` : the multiplets of angular momentum `l_rng[isec][il]` are numbered `ptr_st[isec][il] : ptr_st[isec][il + 1] - 1` across the space.
 * `cfs :: Vector{SConfs}` stores, for each sector, the configurations `SConfs`.
 * `cfs1 :: Vector{SConfs}` stores, for each ``m=0`` sector, the configurations of the auxiliary ``m=1`` (_i. e._ ``2m=2``) sector, used when the ``3j``-symbol of the ``m=0`` component vanishes.
-* `sts :: Vector{Matrix{T}}` stores, for each sector, the representative multiplet states as its columns, sorted and grouped by ``L`` according to `ptr_st`.
-* `sts1 :: Vector{Matrix{T}}` stores, for each ``m=0`` sector, the ``m=1`` components ``L^+`` acting on `sts`, used together with `cfs1` when the ``3j``-symbol vanishes.
+* `sts :: Vector{Matrix{T}}` stores, for each sector, the states as its columns. These states are numbered `ptr_st[isec][1] : ptr_st[isec][end] - 1`.
+* `sts1 :: Vector{Matrix{T}}` stores, for each ``m=0`` sector, the ``m=1`` components ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩``, used together with `cfs1` when the ``3j``-symbol vanishes.
 """
 mutable struct SSegSpace{T <: Union{Float64, ComplexF64}}
     sec :: Matrix{Int64}
@@ -37,9 +37,9 @@ end
 
 constructs a [SSegSpace](@ref SSegSpace) by diagonalising the total angular momentum ``L^2`` — and, facultatively, the flavour Casimir ``C_2`` — within each diagonal quantum number sector, and organising the resulting eigenstates into multiplets.
 
-_N. b._, in including the diagonal quantum numbers, it is required that  the first SQNDiag must contain fermion parity – it must be odd the when state contains odd number of fermions and even when the state constains even number of fermions, and in many cases the total electric charge satisfies this requirement – and the second SQNDiag must be the angular momentum ``2L^z``.
+_N. b._, in including the diagonal quantum numbers, it is required that  the first SQNDiag must contain fermion parity — it must be odd the when state contains odd number of fermions and even when the state constains even number of fermions, and in many cases the total electric charge satisfies this requirement — and the second SQNDiag must be the angular momentum ``2L^z``.
 
-For each sector the operator ``√2L^2+C_2`` is built and diagonalised ; the factor ``√2`` guarantees that the eigenvalues of ``L^2`` and ``C_2`` can be disentangled. Only the multiplets whose ``C_2`` lies within `c2_rng` are retained. For sectors with ``m=0`` the ``m=1`` components ``L^+|l,0⟩=√{l(l+1)}|l,1⟩`` are also computed and stored.
+For each sector the operator ``\\sqrt{2}L^2+C_2`` is built and diagonalised ; the factor ``\\sqrt{2}`` guarantees that the eigenvalues of ``L^2`` and ``C_2`` can be disentangled. Only the multiplets whose ``C_2`` lies within `c2_rng` are retained. For sectors with ``m=0`` the ``m=1`` components ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩`` are also computed and stored.
 
 # Arguments
 
@@ -47,7 +47,7 @@ For each sector the operator ``√2L^2+C_2`` is built and diagonalised ; the fac
 * `nob :: Int64` is the number of bosonic orbitals ``N_{ob}`` of the segment.
 * `nebm :: Vector{Int64}` is the maximal number of bosons allowed in each sector ; it takes one index `nebm[isec]` where `isec` is the index of the sector.
 * `sec :: Matrix{Int64}` collects the diagonal quantum number (`SQNDiag`) sectors that are diagonalised. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the SQNDiag and `isec` is the index of the sector.
-* `qnd :: Vector{SQNDiag}` is the list of diagonal quantum numbers `SQNDiag`. _N. b._, in the construction, the first SQNDiag must contain fermion parity – it must be odd the when state contains odd number of fermions and even when the state constains even number of fermions, and in many cases the total electric charge satisfies this requirement – and the second SQNDiag must be the ``2L^z`` quantum number, _e. g._, from `GetLz2QNDiag` wrapped in `SQNDiag` (for fermions) or `GetBosonLz2SQNDiag` (for bosons).
+* `qnd :: Vector{SQNDiag}` is the list of diagonal quantum numbers `SQNDiag`. _N. b._, in the construction, the first SQNDiag must contain fermion parity — it must be odd the when state contains odd number of fermions and even when the state constains even number of fermions, and in many cases the total electric charge satisfies this requirement — and the second SQNDiag must be the ``2L^z`` quantum number, _e. g._, from `GetLz2QNDiag` wrapped in `SQNDiag` (for fermions) or `GetBosonLz2SQNDiag` (for bosons).
 * `tms_lzlp :: Tuple{STerms, STerms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLpLzTerms` converted to `STerms` (for fermions) or `GetBosonLpLzSTerms` (for bosons).
 * `tms_c2 :: STerms` is the flavour Casimir ``C_2``. Facultative, no flavour resolution by default.
 * `c2_rng :: Vector{Float64}` is the list of allowed eigenvalues of ``C_2`` ; a multiplet is kept when its Casimir is within `1E-4` of one of these values. Facultative, `[0.0]` by default.

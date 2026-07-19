@@ -1,5 +1,5 @@
 #=
-julia -O3 --color=yes make.jl && rm -r publish/*/* && mv -f build/* publish && rm -r build && cd publish && git commit -a -m "a" && git push && cd ..
+julia -O3 --color=yes make.jl
 =#
 push!(LOAD_PATH,"../src/")
 push!(LOAD_PATH,"../ext/")

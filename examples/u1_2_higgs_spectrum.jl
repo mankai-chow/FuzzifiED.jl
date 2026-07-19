@@ -2,7 +2,6 @@ using FuzzifiED
 using FuzzifiED.Fuzzifino
 using FuzzifiEDFullRotation
 FuzzifiED.ElementType = Float64
-Base.zero(SQNDiag, nof, nob) = SQNDiag(zeros(Int64, nof), zeros(Int64, nob))
 
 nmf = 7
 nf = 2

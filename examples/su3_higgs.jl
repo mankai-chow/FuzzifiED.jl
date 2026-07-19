@@ -2,7 +2,6 @@ using FuzzifiED
 using FuzzifiEDFullRotation
 using LinearAlgebra
 FuzzifiED.ElementType = Float64
-Base.zero(QNDiag, no) = QNDiag(zeros(Int64, no))
 
 nm = 6
 nf = 3

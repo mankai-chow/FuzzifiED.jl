@@ -128,9 +128,9 @@ function Base.:*(cpop :: SCompOperator{T}, std :: Vector{T}) where T <: Union{Fl
 end
 
 """
-    GetEigensystem(cpop :: SCompOperator{T}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{T}, disp_std :: Bool, kwargs...) :: Tuple{Vector{T}, Matrix{T}}
+    GetEigensystem(cpop :: SCompOperator{T}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{T}, kwargs...) :: Tuple{Vector{T}, Matrix{T}}
 
-computes the lowest `nst` eigenvalues and eigenvectors of the composite operator `cpop` by feeding its matrix–vector product `x -> cpop * x` to the Lanczos/Arnoldi method of `KrylovKit.eigsolve`. Since `cpop` already acts within a definite total angular momentum sector, this directly yields the low-lying spectrum resolved by ``l``.
+computes the lowest `nst` eigenvalues and eigenvectors of the composite operator `cpop` through `KrylovKit.eigsolve`. This yields the spectrum resolved by angular momentum and flavour symmetries within segments.
 
 # Arguments
 
@@ -139,7 +139,6 @@ computes the lowest `nst` eigenvalues and eigenvectors of the composite operator
 * `tol :: Float64` is the tolerance of the eigensolver. Facultative, `1E-8` by default.
 * `ncv :: Int64` is the dimension of the Krylov subspace. Facultative, `max(2 * nst, nst + 10)` by default.
 * `initvec :: Vector{T}` is the initial vector. Facultative, a random vector by default.
-* `disp_std :: Bool` controls whether the log is displayed. Facultative, `!FuzzifiED.SilentStd` by default.
 * `kwargs...` are further keyword arguments forwarded to `eigsolve`.
 
 # Output
@@ -147,7 +146,7 @@ computes the lowest `nst` eigenvalues and eigenvectors of the composite operator
 * `eigval :: Vector{T}` is the vector of the `nst` lowest eigenvalues.
 * `eigvec :: Matrix{T}` is the matrix whose columns are the corresponding eigenvectors.
 """
-function FuzzifiED.GetEigensystem(cpop :: SCompOperator{T}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), initvec = rand(T, cpop.cpspd.dim), disp_std = !FuzzifiED.SilentStd, kwargs...) where T <: Union{ComplexF64,Float64}
+function FuzzifiED.GetEigensystem(cpop :: SCompOperator{T}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), initvec = rand(T, cpop.cpspd.dim), kwargs...) where T <: Union{ComplexF64,Float64}
     kwargs1 = haskey(kwargs, :krylovdim) ? kwargs : (kwargs..., krylovdim = ncv)
     eigval, eigvec, info = eigsolve(x -> cpop * x, initvec, nst, :SR ; tol, kwargs1...)
     #print(info)

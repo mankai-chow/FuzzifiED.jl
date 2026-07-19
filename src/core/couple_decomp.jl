@@ -110,14 +110,14 @@ end
 """
     ConvPsPot(ps_pot0 :: Dict) :: Tuple{Vector{Matrix{Int64}}, Vector{ComplexF64}}
 
-converts a pseudopotential — a dictionary mapping a density rank ``l`` to its coefficient ``V_l`` — into the coupling channels and coefficients used by a two-part density–density [CoupleDecomp](@ref CoupleDecomp). For each rank ``l`` it produces the channel ``\\begin{smallmatrix}2l&2l\\\\2l&0\\end{smallmatrix}`` (two rank-``l`` operators coupled to a total scalar) with coefficient ``W_l√{2l+1}(-1)^{l}``.
+converts a pseudopotential — a dictionary mapping a density rank ``l`` to its coefficient ``V_l`` — into the coupling channels and coefficients used by a two-part density—density [CoupleDecomp](@ref CoupleDecomp). For each rank ``l`` it produces the channel ``\\begin{smallmatrix}2l&2l\\\\2l&0\\end{smallmatrix}`` (two rank-``l`` operators coupled to a total scalar) with coefficient ``W_l\\sqrt{2l+1}(-1)^{l}``.
 
 # Output
 
 * `ch :: Vector{Matrix{Int64}}` is the list of coupling channels.
 * `coeff :: Vector{ComplexF64}` is the list of channel coefficients.
 
-These are typically splatted into a [CoupleDecomp](@ref CoupleDecomp) constructor, _e. g._ `CoupleDecomp([n_mod, n_mod], ConvPsPot(ps_pot0)..., sec)`.
+These are typically splatted into a [CoupleDecomp](@ref CoupleDecomp) constructor.
 """
 function ConvPsPot(ps_pot0 :: Dict)
     ch = Matrix{Int64}[]
@@ -141,12 +141,12 @@ end
 
 constructs a [CoupleDecomp](@ref CoupleDecomp) for a contact term, _i. e._ the product of one spherical observable per part evaluated at the same point on the sphere
 ```math 
-    ∫\\mathrm{d}^2𝐫\\,√{4π}Ȳ_{lm}(𝐫)\\,n_1(𝐫)n_2(𝐫)⋯n_{N_p}(𝐫)
+    ∫\\mathrm{d}^2𝐫\\,\\sqrt{4π}Ȳ_{lm}(𝐫)\\,Φ_1(𝐫)Φ_2(𝐫)⋯Φ_{N_p}(𝐫)
 ```
 
 # Arguments
 
-* `obs :: Vector{SphereObs}` is the list of spherical observables, one per part.
+* `obs :: Vector{SphereObs}` is the list of spherical observables acting on each segment.
 * `sec :: Matrix{Int64}` records the change of quantum numbers, `sec[iqn, p]` for the `iqn`-th quantum number on part ``p``.
 * `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}`` of the term. Facultative, ``0`` (a scalar) by default.
 
@@ -189,7 +189,7 @@ end
     SingleSegCouple(np :: Int64, p :: Int64, amdp :: AngModes, l :: Int64, secp :: Vector{Int64}) :: CoupleDecomp
     SingleSegCouple(np :: Int64, p :: Int64, tms :: Terms, sec :: Vector{Int64}) :: CoupleDecomp
 
-constructs a [CoupleDecomp](@ref CoupleDecomp) for a term that acts as a nontrivial operator on a single part ``p`` and as the identity on all the other parts. This is used, _e. g._, for a single-part chemical potential or on-site interaction.
+constructs a [CoupleDecomp](@ref CoupleDecomp) for a term that acts only on a single part ``p`` and as the identity on all the other parts.  
 
 # Arguments
 
@@ -206,8 +206,7 @@ In the second form the operator is a scalar (rank ``0``) given directly as a lis
 * `cpd :: CoupleDecomp` is the resulting coupling decomposition.
 """
 function SingleSegCouple(np :: Int64, p :: Int64, amdp :: AngModes, l :: Int64, secp :: Vector{Int64})
-    amd1 = AngModes(0, Dict((0, 0) => one(Terms)))
-    amd = [amd1 for p = 1 : np]
+    amd = [one(AngModes) for p = 1 : np]
     amd[p] = amdp
     ch = zeros(Int64, 2, np)
     ch[1, p] = l
