@@ -3,7 +3,8 @@ export EquivSec, ComposeSec, FindCouplingChannels
 
 
 """
-    CompSpace{T <: Union{Float64, ComplexF64}}
+    CompSpace{Float64}
+    CompSpace{ComplexF64}
 
 The mutable type `CompSpace` stores the composite Hilbert space obtained by combining the segment spaces of all the parts and projecting onto a definite total angular momentum ``l_{\\text{tot}}``. A basis state of the composite space is specified by a composite sector (which sector each part sits in), a coupling channel (the angular momentum of each part and the intermediate totals along the coupling chain), and the position of the multiplet within each part. _E. g._ for bipartite and tri-partite systems, it may take the form 
 ```math

@@ -3,7 +3,8 @@ import FuzzifiED: GetEigensystem
 
 
 """
-    CompOperator{T <: Union{Float64, ComplexF64}}
+    CompOperator{Float64}
+    CompOperator{ComplexF64}
 
 The mutable type `CompOperator` represents a composite operator — such as the Hamiltonian — acting on a [CompSpace](@ref CompSpace) of definite total angular momentum. It combines the reduced matrix elements of the per-part [SegOperators](@ref SegOperator) with the ``9j`` recoupling coefficients that relate the coupled basis of the initial and final composite spaces. The operator is never materialised as a dense matrix ; instead `*` applies it to a state on the fly, which is used by [GetEigensystem](@ref) to obtain the low-lying spectrum through a Krylov method.
 

@@ -2,7 +2,8 @@ export SegOperator, BuildSegOperator, BuildSegOperators
 
 
 """
-    SegOperator{T <: Union{Float64, ComplexF64}}
+    SegOperator{Float64}
+    SegOperator{ComplexF64}
 
 The mutable type `SegOperator` stores the action of a spherical-symmetric operator from an initial [SegSpace](@ref SegSpace) to a final SegSpace. By virtue of the Wigner–Eckart theorem, the full ``m``-dependence is factored out and only the reduced matrix elements ``⟨l_2‖[Φ]_l‖l_1⟩`` — independent of ``l^z`` — need to be kept, and 
 ```math
@@ -119,8 +120,8 @@ constructs, in parallel, all the [SegOperators](@ref SegOperator) required to as
 
 # Arguments
 
-* `sgspd :: Vector{SegSpace{T}}` is the list of the initial (domain) segment spaces of the parts.
-* `sgspf :: Vector{SegSpace{T}}` is the list of the final (codomain) segment spaces of the parts. Facultative, the same as `sgspd` by default.
+* `sgspd :: Vector{SegSpace{T}}` is the list of the initial segment spaces.
+* `sgspf :: Vector{SegSpace{T}}` is the list of the final segment spaces. Facultative, the same as `sgspd` by default.
 * `cpd :: Vector{CoupleDecomp}` is the list of coupling decompositions, _e. g._, an assembled Hamiltonian.
 * `modul :: Vector{Int64}` are the moduli used to match the quantum numbers. Facultative, all ``1`` by default.
 
