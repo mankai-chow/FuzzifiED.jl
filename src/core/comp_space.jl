@@ -23,7 +23,7 @@ Angular momenta are stored as twice their value so that they remain integers.
 * `dim :: Int64` is the total dimension of the composite space.
 * `ltot :: Int64` is twice the total angular momentum ``2L_{\\text{tot}}``.
 * `sgsp :: Vector{SegSpace{T}}` is the list of the [SegSpaces](@ref SegSpace) of the parts.
-* `idsec :: Matrix{Int64}` is the list of composite sector indices. It takes two indices ``idsec[p, isec]`` where ``isec`` is the index of the composite sector and ``p`` is the index of the part. The sector is then given by ``sgsp[p].sec[idsec[p, isec]]``.
+* `idsec :: Matrix{Int64}` is the list of composite sector indices. It takes two indices `idsec[p, isec]` where `isec` is the index of the composite sector and `p` is the index of the part. The sector is then given by `sgsp[p].sec[idsec[p, isec]]`.
 * `chs :: Vector{Vector{Matrix{Int64}}}` records, for each composite sector, the list of angular momentum coupling channels. Each channel is stored as a ``2×N_p`` matrix, where the first row is the angular momentum of each part ``2L_p``, and the second row is the accumulated angular momentum ``2L_{12⋯p}`` of the first ``p`` parts. It takes two indices `chs[isec][ich]` where the `isec` is the index of the composite sector and `ich` is the index of the channel within the sector.
 * `ptr_ch :: Vector{Int64}` are the pointers that delimit, in the global channel numbering, the channels of each composite sector.
 * `ptr_st :: Vector{Vector{Int64}}` records, for each composite sector, the pointers that delimit the block of basis states of each channel.
@@ -49,7 +49,7 @@ constructs a [CompSpace](@ref CompSpace) from the segment spaces of the parts wi
 # Arguments
 
 * `sgsp :: Vector{SegSpace{T}}` is the list of the [SegSpaces](@ref SegSpace) of the parts.
-* `idsec :: Matrix{Int64}` is the list of composite sector indices. It takes two indices ``idsec[p, isec]``.
+* `idsec :: Matrix{Int64}` is the list of composite sector indices. It takes two indices `idsec[p, isec]`.
 * `ltot :: Int64` is twice the total angular momentum ``2L_{\\text{tot}}``.
 
 In the second form the composite sectors are found automatically with [ComposeSec](@ref ComposeSec) from
@@ -125,7 +125,7 @@ finds every combination of per-part sectors whose diagonal quantum numbers add u
 # Arguments
 
 * `sec_tot :: Vector{Int64}` is the target total diagonal quantum numbers.
-* `sec_pt :: Vector{Matrix{Int64}}` lists, for each part, the sectors available in that part. It takes three indices ``sec_pt[p][iqn, isec]``.
+* `sec_pt :: Vector{Matrix{Int64}}` lists, for each part, the sectors available in that part. It takes three indices `sec_pt[p][iqn, isec]`.
 * `modul :: Vector{Int64}` are the moduli used to match the quantum numbers. Facultative, all ``1`` by default.
 
 # Output

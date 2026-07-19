@@ -13,8 +13,8 @@ where α is the multiplicity of the sector. For each multiplet only one state wi
 # Fields
 
 * `sec :: Matrix{Int64}` collects the diagonal quantum number (`QNDiag`) sectors that are diagonalised. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the QNDiag and `isec` is the index of the sector.
-* `l_rng :: Vector{Vector{Int64}}` records, for each sector, the sorted list of the values of ``2L`` that appear. It takes two indices `l_rng[isec][il]`.
-* `l_lookup :: Vector{Dict{Int64, Int64}}` gives, for each sector, a dictionary that maps a value of ``2L`` to its index in `l_rng`.
+* `l_rng :: Vector{Vector{Int64}}` records, for each sector, the sorted list of the values of ``2l`` that appear. It takes two indices `l_rng[isec][il]`.
+* `l_lookup :: Vector{Dict{Int64, Int64}}` gives, for each sector, a dictionary that maps a value of ``2l`` to its index in `l_rng`.
 * `ptr_st :: Vector{Vector{Int64}}` records, for each sector, the pointers that delimit the block of states of each ``L`` : the multiplets of angular momentum `l_rng[isec][il]` occupy the columns `ptr_st[isec][il] - ptr_st[isec][1] + 1 : ptr_st[isec][il + 1] - ptr_st[isec][1]` of `sts[isec]`. The pointers are shifted by a cumulative offset so that they are unique across sectors.
 * `cfs :: Vector{Confs}` stores, for each sector, the configurations `Confs`.
 * `cfs1 :: Vector{Confs}` stores, for each ``m=0`` sector, the configurations of the auxiliary ``m=1`` (_i. e._ ``2m=2``) sector, used when the ``3j``-symbol of the ``m=0`` component vanishes.

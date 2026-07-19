@@ -9,7 +9,7 @@ export PrepareCouple
 The mutable type `CoupleDecomp` records the decomposition of couplings into channels of direct-producted spherical-symmetric actions onto each part. _E. g._ for bipartite and tri-partite systems, each coupling channel may take the form 
 ```math
 \\begin{aligned}
-    [𝒪]_{(l_1l_2)l}&=[𝒪_1]_{l_1}⊗[𝒪_2]_{l_2}&𝒪_{(l_1l_2)lm}&=[𝒪_1]_{l_1l_1}[𝒪_2]_{l_2m_2}⟨l_1m_1,l_2m_2|lm⟩\\\\
+    [𝒪]_{(l_1l_2)l}&=[𝒪_1]_{l_1}⊗[𝒪_2]_{l_2}&𝒪_{lm}&=[𝒪_1]_{l_1l_1}[𝒪_2]_{l_2m_2}⟨l_1m_1,l_2m_2|lm⟩\\\\
     [𝒪]_{((l_1l_2)l_{12}l_3)l}&=([𝒪_1]_{l_1}⊗[𝒪_2]_{l_2})_{l_{12}}[𝒪_3]_{l_3}&𝒪_{lm}&=[𝒪_1]_{l_1l_1}[𝒪_2]_{l_2m_2}[𝒪_3]_{l_3m_3}⟨l_1m_1,l_2m_2|l_{12}m_{12}⟩⟨l_{12}m_{12},l_3m_3|lm⟩
 \\end{aligned}
 ```
@@ -110,7 +110,7 @@ end
 """
     ConvPsPot(ps_pot0 :: Dict) :: Tuple{Vector{Matrix{Int64}}, Vector{ComplexF64}}
 
-converts a density-channel pseudopotential — a dictionary mapping a density rank ``l`` to its coefficient ``V_l`` — into the coupling channels and coefficients used by a two-part density–density [CoupleDecomp](@ref CoupleDecomp). For each rank ``l`` it produces the channel ``\\begin{smallmatrix}2l&2l\\\\2l&0\\end{smallmatrix}`` (two rank-``l`` operators coupled to a total scalar) with coefficient ``W_l√{2l+1}(-1)^{l}``.
+converts a pseudopotential — a dictionary mapping a density rank ``l`` to its coefficient ``V_l`` — into the coupling channels and coefficients used by a two-part density–density [CoupleDecomp](@ref CoupleDecomp). For each rank ``l`` it produces the channel ``\\begin{smallmatrix}2l&2l\\\\2l&0\\end{smallmatrix}`` (two rank-``l`` operators coupled to a total scalar) with coefficient ``W_l√{2l+1}(-1)^{l}``.
 
 # Output
 

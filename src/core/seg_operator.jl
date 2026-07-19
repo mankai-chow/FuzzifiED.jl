@@ -28,12 +28,12 @@ end
 """
     BuildSegOperator(sgspd :: SegSpace, sgspf :: SegSpace, amd :: AngModes, ll :: Int64, secop :: Vector{Int64}, modul :: Vector{Int64} ; eltype :: Type, num_th :: Int64) :: SegOperator
 
-constructs a [SegOperator](@ref SegOperator) for the spherical spherical-symmetric operator `amd` of rank `ll` acting on a single segment. For every pair of sectors related by the quantum number shift `secop`, and every pair of ``L``-multiplets allowed by the triangle rule, it computes the reduced matrix element from the full matrix element via the Wigner–Eckart theorem by dividing out the phase and the ``3j``-symbol. When the ``3j``-symbol vanishes (for ``m_d=m_f=0`` and ``l>0``) the reduced matrix element is instead recovered from the ``m=1`` components, using the ``L^z=1`` states ``L^+|L,0⟩=√{l(l+1)}|l,1⟩`` stored in the segment space.
+constructs a [SegOperator](@ref SegOperator) for the spherical spherical-symmetric operator `amd` of rank `ll` acting on a single segment. For every pair of sectors related by the quantum number shift `secop`, and every pair of ``L``-multiplets allowed by the triangle rule, it computes the reduced matrix element from the full matrix element via the Wigner–Eckart theorem by dividing out the phase and the ``3j``-symbol. When the ``3j``-symbol vanishes (for ``m_1=m_2=0`` and ``l>0``) the reduced matrix element is instead recovered from the ``m=1`` components, using the ``L^z=1`` states ``L^+|L,0⟩=√{l(l+1)}|l,1⟩`` stored in the segment space.
 
 # Arguments
 
 * `sgspd :: SegSpace` and `sgspf :: SegSpace` are the initial and final segment spaces.
-* `amd :: AngModes` is the spherical spherical-symmetric operator, whose ``(l,m)`` component is obtained through `GetComponent`.
+* `amd :: AngModes` is the spherical spherical-symmetric operator.
 * `ll :: Int64` is twice the rank ``2l`` of the spherical-symmetric operator.
 * `secop :: Vector{Int64}` is the change of quantum numbers induced by the operator ; a final sector matches an initial sector when `secd .+ secop` is equivalent to it.
 * `modul :: Vector{Int64}` are the moduli used to match the quantum numbers. Facultative, all ``1`` by default.
