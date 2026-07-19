@@ -8,20 +8,20 @@ mutable struct SCompSpace{T <: Union{Float64, ComplexF64}}
     dim :: Int64
     ltot :: Int64
     sgsp :: Vector{SSegSpace{T}}
-    idsec :: Vector{Vector{Int64}}
+    idsec :: Matrix{Int64}
     chs :: Vector{Vector{Matrix{Int64}}}
     ptr_ch :: Vector{Int64}
     ptr_st :: Vector{Vector{Int64}}
 end
 
-function BuildSCompSpace(sgsp :: Vector{SSegSpace{T}}, idsec :: Vector{Vector{Int64}}, ltot :: Int64) where T <: Union{Float64, ComplexF64}
+function BuildSCompSpace(sgsp :: Vector{SSegSpace{T}}, idsec :: Matrix{Int64}, ltot :: Int64) where T <: Union{Float64, ComplexF64}
     np = length(sgsp)
-    chs = [ Matrix{Int64}[] for _ ∈ idsec]
+    chs = [ Matrix{Int64}[] for _ ∈ axes(idsec, 2)]
     ptr_ch = Int64[1]
-    ptr_st = [ Int64[] for _ ∈ idsec]
+    ptr_st = [ Int64[] for _ ∈ axes(idsec, 2)]
     index = 1
-    for i ∈ eachindex(idsec)
-        idseci = idsec[i]
+    for i ∈ axes(idsec, 2)
+        idseci = idsec[:, i]
         l_rng = [ sgsp[p].l_rng[idseci[p]] for p = 1 : np]
         for lpt in Iterators.product(l_rng...)
             append!(chs[i], FindCouplingChannels(np, [lpt...], ltot))

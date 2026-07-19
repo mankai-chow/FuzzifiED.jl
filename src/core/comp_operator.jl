@@ -19,11 +19,11 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
     np = cpspd.np
     
     mat9j = Array{Float64}(undef, cpspf.nch, cpspd.nch, nd)
-    Threads.@threads :greedy for (isec, jsec, d) in collect(Iterators.product(eachindex(cpspf.idsec), eachindex(cpspd.idsec), 1 : nd))
+    Threads.@threads :greedy for (isec, jsec, d) in collect(Iterators.product(axes(cpspf.idsec, 2), axes(cpspd.idsec, 2), 1 : nd))
         chh = ch[d]
         pfh = mod.(cpd[id_tc[d]].sec[1, :], 2)
-        idsecj = cpspd.idsec[jsec]
-        pfj = [ mod(cpspd.sgsp[p].sec[idsecj[p]][1], 2) for p = 1 : np]
+        idsecj = cpspd.idsec[:, jsec]
+        pfj = [ mod(cpspd.sgsp[p].sec[1, idsecj[p]], 2) for p = 1 : np]
         pftot = sum([pfj[p] * sum(pfh[p + 1 : end]) for p = 1 : np]) % 2
 
         jst = cpspd.ptr_ch[jsec] - 1
@@ -50,9 +50,9 @@ function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Flo
     th_lock = ReentrantLock()
     stf = zeros(T, cpop.cpspf.dim)
     np = cpop.cpspd.np
-    Threads.@threads :greedy for (jsec, d) in collect(Iterators.product(eachindex(cpop.cpspd.idsec), 1 : cpop.nd))
+    Threads.@threads :greedy for (jsec, d) in collect(Iterators.product(axes(cpop.cpspd.idsec, 2), 1 : cpop.nd))
         stf1 = zeros(T, cpop.cpspf.dim)
-        idsecj = cpop.cpspd.idsec[jsec]
+        idsecj = cpop.cpspd.idsec[:, jsec]
         coeff = cpop.coeff[d]
         idel_rng = [ cpop.sgop[p, d].colptr[idsecj[p]] : cpop.sgop[p, d].colptr[idsecj[p] + 1] - 1 for p = 1 : np ]
 
@@ -60,9 +60,8 @@ function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Flo
         irng_sg = Vector{UnitRange{Int64}}(undef, np)
         for idel in Iterators.product(idel_rng...)
             idseci = [ cpop.sgop[p, d].rowid[idel[p]] for p = 1 : np]
-            isec_rng = searchsorted(cpop.cpspf.idsec, idseci)
-            isempty(isec_rng) && continue 
-            isec = isec_rng[1]
+            isec = searchsortedfirst(axes(cpop.cpspf.idsec, 2), idseci, lt = (k, t) -> isless(@view(cpop.cpspf.idsec[:, k]), t))
+            (isec > size(cpop.cpspf.idsec, 2) || @view(cpop.cpspf.idsec[:, isec]) != idseci) && continue
             for jch in eachindex(cpop.cpspd.chs[jsec])
                 jrng = cpop.cpspd.ptr_st[jsec][jch] : cpop.cpspd.ptr_st[jsec][jch + 1] - 1
                 for p = 1 : np 

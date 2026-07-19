@@ -7,20 +7,20 @@ mutable struct CompSpace{T <: Union{Float64, ComplexF64}}
     dim :: Int64
     ltot :: Int64
     sgsp :: Vector{SegSpace{T}}
-    idsec :: Vector{Vector{Int64}}
+    idsec :: Matrix{Int64}
     chs :: Vector{Vector{Matrix{Int64}}}
     ptr_ch :: Vector{Int64}
     ptr_st :: Vector{Vector{Int64}}
 end
 
-function BuildCompSpace(sgsp :: Vector{SegSpace{T}}, idsec :: Vector{Vector{Int64}}, ltot :: Int64) where T <: Union{Float64, ComplexF64}
+function BuildCompSpace(sgsp :: Vector{SegSpace{T}}, idsec :: Matrix{Int64}, ltot :: Int64) where T <: Union{Float64, ComplexF64}
     np = length(sgsp)
-    chs = [ Matrix{Int64}[] for _ ∈ idsec]
+    chs = [ Matrix{Int64}[] for _ ∈ axes(idsec, 2)]
     ptr_ch = Int64[1]
-    ptr_st = [ Int64[] for _ ∈ idsec]
+    ptr_st = [ Int64[] for _ ∈ axes(idsec, 2)]
     index = 1
-    for i ∈ eachindex(idsec)
-        idseci = idsec[i] 
+    for i ∈ axes(idsec, 2)
+        idseci = idsec[:, i]
         l_rng = [ sgsp[p].l_rng[idseci[p]] for p = 1 : np]
         for lpt in Iterators.product(l_rng...)
             append!(chs[i], FindCouplingChannels(np, [lpt...], ltot))
@@ -64,13 +64,14 @@ function EquivSec(sec1 :: Vector{Int64}, sec2 :: Vector{Int64}, modul :: Vector{
     return flag
 end
 
-function ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Vector{Vector{Int64}}}, modul :: Vector{Int64} = fill(1, length(sec_tot)))
+function ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Matrix{Int64}}, modul :: Vector{Int64} = fill(1, length(sec_tot)))
     id_sec_tot = Vector{Int64}[]
-    for isec in Iterators.product(eachindex.(sec_pt)...)
-        seci_tot = sum([ sec_pt[p][isec[p]] for p ∈ eachindex(sec_pt) ])
+    for isec in Iterators.product(axes.(sec_pt, 2)...)
+        seci_tot = sum([ sec_pt[p][:, isec[p]] for p ∈ eachindex(sec_pt) ])
         EquivSec(seci_tot, sec_tot, modul) && push!(id_sec_tot, collect(isec))
     end
-    return sort(id_sec_tot)
+    id_sec_tot = sort(id_sec_tot)
+    return isempty(id_sec_tot) ? Matrix{Int64}(undef, length(sec_pt), 0) : reduce(hcat, id_sec_tot)
 end
 
 function FindCouplingChannels(np :: Int64, lpt :: Vector{Int64}, ltot :: Int64)

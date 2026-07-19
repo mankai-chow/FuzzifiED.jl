@@ -8,15 +8,15 @@ mutable struct SSegOperator{T <: Union{Float64, ComplexF64}}
     elmat :: Vector{Matrix{T}}
 end
 
-function BuildSSegOperator(sgspd :: SSegSpace, sgspf :: SSegSpace, amd :: SAngModes, ll :: Int64, secop :: Vector{Int64}, modul :: Vector{Int64} = fill(1, length(sgspd.sec[1])) ; eltype = FuzzifiED.ElementType, num_th = 1)
+function BuildSSegOperator(sgspd :: SSegSpace, sgspf :: SSegSpace, amd :: SAngModes, ll :: Int64, secop :: Vector{Int64}, modul :: Vector{Int64} = fill(1, size(sgspd.sec, 1)) ; eltype = FuzzifiED.ElementType, num_th = 1)
     index = 0
-    colptr = zeros(Int64, length(sgspd.sec) + 1)
+    colptr = zeros(Int64, size(sgspd.sec, 2) + 1)
     colptr[1] = 1
     rowid = Int64[]
     elmat = Matrix{eltype}[]
 
-    for j in eachindex(sgspd.sec)
-        secd = sgspd.sec[j]
+    for j in axes(sgspd.sec, 2)
+        secd = sgspd.sec[:, j]
         bsd = SBasis(sgspd.cfs[j])
         std = sgspd.sts[j]
         md = secd[2]
@@ -25,8 +25,8 @@ function BuildSSegOperator(sgspd :: SSegSpace, sgspf :: SSegSpace, amd :: SAngMo
             std1 = sgspd.sts1[j]
         end
 
-        for i in eachindex(sgspf.sec)
-            secf = sgspf.sec[i]
+        for i in axes(sgspf.sec, 2)
+            secf = sgspf.sec[:, i]
             EquivSec(secd .+ secop, secf, modul) || continue
             index += 1
             push!(rowid, i)
@@ -72,7 +72,7 @@ function BuildSSegOperator(sgspd :: SSegSpace, sgspf :: SSegSpace, amd :: SAngMo
     return SSegOperator{eltype}(sgspd, sgspf, colptr, rowid, elmat)
 end
 
-function BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, sgspf :: Vector{SSegSpace{T}}, cpd :: Vector{SCoupleDecomp}, modul :: Vector{Int64} = fill(1, length(sgspd[1].sec[1]))) where T <: Union{Float64, ComplexF64}
+function BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, sgspf :: Vector{SSegSpace{T}}, cpd :: Vector{SCoupleDecomp}, modul :: Vector{Int64} = fill(1, size(sgspd[1].sec, 1))) where T <: Union{Float64, ComplexF64}
     id_tc = vcat([ fill(i, length(cpd[i].ch)) for i in eachindex(cpd)]...)
     ch = vcat([ cpd[i].ch for i in eachindex(cpd) ]...)
     coeff = vcat([ cpd[i].coeff for i in eachindex(cpd) ]...)
@@ -87,4 +87,4 @@ function BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, sgspf :: Vector{SSegS
     end
     return sgop
 end
-BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, cpd :: Vector{SCoupleDecomp}, modul :: Vector{Int64} = fill(1, length(sgspd[1].sec[1]))) where T <: Union{Float64, ComplexF64} = BuildSSegOperators(sgspd, sgspd, cpd, modul)
+BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, cpd :: Vector{SCoupleDecomp}, modul :: Vector{Int64} = fill(1, size(sgspd[1].sec, 1))) where T <: Union{Float64, ComplexF64} = BuildSSegOperators(sgspd, sgspd, cpd, modul)

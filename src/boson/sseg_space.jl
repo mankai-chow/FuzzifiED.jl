@@ -1,7 +1,7 @@
 export SSegSpace, BuildSSegSpace
 
 mutable struct SSegSpace{T <: Union{Float64, ComplexF64}}
-    sec :: Vector{Vector{Int64}}
+    sec :: Matrix{Int64}
     l_rng :: Vector{Vector{Int64}}
     l_lookup :: Vector{Dict{Int64, Int64}}
     ptr_st :: Vector{Vector{Int64}}
@@ -11,19 +11,19 @@ mutable struct SSegSpace{T <: Union{Float64, ComplexF64}}
     sts1 :: Vector{Matrix{T}}
 end
 
-function BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Vector{Vector{Int64}}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms = 0 * one(STerms), c2_rng :: Vector{Float64} = [0.0] ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
-    nsec = length(sec)
+function BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms = 0 * one(STerms), c2_rng :: Vector{Float64} = [0.0] ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
+    nsec = size(sec, 2)
     cfs = Vector{SConfs}(undef, nsec)
     cfs1 = Vector{SConfs}(undef, nsec)
     sts = Vector{Matrix{eltype}}(undef, nsec)
     sts1 = Vector{Matrix{eltype}}(undef, nsec)
-    l_rng = [ Int64[] for _ ∈ sec ]
-    ptr_st = [ Int64[] for _ ∈ sec ]
-    l_lookup = [ Dict{Int64, Int64}() for _ ∈ sec ]
+    l_rng = [ Int64[] for _ ∈ axes(sec, 2) ]
+    ptr_st = [ Int64[] for _ ∈ axes(sec, 2) ]
+    l_lookup = [ Dict{Int64, Int64}() for _ ∈ axes(sec, 2) ]
     tms_l2 = GetL2STerms(tms_lzlp)
     BLAS.set_num_threads(num_th)
-    for isec ∈ eachindex(sec)
-        seci = sec[isec]
+    for isec ∈ axes(sec, 2)
+        seci = sec[:, isec]
         cfs[isec] = SConfs(nof, nob, nebm[isec], seci, qnd ; num_th)
         bs = SBasis(cfs[isec])
 
@@ -74,8 +74,8 @@ function BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :
         #println("SECTOR $(seci), TOTAL DIMENSION $(bs.dim), SELECTED DIMENSION $(index - 1).")
     end
     BLAS.set_num_threads(1)
-    ptr_sec = cumsum([ptr_st[isec][end] - 1 for isec ∈ eachindex(sec)])
-    for isec = 2 : length(sec)
+    ptr_sec = cumsum([ptr_st[isec][end] - 1 for isec ∈ axes(sec, 2)])
+    for isec = 2 : nsec
         ptr_st[isec] .+= ptr_sec[isec - 1]
     end
     return SSegSpace{eltype}(sec, l_rng, l_lookup, ptr_st, cfs, cfs1, sts, sts1)

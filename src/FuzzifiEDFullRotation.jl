@@ -27,4 +27,4 @@ include("boson/scouple_decomp.jl")
 include("boson/sseg_operator.jl")
 include("boson/scomp_operator.jl")
 
-end # module FuzzifiEDFullRotation
+end

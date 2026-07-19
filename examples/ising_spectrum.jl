@@ -10,7 +10,7 @@ qnd_pt = [
     GetNeQNDiag(nm), 
     GetLz2QNDiag(nm, 1)
 ] 
-sec_pt = [ [ne1, ((nm + 1) * ne1) % 2] for ne1 = 0 : ne]
+sec_pt = stack([ [ne1, ((nm + 1) * ne1) % 2] for ne1 = 0 : ne])
 sec_tot = [ne, 0]
 
 n_mod = GetDensityMod(nm, 1, [1;;])
@@ -39,4 +39,4 @@ sort!(result, by = st -> real(st[1]))
 enrg_0 = result[1][1]
 enrg_T = filter(st -> st[2] ≈ 2, result)[2][1]
 spec = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
-display(permutedims(hcat(spec...)))
+display(permutedims(stack(spec)))

@@ -1,7 +1,7 @@
 export SegSpace, BuildSegSpace
 
 mutable struct SegSpace{T <: Union{Float64, ComplexF64}}
-    sec :: Vector{Vector{Int64}}
+    sec :: Matrix{Int64}
     l_rng :: Vector{Vector{Int64}}
     l_lookup :: Vector{Dict{Int64, Int64}}
     ptr_st :: Vector{Vector{Int64}}
@@ -11,26 +11,25 @@ mutable struct SegSpace{T <: Union{Float64, ComplexF64}}
     sts1 :: Vector{Matrix{T}}
 end
 
-function BuildSegSpace(no :: Int64, sec :: Vector{Vector{Int64}}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = 0 * one(Terms), c2_rng :: Vector{Float64} = [0.0] ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
-    nsec = length(sec)
+function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = 0 * one(Terms), c2_rng :: Vector{Float64} = [0.0] ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
+    nsec = size(sec, 2)
     cfs = Vector{Confs}(undef, nsec)
     cfs1 = Vector{Confs}(undef, nsec)
     sts = Vector{Matrix{eltype}}(undef, nsec)
     sts1 = Vector{Matrix{eltype}}(undef, nsec)
-    l_rng = [ Int64[] for _ ∈ sec ]
-    ptr_st = [ Int64[] for _ ∈ sec ]
-    l_lookup = [ Dict{Int64, Int64}() for _ ∈ sec ]
+    l_rng = [ Int64[] for _ ∈ axes(sec, 2) ]
+    ptr_st = [ Int64[] for _ ∈ axes(sec, 2) ]
+    l_lookup = [ Dict{Int64, Int64}() for _ ∈ axes(sec, 2) ]
     tms_l2 = GetL2Terms(tms_lzlp)
     BLAS.set_num_threads(num_th)
-    for isec ∈ eachindex(sec)
-        seci = sec[isec]
+    for isec ∈ axes(sec, 2)
+        seci = sec[:, isec]
         cfs[isec] = Confs(no, seci, qnd ; num_th)
 
         bs = Basis(cfs[isec])
 
         l2c2_mat = Matrix(OpMat(Operator(bs, √2 * tms_l2 + tms_c2) ; num_th))
         l2c2_val, st = eigen(Hermitian(l2c2_mat))
-
 
         l2_mat = OpMat(Operator(bs, tms_l2) ; num_th)
         l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in axes(st, 2)]
@@ -74,8 +73,8 @@ function BuildSegSpace(no :: Int64, sec :: Vector{Vector{Int64}}, qnd :: Vector{
             sts1[isec] = lp_mat * sts[isec]
         end
     end
-    ptr_sec = cumsum([ptr_st[isec][end] - 1 for isec ∈ eachindex(sec)])
-    for isec = 2 : length(sec)
+    ptr_sec = cumsum([ptr_st[isec][end] - 1 for isec ∈ axes(sec, 2)])
+    for isec = 2 : nsec
         ptr_st[isec] .+= ptr_sec[isec - 1]
     end
     return SegSpace{eltype}(sec, l_rng, l_lookup, ptr_st, cfs, cfs1, sts, sts1)

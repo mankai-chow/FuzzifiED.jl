@@ -24,8 +24,8 @@ qnd_b = [
     SQNDiag(GetNeQNDiag(1), nmb) 
 ]
 
-sec_f = [ [ne1, 0, 0, 0] for ne1 = 0 : 2 : nof ]
-sec_b = [ [ne1, 0, 0, 0] for ne1 = 0 : 2 : nof ]
+sec_f = stack([ [ne1, 0, 0, 0] for ne1 = 0 : 2 : nof ])
+sec_b = stack([ [ne1, 0, 0, 0] for ne1 = 0 : 2 : nof ])
 sec_tot = [nof, 0, 0, 0]
 nebm_f = [0   for ne1 = 0 : 2 : nof ]
 nebm_b = [ne1 for ne1 = 0 : 2 : nof ]
@@ -66,4 +66,4 @@ sort!(result, by = st -> real(st[1]))
 enrg_0 = result[1][1]
 enrg_T = filter(st -> st[2] ≈ 2 && st[3] ≈ 0, result)[1][1]
 spec = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
-display(permutedims(hcat(spec...)))
+display(permutedims(stack(spec)))
