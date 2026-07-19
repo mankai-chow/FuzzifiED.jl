@@ -1,6 +1,32 @@
 export CompSpace, BuildCompSpace
 export EquivSec, ComposeSec, FindCouplingChannels
 
+
+"""
+    CompSpace{T <: Union{Float64, ComplexF64}}
+
+The mutable type `CompSpace` stores the composite Hilbert space obtained by combining the segment spaces of all the parts and projecting onto a definite total angular momentum ``l_{\\text{tot}}``. A basis state of the composite space is specified by a composite sector (which sector each part sits in), a coupling channel (the angular momentum of each part and the intermediate totals along the coupling chain), and the position of the multiplet within each part. _E. g._ for bipartite and tri-partite systems, it may take the form 
+```math
+\\begin{aligned}
+    |\\{Q\\}_{12}C_{2,12},(l_1l_2)lm,α_{12}⟩&=∑_{m_1m_2}|\\{Q\\}_1C_{2,1},l_1m_1,α_1⟩|\\{Q\\}_2C_{2,2},l_2m_2,α_2⟩⟨l_1m_1,l_2m_2|lm⟩\\\\
+    |\\{Q\\}_{123}C_{2,123},((l_1l_2)l_{12}l_3)lm,α_{123}⟩&=∑_{m_1m_2m_3}|\\{Q\\}_1C_{2,1},l_1m_1,α_1⟩|\\{Q\\}_2C_{2,2},l_2m_2,α_2⟩|\\{Q\\}_3C_{2,3},l_3m_3,α_3⟩⟨l_1m_1,l_2m_2|l_{12}m_{12}⟩⟨l_{12}m_{12},l_3m_3|lm⟩
+\\end{aligned}
+```
+
+Angular momenta are stored as twice their value so that they remain integers.
+
+# Fields
+
+* `np :: Int64` is the number of parts.
+* `nch :: Int64` is the total number of coupling channels summed over all composite sectors.
+* `dim :: Int64` is the total dimension of the composite space.
+* `ltot :: Int64` is twice the total angular momentum ``2L_{\\text{tot}}``.
+* `sgsp :: Vector{SegSpace{T}}` is the list of the [SegSpaces](@ref SegSpace) of the parts.
+* `idsec :: Matrix{Int64}` is the list of composite sector indices. It takes two indices ``idsec[p, isec]`` where ``isec`` is the index of the composite sector and ``p`` is the index of the part. The sector is then given by ``sgsp[p].sec[idsec[p, isec]]``.
+* `chs :: Vector{Vector{Matrix{Int64}}}` records, for each composite sector, the list of angular momentum coupling channels. Each channel is stored as a ``2×N_p`` matrix, where the first row is the angular momentum of each part ``2L_p``, and the second row is the accumulated angular momentum ``2L_{12⋯p}`` of the first ``p`` parts. It takes two indices `chs[isec][ich]` where the `isec` is the index of the composite sector and `ich` is the index of the channel within the sector.
+* `ptr_ch :: Vector{Int64}` are the pointers that delimit, in the global channel numbering, the channels of each composite sector.
+* `ptr_st :: Vector{Vector{Int64}}` records, for each composite sector, the pointers that delimit the block of basis states of each channel.
+"""
 mutable struct CompSpace{T <: Union{Float64, ComplexF64}}
     np :: Int64
     nch :: Int64
@@ -13,6 +39,27 @@ mutable struct CompSpace{T <: Union{Float64, ComplexF64}}
     ptr_st :: Vector{Vector{Int64}}
 end
 
+"""
+    BuildCompSpace(sgsp :: Vector{SegSpace{T}}, idsec :: Matrix{Int64}, ltot :: Int64) :: CompSpace
+    BuildCompSpace(sgsp :: Vector{SegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64, modul :: Vector{Int64}) :: CompSpace
+
+constructs a [CompSpace](@ref CompSpace) from the segment spaces of the parts with total angular momentum `ltot`. For every composite sector it enumerates, through [FindCouplingChannels](@ref FindCouplingChannels), all the ways of coupling the per-part angular momenta into ``L_{\\text{tot}}``, and computes the resulting dimensions and pointers.
+
+# Arguments
+
+* `sgsp :: Vector{SegSpace{T}}` is the list of the [SegSpaces](@ref SegSpace) of the parts.
+* `idsec :: Matrix{Int64}` is the list of composite sector indices. It takes two indices ``idsec[p, isec]``.
+* `ltot :: Int64` is twice the total angular momentum ``2L_{\\text{tot}}``.
+
+In the second form the composite sectors are found automatically with [ComposeSec](@ref ComposeSec) from
+
+* `sec_tot :: Vector{Int64}` the target total diagonal quantum numbers, and
+* `modul :: Vector{Int64}` the moduli used to match the quantum numbers. Facultative, all ``1`` by default.
+
+# Output
+
+* `cpsp :: CompSpace` is the resulting composite space.
+"""
 function BuildCompSpace(sgsp :: Vector{SegSpace{T}}, idsec :: Matrix{Int64}, ltot :: Int64) where T <: Union{Float64, ComplexF64}
     np = length(sgsp)
     chs = [ Matrix{Int64}[] for _ ∈ axes(idsec, 2)]
@@ -49,6 +96,11 @@ function BuildCompSpace(sgsp :: Vector{SegSpace{T}}, sec_tot :: Vector{Int64}, l
     return BuildCompSpace(sgsp, idsec, ltot)
 end
 
+"""
+    EquivSec(sec1 :: Vector{Int64}, sec2 :: Vector{Int64}, modul :: Vector{Int64}) :: Bool
+
+tests whether two diagonal quantum number sectors `sec1` and `sec2` are equivalent. The comparison skips the second entry (the ``L^z`` quantum number, which is not a good quantum number of the composite space) ; for every other quantum number `i` the entries must agree, either exactly when `modul[i] == 1` or modulo `modul[i]` otherwise.
+"""
 function EquivSec(sec1 :: Vector{Int64}, sec2 :: Vector{Int64}, modul :: Vector{Int64})
     flag = true 
     for i ∈ eachindex(modul)
@@ -64,16 +116,46 @@ function EquivSec(sec1 :: Vector{Int64}, sec2 :: Vector{Int64}, modul :: Vector{
     return flag
 end
 
+"""
+    ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Matrix{Int64}}, modul :: Vector{Int64}) :: Matrix{Int64}
+
+finds every combination of per-part sectors whose diagonal quantum numbers add up to the total sector `sec_tot` (in the sense of [EquivSec](@ref EquivSec)).
+
+# Arguments
+
+* `sec_tot :: Vector{Int64}` is the target total diagonal quantum numbers.
+* `sec_pt :: Vector{Matrix{Int64}}` lists, for each part, the sectors available in that part. It takes three indices ``sec_pt[p][iqn, isec]``.
+* `modul :: Vector{Int64}` are the moduli used to match the quantum numbers. Facultative, all ``1`` by default.
+
+# Output
+
+* `idsec_tot :: Matrix{Int64}` is the sorted list of composite sectors, one per column ; each column is a vector of per-part sector indices.
+"""
 function ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Matrix{Int64}}, modul :: Vector{Int64} = fill(1, length(sec_tot)))
-    id_sec_tot = Vector{Int64}[]
+    idsec_tot = Vector{Int64}[]
     for isec in Iterators.product(axes.(sec_pt, 2)...)
         seci_tot = sum([ sec_pt[p][:, isec[p]] for p ∈ eachindex(sec_pt) ])
-        EquivSec(seci_tot, sec_tot, modul) && push!(id_sec_tot, collect(isec))
+        EquivSec(seci_tot, sec_tot, modul) && push!(idsec_tot, collect(isec))
     end
-    id_sec_tot = sort(id_sec_tot)
-    return isempty(id_sec_tot) ? Matrix{Int64}(undef, length(sec_pt), 0) : reduce(hcat, id_sec_tot)
+    idsec_tot = sort(idsec_tot)
+    return isempty(idsec_tot) ? Matrix{Int64}(undef, length(sec_pt), 0) : reduce(hcat, idsec_tot)
 end
 
+"""
+    FindCouplingChannels(np :: Int64, lpt :: Vector{Int64}, ltot :: Int64) :: Vector{Matrix{Int64}}
+
+recursively enumerates every way of coupling the `np` angular momenta `lpt` successively along the chain of parts into the total angular momentum `ltot`. All the angular momenta are given as twice their value.
+
+# Arguments
+
+* `np :: Int64` is the number of parts.
+* `lpt :: Vector{Int64}` is the list of the individual angular momenta ``2L_p`` to be coupled.
+* `ltot :: Int64` is twice the target total angular momentum ``2L_{\\text{tot}}``.
+
+# Output
+
+* `chs :: Vector{Matrix{Int64}}` is the list of coupling channels.
+"""
 function FindCouplingChannels(np :: Int64, lpt :: Vector{Int64}, ltot :: Int64)
     chs = Matrix{Int64}[]
     if (np == 1) 
