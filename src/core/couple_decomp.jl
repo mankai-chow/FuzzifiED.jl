@@ -1,6 +1,6 @@
 export CoupleDecomp
 export RecouplePsPot, ConvPsPot, ContactCouple, SingleSegCouple
-export PrepareCouple
+export PrepareCouple, CountChannels
 
 
 """
@@ -49,21 +49,27 @@ enable the linear combination of coupling decompositions.
 function Base.:+(cpd1 :: Union{CoupleDecomp, Vector{CoupleDecomp}}, cpd2 :: Union{CoupleDecomp, Vector{CoupleDecomp}})
     return [ cpd1 ; cpd2 ]
 end
-
 function Base.:*(fac :: Number, cpd :: CoupleDecomp)
     return CoupleDecomp(cpd.amd, cpd.ch, fac .* cpd.coeff, cpd.sec)
 end
-
 function Base.:*(fac :: Number, cpd :: Vector{CoupleDecomp})
     return fac .* cpd
 end
-
 function Base.:-(cpd :: Union{CoupleDecomp, Vector{CoupleDecomp}})
     return (-1) * cpd
 end
-
 function Base.:-(cpd1 :: Union{CoupleDecomp, Vector{CoupleDecomp}}, cpd2 :: Union{CoupleDecomp, Vector{CoupleDecomp}})
     return cpd1 + (-1) * cpd2
+end
+
+
+"""
+    CountChannels(cpd :: Vector{CoupleDecomp}) :: Int64 
+
+return the total number of channels for a list of CoupleDecomps
+"""
+function CountChannels(cpd :: Vector{CoupleDecomp})
+    return sum([length(cpdi.ch) for cpdi in cpd])
 end
 
 """

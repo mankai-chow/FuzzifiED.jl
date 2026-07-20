@@ -38,7 +38,8 @@ cpd_μ = SingleSegSCouple(2, 1, STerms(GetPolTerms(nmf, 1, [1;;])), [0, 0, 0, 0]
 cpd_hmt = PrepareCouple(2.0 * cpd_fb + 1.0 * cpd_bb - 0.3 * cpd_hop)
 
 sgsp_f = BuildSSegSpace(nmf, 1, nebm_f, sec_f, qnd_f, tms_lzlp_f, modul)
-sgsp_b = BuildSSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0], modul)
+nst_max = [ zeros(Int64, size(sec_b, 2) - 3) ; 5 .* nmf .^ [2,1,0] ]
+sgsp_b = BuildSSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0], modul ; l2c2_ratio = 0.1/nmf^2, nst_max)
 sgop_hmt = BuildSSegOperators([sgsp_f, sgsp_b], cpd_hmt)
 result = []
 for ltot = 0 : 1/2 : 2

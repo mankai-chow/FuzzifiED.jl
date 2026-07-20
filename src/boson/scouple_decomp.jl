@@ -48,22 +48,29 @@ enable the linear combination of coupling decompositions.
 function Base.:+(cpd1 :: Union{SCoupleDecomp, Vector{SCoupleDecomp}}, cpd2 :: Union{SCoupleDecomp, Vector{SCoupleDecomp}})
     return [ cpd1 ; cpd2 ]
 end
-
 function Base.:*(fac :: Number, cpd :: SCoupleDecomp)
     return SCoupleDecomp(cpd.amd, cpd.ch, fac .* cpd.coeff, cpd.sec)
 end
-
 function Base.:*(fac :: Number, cpd :: Vector{SCoupleDecomp})
     return fac .* cpd
 end
-
 function Base.:-(cpd :: Union{SCoupleDecomp, Vector{SCoupleDecomp}})
     return (-1) * cpd
 end
-
 function Base.:-(cpd1 :: Union{SCoupleDecomp, Vector{SCoupleDecomp}}, cpd2 :: Union{SCoupleDecomp, Vector{SCoupleDecomp}})
     return cpd1 + (-1) * cpd2
 end
+
+
+"""
+    CountChannels(cpd :: Vector{SCoupleDecomp}) :: Int64 
+
+return the total number of channels for a list of CoupleDecomps
+"""
+function CountChannels(cpd :: Vector{SCoupleDecomp})
+    return sum([length(cpdi.ch) for cpdi in cpd])
+end
+
 
 function Fuzzifino.SAngModes(obs :: SSphereObs)
     return SAngModes(obs.l2m, obs.get_comp)

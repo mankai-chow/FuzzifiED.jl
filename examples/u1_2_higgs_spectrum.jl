@@ -44,11 +44,19 @@ cpd_int_e = SingleSegSCouple(2, 1, GetIntegral(nf * nf), [0, 0, 0, 0]) + 4 * Sin
 
 cpd_hmt = cpd_int_e - 0.5 * cpd_hop + 0.312 * cpd_μ 
 
-sgsp_b = BuildSSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0])
+nst_max = [ zeros(Int64, size(sec_b, 2) - 3) ; 5 .* nmf .^ [2,1,0] ]
+sgsp_b = BuildSSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0] ; l2c2_ratio = 0.1/nmf^2, nst_max)
+ss = collect(0 : 2)
+c2_rng = [ Float64[s * (s + 1)] for s in ss]
+sgsps_f = BuildSSegSpaces(nof, 1, nebm_f, sec_f, qnd_f, tms_lzlp_f, tms_c2, c2_rng)
+sgop_hmt = Matrix{SSegOperator}(undef, 2, CountChannels(cpd_hmt))
+sgop_hmt[2, :] = BuildSSegOperators([sgsp_b], cpd_hmt ; p_rng = [2])
+
 result = []
-for s = 0 : 2 
-    sgsp_f = BuildSSegSpace(nof, 1, nebm_f, sec_f, qnd_f, tms_lzlp_f, tms_c2, [s * (s + 1.0)])
-    sgop_hmt = BuildSSegOperators([sgsp_f, sgsp_b], cpd_hmt)
+for is in eachindex(ss)
+    s = ss[is]
+    sgsp_f = sgsps_f[is]
+    sgop_hmt[1, :] = BuildSSegOperators([sgsp_f], cpd_hmt ; p_rng = [1])
     for l = 0 : 2
         ll = Int64(2l)
         cpsp = BuildSCompSpace([sgsp_f, sgsp_b], sec_tot, ll)

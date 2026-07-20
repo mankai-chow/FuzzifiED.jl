@@ -36,19 +36,29 @@ cpd_U0 = 6 * ContactCouple([nc_obs, nf_obs], [0 0 ; 0 0 ; 0 0 ; 0 0]) +
 cpd_hmt = 0.5 * cpd_U0 + cpd_U1 + 0.5 * cpd_t + 0.085 * cpd_μ
 
 sec_f = stack([ [ne, ((nmf + 1) * ne) % 2, 0, 0] for ne = 0 : nf : noc])
-sgsp_f = BuildSegSpace(nmf, sec_f, qnd_pt[:, 2], tms_lzlp[2], tms_proj, [0.0])
+nst_max = [ zeros(Int64, size(sec_f, 2) - 2) ; 5 .* nm .^ [1,0] ]
+sgsp_f = BuildSegSpace(nmf, sec_f, qnd_pt[:, 2], tms_lzlp[2], tms_proj, [0.0] ; l2c2_ratio = 0.1/nm^2, nst_max)
+sgop_hmt = Matrix{SegOperator}(undef, 2, CountChannels(cpd_hmt))
+sgop_hmt[2, :] = BuildSegOperators([sgsp_f], cpd_hmt ; p_rng = [2])
+
 result = []
-for (c2, sz) in [(0,0), (3,1), (6,1), (8,2), (12,2)]
+szc2s = [(0, [0]), (1, [3, 6]), (2, [8, 12])]
+for (sz, c2s) in szc2s
     sec_c = stack([ [ne, ((nmf + 1) * ne) % 2, 2 * sz, 0] for ne = 0 : nf : noc])
     sec_tot = [ noc, 0, 2 * sz, 0 ]
-    sgsp_c = BuildSegSpace(noc, sec_c, qnd_pt[:, 1], tms_lzlp[1], tms_c2, [Float64(c2)])
-    for l = 0 : 2
-        cpsp = BuildCompSpace([sgsp_c, sgsp_f], sec_tot, 2l)
-        sgop_hmt = BuildSegOperators([sgsp_c, sgsp_f], cpd_hmt)
-        cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
-        enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
-        for i in eachindex(enrg)
-            push!(result, [enrg[i] / √(2l + 1), l, c2])
+    c2_rng = [ Float64[c2] for c2 in c2s]
+    sgsps_c = BuildSegSpaces(noc, sec_c, qnd_pt[:, 1], tms_lzlp[1], tms_c2, c2_rng)
+    for ic2 in eachindex(c2s)
+        sgsp_c = sgsps_c[ic2]
+        c2 = c2s[ic2]
+        sgop_hmt[1, :] = BuildSegOperators([sgsp_c], cpd_hmt ; p_rng = [1])
+        for l = 0 : 2
+            cpsp = BuildCompSpace([sgsp_c, sgsp_f], sec_tot, 2l)
+            cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
+            enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
+            for i in eachindex(enrg)
+                push!(result, [enrg[i] / √(2l + 1), l, c2])
+            end
         end
     end
 end
