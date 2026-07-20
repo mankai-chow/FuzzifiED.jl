@@ -5,7 +5,7 @@ import FuzzifiED: GetEigensystem
     SCompOperator{Float64}
     SCompOperator{ComplexF64}
 
-The mutable type `SCompOperator` represents a composite operator — such as the Hamiltonian — acting on a [SCompSpace](@ref SCompSpace) of definite total angular momentum. It combines the reduced matrix elements of the per-part [SSegOperators](@ref SSegOperator) with the ``9j`` recoupling coefficients that relate the coupled basis of the initial and final composite spaces. The operator is never materialised as a dense matrix ; instead `*` applies it to a state on the fly, which is used by [GetEigensystem](@ref) to obtain the low-lying spectrum through a Krylov method.
+The mutable type `SCompOperator` represents a composite operator — such as the Hamiltonian — acting on a [SCompSpace](@ref SCompSpace) of definite total angular momentum. It combines the reduced matrix elements of the per-part [SSegOperators](@ref SSegOperator) with the ``9j`` recoupling coefficients that relate the coupled basis of the initial and final composite spaces. The operator is stored in a block-structured form. It can be multiplied formally to a state.
 
 # Fields
 
@@ -14,7 +14,9 @@ The mutable type `SCompOperator` represents a composite operator — such as the
 * `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}`` carried by the operator (``0`` for a scalar such as the Hamiltonian).
 * `coeff :: Vector{T}` is the coefficient of each decomposition channel.
 * `sgop :: Matrix{SSegOperator}` is the ``N_p×N_d`` matrix of segment operators produced by [BuildSSegOperators](@ref BuildSSegOperators).
-* `mat9j :: Array{Float64, 3}` stores the precomputed ``9j`` recoupling coefficients, indexed by `[final channel, initial channel, decomposition]`, including the fermionic reordering sign.
+* `colptr :: Matrix{Int64}` and `rowid :: Vector{Vector{Int64}}` store the allowed blocks of sectors for each channel. `colptr[:, d]` and `rowid[d]` bear the format of a CSC sparse matrix.
+* `idel :: Vector{Matrix{Int64}}` locates the matrix element block in the SSegOperators for each segment. It takes three indices `idel[d][p, e]` where `d` is the channel index, `e` is the element index, and `p` is the part index.
+* `mat9j :: Vector{Vector{Matrix{Float64}}}` stores the precomputed ``9j`` recoupling coefficients, including the fermionic reordering sign. It takes four indices `mat9j[d][e][ich, jch]` where `ich`, `jch` is the channel indices within the sectors specified by `e`.
 """
 mutable struct SCompOperator{T <: Union{Float64, ComplexF64}}
     cpspd :: SCompSpace
@@ -23,7 +25,10 @@ mutable struct SCompOperator{T <: Union{Float64, ComplexF64}}
     ltot :: Int64
     coeff :: Vector{T}
     sgop :: Matrix{SSegOperator}
-    mat9j :: Array{Float64, 3}
+    colptr :: Matrix{Int64}
+    rowid :: Vector{Vector{Int64}}
+    idel :: Vector{Matrix{Int64}}
+    mat9j :: Vector{Vector{Matrix{Float64}}}
 end
 
 """
@@ -50,47 +55,58 @@ function BuildSCompOperator(cpspd :: SCompSpace{T}, cpspf :: SCompSpace{T}, cpd 
     coeff = vcat([ cpd[i].coeff for i in eachindex(cpd) ]...)
     nd = length(id_tc)
     np = cpspd.np
-    modul = cpspd.sgsp[1].sec_modul
 
-    mat9j = Array{Float64}(undef, cpspf.nch, cpspd.nch, nd)
-    Threads.@threads :greedy for (isec, jsec, d) in collect(Iterators.product(axes(cpspf.idsec, 2), axes(cpspd.idsec, 2), 1 : nd))
-        idsecj = cpspd.idsec[:, jsec]
-        idseci = cpspf.idsec[:, isec]
-        secj = reduce(hcat, [ cpspd.sgsp[p].sec[:, idsecj[p]] for p = 1 : np])
-        seci = reduce(hcat, [ cpspf.sgsp[p].sec[:, idseci[p]] for p = 1 : np])
-        sech = cpd[id_tc[d]].sec
+    colptr = zeros(Int64, size(cpspd.idsec, 2) + 1, nd)
+    colptr[1, :] .= 1
+    rowid = [ Int64[] for d = 1 : nd ]
+    idel = [ Matrix{Int64}(undef, np, 0) for d = 1 : nd]
+    Threads.@threads :greedy for d = 1 : nd
+        index = 0
+        for jsec in axes(cpspd.idsec, 2)
+            idsecj = cpspd.idsec[:, jsec]
+            idel_rng = [ sgop[p, d].colptr[idsecj[p]] : sgop[p, d].colptr[idsecj[p] + 1] - 1 for p = 1 : np ]
+            for ideli in Iterators.product(idel_rng...)
+                idseci = [ sgop[p, d].rowid[ideli[p]] for p = 1 : np]
+                isec_rng = searchsorted(eachcol(cpspf.idsec), idseci)
+                isempty(isec_rng) && continue
+                isec = isec_rng[1]
 
-        flag = true
-        for p = 1 : np
-            if (!EquivSec(seci[:, p], secj[:, p] .+ sech[:, p], modul))
-                flag = false
-                break
+                index += 1
+                push!(rowid[d], isec)
+                idel[d] = hcat(idel[d], collect(ideli))
             end
-        end
-        flag || continue
-
-        pfh = mod.(sech[1, :], 2)
-        pfj = mod.(secj[1, :], 2)
-        pftot = sum([pfj[p] * sum(pfh[p + 1 : end]) for p = 1 : np]) % 2
-        chh = ch[d]
-
-        jst = cpspd.ptr_ch[jsec] - 1
-        ist = cpspf.ptr_ch[isec] - 1
-        for j in eachindex(cpspd.chs[jsec])
-            chj = cpspd.chs[jsec][j]
-            for i in eachindex(cpspf.chs[isec])
-                chi = cpspf.chs[isec][i]
-                fac = 1
-                for p = 2 : np
-                    fac = fac * float(d9j(chj[2,p-1], chj[1,p], chj[2,p],  chh[2,p-1], chh[1,p], chh[2,p],  chi[2,p-1], chi[1,p], chi[2,p])) * √((chj[2,p]+1) * (chh[2,p]+1) * (chi[2,p]+1))
-                end
-                (pftot == 1) && (fac = -fac)
-                mat9j[i + ist, j + jst, d] = fac
-            end
+            colptr[jsec + 1, d] = index + 1
         end
     end
 
-    return SCompOperator{T}(cpspd, cpspf, nd, ltot, coeff, sgop, mat9j)
+    mat9j = [ Vector{Matrix{Float64}}(undef, colptr[end, d] - 1) for d = 1 : nd ]
+    Threads.@threads :greedy for (jsec, d) in collect(Iterators.product(axes(cpspd.idsec, 2), 1 : nd))
+        idsecj = cpspd.idsec[:, jsec]
+        for e = colptr[jsec, d] : colptr[jsec + 1, d] - 1
+            isec = rowid[d][e]
+            pfh = [ mod(cpd[id_tc[d]].sec[1, p], 2) for p = 1 : np ]
+            pfj = [ mod(cpspd.sgsp[p].sec[1, idsecj[p]], 2) for p = 1 : np]
+            pftot = sum([pfj[p] * sum(pfh[p + 1 : end]) for p = 1 : np]) % 2
+            chh = ch[d]
+            mat = Matrix{Float64}(undef, length(cpspf.chs[isec]), length(cpspd.chs[jsec]))
+            for j in eachindex(cpspd.chs[jsec])
+                chj = cpspd.chs[jsec][j]
+                for i in eachindex(cpspf.chs[isec])
+                    chi = cpspf.chs[isec][i]
+                    fac = 1
+                    for p = 2 : np
+                        fac = fac * float(d9j(chj[2,p-1], chj[1,p], chj[2,p],  chh[2,p-1], chh[1,p], chh[2,p],  chi[2,p-1], chi[1,p], chi[2,p])) * √((chj[2,p]+1) * (chh[2,p]+1) * (chi[2,p]+1))
+                    end
+                    (pftot == 1) && (fac = -fac)
+                    mat[i, j] = fac
+                end
+            end
+            mat9j[d][e] = mat
+        end
+    end
+    @info "FINISH GENERATING COMP OPERATOR"
+
+    return SCompOperator{T}(cpspd, cpspf, nd, ltot, coeff, sgop, colptr, rowid, idel, mat9j)
 end
 BuildSCompOperator(cpspd :: SCompSpace{T}, cpd :: Vector{SCoupleDecomp}, sgop :: Matrix{SSegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64} = BuildSCompOperator(cpspd, cpspd, cpd, sgop, ltot)
 
@@ -107,14 +123,13 @@ function Base.:*(cpop :: SCompOperator{T}, std :: Vector{T}) where T <: Union{Fl
         stf1 = zeros(T, cpop.cpspf.dim)
         idsecj = cpop.cpspd.idsec[:, jsec]
         coeff = cpop.coeff[d]
-        idel_rng = [ cpop.sgop[p, d].colptr[idsecj[p]] : cpop.sgop[p, d].colptr[idsecj[p] + 1] - 1 for p = 1 : np ]
 
         jrng_sg = Vector{UnitRange{Int64}}(undef, np)
         irng_sg = Vector{UnitRange{Int64}}(undef, np)
-        for idel in Iterators.product(idel_rng...)
-            idseci = [ cpop.sgop[p, d].rowid[idel[p]] for p = 1 : np]
-            isec = searchsortedfirst(axes(cpop.cpspf.idsec, 2), idseci, lt = (k, t) -> isless(@view(cpop.cpspf.idsec[:, k]), t))
-            (isec > size(cpop.cpspf.idsec, 2) || @view(cpop.cpspf.idsec[:, isec]) != idseci) && continue
+        for e = cpop.colptr[jsec, d] : cpop.colptr[jsec + 1, d] - 1
+            idel_sg = cpop.idel[d][:, e]
+            isec = cpop.rowid[d][e]
+            idseci = cpop.cpspf.idsec[:, isec]
             for jch in eachindex(cpop.cpspd.chs[jsec])
                 jrng = cpop.cpspd.ptr_st[jsec][jch] : cpop.cpspd.ptr_st[jsec][jch + 1] - 1
                 for p = 1 : np
@@ -123,7 +138,7 @@ function Base.:*(cpop :: SCompOperator{T}, std :: Vector{T}) where T <: Union{Fl
                     jrng_sg[p] = (cpop.cpspd.sgsp[p].ptr_st[idsecj[p]][idlj] + 1 : cpop.cpspd.sgsp[p].ptr_st[idsecj[p]][idlj + 1]) .- cpop.cpspd.sgsp[p].ptr_st[idsecj[p]][1]
                 end
                 for ich in eachindex(cpop.cpspf.chs[isec])
-                    fac9j = cpop.mat9j[cpop.cpspf.ptr_ch[isec] - 1 + ich, cpop.cpspd.ptr_ch[jsec] - 1 + jch, d]
+                    fac9j = cpop.mat9j[d][e][ich, jch]
                     abs(fac9j) < √eps(Float64) && continue
                     irng = cpop.cpspf.ptr_st[isec][ich] : cpop.cpspf.ptr_st[isec][ich + 1] - 1
                     for p = 1 : np
@@ -131,7 +146,7 @@ function Base.:*(cpop :: SCompOperator{T}, std :: Vector{T}) where T <: Union{Fl
                         idli = cpop.cpspf.sgsp[p].l_lookup[idseci[p]][li]
                         irng_sg[p] = (cpop.cpspf.sgsp[p].ptr_st[idseci[p]][idli] + 1 : cpop.cpspf.sgsp[p].ptr_st[idseci[p]][idli + 1]) .- cpop.cpspf.sgsp[p].ptr_st[idseci[p]][1]
                     end
-                    @views stf1[irng] .+= (coeff * fac9j) .* (⊗([cpop.sgop[p, d].elmat[idel[p]][irng_sg[p], jrng_sg[p]] for p = 1 : np]...) * std[jrng])
+                    @views stf1[irng] .+= (coeff * fac9j) .* (⊗([cpop.sgop[p, d].elmat[idel_sg[p]][irng_sg[p], jrng_sg[p]] for p = 1 : np]...) * std[jrng])
                 end
             end
         end
