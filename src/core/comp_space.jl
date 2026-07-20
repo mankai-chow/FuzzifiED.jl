@@ -24,7 +24,7 @@ Angular momenta are stored as twice their value so that they remain integers.
 * `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}``.
 * `sgsp :: Vector{SegSpace{T}}` is the list of the [SegSpaces](@ref SegSpace) of the parts.
 * `idsec :: Matrix{Int64}` is the list of composite sector indices. It takes two indices `idsec[p, isec]` where `isec` is the index of the composite sector and `p` is the index of the part. The sector is then given by `sgsp[p].sec[idsec[p, isec]]`.
-* `chs :: Vector{Vector{Matrix{Int64}}}` records, for each composite sector, the list of angular momentum coupling channels. Each channel is stored as a ``2×N_p`` matrix, where the first row is the angular momentum of each part ``2L_p``, and the second row is the accumulated angular momentum ``2L_{12⋯p}`` of the first ``p`` parts. It takes two indices `chs[isec][ich]` where the `isec` is the index of the composite sector and `ich` is the index of the channel within the sector.
+* `chs :: Vector{Vector{Matrix{Int64}}}` records, for each composite sector, the list of angular momentum coupling channels. Each channel is stored as a ``2×N_p`` matrix, where the first row is the angular momentum of each part ``2l_p``, and the second row is the accumulated angular momentum ``2l_{12⋯p}`` of the first ``p`` parts. It takes two indices `chs[isec][ich]` where the `isec` is the index of the composite sector and `ich` is the index of the channel within the sector.
 * `ptr_ch :: Vector{Int64}` are the pointers that delimit the channels of each composite sector.
 * `ptr_st :: Vector{Vector{Int64}}` records the pointers that delimit the states of each channel.
 """
@@ -87,7 +87,7 @@ function BuildCompSpace(sgsp :: Vector{SegSpace{T}}, idsec :: Matrix{Int64}, lto
     end
     nch = ptr_ch[end] - 1
     dim = ptr_st[end][end] - 1
-    @info "FINISH BUILDING COMP SPACE, ANGULAR MOMENTUM $(ltot/2), TOTAL DIMENSION $(dim), NUMBER OF CHANNELS $(nch), NUMBER OF SECTORS $(size(idsec, 2))"
+    @info "FINISH BUILDING COMP SPACE, ANGULAR MOMENTUM $(ltot/2), TOTAL DIMENSION $(dim), # OF CHANNELS $(nch), # OF SECTORS $(size(idsec, 2))"
     return CompSpace{T}(np, nch, dim, ltot, sgsp, idsec, chs, ptr_ch, ptr_st)
 end
 
@@ -151,7 +151,7 @@ recursively enumerates every way of coupling the `np` angular momenta `lpt` succ
 # Arguments
 
 * `np :: Int64` is the number of parts.
-* `lpt :: Vector{Int64}` is the list of the individual angular momenta ``2L_p`` to be coupled.
+* `lpt :: Vector{Int64}` is the list of the individual angular momenta ``2l_p`` to be coupled.
 * `ltot :: Int64` is twice the target total angular momentum ``2l_{\\text{tot}}``.
 
 # Output

@@ -28,7 +28,7 @@ end
 """
     BuildSegOperator(sgspd :: SegSpace, sgspf :: SegSpace, amd :: AngModes, ll :: Int64, secop :: Vector{Int64} ; eltype :: Type, num_th :: Int64) :: SegOperator
 
-constructs a [SegOperator](@ref SegOperator) for the spherical spherical-symmetric operator `amd` of rank `ll` acting on a single segment. For every pair of sectors related by the quantum number shift `secop`, and every pair of ``l``-multiplets allowed by the triangle rule, it computes the reduced matrix element from the full matrix element via the Wigner—Eckart theorem by dividing out the phase and the ``3j``-symbol. When the ``3j``-symbol vanishes (for ``m_1=m_2=0`` and ``l>0``) the reduced matrix element is instead recovered from the ``m=1`` components, using the ``L^z=1`` states ``L^+|L,0⟩=\\sqrt{l(l+1)}|l,1⟩`` stored in the segment space.
+constructs a [SegOperator](@ref SegOperator) for the spherical spherical-symmetric operator `amd` of rank `ll` acting on a single segment. For every pair of sectors related by the quantum number shift `secop`, and every pair of ``l``-multiplets allowed by the triangle rule, it computes the reduced matrix element from the full matrix element via the Wigner—Eckart theorem by dividing out the phase and the ``3j``-symbol. When the ``3j``-symbol vanishes (for ``m_1=m_2=0`` and ``l>0``) the reduced matrix element is instead recovered from the ``m=1`` components, using the ``L^z=1`` states ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩`` stored in the segment space.
 
 # Arguments
 
