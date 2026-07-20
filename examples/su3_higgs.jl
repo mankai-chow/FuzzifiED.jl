@@ -44,10 +44,9 @@ for (c2, sz) in [(0,0), (3,1), (6,1), (8,2), (12,2)]
     sgsp_c = BuildSegSpace(noc, sec_c, qnd_pt[:, 1], tms_lzlp[1], tms_c2, [Float64(c2)])
     for l = 0 : 2
         cpsp = BuildCompSpace([sgsp_c, sgsp_f], sec_tot, 2l)
-        @show c2, l, cpsp.dim 
         sgop_hmt = BuildSegOperators([sgsp_c, sgsp_f], cpd_hmt)
         cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
-        enrg, st = GetEigensystem(cpop_hmt, 10)
+        enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
         for i in eachindex(enrg)
             push!(result, [enrg[i] / √(2l + 1), l, c2])
         end

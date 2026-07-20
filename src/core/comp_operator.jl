@@ -91,6 +91,8 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
         end
     end
 
+    @info "FINISH GENERATING COMP OPERATOR"
+
     return CompOperator{T}(cpspd, cpspf, nd, ltot, coeff, sgop, mat9j)
 end
 BuildCompOperator(cpspd :: CompSpace{T}, cpd :: Vector{CoupleDecomp}, sgop :: Matrix{SegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64} = BuildCompOperator(cpspd, cpspd, cpd, sgop, ltot)
@@ -163,7 +165,6 @@ computes the lowest `nst` eigenvalues and eigenvectors of the composite operator
 * `eigvec :: Matrix{T}` is the matrix whose columns are the corresponding eigenvectors.
 """
 function FuzzifiED.GetEigensystem(cpop :: CompOperator{T}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), initvec = rand(T, cpop.cpspd.dim), kwargs...) where T <: Union{ComplexF64,Float64}
-    kwargs1 = haskey(kwargs, :krylovdim) ? kwargs : (kwargs..., krylovdim = ncv)
-    eigval, eigvec, info = eigsolve(x -> cpop * x, initvec, nst, :SR ; tol, kwargs1...)
+    eigval, eigvec, info = eigsolve(x -> cpop * x, initvec, nst, :SR ; tol, krylovdim = ncv, verbosity = 2, kwargs...)
     return Vector{T}(eigval), Matrix{T}(hcat(eigvec...))
 end

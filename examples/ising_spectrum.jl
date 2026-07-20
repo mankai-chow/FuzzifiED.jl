@@ -27,9 +27,8 @@ result = []
 for l in 0 : 2
     ll = Int64(2l)
     cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, ll)
-    @show l, cpsp.dim
     cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
-    enrg, st = GetEigensystem(cpop_hmt, 10)
+    enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
     for i in eachindex(enrg)
         push!(result, [enrg[i] / √(2l + 1), l])
     end

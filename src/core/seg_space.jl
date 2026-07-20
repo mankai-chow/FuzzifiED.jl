@@ -123,6 +123,7 @@ function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag},
     for isec = 2 : nsec
         ptr_st[isec] .+= ptr_sec[isec - 1]
     end
+    @info "BUILDING BUILDING SEG SPACE, TOTAL DIMENSION $(ptr_st[end][end] - 1)"
     return SegSpace{eltype}(sec, sec_modul, l_rng, l_lookup, ptr_st, cfs, cfs1, sts, sts1)
 end
 BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, modul :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads) = BuildSegSpace(no, sec, qnd, tms_lzlp, zero(Terms), [0.0], modul)

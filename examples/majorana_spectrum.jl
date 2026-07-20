@@ -45,9 +45,8 @@ for ltot = 0 : 1/2 : 2
     ll = Int64(2ltot)
     sec_tot = [nmf + ll%2, 0, ne, 0]
     cpsp = BuildSCompSpace([sgsp_f, sgsp_b], sec_tot, ll)
-    @show ltot, cpsp.dim
     cpop_hmt = BuildSCompOperator(cpsp, cpd_hmt, sgop_hmt)
-    enrg, st = GetEigensystem(cpop_hmt, 10)
+    enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
     for i in eachindex(enrg)
         push!(result, [enrg[i] / √(ll + 1), ltot])
     end

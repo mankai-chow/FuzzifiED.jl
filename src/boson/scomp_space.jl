@@ -87,6 +87,7 @@ function BuildSCompSpace(sgsp :: Vector{SSegSpace{T}}, idsec :: Matrix{Int64}, l
     end
     nch = ptr_ch[end] - 1
     dim = ptr_st[end][end] - 1
+    @info "FINISH BUILDING COMP SPACE, ANGULAR MOMENTUM $(ltot/2), TOTAL DIMENSION $(dim), NUMBER OF CHANNELS $(nch), NUMBER OF SECTORS $(size(idsec, 2))"
     return SCompSpace{T}(np, nch, dim, ltot, sgsp, idsec, chs, ptr_ch, ptr_st)
 end
 

@@ -162,8 +162,6 @@ computes the lowest `nst` eigenvalues and eigenvectors of the composite operator
 * `eigvec :: Matrix{T}` is the matrix whose columns are the corresponding eigenvectors.
 """
 function FuzzifiED.GetEigensystem(cpop :: SCompOperator{T}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), initvec = rand(T, cpop.cpspd.dim), kwargs...) where T <: Union{ComplexF64,Float64}
-    kwargs1 = haskey(kwargs, :krylovdim) ? kwargs : (kwargs..., krylovdim = ncv)
-    eigval, eigvec, info = eigsolve(x -> cpop * x, initvec, nst, :SR ; tol, kwargs1...)
-    #print(info)
+    eigval, eigvec, info = eigsolve(x -> cpop * x, initvec, nst, :SR ; tol, krylovdim = ncv, verbosity = 2, kwargs...)
     return Vector{T}(eigval), Matrix{T}(hcat(eigvec...))
 end

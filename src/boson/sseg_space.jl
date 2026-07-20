@@ -119,13 +119,13 @@ function BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :
             lp_mat = Matrix(OpMat(lp))
             sts1[isec] = lp_mat * sts[isec]
         end
-        #println("SECTOR $(seci), TOTAL DIMENSION $(bs.dim), SELECTED DIMENSION $(index - 1).")
     end
     BLAS.set_num_threads(1)
     ptr_sec = cumsum([ptr_st[isec][end] - 1 for isec ∈ axes(sec, 2)])
     for isec = 2 : nsec
         ptr_st[isec] .+= ptr_sec[isec - 1]
     end
+    @info "BUILDING BUILDING SEG SPACE, TOTAL DIMENSION $(ptr_st[end][end] - 1)"
     return SSegSpace{eltype}(sec, modul, l_rng, l_lookup, ptr_st, cfs, cfs1, sts, sts1)
 end
 BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, modul :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads) = BuildSSegSpace(nof, nob, nebm, sec, qnd, tms_lzlp, 0 * one(STerms), [0.0], modul)

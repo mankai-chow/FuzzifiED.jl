@@ -135,6 +135,7 @@ function BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, sgspf :: Vector{SSegS
         ll = ch[d][1, p]
         sgop[p, d] = BuildSSegOperator(sgspd[p], sgspf[p], amd, ll, secop)
     end
+    @info "FINISH BUILDING $np * $nd SEG OPERATORS"
     return sgop
 end
 BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, cpd :: Vector{SCoupleDecomp}) where T <: Union{Float64, ComplexF64} = BuildSSegOperators(sgspd, sgspd, cpd)
