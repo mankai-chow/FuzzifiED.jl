@@ -25,14 +25,16 @@ mutable struct SegOperator{T <: Union{Float64, ComplexF64}}
     elmat :: Vector{Matrix{T}}
 end
 
+
 """
-    BuildSegOperator(sgspd :: SegSpace, sgspf :: SegSpace, amd :: AngModes, ll :: Int64, secop :: Vector{Int64} ; eltype :: Type, num_th :: Int64) :: SegOperator
+    BuildSegOperator(sgspd :: SegSpace[, sgspf :: SegSpace], amd :: AngModes, ll :: Int64, secop :: Vector{Int64} ; eltype :: Type, num_th :: Int64) :: SegOperator
 
 constructs a [SegOperator](@ref SegOperator) for the spherical spherical-symmetric operator `amd` of rank `ll` acting on a single segment. For every pair of sectors related by the quantum number shift `secop`, and every pair of ``l``-multiplets allowed by the triangle rule, it computes the reduced matrix element from the full matrix element via the Wigner—Eckart theorem by dividing out the phase and the ``3j``-symbol. When the ``3j``-symbol vanishes (for ``m_1=m_2=0`` and ``l>0``) the reduced matrix element is instead recovered from the ``m=1`` components, using the ``L^z=1`` states ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩`` stored in the segment space.
 
 # Arguments
 
-* `sgspd :: SegSpace` and `sgspf :: SegSpace` are the initial and final segment spaces.
+* `sgspd :: SegSpace` is the initial segment space.
+* `sgspf :: SegSpace` is the final segment space. Facultative, the same as `sgspd` by default.
 * `amd :: AngModes` is the spherical spherical-symmetric operator.
 * `ll :: Int64` is twice the rank ``2l`` of the spherical-symmetric operator.
 * `secop :: Vector{Int64}` is the change of quantum numbers induced by the operator ; a final sector matches an initial sector when `secd .+ secop` is equivalent to it.
@@ -82,10 +84,6 @@ function BuildSegOperator(sgspd :: SegSpace, sgspf :: SegSpace, amd :: AngModes,
                 op_mat1 = Matrix(OpMat(op1 ; num_th))
                 hmt_block1 = stf' * op_mat1 * std1
             end
-            
-            # dimj = sgspd.ptr_st[j][end] - sgspd.ptr_st[j][1]
-            # dimi = sgspf.ptr_st[i][end] - sgspf.ptr_st[i][1]
-            # @show (dimi,dimj), size(hmt_block)
 
             for jl in eachindex(sgspd.l_rng[j])
                 ld = sgspd.l_rng[j][jl]
@@ -95,8 +93,7 @@ function BuildSegOperator(sgspd :: SegSpace, sgspf :: SegSpace, amd :: AngModes,
                     (ll < abs(ld - lf) || ll > ld + lf) && continue 
                     rngi = (sgspf.ptr_st[i][il] + 1 : sgspf.ptr_st[i][il + 1]) .- sgspf.ptr_st[i][1]
                     fac3j = wigner3j(lf/2, ll/2, ld/2, -mf/2, mm/2, md/2)
-                    ((lf - mf) % 4 == 2) && (fac3j = -fac3j) 
-                    #@show rngi, rngj
+                    ((lf - mf) % 4 == 2) && (fac3j = -fac3j)
                     if (fac3j ≠ 0) 
                         hmt_block[rngi, rngj] /= fac3j
                     else
@@ -112,6 +109,8 @@ function BuildSegOperator(sgspd :: SegSpace, sgspf :: SegSpace, amd :: AngModes,
     end
     return SegOperator{eltype}(sgspd, sgspf, colptr, rowid, elmat)
 end
+BuildSegOperator(sgspd :: SegSpace, amd :: AngModes, ll :: Int64, secop :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = 1) = BuildSegOperator(sgspd, sgspd, amd, ll, secop ; eltype, num_th)
+
 
 """
     BuildSegOperators(sgspd :: Vector{SegSpace{T}}[, sgspf :: Vector{SegSpace{T}}], cpd :: Vector{CoupleDecomp} :: Matrix{SegOperator}

@@ -1,5 +1,6 @@
 export SSegOperator, BuildSSegOperator, BuildSSegOperators
 
+
 """
     SSegOperator{Float64}
     SSegOperator{ComplexF64}
@@ -24,14 +25,16 @@ mutable struct SSegOperator{T <: Union{Float64, ComplexF64}}
     elmat :: Vector{Matrix{T}}
 end
 
+
 """
-    BuildSSegOperator(sgspd :: SSegSpace, sgspf :: SSegSpace, amd :: SAngModes, ll :: Int64, secop :: Vector{Int64} ; eltype :: Type, num_th :: Int64) :: SSegOperator
+    BuildSSegOperator(sgspd :: SSegSpace[, sgspf :: SSegSpace], amd :: SAngModes, ll :: Int64, secop :: Vector{Int64} ; eltype :: Type, num_th :: Int64) :: SSegOperator
 
 constructs a [SSegOperator](@ref SSegOperator) for the spherical spherical-symmetric operator `amd` of rank `ll` acting on a single segment. For every pair of sectors related by the quantum number shift `secop`, and every pair of ``l``-multiplets allowed by the triangle rule, it computes the reduced matrix element from the full matrix element via the Wigner—Eckart theorem by dividing out the phase and the ``3j``-symbol. When the ``3j``-symbol vanishes (for ``m_1=m_2=0`` and ``l>0``) the reduced matrix element is instead recovered from the ``m=1`` components, using the ``L^z=1`` states ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩`` stored in the segment space.
 
 # Arguments
 
-* `sgspd :: SSegSpace` and `sgspf :: SSegSpace` are the initial and final segment spaces.
+* `sgspd :: SSegSpace` is the initial segment space.
+* `sgspf :: SSegSpace` is the final segment space. Facultative, the same as `sgspd` by default.
 * `amd :: SAngModes` is the spherical spherical-symmetric operator.
 * `ll :: Int64` is twice the rank ``2l`` of the spherical-symmetric operator.
 * `secop :: Vector{Int64}` is the change of quantum numbers induced by the operator ; a final sector matches an initial sector when `secd .+ secop` is equivalent to it.
@@ -106,6 +109,7 @@ function BuildSSegOperator(sgspd :: SSegSpace, sgspf :: SSegSpace, amd :: SAngMo
     end
     return SSegOperator{eltype}(sgspd, sgspf, colptr, rowid, elmat)
 end
+BuildSSegOperator(sgspd :: SSegSpace, amd :: SAngModes, ll :: Int64, secop :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = 1) = BuildSSegOperator(sgspd, sgspd, amd, ll,secop ; eltype, num_th)
 
 """
     BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}[, sgspf :: Vector{SSegSpace{T}}], cpd :: Vector{SCoupleDecomp}) :: Matrix{SSegOperator}

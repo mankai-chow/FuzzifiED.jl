@@ -1,5 +1,5 @@
 export CoupleDecomp
-export RecouplePsPot, ConvPsPot, ContactCouple, SingleSegCouple
+export RecouplePsPot, ConvPsPot, ContactCouple, SingleSegCouple, InsertSegment
 export PrepareCouple, CountChannels
 
 
@@ -38,6 +38,7 @@ function CoupleDecomp(amd :: Vector{AngModes}, ch :: Matrix{Int64}, sec :: Matri
     return CoupleDecomp(amd, [ch], [1.0], sec)
 end
 
+
 """
     cpd1 + cpd2 :: Vector{CoupleDecomp}
     cpd1 - cpd2 :: Vector{CoupleDecomp}
@@ -72,39 +73,37 @@ function CountChannels(cpd :: Vector{CoupleDecomp})
     return sum([length(cpdi.ch) for cpdi in cpd])
 end
 
+
 """
     RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ps_pot0 :: Dict) :: Dict
     RecouplePsPot(s :: Number, ps_pot :: Vector{<:Number}) :: Dict
 
-recouples the Haldane pseudopotentials of a two-body interaction ``c^†_1c^†_2c_3c_4`` from the pairing channel ``(12)(34)`` — creations and annihilations each coupled to a pair angular momentum ``j`` — into the density channel ``(14)(23)`` — density modes ``n^{(14)}=c^†_1c_4`` and ``n^{(23)}=c^†_2c_3`` each coupled to a rank ``l``. This is the form consumed by [ConvPsPot](@ref ConvPsPot) and expressed as a product of two density operators. 
+recouples the Haldane pseudo-potentials of a two-body interaction ``c^†_1c^†_2c_3c_4`` from the pairing channel ``(12)(34)`` — creations and annihilations each coupled to a pair angular momentum ``j`` — into the density channel ``(14)(23)`` — density modes ``n^{(14)}=c^†_1c_4`` and ``n^{(23)}=c^†_2c_3`` each coupled to a rank ``l``. This is the form consumed by [ConvPsPot](@ref ConvPsPot) and expressed as a product of two density operators. 
 
 # Arguments
 
 * `s1, s2, s3, s4 :: Number` are the single-particle angular momenta of the four operators.
-* `ps_pot0 :: Dict` maps a pair angular momentum ``j`` to the pseudopotential ``V_j``.
+* `ps_pot0 :: Dict` maps a pair angular momentum ``j`` to the pseudo-potential ``V_j``.
 
-In the second form the interaction is a single flavour with spin `s`, and `ps_pot :: Vector` lists the pseudopotentials ordered from the largest pair angular momentum ``j=2s`` downwards, _i. e._ `ps_pot[i]` is ``V_{2s+1-i}``.
+In the second form the interaction is a single flavour with spin `s`, and `ps_pot :: Vector` lists the pseudo-potentials ordered from the largest pair angular momentum ``j=2s`` downwards, _i. e._ `ps_pot[i]` is ``V_{2s+1-i}``.
 
 # Output
 
 * `ps_pot1 :: Dict` maps a density rank ``l`` to the recoupled coefficient ``W_l``, ready to be passed to [ConvPsPot](@ref ConvPsPot).
 """
 function RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ps_pot0 :: Dict)
-    Lmin = max(abs(s1 - s4), abs(s2 - s3))
-    Lmax = min(s1 + s4, s2 + s3)
     ps_pot1 = Dict{Float64, ComplexF64}()
-    for L in Lmin : Lmax
+    for j in max(abs(s1 - s4), abs(s2 - s3)) : min(s1 + s4, s2 + s3)
         W = 0.0
-        for (J, V) in ps_pot0
-            (abs(s1 - s2) ≤ J ≤ s1 + s2) || continue
-            (abs(s3 - s4) ≤ J ≤ s3 + s4) || continue
-            sixj = Float64(wigner6j(s1, s2, J, s3, s4, L))
+        for (l, V) in ps_pot0
+            (abs(s1 - s2) ≤ l ≤ s1 + s2) || continue
+            (abs(s3 - s4) ≤ l ≤ s3 + s4) || continue
+            sixj = Float64(wigner6j(s1, s2, l, s3, s4, j))
             sixj == 0.0 && continue
-            #iseven(L) || (sixj = -sixj)
-            sixj *= (1.0im) ^ Int(-2J)
-            W += (2J + 1) * sixj * V
+            sixj *= (1.0im) ^ Int(-2l)
+            W += (2l + 1) * sixj * V
         end
-        ps_pot1[L] = W
+        ps_pot1[j] = W
     end
     return ps_pot1
 end
@@ -113,17 +112,16 @@ function RecouplePsPot(s :: Number, ps_pot :: Vector{<:Number})
     return RecouplePsPot(s, s, s, s, ps_pot0)
 end
 
+
 """
     ConvPsPot(ps_pot0 :: Dict) :: Tuple{Vector{Matrix{Int64}}, Vector{ComplexF64}}
 
-converts a pseudopotential — a dictionary mapping a density rank ``l`` to its coefficient ``V_l`` — into the coupling channels and coefficients used by a two-part density—density [CoupleDecomp](@ref CoupleDecomp). For each rank ``l`` it produces the channel ``\\begin{smallmatrix}2l&2l\\\\2l&0\\end{smallmatrix}`` (two rank-``l`` operators coupled to a total scalar) with coefficient ``W_l\\sqrt{2l+1}(-1)^{l}``.
+converts a pseudo-potential — a dictionary mapping a density rank ``l`` to its coefficient ``V_l`` — into the coupling channels and coefficients used by a two-part density—density [CoupleDecomp](@ref CoupleDecomp). For each rank ``l`` it produces the channel ``\\begin{smallmatrix}2l&2l\\\\2l&0\\end{smallmatrix}`` (two rank-``l`` operators coupled to a total scalar) with coefficient ``W_l\\sqrt{2l+1}(-1)^{l}``.
 
 # Output
 
 * `ch :: Vector{Matrix{Int64}}` is the list of coupling channels.
 * `coeff :: Vector{ComplexF64}` is the list of channel coefficients.
-
-These are typically splatted into a [CoupleDecomp](@ref CoupleDecomp) constructor.
 """
 function ConvPsPot(ps_pot0 :: Dict)
     ch = Matrix{Int64}[]
@@ -184,7 +182,7 @@ function ContactCouple(obs :: Vector{SphereObs}, sec :: Matrix{Int64}, ltot :: I
             coeffi *= clebschgordan(chi[2, p - 1]/2, -s2_ptsum[p - 1]/2, chi[1, p]/2, -s2[p]/2, chi[2, p]/2, -s2_ptsum[p]/2)
         end
         flag || continue
-        coeffi *= √(prod(chi[1, :] .+ 1) / (ltot + 1)) * FuzzifiED.ObsNormRadSq
+        coeffi *= √(prod(chi[1, :] .+ 1) / (ltot + 1)) * FuzzifiED.ObsNormRadSq / (4π) ^ (np/2 - 1)
         push!(ch, chi)
         push!(coeff, coeffi)
     end
@@ -192,15 +190,15 @@ function ContactCouple(obs :: Vector{SphereObs}, sec :: Matrix{Int64}, ltot :: I
 end
 
 """
-    SingleSegCouple(np :: Int64, p :: Int64, amdp :: AngModes, l :: Int64, secp :: Vector{Int64}) :: CoupleDecomp
-    SingleSegCouple(np :: Int64, p :: Int64, tms :: Terms, sec :: Vector{Int64}) :: CoupleDecomp
+    SingleSegCouple([np :: Int64, p :: Int64, ]amdp :: AngModes, l :: Int64, secp :: Vector{Int64}) :: CoupleDecomp
+    SingleSegCouple([np :: Int64, p :: Int64, ]tms :: Terms, sec :: Vector{Int64}) :: CoupleDecomp
 
 constructs a [CoupleDecomp](@ref CoupleDecomp) for a term that acts only on a single part ``p`` and as the identity on all the other parts.  
 
 # Arguments
 
-* `np :: Int64` is the number of parts.
-* `p :: Int64` is the index of the part on which the operator acts.
+* `np :: Int64` is the number of parts. Facultative, 1 by default.
+* `p :: Int64` is the index of the part on which the operator acts. Facultative, 1 by default.
 * `amdp :: AngModes` is the spherical tensor operator acting on part ``p``.
 * `l :: Int64` is twice the rank ``2l`` of the operator on part ``p``.
 * `secp :: Vector{Int64}` is the change of quantum numbers on part ``p``.
@@ -225,6 +223,45 @@ function SingleSegCouple(np :: Int64, p :: Int64, tms :: Terms, sec :: Vector{In
     amdp = AngModes(0, Dict((0, 0) => tms))
     return SingleSegCouple(np, p, amdp, 0, sec)
 end
+SingleSegCouple(amdp :: AngModes, l :: Int64, secp :: Vector{Int64}) = SingleSegCouple(1, 1, amdp, l, secp)
+SingleSegCouple(tms :: Terms, secp :: Vector{Int64}) = SingleSegCouple(1, 1, tms, secp)
+
+"""
+    InsertSegment(np :: Int64, p_rng :: Vector{Int64}, ch :: Matrix{Int64}) :: Matrix{Int64}
+    InsertSegment(np :: Int64, p_rng :: Vector{Int64}, ch :: Vector{Matrix{Int64}}) :: Vector{Matrix{Int64}}
+    InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpd :: CoupleDecomp) :: CoupleDecomp
+    InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpd :: Vector{CoupleDecomp}) :: Vector{CoupleDecomp}
+
+Insert segments where the coupling acts as identity to channel(s) or CoupleDecomp(s)
+```math
+    H_1⊗H_2⊗⋯↦𝕀⊗⋯⊗H_1⊗𝕀⊗⋯⊗H_2⊗𝕀⊗⋯
+```
+
+# Arguments 
+* `np :: Int64` is the number of segments after the insertion.
+* `p_rng :: Int64` is the positions of the non-trivial segments after the insertion.
+* `ch :: Matrix{Int64}`, `ch :: Vector{Matrix{Int64}}`, `cpd :: CoupleDecomp`, `cpd :: Vector{CoupleDecomp}` is the channel(s) or CoupleDecomp(s) before the insertion. 
+"""
+function InsertSegment(np :: Int64, p_rng :: Vector{Int64}, ch :: Matrix{Int64})
+    ch1 = zeros(Int64, 2, np)
+    p_rng1 = [p_rng ; np + 1]
+    for p = 1 : length(p_rng)
+        ch1[:, p_rng[p]] = ch[:, p]
+        ch1[2, p_rng[p] + 1 : p_rng1[p + 1] - 1] .= ch[2, p]
+    end
+    return ch1
+end
+InsertSegment(np :: Int64, p_rng :: Vector{Int64}, chs :: Vector{Matrix{Int64}}) = InsertSegment.(Ref(np), Ref(p_rng), chs)
+function InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpd :: CoupleDecomp)
+    amd1 = ones(AngModes, np)
+    amd1[p_rng] = cpd.amd
+    ch1 = InsertSegment(np, p_rng, cpd.ch)
+    sec1 = zeros(Int64, size(cpd.sec, 1), np)
+    sec1[:, p_rng] = cpd.sec
+    return CoupleDecomp(amd1, ch1, cpd.coeff, sec1)
+end
+InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpds :: Vector{CoupleDecomp}) = InsertSegment.(Ref(np), Ref(p_rng), cpds)
+
 
 """
     PrepareCouple(cpd :: CoupleDecomp ; eltype :: Type) :: CoupleDecomp

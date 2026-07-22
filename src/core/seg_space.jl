@@ -1,5 +1,6 @@
 export SegSpace, BuildSegSpace, BuildSegSpaces
 
+
 """
     SegSpace{Float64}
     SegSpace{ComplexF64}
@@ -34,8 +35,9 @@ mutable struct SegSpace{T <: Union{Float64, ComplexF64}}
     sts1 :: Vector{Matrix{T}}
 end
 
+
 """
-    BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}[, tms_c2 :: Terms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64 = √2, eltype :: Type, num_th :: Int64) :: SegSpace
+    BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}[, tms_c2 :: Terms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64, nst_max :: Vector{Int64}, eltype :: Type, num_th :: Int64) :: SegSpace
 
 constructs a [SegSpace](@ref SegSpace) by diagonalising the total angular momentum ``L^2`` — and, facultatively, the flavour Casimir ``C_2`` — within each diagonal quantum number sector, and organising the resulting eigenstates into multiplets.
 
@@ -135,11 +137,11 @@ function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag},
     @info "FINISH BUILDING SEG SPACE, TOTAL DIMENSION $(ptr_st[end][end] - 1)"
     return SegSpace{eltype}(sec, sec_modul, l_rng, l_lookup, ptr_st, cfs, cfs1, sts, sts1)
 end
-BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, modul :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads) = BuildSegSpace(no, sec, qnd, tms_lzlp, zero(Terms), [0.0], modul)
+BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, modul :: Vector{Int64} ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads) = BuildSegSpace(no, sec, qnd, tms_lzlp, zero(Terms), [0.0], modul ; l2c2_ratio, nst_max, eltype, num_th)
 
 
 """
-    BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}[, tms_c2 :: Terms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; eltype :: Type, num_th :: Int64) :: SegSpace
+    BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}[, tms_c2 :: Terms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64, nst_max :: Vector{Int64}, eltype :: Type, num_th :: Int64) :: SegSpace
 
 constructs multiple [SegSpaces](@ref SegSpace) simultaneosly with different list of flavour Casimir ``C_2``.
 

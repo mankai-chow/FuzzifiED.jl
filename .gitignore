@@ -2,6 +2,7 @@
 docs/build
 docs/publish
 docs/src/assets/
+docs/tex/
 **offsync**
 **tmp**
 **Manifest.toml

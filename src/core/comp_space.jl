@@ -90,13 +90,13 @@ function BuildCompSpace(sgsp :: Vector{SegSpace{T}}, idsec :: Matrix{Int64}, lto
     @info "FINISH BUILDING COMP SPACE, ANGULAR MOMENTUM $(ltot/2), TOTAL DIMENSION $(dim), # OF CHANNELS $(nch), # OF SECTORS $(size(idsec, 2))"
     return CompSpace{T}(np, nch, dim, ltot, sgsp, idsec, chs, ptr_ch, ptr_st)
 end
-
 function BuildCompSpace(sgsp :: Vector{SegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64) where T <: Union{Float64, ComplexF64}
     sec_pt = [ sgspi.sec for sgspi in sgsp]
     modul = sgsp[1].sec_modul
     idsec = ComposeSec(sec_tot, sec_pt, modul)
     return BuildCompSpace(sgsp, idsec, ltot)
 end
+
 
 """
     EquivSec(sec1 :: Vector{Int64}, sec2 :: Vector{Int64}, modul :: Vector{Int64}) :: Bool
@@ -118,8 +118,9 @@ function EquivSec(sec1 :: Vector{Int64}, sec2 :: Vector{Int64}, modul :: Vector{
     return flag
 end
 
+
 """
-    ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Matrix{Int64}}, modul :: Vector{Int64}) :: Matrix{Int64}
+    ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Matrix{Int64}}[, modul :: Vector{Int64}]) :: Matrix{Int64}
 
 finds every combination of per-part sectors whose diagonal quantum numbers add up to the total sector `sec_tot` (in the sense of [EquivSec](@ref EquivSec)).
 
@@ -142,6 +143,7 @@ function ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Matrix{Int64}}, m
     idsec_tot = sort(idsec_tot)
     return isempty(idsec_tot) ? Matrix{Int64}(undef, length(sec_pt), 0) : reduce(hcat, idsec_tot)
 end
+
 
 """
     FindCouplingChannels(np :: Int64, lpt :: Vector{Int64}, ltot :: Int64) :: Vector{Matrix{Int64}}

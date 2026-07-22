@@ -32,9 +32,9 @@ mutable struct CompOperator{T <: Union{Float64, ComplexF64}}
     mat9j :: Vector{Vector{Matrix{Float64}}}
 end
 
+
 """
-    BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: Vector{CoupleDecomp}, sgop :: Matrix{SegOperator}, ltot :: Int64) :: CompOperator
-    BuildCompOperator(cpspd :: CompSpace{T}, cpd :: Vector{CoupleDecomp}, sgop :: Matrix{SegOperator}, ltot :: Int64) :: CompOperator
+    BuildCompOperator(cpspd :: CompSpace{T}[, cpspf :: CompSpace{T}], cpd :: Vector{CoupleDecomp}, sgop :: Matrix{SegOperator}, ltot :: Int64) :: CompOperator
 
 constructs a [CompOperator](@ref CompOperator) from the composite spaces, the coupling decompositions `cpd` and the segment operators `sgop`. It computes and stores the ``9j`` recoupling coefficient between every pair of initial and final coupling channels and every decomposition channel together with the sign arising from fermion parity.
 
@@ -157,6 +157,7 @@ function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Flo
     end
     return stf
 end
+
 
 """
     GetEigensystem(cpop :: CompOperator{T}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{T}, kwargs...) :: Tuple{Vector{T}, Matrix{T}}

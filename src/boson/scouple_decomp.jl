@@ -1,7 +1,6 @@
 export SCoupleDecomp
 export ContactSCouple, SingleSegSCouple
-# The pseudopotential helpers RecouplePsPot and ConvPsPot are type agnostic and
-# shared with the fermionic code in `couple_decomp.jl`.
+
 
 """
     SCoupleDecomp
@@ -28,6 +27,7 @@ mutable struct SCoupleDecomp
     sec :: Matrix{Int64} # sec[iqn, p]
 end
 
+
 """
     SCoupleDecomp(amd :: Vector{SAngModes}, ch :: Matrix{Int64}, sec :: Matrix{Int64}) :: SCoupleDecomp
 
@@ -36,6 +36,7 @@ constructs a single-channel `SCoupleDecomp` with unit coefficient from the opera
 function SCoupleDecomp(amd :: Vector{SAngModes}, ch :: Matrix{Int64}, sec :: Matrix{Int64})
     return SCoupleDecomp(amd, [ch], [1.0], sec)
 end
+
 
 """
     cpd1 + cpd2 :: Vector{SCoupleDecomp}
@@ -71,10 +72,10 @@ function CountChannels(cpd :: Vector{SCoupleDecomp})
     return sum([length(cpdi.ch) for cpdi in cpd])
 end
 
-
 function Fuzzifino.SAngModes(obs :: SSphereObs)
     return SAngModes(obs.l2m, obs.get_comp)
 end
+
 
 """
     ContactSCouple(obs :: Vector{SSphereObs}, sec :: Matrix{Int64}, ltot :: Int64) :: SCoupleDecomp
@@ -118,12 +119,13 @@ function ContactSCouple(obs :: Vector{SSphereObs}, sec :: Matrix{Int64}, ltot ::
             coeffi *= clebschgordan(chi[2, p - 1]/2, -s2_ptsum[p - 1]/2, chi[1, p]/2, -s2[p]/2, chi[2, p]/2, -s2_ptsum[p]/2)
         end
         flag || continue
-        coeffi *= √(prod(chi[1, :] .+ 1) / (ltot + 1)) * FuzzifiED.ObsNormRadSq
+        coeffi *= √(prod(chi[1, :] .+ 1) / (ltot + 1)) * FuzzifiED.ObsNormRadSq / (4π) ^ (np/2 - 1)
         push!(ch, chi)
         push!(coeff, coeffi)
     end
     return SCoupleDecomp(amd, ch, coeff, sec)
 end
+
 
 """
     SingleSegSCouple(np :: Int64, p :: Int64, amdp :: SAngModes, l :: Int64, secp :: Vector{Int64}) :: SCoupleDecomp
@@ -159,6 +161,32 @@ function SingleSegSCouple(np :: Int64, p :: Int64, tms :: STerms, sec :: Vector{
     amdp = SAngModes(0, Dict((0, 0) => tms))
     return SingleSegSCouple(np, p, amdp, 0, sec)
 end
+
+
+"""
+    InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpd :: SCoupleDecomp) :: CoupleDecomp
+    InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpd :: Vector{CoupleDecomp}) :: Vector{SCoupleDecomp}
+
+Insert segments where the coupling acts as identity to SCoupleDecomp(s)
+```math
+    H_1⊗H_2⊗⋯↦𝕀⊗⋯⊗H_1⊗𝕀⊗⋯⊗H_2⊗𝕀⊗⋯
+```
+
+# Arguments 
+* `np :: Int64` is the number of segments after the insertion.
+* `p_rng :: Int64` is the positions of the non-trivial segments after the insertion.
+* `cpd :: SCoupleDecomp`, `cpd :: Vector{SCoupleDecomp}` is the SCoupleDecomp(s) before the insertion. 
+"""
+function InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpd :: SCoupleDecomp)
+    amd1 = ones(SAngModes, np)
+    amd1[p_rng] = cpd.amd
+    ch1 = InsertSegment(np, p_rng, cpd.ch)
+    sec1 = zeros(Int64, size(cpd.sec, 1), np)
+    sec1[:, p_rng] = cpd.sec
+    return SCoupleDecomp(amd1, ch1, cpd.coeff, sec1)
+end
+InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpds :: Vector{SCoupleDecomp}) = InsertSegment.(Ref(np), Ref(p_rng), cpds)
+
 
 """
     PrepareCouple(cpd :: SCoupleDecomp ; eltype :: Type) :: SCoupleDecomp

@@ -1,6 +1,5 @@
 export SCompSpace, BuildSCompSpace
-# The helper functions EquivSec, ComposeSec and FindCouplingChannels are type
-# agnostic and shared with the fermionic code in `comp_space.jl`.
+
 
 """
     SCompSpace{Float64}
@@ -39,6 +38,7 @@ mutable struct SCompSpace{T <: Union{Float64, ComplexF64}}
     ptr_ch :: Vector{Int64}
     ptr_st :: Vector{Vector{Int64}}
 end
+
 
 """
     BuildSCompSpace(sgsp :: Vector{SSegSpace{T}}, idsec :: Matrix{Int64}, ltot :: Int64) :: SCompSpace

@@ -1,6 +1,7 @@
 export SCompOperator, BuildSCompOperator
 import FuzzifiED: GetEigensystem
 
+
 """
     SCompOperator{Float64}
     SCompOperator{ComplexF64}
@@ -31,9 +32,9 @@ mutable struct SCompOperator{T <: Union{Float64, ComplexF64}}
     mat9j :: Vector{Vector{Matrix{Float64}}}
 end
 
+
 """
-    BuildSCompOperator(cpspd :: SCompSpace{T}, cpspf :: SCompSpace{T}, cpd :: Vector{SCoupleDecomp}, sgop :: Matrix{SSegOperator}, ltot :: Int64) :: SCompOperator
-    BuildSCompOperator(cpspd :: SCompSpace{T}, cpd :: Vector{SCoupleDecomp}, sgop :: Matrix{SSegOperator}, ltot :: Int64) :: SCompOperator
+    BuildSCompOperator(cpspd :: SCompSpace{T}[, cpspf :: SCompSpace{T}], cpd :: Vector{SCoupleDecomp}, sgop :: Matrix{SSegOperator}, ltot :: Int64) :: SCompOperator
 
 constructs a [SCompOperator](@ref SCompOperator) from the composite spaces, the coupling decompositions `cpd` and the segment operators `sgop`. It computes and stores the ``9j`` recoupling coefficient between every pair of initial and final coupling channels and every decomposition channel together with the sign arising from fermion parity.
 
@@ -110,6 +111,7 @@ function BuildSCompOperator(cpspd :: SCompSpace{T}, cpspf :: SCompSpace{T}, cpd 
 end
 BuildSCompOperator(cpspd :: SCompSpace{T}, cpd :: Vector{SCoupleDecomp}, sgop :: Matrix{SSegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64} = BuildSCompOperator(cpspd, cpspd, cpd, sgop, ltot)
 
+
 """
     *(cpop :: SCompOperator{T}, std :: Vector{T}) :: Vector{T}
 
@@ -156,6 +158,7 @@ function Base.:*(cpop :: SCompOperator{T}, std :: Vector{T}) where T <: Union{Fl
     end
     return stf
 end
+
 
 """
     GetEigensystem(cpop :: SCompOperator{T}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{T}, kwargs...) :: Tuple{Vector{T}, Matrix{T}}

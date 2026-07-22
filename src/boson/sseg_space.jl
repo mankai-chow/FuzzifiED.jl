@@ -1,5 +1,6 @@
 export SSegSpace, BuildSSegSpace, BuildSSegSpaces
 
+
 """
     SSegSpace{Float64}
     SSegSpace{ComplexF64}
@@ -34,8 +35,9 @@ mutable struct SSegSpace{T <: Union{Float64, ComplexF64}}
     sts1 :: Vector{Matrix{T}}
 end
 
+
 """
-    BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}[, tms_c2 :: STerms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64 = √2, eltype :: Type, num_th :: Int64) :: SSegSpace
+    BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}[, tms_c2 :: STerms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64, nst_max :: Vector{Int64}, eltype :: Type, num_th :: Int64) :: SSegSpace
 
 constructs a [SSegSpace](@ref SSegSpace) by diagonalising the total angular momentum ``L^2`` — and, facultatively, the flavour Casimir ``C_2`` — within each diagonal quantum number sector, and organising the resulting eigenstates into multiplets.
 
@@ -137,7 +139,7 @@ function BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :
     @info "FINISH BUILDING SEG SPACE, TOTAL DIMENSION $(ptr_st[end][end] - 1)"
     return SSegSpace{eltype}(sec, sec_modul, l_rng, l_lookup, ptr_st, cfs, cfs1, sts, sts1)
 end
-BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, modul :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads) = BuildSSegSpace(nof, nob, nebm, sec, qnd, tms_lzlp, 0 * one(STerms), [0.0], modul)
+BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, modul :: Vector{Int64} ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads) = BuildSSegSpace(nof, nob, nebm, sec, qnd, tms_lzlp, 0 * one(STerms), [0.0], modul ; l2c2_ratio, nst_max, eltype, num_th)
 
 
 """
