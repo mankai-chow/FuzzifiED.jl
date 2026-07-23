@@ -5,7 +5,7 @@ export SSegSpace, BuildSSegSpace, BuildSSegSpaces
     SSegSpace{Float64}
     SSegSpace{ComplexF64}
 
-The mutable type `SSegSpace` stores the Hilbert space of a single segment (part) of a boson—fermion mixed system, block-diagonalised into multiplets of definite total angular momentum ``l`` and, facultatively, definite flavour Casimir ``C_2``.
+The mutable type `SSegSpace` stores the Hilbert space of a single segment (part) of the system, diagonalized to have definite total angular momentum ``l`` and, facultatively, definite flavour Casimir ``C_2``. 
 ```math
     |\\{Q\\}C_2,lm,α⟩
 ```

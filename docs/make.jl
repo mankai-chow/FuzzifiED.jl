@@ -11,10 +11,9 @@ using FuzzifiEDFullRotation
 
 makedocs(sitename = "FuzzifiEDFullRotation.jl", 
     pages = ["Home" => "index.md", 
-        "Principle" => "principle.md",
+        "Formalism" => "formalism.md",
         "Tutorial" => "tutorial.md",
-        "Interface" => "interface.md",
-        "Releases" => "releases.md"],
+        "Interface" => "interface.md"],
     format = Documenter.HTML(
         assets = ["assets/serif.css", "assets/favicon.ico"], 
         repolink = "https://github.com/FuzzifiED/FuzzifiEDFullRotation.jl",
