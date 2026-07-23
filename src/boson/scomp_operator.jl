@@ -34,7 +34,7 @@ end
 
 
 """
-    BuildSCompOperator(cpspd :: SCompSpace{T}[, cpspf :: SCompSpace{T}], cpd :: Vector{SCoupleDecomp}, sgop :: Matrix{SSegOperator}, ltot :: Int64) :: SCompOperator
+    BuildSCompOperator(cpspd :: SCompSpace{T}[, cpspf :: SCompSpace{T}], cpd :: SCoupleDecomps, sgop :: Matrix{SSegOperator}, ltot :: Int64) :: SCompOperator
 
 constructs a [SCompOperator](@ref SCompOperator) from the composite spaces, the coupling decompositions `cpd` and the segment operators `sgop`. It computes and stores the ``9j`` recoupling coefficient between every pair of initial and final coupling channels and every decomposition channel together with the sign arising from fermion parity.
 
@@ -42,7 +42,7 @@ constructs a [SCompOperator](@ref SCompOperator) from the composite spaces, the 
 
 * `cpspd :: SCompSpace{T}` is the initial composite space.
 * `cpspf :: SCompSpace{T}` is the final composite space. Facultative, the same as `cpspd` by default.
-* `cpd :: Vector{SCoupleDecomp}` is the list of coupling decompositions ; it must be the same one used to build `sgop`.
+* `cpd :: SCoupleDecomps` is the list of coupling decompositions ; it must be the same one used to build `sgop`.
 * `sgop :: Matrix{SSegOperator}` is the matrix of segment operators from [BuildSSegOperators](@ref BuildSSegOperators).
 * `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}`` carried by the operator. Facultative, ``0`` (a scalar) by default.
 
@@ -50,11 +50,10 @@ constructs a [SCompOperator](@ref SCompOperator) from the composite spaces, the 
 
 * `cpop :: SCompOperator` is the resulting composite operator.
 """
-function BuildSCompOperator(cpspd :: SCompSpace{T}, cpspf :: SCompSpace{T}, cpd :: Vector{SCoupleDecomp}, sgop :: Matrix{SSegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64}
-    id_tc = vcat([ fill(i, length(cpd[i].ch)) for i in eachindex(cpd)]...)
-    ch = vcat([ cpd[i].ch for i in eachindex(cpd) ]...)
-    coeff = vcat([ cpd[i].coeff for i in eachindex(cpd) ]...)
-    nd = length(id_tc)
+function BuildSCompOperator(cpspd :: SCompSpace{T}, cpspf :: SCompSpace{T}, cpd :: SCoupleDecomps, sgop :: Matrix{SSegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64}
+    nd = length(cpd)
+    ch = [ cpd[d].ch for d = 1 : nd ]
+    coeff = [ cpd[d].coeff for d = 1 : nd ]
     np = cpspd.np
 
     colptr = zeros(Int64, size(cpspd.idsec, 2) + 1, nd)
@@ -85,7 +84,7 @@ function BuildSCompOperator(cpspd :: SCompSpace{T}, cpspf :: SCompSpace{T}, cpd 
         idsecj = cpspd.idsec[:, jsec]
         for e = colptr[jsec, d] : colptr[jsec + 1, d] - 1
             isec = rowid[d][e]
-            pfh = [ mod(cpd[id_tc[d]].sec[1, p], 2) for p = 1 : np ]
+            pfh = [ mod(cpd[d].sec[1, p], 2) for p = 1 : np ]
             pfj = [ mod(cpspd.sgsp[p].sec[1, idsecj[p]], 2) for p = 1 : np]
             pftot = sum([pfj[p] * sum(pfh[p + 1 : end]) for p = 1 : np]) % 2
             chh = ch[d]
@@ -109,7 +108,7 @@ function BuildSCompOperator(cpspd :: SCompSpace{T}, cpspf :: SCompSpace{T}, cpd 
 
     return SCompOperator{T}(cpspd, cpspf, nd, ltot, coeff, sgop, colptr, rowid, idel, mat9j)
 end
-BuildSCompOperator(cpspd :: SCompSpace{T}, cpd :: Vector{SCoupleDecomp}, sgop :: Matrix{SSegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64} = BuildSCompOperator(cpspd, cpspd, cpd, sgop, ltot)
+BuildSCompOperator(cpspd :: SCompSpace{T}, cpd :: SCoupleDecomps, sgop :: Matrix{SSegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64} = BuildSCompOperator(cpspd, cpspd, cpd, sgop, ltot)
 
 
 """

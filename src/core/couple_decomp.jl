@@ -1,12 +1,13 @@
-export CoupleDecomp
+export CoupleDecomp, CoupleDecomps
 export RecouplePsPot, ConvPsPot, ContactCouple, SingleSegCouple, InsertSegment
-export PrepareCouple, CountChannels
+export PrepareCouple
+import FuzzifiED: AngModes
 
 
 """
     CoupleDecomp
 
-The mutable type `CoupleDecomp` records the decomposition of couplings into channels of direct-producted spherical-symmetric actions onto each part. _E. g._ for bipartite and tri-partite systems, each coupling channel may take the form 
+The mutable type `CoupleDecomp` records an angular-moemntum channel of a coupling — a direct product of spherical-symmetric actions on each part, coupled to a definite total angular momentum. A full operator is represented as a `CoupleDecomps`, _i. e._ a sum of such channels. _E. g._ for bipartite and tri-partite systems, a channel may take the form
 ```math
 \\begin{aligned}
     [𝒪]_{(l_1l_2)l}&=[𝒪_1]_{l_1}⊗[𝒪_2]_{l_2}&𝒪_{lm}&=[𝒪_1]_{l_1l_1}[𝒪_2]_{l_2m_2}⟨l_1m_1,l_2m_2|lm⟩\\\\
@@ -16,61 +17,65 @@ The mutable type `CoupleDecomp` records the decomposition of couplings into chan
 
 # Fields
 
-* `amd :: Vector{AngModes}` records, for each part ``p``, the spherical-symmetric action on that part, stored as an `AngModes` object.
-* `ch :: Vector{Matrix{Int64}}` is the list of coupling channels. 
-* `coeff :: Vector{ComplexF64}` is the coefficient of each channel.
+* `amd :: Vector{AngModes}` records, for each segment ``p``, the angular modes (`AngModes`) [Φ_p]_{lm}.
+* `ch :: Matrix{Int64}` is the coupling channel.
+* `coeff :: ComplexF64` is the coefficient of the channel.
 * `sec :: Matrix{Int64}` records the change of quantum numbers that the term induces : `sec[iqn, p]` is the shift of the `iqn`-th diagonal quantum number on part ``p``.
 """
 mutable struct CoupleDecomp
     amd :: Vector{AngModes}
-    ch :: Vector{Matrix{Int64}}
-    coeff :: Vector{ComplexF64}
+    ch :: Matrix{Int64}
+    coeff :: ComplexF64
     sec :: Matrix{Int64} # sec[iqn, p]
 end
-
-
-"""
-    CoupleDecomp(amd :: Vector{AngModes}, ch :: Matrix{Int64}, sec :: Matrix{Int64}) :: CoupleDecomp
-
-constructs a single-channel `CoupleDecomp` with unit coefficient from the operators `amd`, a single coupling channel `ch` and the quantum number shift `sec`.
-"""
 function CoupleDecomp(amd :: Vector{AngModes}, ch :: Matrix{Int64}, sec :: Matrix{Int64})
-    return CoupleDecomp(amd, [ch], [1.0], sec)
+    return CoupleDecomp(amd, ch, 1.0 + 0.0im, sec)
 end
 
 
 """
-    cpd1 + cpd2 :: Vector{CoupleDecomp}
-    cpd1 - cpd2 :: Vector{CoupleDecomp}
-    -cpd :: Vector{CoupleDecomp}
-    fac * cpd :: Vector{CoupleDecomp}
+    CoupleDecomps = Vector{CoupleDecomp}
+
+Alias for `Vector{CoupleDecomp}`, representing a full operator as a list of single-channel [CoupleDecomp](@ref CoupleDecomp)s.
+"""
+const CoupleDecomps = Vector{CoupleDecomp}
+
+
+"""
+    CoupleDecomps(amd :: Vector{AngModes}, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64}) :: CoupleDecomps
+
+constructs a `CoupleDecomps` — one single-channel `CoupleDecomp` per coupling channel `ch[i]` with coefficient `coeff[i]` — all sharing the operators `amd` and the quantum number shift `sec`. It consumes the channels and coefficients returned by [ConvPsPot](@ref ConvPsPot). 
+"""
+function CoupleDecomps(amd :: Vector{AngModes}, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64})
+    return CoupleDecomp[ CoupleDecomp(amd, ch[i], ComplexF64(coeff[i]), sec) for i in eachindex(ch) ]
+end
+
+
+"""
+    cpd1 + cpd2 :: CoupleDecomps
+    cpd1 - cpd2 :: CoupleDecomps
+    -cpd :: CoupleDecomps
+    fac * cpd :: CoupleDecomps
 
 enable the linear combination of coupling decompositions. 
 """
-function Base.:+(cpd1 :: Union{CoupleDecomp, Vector{CoupleDecomp}}, cpd2 :: Union{CoupleDecomp, Vector{CoupleDecomp}})
+function Base.:+(cpd1 :: CoupleDecomps, cpd2 :: CoupleDecomps)
     return [ cpd1 ; cpd2 ]
 end
 function Base.:*(fac :: Number, cpd :: CoupleDecomp)
-    return CoupleDecomp(cpd.amd, cpd.ch, fac .* cpd.coeff, cpd.sec)
+    return CoupleDecomp(cpd.amd, cpd.ch, fac * cpd.coeff, cpd.sec)
 end
-function Base.:*(fac :: Number, cpd :: Vector{CoupleDecomp})
+function Base.:*(fac :: Number, cpd :: CoupleDecomps)
     return fac .* cpd
 end
-function Base.:-(cpd :: Union{CoupleDecomp, Vector{CoupleDecomp}})
+function Base.:-(cpd :: CoupleDecomps)
     return (-1) * cpd
 end
-function Base.:-(cpd1 :: Union{CoupleDecomp, Vector{CoupleDecomp}}, cpd2 :: Union{CoupleDecomp, Vector{CoupleDecomp}})
+function Base.:-(cpd1 :: CoupleDecomps, cpd2 :: CoupleDecomps)
     return cpd1 + (-1) * cpd2
 end
-
-
-"""
-    CountChannels(cpd :: Vector{CoupleDecomp}) :: Int64 
-
-return the total number of channels for a list of CoupleDecomps
-"""
-function CountChannels(cpd :: Vector{CoupleDecomp})
-    return sum([length(cpdi.ch) for cpdi in cpd])
+function Base.:+(cpd1 :: CoupleDecomps, cpd2 :: Vararg{CoupleDecomps})
+    return cpd1 + +(cpd2...)
 end
 
 
@@ -141,7 +146,7 @@ end
 
 
 """
-    ContactCouple(obs :: Vector{SphereObs}, sec :: Matrix{Int64}, ltot :: Int64) :: CoupleDecomp
+    ContactCouple(obs :: Vector{SphereObs}, sec :: Matrix{Int64}, ltot :: Int64) :: CoupleDecomps
 
 constructs a [CoupleDecomp](@ref CoupleDecomp) for a contact term, _i. e._ the product of one spherical observable per part evaluated at the same point on the sphere
 ```math 
@@ -156,7 +161,7 @@ constructs a [CoupleDecomp](@ref CoupleDecomp) for a contact term, _i. e._ the p
 
 # Output
 
-* `cpd :: CoupleDecomp` is the resulting coupling decomposition.
+* `cpd :: CoupleDecomps` is the resulting coupling decomposition, one [CoupleDecomp](@ref CoupleDecomp) per channel.
 """
 function ContactCouple(obs :: Vector{SphereObs}, sec :: Matrix{Int64}, ltot :: Int64 = 0)
     amd = AngModes.(obs)
@@ -186,12 +191,12 @@ function ContactCouple(obs :: Vector{SphereObs}, sec :: Matrix{Int64}, ltot :: I
         push!(ch, chi)
         push!(coeff, coeffi)
     end
-    return CoupleDecomp(amd, ch, coeff, sec)
+    return CoupleDecomps(amd, ch, coeff, sec)
 end
 
 """
-    SingleSegCouple([np :: Int64, p :: Int64, ]amdp :: AngModes, l :: Int64, secp :: Vector{Int64}) :: CoupleDecomp
-    SingleSegCouple([np :: Int64, p :: Int64, ]tms :: Terms, sec :: Vector{Int64}) :: CoupleDecomp
+    SingleSegCouple([np :: Int64, p :: Int64, ]amdp :: AngModes, l :: Int64, secp :: Vector{Int64}) :: CoupleDecomps
+    SingleSegCouple([np :: Int64, p :: Int64, ]tms :: Terms, sec :: Vector{Int64}) :: CoupleDecomps
 
 constructs a [CoupleDecomp](@ref CoupleDecomp) for a term that acts only on a single part ``p`` and as the identity on all the other parts.  
 
@@ -207,7 +212,7 @@ In the second form the operator is a scalar (rank ``0``) given directly as a lis
 
 # Output
 
-* `cpd :: CoupleDecomp` is the resulting coupling decomposition.
+* `cpd :: CoupleDecomps` is the resulting coupling decomposition (a single channel).
 """
 function SingleSegCouple(np :: Int64, p :: Int64, amdp :: AngModes, l :: Int64, secp :: Vector{Int64})
     amd = [one(AngModes) for p = 1 : np]
@@ -217,7 +222,7 @@ function SingleSegCouple(np :: Int64, p :: Int64, amdp :: AngModes, l :: Int64, 
     ch[2, p : end] .= l 
     sec = zeros(Int64, length(secp), np)
     sec[:, p] = secp
-    return CoupleDecomp(amd, [ch], [1], sec)
+    return CoupleDecomps(amd, [ch], [1], sec)
 end
 function SingleSegCouple(np :: Int64, p :: Int64, tms :: Terms, sec :: Vector{Int64})
     amdp = AngModes(0, Dict((0, 0) => tms))
@@ -228,9 +233,7 @@ SingleSegCouple(tms :: Terms, secp :: Vector{Int64}) = SingleSegCouple(1, 1, tms
 
 """
     InsertSegment(np :: Int64, p_rng :: Vector{Int64}, ch :: Matrix{Int64}) :: Matrix{Int64}
-    InsertSegment(np :: Int64, p_rng :: Vector{Int64}, ch :: Vector{Matrix{Int64}}) :: Vector{Matrix{Int64}}
-    InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpd :: CoupleDecomp) :: CoupleDecomp
-    InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpd :: Vector{CoupleDecomp}) :: Vector{CoupleDecomp}
+    InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpd :: CoupleDecomps) :: CoupleDecomps
 
 Insert segments where the coupling acts as identity to channel(s) or CoupleDecomp(s)
 ```math
@@ -240,7 +243,7 @@ Insert segments where the coupling acts as identity to channel(s) or CoupleDecom
 # Arguments 
 * `np :: Int64` is the number of segments after the insertion.
 * `p_rng :: Int64` is the positions of the non-trivial segments after the insertion.
-* `ch :: Matrix{Int64}`, `ch :: Vector{Matrix{Int64}}`, `cpd :: CoupleDecomp`, `cpd :: Vector{CoupleDecomp}` is the channel(s) or CoupleDecomp(s) before the insertion. 
+* `ch :: Matrix{Int64}`, `ch :: Vector{Matrix{Int64}}`, `cpd :: CoupleDecomp`, `cpd :: CoupleDecomps` is the channel(s) or CoupleDecomp(s) before the insertion. 
 """
 function InsertSegment(np :: Int64, p_rng :: Vector{Int64}, ch :: Matrix{Int64})
     ch1 = zeros(Int64, 2, np)
@@ -260,23 +263,22 @@ function InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpd :: CoupleDecomp)
     sec1[:, p_rng] = cpd.sec
     return CoupleDecomp(amd1, ch1, cpd.coeff, sec1)
 end
-InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpds :: Vector{CoupleDecomp}) = InsertSegment.(Ref(np), Ref(p_rng), cpds)
+InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpds :: CoupleDecomps) = InsertSegment.(Ref(np), Ref(p_rng), cpds)
 
 
 """
-    PrepareCouple(cpd :: CoupleDecomp ; eltype :: Type) :: CoupleDecomp
-    PrepareCouple(cpd :: Vector{CoupleDecomp} ; eltype :: Type) :: Vector{CoupleDecomp}
+    PrepareCouple(cpd :: CoupleDecomps ; eltype :: Type) :: CoupleDecomps
 
 prepares a coupling decomposition for the construction of operators by pre-storing the components of each `AngModes` and, when `eltype == Float64`, rotating any purely imaginary operator by ``i`` while compensating the phase in the coefficients, so that all the matrix elements can be represented with real numbers. This should be called once on an assembled operator before it is passed to [BuildSegOperators](@ref BuildSegOperators).
 
 # Arguments
 
-* `cpd :: CoupleDecomp` or `Vector{CoupleDecomp}` is the coupling decomposition to be prepared.
+* `cpd :: CoupleDecomps` is the coupling decomposition to be prepared.
 * `eltype :: Type` is the target matrix element type, either `Float64` or `ComplexF64`. Facultative, `FuzzifiED.ElementType` by default.
 
 # Output
 
-* the prepared coupling decomposition, of the same shape as the input.
+* the prepared coupling decompositions.
 """
 function PrepareCouple(cpd :: CoupleDecomp ; eltype = FuzzifiED.ElementType)
     amd1 = AngModes[]
@@ -292,6 +294,6 @@ function PrepareCouple(cpd :: CoupleDecomp ; eltype = FuzzifiED.ElementType)
         end
         push!(amd1, amdi1)
     end
-    return CoupleDecomp(amd1, cpd.ch, cpd.coeff .* ph, cpd.sec)
+    return CoupleDecomp(amd1, cpd.ch, cpd.coeff * ph, cpd.sec)
 end
-PrepareCouple(cpd :: Vector{CoupleDecomp} ; eltype = FuzzifiED.ElementType) = PrepareCouple.(cpd ; eltype)
+PrepareCouple(cpd :: CoupleDecomps ; eltype = FuzzifiED.ElementType) = PrepareCouple.(cpd ; eltype)

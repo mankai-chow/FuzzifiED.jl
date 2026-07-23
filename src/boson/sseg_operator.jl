@@ -112,7 +112,7 @@ end
 BuildSSegOperator(sgspd :: SSegSpace, amd :: SAngModes, ll :: Int64, secop :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = 1) = BuildSSegOperator(sgspd, sgspd, amd, ll,secop ; eltype, num_th)
 
 """
-    BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}[, sgspf :: Vector{SSegSpace{T}}], cpd :: Vector{SCoupleDecomp}) :: Matrix{SSegOperator}
+    BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}[, sgspf :: Vector{SSegSpace{T}}], cpd :: SCoupleDecomps) :: Matrix{SSegOperator}
 
 constructs, in parallel, all the [SSegOperators](@ref SSegOperator) required to assemble the composite operators described by the coupling decompositions `cpd`.
 
@@ -120,28 +120,25 @@ constructs, in parallel, all the [SSegOperators](@ref SSegOperator) required to 
 
 * `sgspd :: Vector{SSegSpace{T}}` is the list of the initial segment spaces.
 * `sgspf :: Vector{SSegSpace{T}}` is the list of the final segment spaces. Facultative, the same as `sgspd` by default.
-* `cpd :: Vector{SCoupleDecomp}` is the list of coupling decompositions, _e. g._, an assembled Hamiltonian.
+* `cpd :: SCoupleDecomps` is the list of coupling decompositions, _e. g._, an assembled Hamiltonian.
 * `p_rng :: Vector{Int64}`. When specified, only the SSegOperators of the specified parts will be generated. It must be of the same length as `sgspd`. An array ``1:N_p`` by default.
 
 # Output
 
 * `sgop :: Matrix{SSegOperator}` is a matrix of segment operators of size ``N_p×N_d``, where ``N_p`` is the number of parts and ``N_d`` the total number of channels of `cpd`. It is passed together with the same `cpd` to [BuildSCompOperator](@ref BuildSCompOperator).
 """
-function BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, sgspf :: Vector{SSegSpace{T}}, cpd :: Vector{SCoupleDecomp} ; p_rng :: Vector{Int64} = collect(eachindex(sgspd))) where T <: Union{Float64, ComplexF64}
-    id_tc = vcat([ fill(i, length(cpd[i].ch)) for i in eachindex(cpd)]...)
-    ch = vcat([ cpd[i].ch for i in eachindex(cpd) ]...)
-    coeff = vcat([ cpd[i].coeff for i in eachindex(cpd) ]...)
-    nd = length(id_tc)
+function BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, sgspf :: Vector{SSegSpace{T}}, cpd :: SCoupleDecomps ; p_rng :: Vector{Int64} = collect(eachindex(sgspd))) where T <: Union{Float64, ComplexF64}
+    nd = length(cpd)
     np = length(p_rng)
     sgop = Matrix{SSegOperator}(undef, np, nd)
     Threads.@threads :greedy for (ip, d) in collect(Iterators.product(1 : np, 1 : nd))
         p = p_rng[ip]
-        amd = cpd[id_tc[d]].amd[p]
-        secop = cpd[id_tc[d]].sec[:, p]
-        ll = ch[d][1, p]
+        amd = cpd[d].amd[p]
+        secop = cpd[d].sec[:, p]
+        ll = cpd[d].ch[1, p]
         sgop[ip, d] = BuildSSegOperator(sgspd[ip], sgspf[ip], amd, ll, secop)
     end
     @info "FINISH BUILDING $np * $nd SEG OPERATORS"
     return sgop
 end
-BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, cpd :: Vector{SCoupleDecomp} ; p_rng :: Vector{Int64} = collect(eachindex(sgspd))) where T <: Union{Float64, ComplexF64} = BuildSSegOperators(sgspd, sgspd, cpd ; p_rng)
+BuildSSegOperators(sgspd :: Vector{SSegSpace{T}}, cpd :: SCoupleDecomps ; p_rng :: Vector{Int64} = collect(eachindex(sgspd))) where T <: Union{Float64, ComplexF64} = BuildSSegOperators(sgspd, sgspd, cpd ; p_rng)

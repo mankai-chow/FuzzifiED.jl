@@ -34,7 +34,7 @@ end
 
 
 """
-    BuildCompOperator(cpspd :: CompSpace{T}[, cpspf :: CompSpace{T}], cpd :: Vector{CoupleDecomp}, sgop :: Matrix{SegOperator}, ltot :: Int64) :: CompOperator
+    BuildCompOperator(cpspd :: CompSpace{T}[, cpspf :: CompSpace{T}], cpd :: CoupleDecomps, sgop :: Matrix{SegOperator}, ltot :: Int64) :: CompOperator
 
 constructs a [CompOperator](@ref CompOperator) from the composite spaces, the coupling decompositions `cpd` and the segment operators `sgop`. It computes and stores the ``9j`` recoupling coefficient between every pair of initial and final coupling channels and every decomposition channel together with the sign arising from fermion parity.
 
@@ -42,7 +42,7 @@ constructs a [CompOperator](@ref CompOperator) from the composite spaces, the co
 
 * `cpspd :: CompSpace{T}` is the initial composite space.
 * `cpspf :: CompSpace{T}` is the final composite space. Facultative, the same as `cpspd` by default.
-* `cpd :: Vector{CoupleDecomp}` is the list of coupling decompositions ; it must be the same one used to build `sgop`.
+* `cpd :: CoupleDecomps` is the list of coupling decompositions ; it must be the same one used to build `sgop`.
 * `sgop :: Matrix{SegOperator}` is the matrix of segment operators from [BuildSegOperators](@ref BuildSegOperators).
 * `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}`` carried by the operator. Facultative, ``0`` (a scalar) by default.
 
@@ -50,11 +50,10 @@ constructs a [CompOperator](@ref CompOperator) from the composite spaces, the co
 
 * `cpop :: CompOperator` is the resulting composite operator.
 """
-function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: Vector{CoupleDecomp}, sgop :: Matrix{SegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64}
-    id_tc = vcat([ fill(i, length(cpd[i].ch)) for i in eachindex(cpd)]...)
-    ch = vcat([ cpd[i].ch for i in eachindex(cpd) ]...)
-    coeff = vcat([ cpd[i].coeff for i in eachindex(cpd) ]...)
-    nd = length(id_tc)
+function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: CoupleDecomps, sgop :: Matrix{SegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64}
+    nd = length(cpd)
+    ch = [ cpd[d].ch for d = 1 : nd ]
+    coeff = [ cpd[d].coeff for d = 1 : nd ]
     np = cpspd.np
 
     colptr = zeros(Int64, size(cpspd.idsec, 2) + 1, nd)
@@ -85,7 +84,7 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
         idsecj = cpspd.idsec[:, jsec]
         for e = colptr[jsec, d] : colptr[jsec + 1, d] - 1
             isec = rowid[d][e]
-            pfh = [ mod(cpd[id_tc[d]].sec[1, p], 2) for p = 1 : np ]
+            pfh = [ mod(cpd[d].sec[1, p], 2) for p = 1 : np ]
             pfj = [ mod(cpspd.sgsp[p].sec[1, idsecj[p]], 2) for p = 1 : np]
             pftot = sum([pfj[p] * sum(pfh[p + 1 : end]) for p = 1 : np]) % 2
             chh = ch[d]
@@ -109,12 +108,13 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
 
     return CompOperator{T}(cpspd, cpspf, nd, ltot, coeff, sgop, colptr, rowid, idel, mat9j)
 end
-BuildCompOperator(cpspd :: CompSpace{T}, cpd :: Vector{CoupleDecomp}, sgop :: Matrix{SegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64} = BuildCompOperator(cpspd, cpspd, cpd, sgop, ltot)
+BuildCompOperator(cpspd :: CompSpace{T}, cpd :: CoupleDecomps, sgop :: Matrix{SegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64} = BuildCompOperator(cpspd, cpspd, cpd, sgop, ltot)
 
 """
     *(cpop :: CompOperator{T}, std :: Vector{T}) :: Vector{T}
+    *(stf :: LinearAlgebra.Adjoint{T, Vector{T}}, cpop :: CompOperator{T}, std :: Vector{T}) :: Vector{T}
 
-applies the composite operator `cpop` to a state `std` of the initial composite space and returns the resulting state of the final composite space. The action is evaluated block by block : for every decomposition channel and every pair of coupling channels it takes the Kronecker product of the corresponding per-part reduced matrix element blocks, weighted by the channel coefficient and the ``9j`` recoupling factor. 
+applies the composite operator `cpop` to a state `std` of the initial composite space and returns the resulting state of the final composite space or calculates its inner product between an initial and a final state. The action is evaluated block by block : for every decomposition channel and every pair of coupling channels it takes the Kronecker product of the corresponding per-part reduced matrix element blocks, weighted by the channel coefficient and the ``9j`` recoupling factor. 
 """
 function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Float64, ComplexF64}
     th_lock = ReentrantLock()
@@ -157,6 +157,7 @@ function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Flo
     end
     return stf
 end
+Base.:*(stf :: LinearAlgebra.Adjoint{T, Vector{T}}, cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Float64, ComplexF64} = stf * (cpop * std)
 
 
 """
