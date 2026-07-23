@@ -1,3 +1,8 @@
+# This example calculates the spectrum of the SO(5) deconfined criticality. 
+# It uses a bi-partition into two segments each of two flavours. 
+# The implemented symmetry is SU(2)×SU(2) ⊃ SO(5) and the SO(5) representation 
+# is resolved by measuring flavour Casimir.
+
 using FuzzifiED
 using FuzzifiEDFullRotation
 using LinearAlgebra
@@ -22,18 +27,18 @@ sec_tot = [ne, 0, 0]
 n = GetDensityMod(nm, 2, [1 0;0 1])
 cpd_nn = SingleSegCouple(2, 1, GetDenIntTerms(nm, 2), [0, 0, 0]) + 
     SingleSegCouple(2, 2, GetDenIntTerms(nm, 2), [0, 0, 0]) + 
-    2 * CoupleDecomp([n, n], ConvPsPot(RecouplePsPot(s, [1]))..., [0 0;0 0;0 0])
+    2 * CoupleDecomps([n, n], ConvPsPot(RecouplePsPot(s, [1]))..., [0 0;0 0;0 0])
 cpd_ΔΔ = SingleSegCouple(2, 1, GetPairIntTerms(nm, 2, [0 1;0 0]), [0, 0, 0]) + 
     SingleSegCouple(2, 2, GetPairIntTerms(nm, 2, [0 1;0 0]), [0, 0, 0]) + 
-    CoupleDecomp([Δ', Δ], ConvPsPot(Dict(2s => 1))..., [2 -2;0 0;0 0]) + 
-    CoupleDecomp([Δ, Δ'], ConvPsPot(Dict(2s => 1))..., [-2 2;0 0;0 0])
+    CoupleDecomps([Δ', Δ], ConvPsPot(Dict(2s => 1))..., [2 -2;0 0;0 0]) + 
+    CoupleDecomps([Δ, Δ'], ConvPsPot(Dict(2s => 1))..., [-2 2;0 0;0 0])
 cpd_hmt = PrepareCouple(cpd_nn - 0.9 * cpd_ΔΔ)
 
 tms_c2_sg = GetC2Terms(nm, 2, :SU) + (nf - 2) / 4 * GetPolTerms(nm, 2)
 cpd_c2 = PrepareCouple(SingleSegCouple(2, 1, tms_c2_sg, [0, 0, 0]) + SingleSegCouple(2, 2, tms_c2_sg, [0, 0, 0]) + 
-    CoupleDecomp([n, n], ConvPsPot(Dict([2s - l => -0.5 for l = 0 : 2s]))..., [0 0;0 0;0 0]) +
-    CoupleDecomp([Δ', Δ], ConvPsPot(Dict([2s - l => -1 for l = 0 : 2 : 2s]))..., [2 -2;0 0;0 0]) + 
-    CoupleDecomp([Δ, Δ'], ConvPsPot(Dict([2s - l => -1 for l = 0 : 2 : 2s]))..., [-2 2;0 0;0 0]))
+    CoupleDecomps([n, n], ConvPsPot(Dict([2s - l => -0.5 for l = 0 : 2s]))..., [0 0;0 0;0 0]) +
+    CoupleDecomps([Δ', Δ], ConvPsPot(Dict([2s - l => -1 for l = 0 : 2 : 2s]))..., [2 -2;0 0;0 0]) + 
+    CoupleDecomps([Δ, Δ'], ConvPsPot(Dict([2s - l => -1 for l = 0 : 2 : 2s]))..., [-2 2;0 0;0 0]))
 
 s_rng = collect(0 : 2)
 c2_rng = [Float64[s * (s + 1)] for s in s_rng]

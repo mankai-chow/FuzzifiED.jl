@@ -1,3 +1,5 @@
+# This example gives the model for QED-Chern-Simons of U(1)_{5/2} with one flavour of Dirac fermion.
+
 using FuzzifiED
 using FuzzifiED.Fuzzifino
 using FuzzifiEDFullRotation
@@ -57,18 +59,13 @@ tms_int_b = SimplifyTerms(GetIntegral(nb * nb))
 tms_int_1 = SimplifyTerms(GetIntegral(nf * Laplacian(nf)))
 tms_pol_f = SimplifyTerms(GetIntegral(nf))
 
-cpd_int_b = SingleSegSCouple(3, 2, tms_int_b, zeros(Int64, 4))
-cpd_int_1 = SingleSegSCouple(3, 3, tms_int_1, zeros(Int64, 4))
 cpd_pol_f = SingleSegSCouple(3, 3, tms_pol_f, zeros(Int64, 4))
 cpd_hop = ContactSCouple([c', b', f], [ 1 2 -3 ; 0 0 0 ; 0 1 -1 ; 0 0 0]) -
           ContactSCouple([c, b, f'],  [-1 -2 3 ; 0 0 0 ; 0 -1 1 ; 0 0 0])
-cpd_int_e = SingleSegSCouple(3, 1, GetIntegral(nc * nc), zeros(Int64, 4)) +
-            4 * SingleSegSCouple(3, 2, GetIntegral(nb * nb), zeros(Int64, 4)) +
-            9 * SingleSegSCouple(3, 3, GetIntegral(nf * nf), zeros(Int64, 4)) +
-            4 * ContactSCouple([nc, nb, one(SSphereObs)], zeros(Int64, 4, 3)) +
+cpd_int_e = 4 * ContactSCouple([nc, nb, one(SSphereObs)], zeros(Int64, 4, 3)) +
             6 * ContactSCouple([nc, one(SSphereObs), nf ], zeros(Int64, 4, 3)) +
             12 * ContactSCouple([one(SSphereObs), nb, nf ], zeros(Int64, 4, 3)); 
-cpd_hmt = PrepareCouple(0.07888 * cpd_int_e + 0.0 * cpd_int_b + 1.0 * cpd_int_1 - 0.1176583770744356 * cpd_hop + 0.39833690759271606 * cpd_pol_f) 
+cpd_hmt = PrepareCouple(cpd_int_e - 0.2 * cpd_hop + 0.2 * cpd_pol_f) # An example of Hamiltonian, not necessarily conformal
 
 result = []
 for q = -1 : 1, l = 0 : 2

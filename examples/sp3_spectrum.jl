@@ -1,3 +1,6 @@
+# This example calculates the spectrum of the Sp(3) CFT. 
+# It uses a tri-partition, each with two flavours and a SU(2) symmetry.
+
 using FuzzifiED
 using FuzzifiEDFullRotation
 using LinearAlgebra
@@ -20,18 +23,18 @@ sec_tot = [ne, 0, 0]
 
 Δ = GetPairingMod(nm, 2, [0 1;0 0])
 n = GetDensityMod(nm, 2, [1 0;0 1])
-tms_intra = GetDenIntTerms(nm, 2, [1.0, 0.26435143448887427, 0.06520453215339449]) - GetPairIntTerms(nm, 2, [0.3798431681470266, 0.0, -0.02191234730375343], [0 1;0 0])
-cpd_nn_inter = 2 * CoupleDecomp([n, n], ConvPsPot(RecouplePsPot(s, [1.0, 0.26435143448887427, 0.06520453215339449]))..., [0 0;0 0;0 0])
-cpd_ΔΔ_inter = CoupleDecomp([Δ', Δ], ConvPsPot(Dict(2s => 0.3798431681470266, 2s-2 => -0.02191234730375343))..., [2 -2;0 0;0 0]) + 
-    CoupleDecomp([Δ, Δ'], ConvPsPot(Dict(2s => 0.3798431681470266, 2s-2 => -0.02191234730375343))..., [-2 2;0 0;0 0])
+tms_intra = GetDenIntTerms(nm, 2, [1.0, 0.2643, 0.0652]) - GetPairIntTerms(nm, 2, [0.3798, 0.0, -0.0219], [0 1;0 0])
+cpd_nn_inter = 2 * CoupleDecomps([n, n], ConvPsPot(RecouplePsPot(s, [1.0, 0.2643, 0.0652]))..., [0 0;0 0;0 0])
+cpd_ΔΔ_inter = CoupleDecomps([Δ', Δ], ConvPsPot(Dict(2s => 0.3798, 2s-2 => -0.0219))..., [2 -2;0 0;0 0]) + 
+    CoupleDecomps([Δ, Δ'], ConvPsPot(Dict(2s => 0.3798, 2s-2 => -0.0219))..., [-2 2;0 0;0 0])
 cpd_hmt = PrepareCouple(sum([SingleSegCouple(3, p, tms_intra, [0, 0, 0]) for p = 1 : 3]) +
     sum([InsertSegment(3, [p1, p2], cpd_nn_inter) for p1 = 1 : 3 for p2 = p1 + 1 : 3]) -
     sum([InsertSegment(3, [p1, p2], cpd_ΔΔ_inter) for p1 = 1 : 3 for p2 = p1 + 1 : 3])) ;
 
 tms_c2_sg = GetC2Terms(nm, 2, :SU) + (nf - 2) / 4 * GetPolTerms(nm, 2)
-cpd_c2_inter = CoupleDecomp([n, n], ConvPsPot(Dict([2s - l => -0.5 for l = 0 : 2s]))..., [0 0;0 0;0 0]) +
-    CoupleDecomp([Δ', Δ], ConvPsPot(Dict([2s - l => -1 for l = 0 : 2 : 2s]))..., [2 -2;0 0;0 0]) + 
-    CoupleDecomp([Δ, Δ'], ConvPsPot(Dict([2s - l => -1 for l = 0 : 2 : 2s]))..., [-2 2;0 0;0 0])
+cpd_c2_inter = CoupleDecomps([n, n], ConvPsPot(Dict([2s - l => -0.5 for l = 0 : 2s]))..., [0 0;0 0;0 0]) +
+    CoupleDecomps([Δ', Δ], ConvPsPot(Dict([2s - l => -1 for l = 0 : 2 : 2s]))..., [2 -2;0 0;0 0]) + 
+    CoupleDecomps([Δ, Δ'], ConvPsPot(Dict([2s - l => -1 for l = 0 : 2 : 2s]))..., [-2 2;0 0;0 0])
 cpd_c2 = PrepareCouple(sum([SingleSegCouple(3, p, tms_c2_sg, [0, 0, 0]) for p = 1 : 3]) +
     sum([InsertSegment(3, [p1, p2], cpd_c2_inter) for p1 = 1 : 3 for p2 = p1 + 1 : 3]))
 

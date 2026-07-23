@@ -1,3 +1,6 @@
+# This example calculates the spectrum of the 3D Ising model on the fuzzy sphere 
+# at N_m = 12 in the sectors with total angular momentum l = 0, 1, and 2.
+
 using FuzzifiED
 using FuzzifiEDFullRotation
 FuzzifiED.ElementType = Float64
@@ -15,7 +18,7 @@ sec_tot = [ne, 0]
 
 n_mod = GetDensityMod(nm, 1, [1;;])
 c_obs = GetElectronObs(nm, 1, 1)
-cpd_int = 2 * CoupleDecomp([ n_mod, n_mod ], ConvPsPot(RecouplePsPot((nm-1)/2, [4.75, 1.0]))..., [ 0 0 ; 0 0 ])
+cpd_int = 2 * CoupleDecomps([ n_mod, n_mod ], ConvPsPot(RecouplePsPot((nm-1)/2, [4.75, 1.0]))..., [ 0 0 ; 0 0 ])
 cpd_nx = ContactCouple([c_obs', c_obs], [ 1 -1 ; 0 0 ]) - ContactCouple([c_obs, c_obs'], [ -1 1 ; 0 0 ])
 
 cpd_hmt = PrepareCouple(cpd_int - 3.16 * cpd_nx)
@@ -25,8 +28,7 @@ sgsp = BuildSegSpace(nm, sec_pt, qnd_pt, tms_lzlp_pt)
 sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt)
 result = []
 for l in 0 : 2
-    ll = Int64(2l)
-    cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, ll)
+    cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, 2l)
     cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
     enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
     for i in eachindex(enrg)

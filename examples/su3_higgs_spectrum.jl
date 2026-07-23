@@ -1,3 +1,6 @@
+# This example calculates the spectrum of the SU(3)_1-Higgs theory 
+# realized as a transition between a ν=1/3 Laughlin state and a ν=3 fIQH state.
+
 using FuzzifiED
 using FuzzifiEDFullRotation
 using LinearAlgebra
@@ -38,7 +41,7 @@ cpd_hmt = 0.5 * cpd_U0 + cpd_U1 + 0.5 * cpd_t + 0.085 * cpd_μ
 sec_f = stack([ [ne, ((nmf + 1) * ne) % 2, 0, 0] for ne = 0 : nf : noc])
 nst_max = [ zeros(Int64, size(sec_f, 2) - 2) ; 5 .* nm .^ [1,0] ]
 sgsp_f = BuildSegSpace(nmf, sec_f, qnd_pt[:, 2], tms_lzlp[2], tms_proj, [0.0] ; l2c2_ratio = 0.1/nm^2, nst_max)
-sgop_hmt = Matrix{SegOperator}(undef, 2, CountChannels(cpd_hmt))
+sgop_hmt = Matrix{SegOperator}(undef, 2, length(cpd_hmt))
 sgop_hmt[2, :] = BuildSegOperators([sgsp_f], cpd_hmt ; p_rng = [2])
 
 result = []

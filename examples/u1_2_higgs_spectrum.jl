@@ -1,3 +1,5 @@
+# This example calculates the spectrum of the U(1)_2-Higgs theory realized as a transition between a ν=1/2 bosonic Laughlin state and a ν=2 fIQH state.
+
 using FuzzifiED
 using FuzzifiED.Fuzzifino
 using FuzzifiEDFullRotation
@@ -49,7 +51,7 @@ sgsp_b = BuildSSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0
 ss = collect(0 : 2)
 c2_rng = [ Float64[s * (s + 1)] for s in ss]
 sgsps_f = BuildSSegSpaces(nof, 1, nebm_f, sec_f, qnd_f, tms_lzlp_f, tms_c2, c2_rng)
-sgop_hmt = Matrix{SSegOperator}(undef, 2, CountChannels(cpd_hmt))
+sgop_hmt = Matrix{SSegOperator}(undef, 2, length(cpd_hmt))
 sgop_hmt[2, :] = BuildSSegOperators([sgsp_b], cpd_hmt ; p_rng = [2])
 
 result = []
@@ -58,12 +60,11 @@ for is in eachindex(ss)
     sgsp_f = sgsps_f[is]
     sgop_hmt[1, :] = BuildSSegOperators([sgsp_f], cpd_hmt ; p_rng = [1])
     for l = 0 : 2
-        ll = Int64(2l)
-        cpsp = BuildSCompSpace([sgsp_f, sgsp_b], sec_tot, ll)
+        cpsp = BuildSCompSpace([sgsp_f, sgsp_b], sec_tot, 2l)
         cpop_hmt = BuildSCompOperator(cpsp, cpd_hmt, sgop_hmt)
         enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
         for i in eachindex(enrg)
-            push!(result, [enrg[i] / √(ll + 1), l, s])
+            push!(result, [enrg[i] / √(2l + 1), l, s])
         end
     end
 end
