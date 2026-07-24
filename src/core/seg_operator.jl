@@ -18,11 +18,9 @@ The matrix ``⟨\\{Q\\}_2l_2α_2‖[Φ]_l‖\\{Q\\}_1l_1α_1⟩`` is stored in b
 * `elmat :: Vector{Matrix{T}}` stores, for each block, the reduced matrix elements. 
 """
 mutable struct SegOperator{T <: Union{Float64, ComplexF64}}
-    sgspd :: AbstractSegSpace{T}
-    sgspf :: AbstractSegSpace{T}
     colptr :: Vector{Int64}
     rowid :: Vector{Int64}
-    elmat :: Vector{Matrix{T}}
+    elmat :: Vector{Matrix{Matrix{T}}}
 end
 
 
@@ -60,7 +58,7 @@ function BuildSegOperator(sgspd :: AbstractSegSpace, sgspf :: AbstractSegSpace, 
     colptr = zeros(Int64, size(sgspd.sec, 2) + 1)
     colptr[1] = 1
     rowid = Int64[]
-    elmat = Matrix{eltype}[]
+    elmat = Matrix{Matrix{eltype}}[]
     modul = sgspd.sec_modul
 
     for j in axes(sgspd.sec, 2)
@@ -95,6 +93,8 @@ function BuildSegOperator(sgspd :: AbstractSegSpace, sgspf :: AbstractSegSpace, 
                 hmt_block1 = stf' * op_mat1 * std1
             end
 
+            hmt_mat = Matrix{Matrix{eltype}}(undef, length(sgspf.l_rng[i]), length(sgspf.l_rng[j]))
+
             for jl in eachindex(sgspd.l_rng[j])
                 ld = sgspd.l_rng[j][jl]
                 rngj = (sgspd.ptr_st[j][jl] + 1 : sgspd.ptr_st[j][jl + 1]) .- sgspd.ptr_st[j][1]
@@ -105,19 +105,19 @@ function BuildSegOperator(sgspd :: AbstractSegSpace, sgspf :: AbstractSegSpace, 
                     fac3j = wigner3j(lf/2, ll/2, ld/2, -mf/2, mm/2, md/2)
                     ((lf - mf) % 4 == 2) && (fac3j = -fac3j)
                     if (fac3j ≠ 0) 
-                        hmt_block[rngi, rngj] /= fac3j
+                        hmt_mat[il, jl] = hmt_block[rngi, rngj] / fac3j
                     else
                         fac3j1 = wigner3j(lf/2, ll/2, ld/2, -mf/2, mm/2 - 1, md/2 + 1)
                         ((lf - mf) % 4 == 2) && (fac3j1 = -fac3j1)
-                        hmt_block[rngi, rngj] = hmt_block1[rngi, rngj] / √(ld/2 * (ld/2 + 1)) / fac3j1
+                        hmt_mat[il, jl] = hmt_block1[rngi, rngj] / √(ld/2 * (ld/2 + 1)) / fac3j1
                     end
                 end
             end
-            push!(elmat, hmt_block)
+            push!(elmat, hmt_mat)
         end
         colptr[j + 1] = index + 1
     end
-    return SegOperator{eltype}(sgspd, sgspf, colptr, rowid, elmat)
+    return SegOperator{eltype}(colptr, rowid, elmat)
 end
 BuildSegOperator(sgspd :: AbstractSegSpace, amd :: Union{AngModes, SAngModes, Symbol}, ll :: Int64, secop :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = 1) = BuildSegOperator(sgspd, sgspd, amd, ll, secop ; eltype, num_th)
 

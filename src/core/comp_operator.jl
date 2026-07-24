@@ -132,8 +132,8 @@ function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Flo
     Threads.@threads for ith = 1 : nth 
         stf1 = zeros(T, cpop.cpspf.dim)
         scratch = Vector{T}(undef, maxblk)
-        jrng_sg = Vector{UnitRange{Int64}}(undef, np)
-        irng_sg = Vector{UnitRange{Int64}}(undef, np)
+        idlj = Vector{Int64}(undef, np)
+        idli = Vector{Int64}(undef, np)
         for i_jsec_d = ith : nth : length(jsec_d_rng)
             jsec, d = jsec_d_rng[i_jsec_d]
             idsecj = cpop.cpspd.idsec[:, jsec]
@@ -146,8 +146,7 @@ function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Flo
                     jrng = cpop.cpspd.ptr_st[jsec][jch] : cpop.cpspd.ptr_st[jsec][jch + 1] - 1
                     for p = 1 : np 
                         lj = cpop.cpspd.chs[jsec][jch][1, p]
-                        idlj = cpop.cpspd.sgsp[p].l_lookup[idsecj[p]][lj]
-                        jrng_sg[p] = (cpop.cpspd.sgsp[p].ptr_st[idsecj[p]][idlj] + 1 : cpop.cpspd.sgsp[p].ptr_st[idsecj[p]][idlj + 1]) .- cpop.cpspd.sgsp[p].ptr_st[idsecj[p]][1]
+                        idlj[p] = cpop.cpspd.sgsp[p].l_lookup[idsecj[p]][lj]
                     end
                     for ich in eachindex(cpop.cpspf.chs[isec])
                         fac9j = cpop.mat9j[d][e][ich, jch]
@@ -155,11 +154,10 @@ function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Flo
                         irng = cpop.cpspf.ptr_st[isec][ich] : cpop.cpspf.ptr_st[isec][ich + 1] - 1
                         for p = 1 : np 
                             li = cpop.cpspf.chs[isec][ich][1, p]
-                            idli = cpop.cpspf.sgsp[p].l_lookup[idseci[p]][li]
-                            irng_sg[p] = (cpop.cpspf.sgsp[p].ptr_st[idseci[p]][idli] + 1 : cpop.cpspf.sgsp[p].ptr_st[idseci[p]][idli + 1]) .- cpop.cpspf.sgsp[p].ptr_st[idseci[p]][1]
+                            idli[p] = cpop.cpspf.sgsp[p].l_lookup[idseci[p]][li]
                         end
                         tmp = @view scratch[1 : length(irng)]
-                        @views mul!(tmp, ⊗([cpop.sgop[p, d].elmat[idel_sg[p]][irng_sg[p], jrng_sg[p]] for p = 1 : np]...), std[jrng])
+                        @views mul!(tmp, ⊗([cpop.sgop[p, d].elmat[idel_sg[p]][idli[p], idlj[p]] for p = 1 : np]...), std[jrng])
                         @views stf1[irng] .+= (coeff * fac9j) .* tmp
                     end
                 end
