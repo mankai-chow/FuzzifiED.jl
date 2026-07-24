@@ -43,9 +43,9 @@ tms_lzlp_f = STerms.(GetLpLzTerms(nmf, 1))
 tms_proj_b = GetBosonDenIntSTerms(nmb, 1)
 tms_proj_f = STerms(GetDenIntTerms(nmf, 1, [0, 1]))
 
-sgsp_c = BuildSSegSpace(nmc, 1, nebm_c, sec_c, qnd_c, tms_lzlp_c)
-sgsp_b = BuildSSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj_b)
-sgsp_f = BuildSSegSpace(nmf, 1, nebm_f, sec_f, qnd_f, tms_lzlp_f, tms_proj_f)
+sgsp_c = BuildSegSpace(nmc, 1, nebm_c, sec_c, qnd_c, tms_lzlp_c)
+sgsp_b = BuildSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj_b)
+sgsp_f = BuildSegSpace(nmf, 1, nebm_f, sec_f, qnd_f, tms_lzlp_f, tms_proj_f)
 
 
 c = GetFermionSObs(nmc, 1, 1)
@@ -59,20 +59,20 @@ tms_int_b = SimplifyTerms(GetIntegral(nb * nb))
 tms_int_1 = SimplifyTerms(GetIntegral(nf * Laplacian(nf)))
 tms_pol_f = SimplifyTerms(GetIntegral(nf))
 
-cpd_pol_f = SingleSegSCouple(3, 3, tms_pol_f, zeros(Int64, 4))
-cpd_hop = ContactSCouple([c', b', f], [ 1 2 -3 ; 0 0 0 ; 0 1 -1 ; 0 0 0]) -
-          ContactSCouple([c, b, f'],  [-1 -2 3 ; 0 0 0 ; 0 -1 1 ; 0 0 0])
-cpd_int_e = 4 * ContactSCouple([nc, nb, one(SSphereObs)], zeros(Int64, 4, 3)) +
-            6 * ContactSCouple([nc, one(SSphereObs), nf ], zeros(Int64, 4, 3)) +
-            12 * ContactSCouple([one(SSphereObs), nb, nf ], zeros(Int64, 4, 3)); 
+cpd_pol_f = SingleSegCouple(3, 3, tms_pol_f, zeros(Int64, 4))
+cpd_hop = ContactCouple([c', b', f], [ 1 2 -3 ; 0 0 0 ; 0 1 -1 ; 0 0 0]) -
+          ContactCouple([c, b, f'],  [-1 -2 3 ; 0 0 0 ; 0 -1 1 ; 0 0 0])
+cpd_int_e = 4 * ContactCouple([nc, nb, one(SSphereObs)], zeros(Int64, 4, 3)) +
+            6 * ContactCouple([nc, one(SSphereObs), nf ], zeros(Int64, 4, 3)) +
+            12 * ContactCouple([one(SSphereObs), nb, nf ], zeros(Int64, 4, 3)); 
 cpd_hmt = PrepareCouple(cpd_int_e - 0.2 * cpd_hop + 0.2 * cpd_pol_f) # An example of Hamiltonian, not necessarily conformal
 
 result = []
 for q = -1 : 1, l = 0 : 2
     sec_tot = [3nmc, 0, nmc + q, 0]
-    cpsp = BuildSCompSpace([sgsp_c, sgsp_b, sgsp_f], sec_tot, 2l)
-    sgop_hmt = BuildSSegOperators([sgsp_c, sgsp_b, sgsp_f], cpd_hmt)
-    cpop_hmt = BuildSCompOperator(cpsp, cpd_hmt, sgop_hmt)
+    cpsp = BuildCompSpace([sgsp_c, sgsp_b, sgsp_f], sec_tot, 2l)
+    sgop_hmt = BuildSegOperators([sgsp_c, sgsp_b, sgsp_f], cpd_hmt)
+    cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
     nst = 10 - abs(q) - l
     enrg, st = GetEigensystem(cpop_hmt, nst ; issymmetric = true)
     for i in eachindex(enrg)

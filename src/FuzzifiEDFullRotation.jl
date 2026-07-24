@@ -16,15 +16,10 @@ function __init__()
 end
 
 include("core/seg_space.jl")
+include("core/sseg_space.jl")
 include("core/comp_space.jl")
 include("core/couple_decomp.jl")
 include("core/seg_operator.jl")
 include("core/comp_operator.jl")
-
-include("boson/sseg_space.jl")
-include("boson/scomp_space.jl")
-include("boson/scouple_decomp.jl")
-include("boson/sseg_operator.jl")
-include("boson/scomp_operator.jl")
 
 end
