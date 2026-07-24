@@ -1,4 +1,4 @@
-export SSegSpace, BuildSSegSpace, BuildSSegSpaces
+export SSegSpace   # BuildSegSpace / BuildSegSpaces are overloaded here but exported from core/seg_space.jl
 
 
 """
@@ -23,7 +23,7 @@ where ``α`` is the multiplicity of the sector. For each multiplet only one stat
 * `sts :: Vector{Matrix{T}}` stores, for each sector, the states as its columns. These states are numbered `ptr_st[isec][1] : ptr_st[isec][end] - 1`.
 * `sts1 :: Vector{Matrix{T}}` stores, for each ``m=0`` sector, the ``m=1`` components ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩``, used together with `cfs1` when the ``3j``-symbol vanishes.
 """
-mutable struct SSegSpace{T <: Union{Float64, ComplexF64}}
+mutable struct SSegSpace{T <: Union{Float64, ComplexF64}} <: AbstractSegSpace{T}
     sec :: Matrix{Int64}
     sec_modul :: Vector{Int64}
     l_rng :: Vector{Vector{Int64}}
@@ -37,7 +37,7 @@ end
 
 
 """
-    BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}[, tms_c2 :: STerms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64, nst_max :: Vector{Int64}, eltype :: Type, num_th :: Int64) :: SSegSpace
+    BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}[, tms_c2 :: STerms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64, nst_max :: Vector{Int64}, eltype :: Type, num_th :: Int64) :: SSegSpace
 
 constructs a [SSegSpace](@ref SSegSpace) by diagonalising the total angular momentum ``L^2`` — and, facultatively, the flavour Casimir ``C_2`` — within each diagonal quantum number sector, and organising the resulting eigenstates into multiplets.
 
@@ -65,7 +65,7 @@ For each sector the operator ``αL^2+C_2`` is built and diagonalised ; the facto
 
 * `sgsp :: SSegSpace` is the resulting [SSegSpace](@ref SSegSpace) object.
 """
-function BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms = 0 * one(STerms), c2_rng :: Vector{Float64} = [0.0], sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
+function BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms = 0 * one(STerms), c2_rng :: Vector{Float64} = [0.0], sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
     nsec = size(sec, 2)
     cfs = Vector{SConfs}(undef, nsec)
     cfs1 = Vector{SConfs}(undef, nsec)
@@ -139,11 +139,11 @@ function BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :
     @info "FINISH BUILDING SEG SPACE, TOTAL DIMENSION $(ptr_st[end][end] - 1)"
     return SSegSpace{eltype}(sec, sec_modul, l_rng, l_lookup, ptr_st, cfs, cfs1, sts, sts1)
 end
-BuildSSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, modul :: Vector{Int64} ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads) = BuildSSegSpace(nof, nob, nebm, sec, qnd, tms_lzlp, 0 * one(STerms), [0.0], modul ; l2c2_ratio, nst_max, eltype, num_th)
+BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, modul :: Vector{Int64} ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads) = BuildSegSpace(nof, nob, nebm, sec, qnd, tms_lzlp, 0 * one(STerms), [0.0], modul ; l2c2_ratio, nst_max, eltype, num_th)
 
 
 """
-    BuildSSegSpaces(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms, c2_rng :: Vector{Vector{Float64}}[, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64 = √2, eltype :: Type, num_th :: Int64) :: Vector{SSegSpace}
+    BuildSegSpaces(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms, c2_rng :: Vector{Vector{Float64}}[, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64 = √2, eltype :: Type, num_th :: Int64) :: Vector{SSegSpace}
 
 constructs multiple [SSegSpaces](@ref SSegSpace) simultaneosly with different list of flavour Casimir ``C_2``.
 
@@ -167,7 +167,7 @@ constructs multiple [SSegSpaces](@ref SSegSpace) simultaneosly with different li
 
 * `sgsp :: Vector{SSegSpace}` is the resulting list of [SSegSpace](@ref SSegSpace) objects.
 """
-function BuildSSegSpaces(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms, c2_rng :: Vector{Vector{Float64}}, sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
+function BuildSegSpaces(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms, c2_rng :: Vector{Vector{Float64}}, sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
     nsec = size(sec, 2)
     cfs = Vector{SConfs}(undef, nsec)
     cfs1 = Vector{SConfs}(undef, nsec)

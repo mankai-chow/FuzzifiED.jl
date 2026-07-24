@@ -17,18 +17,18 @@ The mutable type `CoupleDecomp` records an angular-moemntum channel of a couplin
 
 # Fields
 
-* `amd :: Vector{AngModes}` records, for each segment ``p``, the angular modes (`AngModes`) [Φ_p]_{lm}.
+* `amd :: Vector{Union{AngModes, SAngModes, Symbol}}` records, for each segment ``p``, its angular modes ``[Φ_p]_{lm}`` — an `AngModes` on a fermionic segment, an `SAngModes` on a bosonic one, or the `:Identity` sentinel on an inert segment (resolved to that segment's own identity in [BuildSegOperator](@ref BuildSegOperator)).
 * `ch :: Matrix{Int64}` is the coupling channel.
 * `coeff :: ComplexF64` is the coefficient of the channel.
 * `sec :: Matrix{Int64}` records the change of quantum numbers that the term induces : `sec[iqn, p]` is the shift of the `iqn`-th diagonal quantum number on part ``p``.
 """
 mutable struct CoupleDecomp
-    amd :: Vector{AngModes}
+    amd :: Vector{<:Union{AngModes, SAngModes, Symbol}}
     ch :: Matrix{Int64}
     coeff :: ComplexF64
     sec :: Matrix{Int64} # sec[iqn, p]
 end
-function CoupleDecomp(amd :: Vector{AngModes}, ch :: Matrix{Int64}, sec :: Matrix{Int64})
+function CoupleDecomp(amd :: Vector{<:Union{AngModes, SAngModes, Symbol}}, ch :: Matrix{Int64}, sec :: Matrix{Int64})
     return CoupleDecomp(amd, ch, 1.0 + 0.0im, sec)
 end
 
@@ -42,11 +42,11 @@ const CoupleDecomps = Vector{CoupleDecomp}
 
 
 """
-    CoupleDecomps(amd :: Vector{AngModes}, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64}) :: CoupleDecomps
+    CoupleDecomps(amd :: Vector, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64}) :: CoupleDecomps
 
-constructs a `CoupleDecomps` — one single-channel `CoupleDecomp` per coupling channel `ch[i]` with coefficient `coeff[i]` — all sharing the operators `amd` and the quantum number shift `sec`. It consumes the channels and coefficients returned by [ConvPsPot](@ref ConvPsPot). 
+constructs a `CoupleDecomps` — one single-channel `CoupleDecomp` per coupling channel `ch[i]` with coefficient `coeff[i]` — all sharing the operators `amd` (each entry an `AngModes`, `SAngModes` or the `:Identity` sentinel) and the quantum number shift `sec`. It consumes the channels and coefficients returned by [ConvPsPot](@ref ConvPsPot).
 """
-function CoupleDecomps(amd :: Vector{AngModes}, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64})
+function CoupleDecomps(amd :: Vector{<: Union{AngModes, SAngModes, Symbol}}, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64})
     return CoupleDecomp[ CoupleDecomp(amd, ch[i], ComplexF64(coeff[i]), sec) for i in eachindex(ch) ]
 end
 
@@ -143,10 +143,15 @@ end
 function FuzzifiED.AngModes(obs :: SphereObs)
     return AngModes(obs.l2m, obs.get_comp)
 end
+function Fuzzifino.SAngModes(obs :: SSphereObs)
+    return SAngModes(obs.l2m, obs.get_comp)
+end
+_ContactAngModes(obs :: SphereObs) = AngModes(obs)
+_ContactAngModes(obs :: SSphereObs) = SAngModes(obs)
 
 
 """
-    ContactCouple(obs :: Vector{SphereObs}, sec :: Matrix{Int64}, ltot :: Int64) :: CoupleDecomps
+    ContactCouple(obs :: Vector{<:Union{SphereObs, SSphereObs}}, sec :: Matrix{Int64}, ltot :: Int64) :: CoupleDecomps
 
 constructs a [CoupleDecomp](@ref CoupleDecomp) for a contact term, _i. e._ the product of one spherical observable per part evaluated at the same point on the sphere
 ```math 
@@ -155,7 +160,7 @@ constructs a [CoupleDecomp](@ref CoupleDecomp) for a contact term, _i. e._ the p
 
 # Arguments
 
-* `obs :: Vector{SphereObs}` is the list of spherical observables acting on each segment.
+* `obs :: Vector` is the list of spherical observables acting on each segment — each a fermionic `SphereObs` or a bosonic `SSphereObs`, and the two may be mixed.
 * `sec :: Matrix{Int64}` records the change of quantum numbers, `sec[iqn, p]` for the `iqn`-th quantum number on part ``p``.
 * `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}`` of the term. Facultative, ``0`` (a scalar) by default.
 
@@ -163,8 +168,8 @@ constructs a [CoupleDecomp](@ref CoupleDecomp) for a contact term, _i. e._ the p
 
 * `cpd :: CoupleDecomps` is the resulting coupling decomposition, one [CoupleDecomp](@ref CoupleDecomp) per channel.
 """
-function ContactCouple(obs :: Vector{SphereObs}, sec :: Matrix{Int64}, ltot :: Int64 = 0)
-    amd = AngModes.(obs)
+function ContactCouple(obs :: Vector{<:Union{SphereObs, SSphereObs}}, sec :: Matrix{Int64}, ltot :: Int64 = 0)
+    amd = _ContactAngModes.(obs)
     np = length(obs)
     s2 = [ obsi.s2 for obsi in obs ]
     s2_ptsum = cumsum(s2)
@@ -195,27 +200,27 @@ function ContactCouple(obs :: Vector{SphereObs}, sec :: Matrix{Int64}, ltot :: I
 end
 
 """
-    SingleSegCouple([np :: Int64, p :: Int64, ]amdp :: AngModes, l :: Int64, secp :: Vector{Int64}) :: CoupleDecomps
-    SingleSegCouple([np :: Int64, p :: Int64, ]tms :: Terms, sec :: Vector{Int64}) :: CoupleDecomps
+    SingleSegCouple([np :: Int64, p :: Int64, ]amdp :: Union{AngModes, SAngModes}, l :: Int64, secp :: Vector{Int64}) :: CoupleDecomps
+    SingleSegCouple([np :: Int64, p :: Int64, ]tms :: Union{Terms, STerms}, sec :: Vector{Int64}) :: CoupleDecomps
 
-constructs a [CoupleDecomp](@ref CoupleDecomp) for a term that acts only on a single part ``p`` and as the identity on all the other parts.  
+constructs a [CoupleDecomp](@ref CoupleDecomp) for a term that acts only on a single part ``p`` and as the identity on all the other parts, which are filled with the `:Identity` sentinel.
 
 # Arguments
 
 * `np :: Int64` is the number of parts. Facultative, 1 by default.
 * `p :: Int64` is the index of the part on which the operator acts. Facultative, 1 by default.
-* `amdp :: AngModes` is the spherical tensor operator acting on part ``p``.
+* `amdp :: Union{AngModes, SAngModes}` is the spherical tensor operator acting on part ``p`` — an `AngModes` for a fermionic part or an `SAngModes` for a bosonic one.
 * `l :: Int64` is twice the rank ``2l`` of the operator on part ``p``.
 * `secp :: Vector{Int64}` is the change of quantum numbers on part ``p``.
 
-In the second form the operator is a scalar (rank ``0``) given directly as a list of terms `tms :: Terms`, and `sec` is its quantum number shift.
+In the second form the operator is a scalar (rank ``0``) given directly as a list of terms `tms :: Terms` (or `tms :: STerms` for a bosonic part), and `sec` is its quantum number shift.
 
 # Output
 
 * `cpd :: CoupleDecomps` is the resulting coupling decomposition (a single channel).
 """
-function SingleSegCouple(np :: Int64, p :: Int64, amdp :: AngModes, l :: Int64, secp :: Vector{Int64})
-    amd = [one(AngModes) for p = 1 : np]
+function SingleSegCouple(np :: Int64, p :: Int64, amdp :: Union{AngModes, SAngModes}, l :: Int64, secp :: Vector{Int64})
+    amd = Union{AngModes, SAngModes, Symbol}[:Identity for _ = 1 : np]
     amd[p] = amdp
     ch = zeros(Int64, 2, np)
     ch[1, p] = l
@@ -226,6 +231,10 @@ function SingleSegCouple(np :: Int64, p :: Int64, amdp :: AngModes, l :: Int64, 
 end
 function SingleSegCouple(np :: Int64, p :: Int64, tms :: Terms, sec :: Vector{Int64})
     amdp = AngModes(0, Dict((0, 0) => tms))
+    return SingleSegCouple(np, p, amdp, 0, sec)
+end
+function SingleSegCouple(np :: Int64, p :: Int64, tms :: STerms, sec :: Vector{Int64})
+    amdp = SAngModes(0, Dict((0, 0) => tms))
     return SingleSegCouple(np, p, amdp, 0, sec)
 end
 SingleSegCouple(amdp :: AngModes, l :: Int64, secp :: Vector{Int64}) = SingleSegCouple(1, 1, amdp, l, secp)
@@ -269,7 +278,7 @@ InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpds :: CoupleDecomps) = Inse
 """
     PrepareCouple(cpd :: CoupleDecomps ; eltype :: Type) :: CoupleDecomps
 
-prepares a coupling decomposition for the construction of operators by pre-storing the components of each `AngModes` and, when `eltype == Float64`, rotating any purely imaginary operator by ``i`` while compensating the phase in the coefficients, so that all the matrix elements can be represented with real numbers. This should be called once on an assembled operator before it is passed to [BuildSegOperators](@ref BuildSegOperators).
+prepares a coupling decomposition for the construction of operators by pre-storing the components of each `AngModes`/`SAngModes` and, when `eltype == Float64`, rotating any purely imaginary operator by ``i`` while compensating the phase in the coefficients, so that all the matrix elements can be represented with real numbers. This should be called once on an assembled operator before it is passed to [BuildSegOperators](@ref BuildSegOperators).
 
 # Arguments
 
@@ -281,9 +290,13 @@ prepares a coupling decomposition for the construction of operators by pre-stori
 * the prepared coupling decompositions.
 """
 function PrepareCouple(cpd :: CoupleDecomp ; eltype = FuzzifiED.ElementType)
-    amd1 = AngModes[]
+    amd1 = Union{AngModes, SAngModes, Symbol}[]
     ph = 1.0 + 0.0im
     for amdi in cpd.amd
+        if (amdi === :Identity)
+            push!(amd1, amdi)
+            continue
+        end
         amdi1 = StoreComps(amdi)
         if (eltype == Float64)
             coeff1 = collect(amdi1.comps)[1][2][1].coeff

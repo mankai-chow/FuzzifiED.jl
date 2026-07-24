@@ -1,4 +1,12 @@
-export SegSpace, BuildSegSpace, BuildSegSpaces
+export AbstractSegSpace, SegSpace, BuildSegSpace, BuildSegSpaces
+
+
+"""
+    AbstractSegSpace{T}
+
+Abstract supertype of the single-segment Hilbert spaces. Its concrete subtypes are [SegSpace](@ref SegSpace) for a fermionic segment (backed by FuzzifiED `Confs`) and [SSegSpace](@ref SSegSpace) for a bosonic / mixed segment (backed by Fuzzifino `SConfs`). Both share the same field layout — only the configuration storage and the operator backend differ — so the composite space, composite operator and coupling machinery are written generically on `AbstractSegSpace` and support an arbitrary mixture of fermionic and bosonic segments.
+"""
+abstract type AbstractSegSpace{T <: Union{Float64, ComplexF64}} end
 
 
 """
@@ -23,7 +31,7 @@ where ``α`` is the multiplicity of the sector. For each multiplet only one stat
 * `sts :: Vector{Matrix{T}}` stores, for each sector, the states as its columns. These states are numbered `ptr_st[isec][1] : ptr_st[isec][end] - 1`.
 * `sts1 :: Vector{Matrix{T}}` stores, for each ``m=0`` sector, the ``m=1`` components ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩``, used together with `cfs1` when the ``3j``-symbol vanishes.
 """
-mutable struct SegSpace{T <: Union{Float64, ComplexF64}}
+mutable struct SegSpace{T <: Union{Float64, ComplexF64}} <: AbstractSegSpace{T}
     sec :: Matrix{Int64}
     sec_modul :: Vector{Int64}
     l_rng :: Vector{Vector{Int64}}

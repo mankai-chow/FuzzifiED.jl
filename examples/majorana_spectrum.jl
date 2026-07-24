@@ -33,22 +33,22 @@ tms_lzlp_f = STerms.(GetLpLzTerms(nmf, 1))
 tms_lzlp_b = GetBosonLpLzSTerms(nmb, 1)
 tms_proj = ContractMod(b' * b' * b', b * b * b, 3(s-1/2))
 
-cpd_hop = SCoupleDecomps([f' * f', b * b], ConvPsPot(Dict(2s-1 => 1))..., [0 0 ; 0 0 ; 2 -2 ; 0 0]) + SCoupleDecomps([f * f, b' * b'], ConvPsPot(Dict(2s-1 => 1))..., [0 0 ; 0 0 ; -2 2 ; 0 0])
-cpd_fb = SCoupleDecomps([f' * f, b' * b], ConvPsPot(RecouplePsPot(s-1/2, s, s, s-1/2, Dict(2s-1/2 => 1)))..., [0 0 ; 0 0 ; 0 0 ; 0 0 ])
-cpd_bb = SingleSegSCouple(2, 2, ContractMod(b' * b', b * b, 2s-1), [0, 0, 0, 0])
-cpd_μ = SingleSegSCouple(2, 1, STerms(GetPolTerms(nmf, 1, [1;;])), [0, 0, 0, 0])
+cpd_hop = CoupleDecomps([f' * f', b * b], ConvPsPot(Dict(2s-1 => 1))..., [0 0 ; 0 0 ; 2 -2 ; 0 0]) + CoupleDecomps([f * f, b' * b'], ConvPsPot(Dict(2s-1 => 1))..., [0 0 ; 0 0 ; -2 2 ; 0 0])
+cpd_fb = CoupleDecomps([f' * f, b' * b], ConvPsPot(RecouplePsPot(s-1/2, s, s, s-1/2, Dict(2s-1/2 => 1)))..., [0 0 ; 0 0 ; 0 0 ; 0 0 ])
+cpd_bb = SingleSegCouple(2, 2, ContractMod(b' * b', b * b, 2s-1), [0, 0, 0, 0])
+cpd_μ = SingleSegCouple(2, 1, STerms(GetPolTerms(nmf, 1, [1;;])), [0, 0, 0, 0])
 cpd_hmt = PrepareCouple(2.0 * cpd_fb + 1.0 * cpd_bb - 0.3 * cpd_hop)
 
-sgsp_f = BuildSSegSpace(nmf, 1, nebm_f, sec_f, qnd_f, tms_lzlp_f, modul)
+sgsp_f = BuildSegSpace(nmf, 1, nebm_f, sec_f, qnd_f, tms_lzlp_f, modul)
 nst_max = [ zeros(Int64, size(sec_b, 2) - 3) ; 5 .* nmf .^ [2,1,0] ]
-sgsp_b = BuildSSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0], modul ; l2c2_ratio = 0.1/nmf^2, nst_max)
-sgop_hmt = BuildSSegOperators([sgsp_f, sgsp_b], cpd_hmt)
+sgsp_b = BuildSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0], modul ; l2c2_ratio = 0.1/nmf^2, nst_max)
+sgop_hmt = BuildSegOperators([sgsp_f, sgsp_b], cpd_hmt)
 result = []
 for ltot = 0 : 1/2 : 2
     ll = Int64(2ltot)
     sec_tot = [nmf + ll%2, 0, ne, 0]
-    cpsp = BuildSCompSpace([sgsp_f, sgsp_b], sec_tot, ll)
-    cpop_hmt = BuildSCompOperator(cpsp, cpd_hmt, sgop_hmt)
+    cpsp = BuildCompSpace([sgsp_f, sgsp_b], sec_tot, ll)
+    cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
     enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
     for i in eachindex(enrg)
         push!(result, [enrg[i] / √(ll + 1), ltot])
