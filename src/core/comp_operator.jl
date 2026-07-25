@@ -134,6 +134,8 @@ function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Flo
         scratch = Vector{T}(undef, maxblk)
         idlj = Vector{Int64}(undef, np)
         idli = Vector{Int64}(undef, np)
+        blocks = Vector{Matrix{T}}(undef, np)
+        scr2 = T[]
         for i_jsec_d = ith : nth : length(jsec_d_rng)
             jsec, d = jsec_d_rng[i_jsec_d]
             idsecj = cpop.cpspd.idsec[:, jsec]
@@ -156,8 +158,11 @@ function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Flo
                             li = cpop.cpspf.chs[isec][ich][1, p]
                             idli[p] = cpop.cpspf.sgsp[p].l_lookup[idseci[p]][li]
                         end
+                        for p = 1 : np
+                            blocks[p] = cpop.sgop[p, d].elmat[idel_sg[p]][idli[p], idlj[p]]
+                        end
                         tmp = @view scratch[1 : length(irng)]
-                        @views mul!(tmp, ⊗([cpop.sgop[p, d].elmat[idel_sg[p]][idli[p], idlj[p]] for p = 1 : np]...), std[jrng])
+                        _KronMul!(tmp, blocks, (@view std[jrng]), scr2)
                         @views stf1[irng] .+= (coeff * fac9j) .* tmp
                     end
                 end
@@ -170,6 +175,40 @@ function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Flo
     return stf
 end
 Base.:*(stf :: LinearAlgebra.Adjoint{T, Vector{T}}, cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Float64, ComplexF64} = stf * (cpop * std)
+
+
+function _KronMul!(y :: AbstractVector{T}, As, x :: AbstractVector{T}, scr :: Vector{T}) where T
+    N = length(As)
+    if N == 1
+        mul!(y, As[1], x)
+    elseif N == 2
+        A1, A2 = As[1], As[2]
+        m1, n1 = size(A1) ; m2, n2 = size(A2)
+        len = m2 * n1
+        (length(scr) < len) && resize!(scr, len)
+        X = reshape(x, n2, n1)
+        W = reshape(view(scr, 1 : len), m2, n1)
+        mul!(W, A2, X)
+        mul!(reshape(y, m2, m1), W, transpose(A1))
+    else
+        copyto!(y, _KronVec(As, x))
+    end
+    return y
+end
+
+function _KronVec(As, x :: AbstractVector{T}) where T
+    (length(As) == 1) && return As[1] * x
+    A1 = As[1] ; m1, n1 = size(A1)
+    rest = @view As[2 : end]
+    nrest = prod(size(B, 2) for B in rest)
+    mrest = prod(size(B, 1) for B in rest)
+    X = reshape(x, nrest, n1)
+    W = Matrix{T}(undef, mrest, n1)
+    for c in 1 : n1
+        @views W[:, c] = _KronVec(rest, X[:, c])
+    end
+    return vec(W * transpose(A1))
+end
 
 
 """

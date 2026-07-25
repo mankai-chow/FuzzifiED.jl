@@ -52,7 +52,7 @@ constructs a [SegOperator](@ref SegOperator) for the spherical spherical-symmetr
 
 * `sgop :: SegOperator` is the resulting segment operator.
 """
-function BuildSegOperator(sgspd :: AbstractSegSpace, sgspf :: AbstractSegSpace, amd :: Union{AngModes, SAngModes, Symbol}, ll :: Int64, secop :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = 1)
+function BuildSegOperator(sgspd :: AbstractSegSpace, sgspf :: AbstractSegSpace, amd :: Union{AngModes, SAngModes, Symbol}, ll :: Int64, secop :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
     (amd === :Identity) && (amd = _SegIdentity(sgspd))
     index = 0
     colptr = zeros(Int64, size(sgspd.sec, 2) + 1)
@@ -61,6 +61,7 @@ function BuildSegOperator(sgspd :: AbstractSegSpace, sgspf :: AbstractSegSpace, 
     elmat = Matrix{Matrix{eltype}}[]
     modul = sgspd.sec_modul
 
+    BLAS.set_num_threads(num_th)
     for j in axes(sgspd.sec, 2)
         secd = sgspd.sec[:, j]
         bsd = _SegBasis(sgspd, sgspd.cfs[j])
@@ -117,6 +118,7 @@ function BuildSegOperator(sgspd :: AbstractSegSpace, sgspf :: AbstractSegSpace, 
         end
         colptr[j + 1] = index + 1
     end
+    BLAS.set_num_threads(1)
     return SegOperator{eltype}(colptr, rowid, elmat)
 end
 BuildSegOperator(sgspd :: AbstractSegSpace, amd :: Union{AngModes, SAngModes, Symbol}, ll :: Int64, secop :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = 1) = BuildSegOperator(sgspd, sgspd, amd, ll, secop ; eltype, num_th)
@@ -142,7 +144,8 @@ function BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, sgspf :: Vect
     nd = length(cpd)
     np = length(p_rng)
     sgop = Matrix{SegOperator}(undef, np, nd)
-    Threads.@threads :greedy for (ip, d) in collect(Iterators.product(1 : np, 1 : nd))
+    # Threads.@threads :greedy for (ip, d) in collect(Iterators.product(1 : np, 1 : nd))
+    for d = 1 : nd, ip = 1 : np
         p = p_rng[ip]
         amd = cpd[d].amd[p]
         secop = cpd[d].sec[:, p]
