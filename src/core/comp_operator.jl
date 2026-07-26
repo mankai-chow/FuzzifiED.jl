@@ -116,60 +116,49 @@ BuildCompOperator(cpspd :: CompSpace{T}, cpd :: CoupleDecomps, sgop :: Matrix{Se
 
 applies the composite operator `cpop` to a state `std` of the initial composite space and returns the resulting state of the final composite space or calculates its inner product between an initial and a final state. The action is evaluated block by block : for every decomposition channel and every pair of coupling channels it takes the Kronecker product of the corresponding per-part reduced matrix element blocks, weighted by the channel coefficient and the ``9j`` recoupling factor. 
 """
-function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Float64, ComplexF64}
-    th_lock = ReentrantLock()
+function Base.:*(cpop :: CompOperator{T}, std :: Vector{T} ; num_th = FuzzifiED.NumThreads) where T <: Union{Float64, ComplexF64}
     stf = zeros(T, cpop.cpspf.dim)
     np = cpop.cpspd.np
-
-    jsec_d_rng = collect(Iterators.product(axes(cpop.cpspd.idsec, 2), 1 : cpop.nd))
     
     maxblk = 1
     for pts in cpop.cpspf.ptr_st, i in 1 : length(pts) - 1
         maxblk = max(maxblk, pts[i + 1] - pts[i])
     end
-    nth = max(1, min(Threads.nthreads(), length(jsec_d_rng)))
 
-    Threads.@threads for ith = 1 : nth 
-        stf1 = zeros(T, cpop.cpspf.dim)
-        scratch = Vector{T}(undef, maxblk)
-        idlj = Vector{Int64}(undef, np)
-        idli = Vector{Int64}(undef, np)
-        blocks = Vector{Matrix{T}}(undef, np)
-        scr2 = T[]
-        for i_jsec_d = ith : nth : length(jsec_d_rng)
-            jsec, d = jsec_d_rng[i_jsec_d]
-            idsecj = cpop.cpspd.idsec[:, jsec]
-            coeff = cpop.coeff[d]
-            for e = cpop.colptr[jsec, d] : cpop.colptr[jsec + 1, d] - 1
-                idel_sg = cpop.idel[d][:, e]
-                isec = cpop.rowid[d][e]
-                idseci = cpop.cpspf.idsec[:, isec]
-                for jch in eachindex(cpop.cpspd.chs[jsec])
-                    jrng = cpop.cpspd.ptr_st[jsec][jch] : cpop.cpspd.ptr_st[jsec][jch + 1] - 1
+    scratch = Vector{T}(undef, maxblk)
+    idlj = Vector{Int64}(undef, np)
+    idli = Vector{Int64}(undef, np)
+    blocks = Vector{Matrix{T}}(undef, np)
+    scr2 = T[]
+    for d = 1 : cpop.nd, jsec in axes(cpop.cpspd.idsec, 2)
+        idsecj = cpop.cpspd.idsec[:, jsec]
+        coeff = cpop.coeff[d]
+        for e = cpop.colptr[jsec, d] : cpop.colptr[jsec + 1, d] - 1
+            idel_sg = cpop.idel[d][:, e]
+            isec = cpop.rowid[d][e]
+            idseci = cpop.cpspf.idsec[:, isec]
+            for jch in eachindex(cpop.cpspd.chs[jsec])
+                jrng = cpop.cpspd.ptr_st[jsec][jch] : cpop.cpspd.ptr_st[jsec][jch + 1] - 1
+                for p = 1 : np 
+                    lj = cpop.cpspd.chs[jsec][jch][1, p]
+                    idlj[p] = cpop.cpspd.sgsp[p].l_lookup[idsecj[p]][lj]
+                end
+                for ich in eachindex(cpop.cpspf.chs[isec])
+                    fac9j = cpop.mat9j[d][e][ich, jch]
+                    abs(fac9j) < √eps(Float64) && continue
+                    irng = cpop.cpspf.ptr_st[isec][ich] : cpop.cpspf.ptr_st[isec][ich + 1] - 1
                     for p = 1 : np 
-                        lj = cpop.cpspd.chs[jsec][jch][1, p]
-                        idlj[p] = cpop.cpspd.sgsp[p].l_lookup[idsecj[p]][lj]
+                        li = cpop.cpspf.chs[isec][ich][1, p]
+                        idli[p] = cpop.cpspf.sgsp[p].l_lookup[idseci[p]][li]
                     end
-                    for ich in eachindex(cpop.cpspf.chs[isec])
-                        fac9j = cpop.mat9j[d][e][ich, jch]
-                        abs(fac9j) < √eps(Float64) && continue
-                        irng = cpop.cpspf.ptr_st[isec][ich] : cpop.cpspf.ptr_st[isec][ich + 1] - 1
-                        for p = 1 : np 
-                            li = cpop.cpspf.chs[isec][ich][1, p]
-                            idli[p] = cpop.cpspf.sgsp[p].l_lookup[idseci[p]][li]
-                        end
-                        for p = 1 : np
-                            blocks[p] = cpop.sgop[p, d].elmat[idel_sg[p]][idli[p], idlj[p]]
-                        end
-                        tmp = @view scratch[1 : length(irng)]
-                        _KronMul!(tmp, blocks, (@view std[jrng]), scr2)
-                        @views stf1[irng] .+= (coeff * fac9j) .* tmp
+                    for p = 1 : np
+                        blocks[p] = cpop.sgop[p, d].elmat[idel_sg[p]][idli[p], idlj[p]]
                     end
+                    tmp = @view scratch[1 : length(irng)]
+                    _KronMul!(tmp, blocks, (@view std[jrng]), scr2)
+                    @views stf[irng] .+= (coeff * fac9j) .* tmp
                 end
             end
-        end
-        lock(th_lock) do 
-            stf .+= stf1 
         end
     end
     return stf

@@ -10,7 +10,6 @@ using Kronecker
 using KrylovKit
 
 function __init__()
-    BLAS.set_num_threads(1)
     FuzzifiED.ObsMomIncr = true
     FuzzifiED.SilentStd = true
 end

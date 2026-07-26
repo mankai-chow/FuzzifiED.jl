@@ -61,7 +61,6 @@ function BuildSegOperator(sgspd :: AbstractSegSpace, sgspf :: AbstractSegSpace, 
     elmat = Matrix{Matrix{eltype}}[]
     modul = sgspd.sec_modul
 
-    BLAS.set_num_threads(num_th)
     for j in axes(sgspd.sec, 2)
         secd = sgspd.sec[:, j]
         bsd = _SegBasis(sgspd, sgspd.cfs[j])
@@ -118,7 +117,6 @@ function BuildSegOperator(sgspd :: AbstractSegSpace, sgspf :: AbstractSegSpace, 
         end
         colptr[j + 1] = index + 1
     end
-    BLAS.set_num_threads(1)
     return SegOperator{eltype}(colptr, rowid, elmat)
 end
 BuildSegOperator(sgspd :: AbstractSegSpace, amd :: Union{AngModes, SAngModes, Symbol}, ll :: Int64, secop :: Vector{Int64} ; eltype = FuzzifiED.ElementType, num_th = 1) = BuildSegOperator(sgspd, sgspd, amd, ll, secop ; eltype, num_th)

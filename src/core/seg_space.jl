@@ -81,7 +81,6 @@ function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag},
     ptr_st = [ Int64[] for _ ∈ axes(sec, 2) ]
     l_lookup = [ Dict{Int64, Int64}() for _ ∈ axes(sec, 2) ]
     tms_l2 = GetL2Terms(tms_lzlp)
-    BLAS.set_num_threads(num_th)
     for isec ∈ axes(sec, 2)
         seci = sec[:, isec]
         cfs[isec] = Confs(no, seci, qnd ; num_th)
@@ -137,7 +136,6 @@ function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag},
             sts1[isec] = lp_mat * sts[isec]
         end
     end
-    BLAS.set_num_threads(1)
     ptr_sec = cumsum([ptr_st[isec][end] - 1 for isec ∈ axes(sec, 2)])
     for isec = 2 : nsec
         ptr_st[isec] .+= ptr_sec[isec - 1]
@@ -181,7 +179,6 @@ function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}
     ptr_st = [ [ Int64[] for _ ∈ axes(sec, 2) ] for _ in c2_rng ]
     l_lookup = [ [ Dict{Int64, Int64}() for _ ∈ axes(sec, 2) ] for _ in c2_rng ]
     tms_l2 = GetL2Terms(tms_lzlp)
-    BLAS.set_num_threads(num_th)
     for isec ∈ axes(sec, 2)
         seci = sec[:, isec]
         cfs[isec] = Confs(no, seci, qnd ; num_th)
@@ -241,7 +238,6 @@ function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}
             end
         end
     end
-    BLAS.set_num_threads(1)
     for ic2 in eachindex(c2_rng)
         ptr_sec = cumsum([ptr_st[ic2][isec][end] - 1 for isec ∈ axes(sec, 2)])
         for isec = 2 : nsec
