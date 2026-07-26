@@ -18,9 +18,10 @@ The mutable type `CompOperator` represents a composite operator — such as the 
 * `colptr :: Matrix{Int64}` and `rowid :: Vector{Vector{Int64}}` store the allowed blocks of sectors for each channel. `colptr[:, d]` and `rowid[d]` bear the format of a CSC sparse matrix.
 * `idel :: Vector{Matrix{Int64}}` locates the matrix element block in the SegOperators for each segment. It takes three indices `idel[d][p, e]` where `d` is the channel index, `e` is the element index, and `p` is the part index. 
 * `mat9j :: Vector{Vector{Matrix{Float64}}}` stores the precomputed ``9j`` recoupling coefficients, including the fermionic reordering sign. It takes four indices `mat9j[d][e][ich, jch]` where `ich`, `jch` is the channel indices within the sectors specified by `e`.
+* `wklist :: Vector{Tuple{Int64, Int64, Int64}}` is the flattened list of the `(jsec, d, e)` matrix element blocks, ordered from the most to the least expensive. The threads of the operator application take their blocks greedily from this list.
 """
 mutable struct CompOperator{T <: Union{Float64, ComplexF64}}
-    cpspd :: CompSpace 
+    cpspd :: CompSpace
     cpspf :: CompSpace
     nd :: Int64
     ltot :: Int64
@@ -30,6 +31,7 @@ mutable struct CompOperator{T <: Union{Float64, ComplexF64}}
     rowid :: Vector{Vector{Int64}}
     idel :: Vector{Matrix{Int64}}
     mat9j :: Vector{Vector{Matrix{Float64}}}
+    wklist :: Vector{Tuple{Int64, Int64, Int64}}
 end
 
 
@@ -80,6 +82,7 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
     end
 
     mat9j = [ Vector{Matrix{Float64}}(undef, colptr[end, d] - 1) for d = 1 : nd ]
+    wkcost = [ Vector{Int64}(undef, colptr[end, d] - 1) for d = 1 : nd ]
     Threads.@threads :greedy for (jsec, d) in collect(Iterators.product(axes(cpspd.idsec, 2), 1 : nd))
         idsecj = cpspd.idsec[:, jsec]
         for e = colptr[jsec, d] : colptr[jsec + 1, d] - 1
@@ -102,11 +105,20 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
                 end
             end
             mat9j[d][e] = mat
+            cost = 0
+            for j in eachindex(cpspd.chs[jsec]), i in eachindex(cpspf.chs[isec])
+                (abs(mat[i, j]) < √eps(Float64)) && continue
+                cost += (cpspd.ptr_st[jsec][j + 1] - cpspd.ptr_st[jsec][j]) + (cpspf.ptr_st[isec][i + 1] - cpspf.ptr_st[isec][i])
+            end
+            wkcost[d][e] = cost
         end
     end
+
+    wklist = [ (jsec, d, e) for d = 1 : nd for jsec in axes(cpspd.idsec, 2) for e = colptr[jsec, d] : colptr[jsec + 1, d] - 1 ]
+    sort!(wklist ; by = wk -> wkcost[wk[2]][wk[3]], rev = true)
     @info "FINISH GENERATING COMP OPERATOR"
 
-    return CompOperator{T}(cpspd, cpspf, nd, ltot, coeff, sgop, colptr, rowid, idel, mat9j)
+    return CompOperator{T}(cpspd, cpspf, nd, ltot, coeff, sgop, colptr, rowid, idel, mat9j, wklist)
 end
 BuildCompOperator(cpspd :: CompSpace{T}, cpd :: CoupleDecomps, sgop :: Matrix{SegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64} = BuildCompOperator(cpspd, cpspd, cpd, sgop, ltot)
 
@@ -116,51 +128,74 @@ BuildCompOperator(cpspd :: CompSpace{T}, cpd :: CoupleDecomps, sgop :: Matrix{Se
 
 applies the composite operator `cpop` to a state `std` of the initial composite space and returns the resulting state of the final composite space or calculates its inner product between an initial and a final state. The action is evaluated block by block : for every decomposition channel and every pair of coupling channels it takes the Kronecker product of the corresponding per-part reduced matrix element blocks, weighted by the channel coefficient and the ``9j`` recoupling factor. 
 """
-function Base.:*(cpop :: CompOperator{T}, std :: Vector{T} ; num_th = FuzzifiED.NumThreads) where T <: Union{Float64, ComplexF64}
+function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Float64, ComplexF64}
+    th_lock = ReentrantLock()
     stf = zeros(T, cpop.cpspf.dim)
     np = cpop.cpspd.np
-    
+
+    nwk = length(cpop.wklist)
+
     maxblk = 1
     for pts in cpop.cpspf.ptr_st, i in 1 : length(pts) - 1
         maxblk = max(maxblk, pts[i + 1] - pts[i])
     end
+    nth = max(1, min(Threads.nthreads(), nwk))
 
-    scratch = Vector{T}(undef, maxblk)
-    idlj = Vector{Int64}(undef, np)
-    idli = Vector{Int64}(undef, np)
-    blocks = Vector{Matrix{T}}(undef, np)
-    scr2 = T[]
-    for d = 1 : cpop.nd, jsec in axes(cpop.cpspd.idsec, 2)
-        idsecj = cpop.cpspd.idsec[:, jsec]
-        coeff = cpop.coeff[d]
-        for e = cpop.colptr[jsec, d] : cpop.colptr[jsec + 1, d] - 1
-            idel_sg = cpop.idel[d][:, e]
-            isec = cpop.rowid[d][e]
-            idseci = cpop.cpspf.idsec[:, isec]
-            for jch in eachindex(cpop.cpspd.chs[jsec])
-                jrng = cpop.cpspd.ptr_st[jsec][jch] : cpop.cpspd.ptr_st[jsec][jch + 1] - 1
-                for p = 1 : np 
-                    lj = cpop.cpspd.chs[jsec][jch][1, p]
-                    idlj[p] = cpop.cpspd.sgsp[p].l_lookup[idsecj[p]][lj]
-                end
-                for ich in eachindex(cpop.cpspf.chs[isec])
-                    fac9j = cpop.mat9j[d][e][ich, jch]
-                    abs(fac9j) < √eps(Float64) && continue
-                    irng = cpop.cpspf.ptr_st[isec][ich] : cpop.cpspf.ptr_st[isec][ich + 1] - 1
-                    for p = 1 : np 
-                        li = cpop.cpspf.chs[isec][ich][1, p]
-                        idli[p] = cpop.cpspf.sgsp[p].l_lookup[idseci[p]][li]
-                    end
+    next_wk = Threads.Atomic{Int64}(0)
+
+    nth_blas = BLAS.get_num_threads()
+    BLAS.set_num_threads(1)
+    @sync for _ = 1 : nth
+        Threads.@spawn begin
+            stf1 = zeros(T, cpop.cpspf.dim)
+            scratch = Vector{T}(undef, maxblk)
+            idlj = Vector{Int64}(undef, np)
+            idli = Vector{Int64}(undef, np)
+            blocks = Vector{Matrix{T}}(undef, np)
+            scr2 = T[]
+            nwk_th = 0
+            while true
+                iwk = Threads.atomic_add!(next_wk, 1) + 1
+                iwk > nwk && break
+                nwk_th += 1
+                jsec, d, e = cpop.wklist[iwk]
+                idsecj = @view cpop.cpspd.idsec[:, jsec]
+                coeff = cpop.coeff[d]
+                idel_sg = @view cpop.idel[d][:, e]
+                isec = cpop.rowid[d][e]
+                idseci = @view cpop.cpspf.idsec[:, isec]
+                mat9j_e = cpop.mat9j[d][e]
+                for jch in eachindex(cpop.cpspd.chs[jsec])
+                    jrng = cpop.cpspd.ptr_st[jsec][jch] : cpop.cpspd.ptr_st[jsec][jch + 1] - 1
                     for p = 1 : np
-                        blocks[p] = cpop.sgop[p, d].elmat[idel_sg[p]][idli[p], idlj[p]]
+                        lj = cpop.cpspd.chs[jsec][jch][1, p]
+                        idlj[p] = cpop.cpspd.sgsp[p].l_lookup[idsecj[p]][lj]
                     end
-                    tmp = @view scratch[1 : length(irng)]
-                    _KronMul!(tmp, blocks, (@view std[jrng]), scr2)
-                    @views stf[irng] .+= (coeff * fac9j) .* tmp
+                    for ich in eachindex(cpop.cpspf.chs[isec])
+                        fac9j = mat9j_e[ich, jch]
+                        abs(fac9j) < √eps(Float64) && continue
+                        irng = cpop.cpspf.ptr_st[isec][ich] : cpop.cpspf.ptr_st[isec][ich + 1] - 1
+                        for p = 1 : np
+                            li = cpop.cpspf.chs[isec][ich][1, p]
+                            idli[p] = cpop.cpspf.sgsp[p].l_lookup[idseci[p]][li]
+                        end
+                        for p = 1 : np
+                            blocks[p] = cpop.sgop[p, d].elmat[idel_sg[p]][idli[p], idlj[p]]
+                        end
+                        tmp = @view scratch[1 : length(irng)]
+                        _KronMul!(tmp, blocks, (@view std[jrng]), scr2)
+                        @views stf1[irng] .+= (coeff * fac9j) .* tmp
+                    end
+                end
+            end
+            if nwk_th > 0
+                lock(th_lock) do
+                    stf .+= stf1
                 end
             end
         end
     end
+    BLAS.set_num_threads(nth_blas)
     return stf
 end
 Base.:*(stf :: LinearAlgebra.Adjoint{T, Vector{T}}, cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Float64, ComplexF64} = stf * (cpop * std)
