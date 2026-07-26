@@ -82,6 +82,7 @@ end
 """
     RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ps_pot0 :: Dict) :: Dict
     RecouplePsPot(s :: Number, ps_pot :: Vector{<:Number}) :: Dict
+    RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ch0 :: Vector{Matrix{Int64}}, coeff0 :: Vector{<:Number})
 
 recouples the Haldane pseudo-potentials of a two-body interaction ``c^†_1c^†_2c_3c_4`` from the pairing channel ``(12)(34)`` — creations and annihilations each coupled to a pair angular momentum ``j`` — into the density channel ``(14)(23)`` — density modes ``n^{(14)}=c^†_1c_4`` and ``n^{(23)}=c^†_2c_3`` each coupled to a rank ``l``. This is the form consumed by [ConvPsPot](@ref ConvPsPot) and expressed as a product of two density operators. 
 
@@ -112,9 +113,37 @@ function RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, p
     end
     return ps_pot1
 end
-function RecouplePsPot(s :: Number, ps_pot :: Vector{<:Number}) 
+function RecouplePsPot(s :: Number, ps_pot :: Vector{<:Number})
     ps_pot0 = Dict([ 2s + 1 - i => ps_pot[i] for i ∈ eachindex(ps_pot)])
     return RecouplePsPot(s, s, s, s, ps_pot0)
+end
+function RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ch0 :: Vector{Matrix{Int64}}, coeff0 :: Vector{<:Number})
+    s12 = Int64(2s1)
+    s22 = Int64(2s2)
+    s32 = Int64(2s3)
+    s42 = Int64(2s4)
+    ps_pot1 = Dict{NTuple{3, Int64}, ComplexF64}()
+    for i in eachindex(ch0)
+        l1 = ch0[i][1, 1]
+        l2 = ch0[i][1, 2]
+        l = ch0[i][2, 2]
+        for j1 = abs(s12 - s42) : 2 : s12 + s42, j2 = abs(s22 - s32) : 2 : s22 + s32
+            (abs(j1 - j2) ≤ l ≤ j1 + j2 && iseven(j1 + j2 + l)) || continue
+            ninej = Float64(float(d9j(s12, s22, l1, s42, s32, l2, j1, j2, l)))
+            ninej == 0.0 && continue
+            W = √((l1 + 1) * (l2 + 1) * (j1 + 1) * (j2 + 1)) * ninej * coeff0[i]
+            W *= (1.0im) ^ Int(-l2 + 2s32 + s42 - s22)
+            ps_pot1[(j1, j2, l)] = get(ps_pot1, (j1, j2, l), 0.0im) + W
+        end
+    end
+    ch1 = Matrix{Int64}[]
+    coeff1 = ComplexF64[]
+    for ((j1, j2, l), W) in ps_pot1
+        abs(W) < 1E-13 && continue
+        push!(ch1, [j1  j2 ; j1  l])
+        push!(coeff1, W)
+    end
+    return ch1, coeff1
 end
 
 
