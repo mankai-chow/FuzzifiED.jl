@@ -34,10 +34,10 @@ tms_lzlp_pt = GetLpLzTerms(nm, 1)
 b = @benchmark begin
 
 sgsp = BuildSegSpace(nm, sec_pt, qnd_pt, tms_lzlp_pt)
-sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt ; ident_seg = [1, 1])
+@time sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt ; ident_seg = [1, 1])
 cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, 2l)
 cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
-enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
+@time enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
 display(enrg)
 
 end

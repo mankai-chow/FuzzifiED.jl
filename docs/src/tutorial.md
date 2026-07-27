@@ -95,8 +95,9 @@ cpd_hmt = cpd_int - 3.16 * cpd_nx
 
 The reduced matrix elements of every channel of the Hamiltonian, on each of the two segments, are computed in parallel by [`BuildSegOperators`](@ref). The result is a matrix of [`SegOperator`](@ref)s of size $N_p ×N_d$, where $N_d$ is the total number of channels.
 ```julia
-sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt)
+sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt ; ident_seg = [1, 1])
 ```
+Here the key-word `ident_seg` specifies the identical segmentations. 
 
 ## Building the Composite Operator
 

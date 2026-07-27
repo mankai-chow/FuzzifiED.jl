@@ -30,7 +30,7 @@ cpd_nx = ContactCouple([c_obs', c_obs], [ 1 -1 ; 0 0 ]) - ContactCouple([c_obs, 
 cpd_hmt = cpd_int - 3.16 * cpd_nx
 
 # Build the segment operators for each channel in the Hamiltonian
-sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt)
+sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt ; ident_seg = [1, 1])
 # Assemble the segment operators into the composed operator for the Hamiltonian
 cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
 # Diagonalise for the 10 lowest states
@@ -46,5 +46,5 @@ stϵ = st[:, 3]
 nz_00 = GetComponent(GetDensityObs(nm, 1), 0, 0)
 cpd_nz = SingleSegCouple(2, 1, nz_00, [0, 0]) - SingleSegCouple(2, 2, nz_00, [0, 0])
 cpop_nz = BuildCompOperator(cpsp, cpd_nz)
-f_σσϵ = (stσ' * cpop_nz * stϵ) / (stσ' * cpop_nz * stI)
+f_σσϵ = abs(stσ' * cpop_nz * stϵ) / abs(stσ' * cpop_nz * stI)
 @show f_σσϵ
