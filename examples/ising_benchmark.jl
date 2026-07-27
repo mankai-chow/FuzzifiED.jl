@@ -3,7 +3,7 @@
 # Currently, it only supports even nm. 
 
 using FuzzifiED
-using FuzzifiEDFullRotation
+using SO3lver
 using BenchmarkTools
 FuzzifiED.ElementType = Float64
 

@@ -2,7 +2,7 @@
 # and compare the states Λ|Φ⟩ with |∂Φ⟩ where Φ = σ, ϵ.
 
 using FuzzifiED
-using FuzzifiEDFullRotation
+using SO3lver
 using LinearAlgebra
 FuzzifiED.ElementType = Float64
 

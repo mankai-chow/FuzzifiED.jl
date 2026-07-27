@@ -1,4 +1,4 @@
-module FuzzifiEDFullRotation
+module SO3lver
 
 using FuzzifiED
 using FuzzifiED.Fuzzifino

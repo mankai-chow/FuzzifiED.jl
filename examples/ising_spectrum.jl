@@ -3,7 +3,7 @@
 # It resolves the Z_2 symmetry as a QNDiag by using XX - Z basis. 
 
 using FuzzifiED
-using FuzzifiEDFullRotation
+using SO3lver
 FuzzifiED.ElementType = Float64
 
 nm = 12

@@ -1,10 +1,10 @@
-# FuzzifiEDFullRotation.jl 
+# SO3lver.jl 
 
-[![Documentation online](https://img.shields.io/badge/Documentation-Online-8e8eff)](https://docs.fuzzified.world/full_rotation/)
-[![Source GitHub](https://img.shields.io/badge/Source-GitHub-silver)](https://github.com/FuzzifiED/FuzzifiEDFullRotation.jl)
+[![Documentation online](https://img.shields.io/badge/Documentation-Online-8e8eff)](https://docs.fuzzified.world/so3lver/)
+[![Source GitHub](https://img.shields.io/badge/Source-GitHub-silver)](https://github.com/FuzzifiED/SO3lver.jl)
 [![Contact](https://img.shields.io/badge/Contact-Zheng_Zhou_周正-2e63b8)](mailto:Zheng%20Zhou%20%E5%91%A8%E6%AD%A3%20<physics@zhengzhou.page>)
 
-FuzzifiED-Full-Rotation is an extension of the package [FuzzifiED](https://docs.fuzzified.world). It enables exact diagonalization (ED) on the fuzzy sphere with the implementation of full $\mathrm{SO}(3)$ spatial rotation symmetry and some non-abelian flavour symmetry through partitioning the Hilbert space into segments and compose these segments. The implementation of $\mathrm{SO}(3)$ symmetry greatly reduces the demand for the memory and enables calculation for much larger size. _E. g._, with the $\mathrm{SO}(3)$ resolution, the Hilbert space of the ground-state sector for $N_m=22$ has a dimension $2.07\times 10^7$, and the Hamiltonian requires a memory of 76.7 Go ; as a comparison, without the $\mathrm{SO}(3)$ resolution, the Hilbert space for $N_m=18$ has a similar dimension $2.84\times 10^7$, and the Hamiltonian requires a memory of 63.9 Go.
+SO₃lver is an extension of the package [FuzzifiED](https://docs.fuzzified.world). It enables exact diagonalization (ED) on the fuzzy sphere with the implementation of full $\mathrm{SO}(3)$ spatial rotation symmetry and some non-abelian flavour symmetry through partitioning the Hilbert space into segments and compose these segments. The implementation of $\mathrm{SO}(3)$ symmetry greatly reduces the demand for the memory and enables calculation for much larger size. _E. g._, with the $\mathrm{SO}(3)$ resolution, the Hilbert space of the ground-state sector for $N_m=22$ has a dimension $2.07\times 10^7$, and the Hamiltonian requires a memory of 76.7 Go ; as a comparison, without the $\mathrm{SO}(3)$ resolution, the Hilbert space for $N_m=18$ has a similar dimension $2.84\times 10^7$, and the Hamiltonian requires a memory of 63.9 Go.
 
 ## Installation
 
@@ -15,12 +15,12 @@ gh auth login
 and then run the following command in the Julia REPL (read-eval-print loop) (To enter Julia REPL, simply type `julia` in the command line) 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/FuzzifiED/FuzzifiEDFullRotation.jl")
+Pkg.add(url="https://github.com/FuzzifiED/SO3lver.jl")
 ```
 To use the package, include at the start of the Julia script
 ```julia
 using FuzzifiED
-using FuzzifiEDFullRotation
+using SO3lver
 ```
 To suppress the log into `stderr`, load the `Logging` module.
 ```julia

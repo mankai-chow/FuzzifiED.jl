@@ -2,7 +2,7 @@
 
 using FuzzifiED
 using FuzzifiED.Fuzzifino
-using FuzzifiEDFullRotation
+using SO3lver
 FuzzifiED.ElementType = Float64
 
 nmf = 10

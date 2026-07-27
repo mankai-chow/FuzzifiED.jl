@@ -1,6 +1,6 @@
-name = "FuzzifiEDFullRotation"
+name = "SO3lver"
 uuid = "244ec485-852d-4805-9eb5-36e8982799f8"
-version = "0.1.1"
+version = "0.1.0"
 authors = ["Zheng Zhou 周正 <physics@zhengzhou.page>"]
 
 [deps]

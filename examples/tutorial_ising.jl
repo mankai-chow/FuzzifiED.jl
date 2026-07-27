@@ -1,5 +1,5 @@
 using FuzzifiED
-using FuzzifiEDFullRotation
+using SO3lver
 FuzzifiED.ElementType = Float64
 
 # Set-up

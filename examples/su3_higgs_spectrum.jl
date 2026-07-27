@@ -2,7 +2,7 @@
 # realized as a transition between a ν=1/3 Laughlin state and a ν=3 fIQH state.
 
 using FuzzifiED
-using FuzzifiEDFullRotation
+using SO3lver
 using LinearAlgebra
 FuzzifiED.ElementType = Float64
 

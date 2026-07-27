@@ -1,6 +1,6 @@
-# FuzzifiED-Full-Rotation Explained in a Tutorial
+# SO₃lver Explained in a Tutorial
 
-To demonstrate the usage of FuzzifiEDFullRoataion interfaces, in this section, we use a tutorial that calculates the eigenstates in the $l=0$ sector and the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$ for the Ising model on the fuzzy sphere. In this tutorial, the $\mathbb{Z}_2$ quantum number is not resolved. A version resolving the $\mathbb{Z}_2$ is given in [`ising_spectrum.jl`](https://github.com/FuzzifiED/FuzzifiEDFullRotation.jl/blob/main/examples/ising_spectrum.jl) by using the $XX-Z$ basis.
+To demonstrate the usage of FuzzifiEDFullRoataion interfaces, in this section, we use a tutorial that calculates the eigenstates in the $l=0$ sector and the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$ for the Ising model on the fuzzy sphere. In this tutorial, the $\mathbb{Z}_2$ quantum number is not resolved. A version resolving the $\mathbb{Z}_2$ is given in [`ising_spectrum.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/ising_spectrum.jl) by using the $XX-Z$ basis.
 
 Practically, the ED calculation can be divided into 6 steps.
 
@@ -18,7 +18,7 @@ Throughout the package, all angular momenta are stored as *twice* their value (_
 We begin by loading the packages and set the real element type. 
 ```julia
 using FuzzifiED
-using FuzzifiEDFullRotation
+using SO3lver
 FuzzifiED.ElementType = Float64
 ```
 
@@ -72,7 +72,7 @@ _N. b._, throughout the package, angular momenta are stored or specified by twic
 
 ## Recording the Coupling Decompositions
 
-Having built the segment and composite spaces, we now record the decomposed Hamiltonian. In FuzzifiED-Full-Rotation, an operator is written as a sum of decomposed coupling channels, specified by the angular modes $[Φ_p]_{lm}$, the coupling channel, the co-efficient $g_d$, and the shift of quantum numbers in the format of a $\#_{\text{QN}}×N_p$ matrix. 
+Having built the segment and composite spaces, we now record the decomposed Hamiltonian. In SO₃lver, an operator is written as a sum of decomposed coupling channels, specified by the angular modes $[Φ_p]_{lm}$, the coupling channel, the co-efficient $g_d$, and the shift of quantum numbers in the format of a $\#_{\text{QN}}×N_p$ matrix. 
 
 We record the Ising interaction by recoupling the pseudo-potential $V_0=4.75,V_1=1.0$ from pairing channel $\big[[c^\dagger_1 c^\dagger_2][c_3c_4]\big]$ into the density channel $\big[[c^\dagger_1c_4][c^\dagger_2c_3]\big]$. The recoupling is done by [`RecoupleAngMom`](@ref) function, and then [`ConvPsPot`](@ref) converts it into coupling channels and coefficients. The pairing modes $[c^\dagger c]$ is recorded by the type `AngModes` (which composes in the manner of CG-co-efficient) and generated from `GetDensityMod`.
 ```julia
@@ -160,10 +160,10 @@ f_σσϵ = (stσ' * cpop_nz * stϵ) / (stσ' * cpop_nz * stI)
 
 We offer a series of examples that reproduce various fuzzy-sphere calculations with the full $\mathrm{SO}(3)$ symmetry resolved.
 
-* [`ising_spectrum.jl`](https://github.com/FuzzifiED/FuzzifiEDFullRotation.jl/blob/main/examples/ising_spectrum.jl) calculates the spectrum of the 3D Ising model on the fuzzy sphere at $N_m = 12$ in the sectors with total angular momentum $l = 0,1,2$. It resolves the $\mathbb{Z}_2$ symmetry as a QNDiag by using the $XX - Z$ basis.
-* [`ising_benchmark.jl`](https://github.com/FuzzifiED/FuzzifiEDFullRotation.jl/blob/main/examples/ising_benchmark.jl) provides a benchmark for the package at its best performance. It calculates the 10 lowest $\mathbb{Z}_2$-even states with $l = 0$.
-* [`ising_generator.jl`](https://github.com/FuzzifiED/FuzzifiEDFullRotation.jl/blob/main/examples/ising_generator.jl) constructs the conformal generator $\Lambda = P + K$ and compare the states $\Lambda|\Phi\rangle$ with $|\partial\Phi\rangle$ where $\Phi=\sigma,\epsilon$.
-* [`so5_dqcp_spectrum.jl`](https://github.com/FuzzifiED/FuzzifiEDFullRotation.jl/blob/main/examples/so5_dqcp_spectrum.jl) calculates the spectrum of the $\mathrm{SO}(5)$ deconfined quantum critical point. It uses a bi-partition into two segments each of two flavours. The implemented symmetry is $\mathrm{SU}(2)×\mathrm{SU}(2)⊃\mathrm{SO}(5)$ and the $\mathrm{SO}(5)$ representation is resolved by measuring flavour Casimir.
-* [`sp3_spectrum.jl`](https://github.com/FuzzifiED/FuzzifiEDFullRotation.jl/blob/main/examples/sp3_spectrum.jl) calculates the spectrum of the $\mathrm{Sp}(3)$ CFT. It uses a tri-partition, each with two flavours and a $\mathrm{SU}(2)$ symmetry.
-* [`majorana_spectrum.jl`](https://github.com/FuzzifiED/FuzzifiEDFullRotation.jl/blob/main/examples/majorana_spectrum.jl) calculates the spectrum of a free Majorana fermion.
-* [`u1_2_higgs_spectrum.jl`](https://github.com/FuzzifiED/FuzzifiEDFullRotation.jl/blob/main/examples/u1_2_higgs_spectrum.jl) calculates the spectrum of the $\mathrm{U}(1)_2$-Higgs theory realized as a transition between a $ν=1/2$ bosonic Laughlin state and a $ν=2$ fIQH state.
+* [`ising_spectrum.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/ising_spectrum.jl) calculates the spectrum of the 3D Ising model on the fuzzy sphere at $N_m = 12$ in the sectors with total angular momentum $l = 0,1,2$. It resolves the $\mathbb{Z}_2$ symmetry as a QNDiag by using the $XX - Z$ basis.
+* [`ising_benchmark.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/ising_benchmark.jl) provides a benchmark for the package at its best performance. It calculates the 10 lowest $\mathbb{Z}_2$-even states with $l = 0$.
+* [`ising_generator.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/ising_generator.jl) constructs the conformal generator $\Lambda = P + K$ and compare the states $\Lambda|\Phi\rangle$ with $|\partial\Phi\rangle$ where $\Phi=\sigma,\epsilon$.
+* [`so5_dqcp_spectrum.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/so5_dqcp_spectrum.jl) calculates the spectrum of the $\mathrm{SO}(5)$ deconfined quantum critical point. It uses a bi-partition into two segments each of two flavours. The implemented symmetry is $\mathrm{SU}(2)×\mathrm{SU}(2)⊃\mathrm{SO}(5)$ and the $\mathrm{SO}(5)$ representation is resolved by measuring flavour Casimir.
+* [`sp3_spectrum.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/sp3_spectrum.jl) calculates the spectrum of the $\mathrm{Sp}(3)$ CFT. It uses a tri-partition, each with two flavours and a $\mathrm{SU}(2)$ symmetry.
+* [`majorana_spectrum.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/majorana_spectrum.jl) calculates the spectrum of a free Majorana fermion.
+* [`u1_2_higgs_spectrum.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/u1_2_higgs_spectrum.jl) calculates the spectrum of the $\mathrm{U}(1)_2$-Higgs theory realized as a transition between a $ν=1/2$ bosonic Laughlin state and a $ν=2$ fIQH state.
