@@ -113,7 +113,7 @@ Having obtained the decomposed Hamiltonian, we first calculate the matrix elemen
 ```
 Here, $\langle l'\|[\Phi]_L\|l\rangle$ is independent of the choice of states $m,m'$ in the multiplet and is called the _reduced matrix element_. To calculate the reduced matrix of the segment operator, we need only pick one representative state from each multiplet in the segment Hilber space. We typically pick the representative state as $m'=M=m=0$ except when the $3j$-symbols vanish, _i. e._ when $l'+L+l\in 2\mathbb{Z}+1$, in which cases we pick $m=1$ instead.
 
-We now assemble the segment operator into the composed operator acting on the full Hilbert space. This involves recoupling through the $9j$-symbol.
+We now assemble the segment operator into the composed operator acting on the full Hilbert space. This involves re-coupling through the $9j$-symbol.
 ```math
     \langle(l_1'l_2')l'\|[\Phi_{1,L_1}\otimes\Phi_{2,L_2}]_L\|(l_1 l_2)l\rangle
     =\sqrt{(2l+1)(2l'+1)(2L+1)}\begin{Bmatrix}l_1&l_2&l\\L_1&L_2&L\\l_1'&l_2'&l'\end{Bmatrix}

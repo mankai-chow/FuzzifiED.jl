@@ -51,7 +51,7 @@ constructs a [SegSpace](@ref SegSpace) by diagonalising the total angular moment
 
 _N. b._, in including the diagonal quantum numbers, it is required that  the first QNDiag must contain fermion parity — it must be odd the when state contains odd number of fermions and even when the state constains even number of fermions, and in many cases the total electric charge satisfies this requirement — and the second QNDiag must be the angular momentum ``2L^z``.
 
-For each sector the operator ``αL^2+C_2`` is built and diagonalised ; the factor `α`` usually guarantees that the eigenvalues of ``L^2`` and ``C_2`` can be disentangled. Only the multiplets whose ``C_2`` lies within `c2_rng` are retained. For sectors with ``m=0`` the ``m=1`` components ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩`` are also computed and stored.
+For each sector the operator ``αL^2+C_2`` is built and diagonalised ; the factor ``α`` usually guarantees that the eigenvalues of ``L^2`` and ``C_2`` can be disentangled. Only the multiplets whose ``C_2`` lies within `c2_rng` are retained. For sectors with ``m=0`` the ``m=1`` components ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩`` are also computed and stored.
 
 # Arguments
 

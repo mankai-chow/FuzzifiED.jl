@@ -44,7 +44,7 @@ SingleSegCouple
 InsertSegment
 ```
 
-Several methods help recoupling pseudo-potentials, converting them to coupling channels, and preparing an assembled operator.
+Several methods help re-coupling angular momenta and converting pseudo-potentials to coupling channel.
 ```@docs
 RecoupleAngMom
 ConvPsPot

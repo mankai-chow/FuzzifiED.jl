@@ -4,14 +4,14 @@ To demonstrate the usage of FuzzifiEDFullRoataion interfaces, in this section, w
 
 Practically, the ED calculation can be divided into 6 steps.
 
-* Build the [segment spaces](@ref SegSpace) by diagonalizing the total angular momentum in the segment basis ;
-* Couple them into a [composite space](@ref CompSpace) of definite total angular momentum ;
-* Decompose the Hamiltonian into coupling channels of segment operators and build the [segment operators](@ref SegOperator)
-* Assemble the segment operators into the [composite operator](@ref CompOperator) ;
+* Build the [segment spaces](@ref SegSpace) by diagonalizing the total angular momentum in the segment basis,
+* Couple them into a [composite space](@ref CompSpace) of definite total angular momentum,
+* Decompose the Hamiltonian into coupling channels of segment operators and build the [segment operators](@ref SegOperator),
+* Assemble the segment operators into the [composite operator](@ref CompOperator),
 * Find the lowest eigen-states of the Hamiltonian, and
-* Make measurements on the eigenstates
+* Make measurements on the eigenstates.
 
-Throughout the package, all angular momenta are stored as *twice* their value (_i. e._ $2l$, $2m$) so that they remain integers.
+The examples can be found in the directory [`examples`](https://github.com/FuzzifiED/SO3lver.jl/tree/main/examples). We also append in the end [a list of given examples](@ref List-of-Examples) at the end of the page. 
 
 ## Set-up
 
@@ -28,7 +28,7 @@ nm = 12
 ne = nm
 ```
 
-In this set-up, the system is bi-partited into two segments, _viz._ spin-up and spin-down flavour. Each segment is treated as a separate 1-flavour system.
+Throughout the package, all angular momenta are stored as *twice* their value (_i. e._ $2l$, $2m$) so that they remain integers. In this set-up, the system is bi-partited into two segments, _viz._ spin-up and spin-down flavour. Each segment is treated as a separate 1-flavour system.
 
 ## Building the Segment Space
 
@@ -74,7 +74,7 @@ _N. b._, throughout the package, angular momenta are stored or specified by twic
 
 Having built the segment and composite spaces, we now record the decomposed Hamiltonian. In SO₃lver, an operator is written as a sum of decomposed coupling channels, specified by the angular modes $[Φ_p]_{lm}$, the coupling channel, the co-efficient $g_d$, and the shift of quantum numbers in the format of a $\#_{\text{QN}}×N_p$ matrix. 
 
-We record the Ising interaction by recoupling the pseudo-potential $V_0=4.75,V_1=1.0$ from pairing channel $\big[[c^\dagger_1 c^\dagger_2][c_3c_4]\big]$ into the density channel $\big[[c^\dagger_1c_4][c^\dagger_2c_3]\big]$. The recoupling is done by [`RecoupleAngMom`](@ref) function, and then [`ConvPsPot`](@ref) converts it into coupling channels and coefficients. The pairing modes $[c^\dagger c]$ is recorded by the type `AngModes` (which composes in the manner of CG-co-efficient) and generated from `GetDensityMod`.
+We record the Ising interaction by re-coupling the pseudo-potential $V_0=4.75,V_1=1.0$ from pairing channel $\big[[c^\dagger_1 c^\dagger_2][c_3c_4]\big]$ into the density channel $\big[[c^\dagger_1c_4][c^\dagger_2c_3]\big]$. The re-coupling is done by [`RecoupleAngMom`](@ref) function, and then [`ConvPsPot`](@ref) converts it into coupling channels and coefficients. The pairing modes $[c^\dagger c]$ is recorded by the type `AngModes` (which composes in the manner of CG-co-efficient) and generated from `GetDensityMod`.
 ```julia
 n_mod = GetDensityMod(nm, 1, [1;;])
 cpd_int = 2 * CoupleDecomps([ n_mod, n_mod ], ConvPsPot(RecoupleAngMom((nm-1)/2, [4.75, 1.0]))..., [ 0 0 ; 0 0 ])
@@ -101,7 +101,7 @@ Here the key-word `ident_seg` specifies the identical segmentations.
 
 ## Building the Composite Operator
 
-[`BuildCompOperator`](@ref) assembles the composite Hamiltonian [`CompOperator`](@ref) on the composite space `cpsp` built above, combining the reduced matrix elements of the [`SegOperator`](@ref)s with the recoupling coefficients relating the initial and final coupling channels.
+[`BuildCompOperator`](@ref) assembles the composite Hamiltonian [`CompOperator`](@ref) on the composite space `cpsp` built above, combining the reduced matrix elements of the [`SegOperator`](@ref)s with the re-coupling coefficients relating the initial and final coupling channels.
 
 ```julia
 cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)

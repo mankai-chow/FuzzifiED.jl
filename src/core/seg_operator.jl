@@ -5,11 +5,11 @@ export SegOperator, BuildSegOperator, BuildSegOperators
     SegOperator{Float64}
     SegOperator{ComplexF64}
 
-The mutable type `SegOperator` stores the action of a spherical-symmetric operator from an initial [SegSpace](@ref SegSpace) to a final SegSpace. By virtue of the Wigner—Eckart theorem, the full ``m``-dependence is factored out and only the reduced matrix elements ``⟨l_2‖[Φ]_l‖l_1⟩`` — independent of ``l^z`` — need to be kept, and 
+The mutable type `SegOperator` stores the action of a spherical-symmetric operator from an initial [SegSpace](@ref SegSpace) to a final SegSpace. By virtue of the Wigner—Eckart theorem, the full ``m``-dependence is factored out and only the reduced matrix elements ``⟨l_2\\|[Φ]_l\\|l_1⟩`` — independent of ``l^z`` — need to be kept, and 
 ```math
-    ⟨l_2m_2|[Φ]_{lm}|l_1m_1⟩=(-1)^{l_2-m_2}\\begin{pmatrix}l_2&l&l_1\\\\-m_2&m&m_1\\end{pmatrix}⟨l_2‖[Φ]_l‖l_1⟩
+    ⟨l_2m_2|[Φ]_{lm}|l_1m_1⟩=(-1)^{l_2-m_2}\\begin{pmatrix}l_2&l&l_1\\\\-m_2&m&m_1\\end{pmatrix}⟨l_2\\|[Φ]_l\\|l_1⟩
 ```
-The matrix ``⟨\\{Q\\}_2l_2α_2‖[Φ]_l‖\\{Q\\}_1l_1α_1⟩`` is stored in blocks of QNDiag — for given sectors ``\\{Q\\}_{\\{12\\}}``, the matrix elements ``M_{l_2α_2,l_1α_1}`` are stored. 
+The matrix ``⟨\\{Q\\}_2l_2α_2\\|[Φ]_l\\|\\{Q\\}_1l_1α_1⟩`` is stored in blocks of QNDiag — for given sectors ``\\{Q\\}_{\\{12\\}}``, the matrix elements ``M_{l_2α_2,l_1α_1}`` are stored. 
 
 # Fields
 
@@ -115,14 +115,14 @@ BuildSegOperator(sgspd :: AbstractSegSpace, amd :: Union{AngModes, SAngModes, Sy
 
 
 """
-    BuildSegOperators(sgspd :: Vector{SegSpace{T}}[, sgspf :: Vector{SegSpace{T}}], cpd :: CoupleDecomps ; p_rng :: Vector{Int64}, ident_seg :: Vector{Int64}, num_th :: Int64) :: Matrix{SegOperator}
+    BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}[, sgspf :: Vector{<:AbstractSegSpace{T}}], cpd :: CoupleDecomps ; p_rng :: Vector{Int64}, ident_seg :: Vector{Int64}, num_th :: Int64) :: Matrix{SegOperator}
 
 constructs, in parallel, all the [SegOperators](@ref SegOperator) required to assemble the composite operators described by the coupling decompositions `cpd`.
 
 # Arguments
 
-* `sgspd :: Vector{SegSpace{T}}` is the list of the initial segment spaces. Their element type `T` — either `Float64` or `ComplexF64` — is that of the resulting matrix elements.
-* `sgspf :: Vector{SegSpace{T}}` is the list of the final segment spaces. Facultative, the same as `sgspd` by default.
+* `sgspd :: Vector{<:AbstractSegSpace{T}}` is the list of the initial segment spaces. Its elements are either `SegSpace` or `SSegSpace`. Their element type `T` — either `Float64` or `ComplexF64` — is that of the resulting matrix elements.
+* `sgspf :: Vector{<:AbstractSegSpace{T}}` is the list of the final segment spaces. Its elements are either `SegSpace` or `SSegSpace`. Facultative, the same as `sgspd` by default.
 * `cpd :: CoupleDecomps` is the list of coupling decompositions, _e. g._, an assembled Hamiltonian.
 * `p_rng :: Vector{Int64}`. When specified, only the SegOperators of the specified parts will be generated. It must be of the same length as `sgspd`. An array ``1:N_p`` by default.
 * `ident_seg :: Vector{Int64}` labels the identical segments. If given, an array of length ``N_p``, identical segments carry identical index. Facultative, empty by default, marking no identification. 

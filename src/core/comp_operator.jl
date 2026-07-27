@@ -6,7 +6,7 @@ import FuzzifiED: GetEigensystem
     CompOperator{Float64}
     CompOperator{ComplexF64}
 
-The mutable type `CompOperator` represents a composite operator — such as the Hamiltonian — acting on a [CompSpace](@ref CompSpace) of definite total angular momentum. It combines the reduced matrix elements of the per-part [SegOperators](@ref SegOperator) with the ``9j`` recoupling coefficients that relate the coupled basis of the initial and final composite spaces. The operator is stored in a block-structured form. It can be multiplied formally to a state.
+The mutable type `CompOperator` represents a composite operator — such as the Hamiltonian — acting on a [CompSpace](@ref CompSpace) of definite total angular momentum. It combines the reduced matrix elements of the per-part [SegOperators](@ref SegOperator) with the ``9j`` re-coupling coefficients that relate the coupled basis of the initial and final composite spaces. The operator is stored in a block-structured form. It can be multiplied formally to a state.
 
 # Fields
 
@@ -17,7 +17,7 @@ The mutable type `CompOperator` represents a composite operator — such as the 
 * `sgop :: Matrix{SegOperator}` is the ``N_p×N_d`` matrix of segment operators produced by [BuildSegOperators](@ref BuildSegOperators).
 * `colptr :: Matrix{Int64}` and `rowid :: Vector{Vector{Int64}}` store the allowed blocks of sectors for each channel. `colptr[:, d]` and `rowid[d]` bear the format of a CSC sparse matrix.
 * `idel :: Vector{Matrix{Int64}}` locates the matrix element block in the SegOperators for each segment. It takes three indices `idel[d][p, e]` where `d` is the channel index, `e` is the element index, and `p` is the part index. 
-* `mat9j :: Vector{Vector{Matrix{Float64}}}` stores the precomputed ``9j`` recoupling coefficients, including the fermionic reordering sign. It takes four indices `mat9j[d][e][ich, jch]` where `ich`, `jch` is the channel indices within the sectors specified by `e`.
+* `mat9j :: Vector{Vector{Matrix{Float64}}}` stores the precomputed ``9j`` re-coupling coefficients, including the fermionic reordering sign. It takes four indices `mat9j[d][e][ich, jch]` where `ich`, `jch` is the channel indices within the sectors specified by `e`.
 * `wklist :: Vector{Tuple{Int64, Int64, Int64}}` is the flattened list of the `(jsec, d, e)` matrix element blocks, ordered from the most to the least expensive. The threads of the operator application take their blocks greedily from this list.
 """
 mutable struct CompOperator{T <: Union{Float64, ComplexF64}}
@@ -38,7 +38,7 @@ end
 """
     BuildCompOperator(cpspd :: CompSpace{T}[, cpspf :: CompSpace{T}], cpd :: CoupleDecomps[, sgop :: Matrix{SegOperator}][, ltot :: Int64] ; ident_seg :: Vector{Int64}, num_th :: Int64) :: CompOperator
 
-constructs a [CompOperator](@ref CompOperator) from the composite spaces, the coupling decompositions `cpd` and the segment operators `sgop`. It computes and stores the ``9j`` recoupling coefficient between every pair of initial and final coupling channels and every decomposition channel together with the sign arising from fermion parity.
+constructs a [CompOperator](@ref CompOperator) from the composite spaces, the coupling decompositions `cpd` and the segment operators `sgop`. It computes and stores the ``9j`` re-coupling coefficient between every pair of initial and final coupling channels and every decomposition channel together with the sign arising from fermion parity.
 
 # Arguments
 
@@ -137,7 +137,7 @@ BuildCompOperator(cpspd :: CompSpace{T}, cpd :: CoupleDecomps, ltot :: Int64 = 0
     *(cpop :: CompOperator{T}, std :: Vector{T}) :: Vector{T}
     *(stf :: LinearAlgebra.Adjoint{T, Vector{T}}, cpop :: CompOperator{T}, std :: Vector{T}) :: Vector{T}
 
-applies the composite operator `cpop` to a state `std` of the initial composite space and returns the resulting state of the final composite space or calculates its inner product between an initial and a final state. The action is evaluated block by block : for every decomposition channel and every pair of coupling channels it takes the Kronecker product of the corresponding per-part reduced matrix element blocks, weighted by the channel coefficient and the ``9j`` recoupling factor. 
+applies the composite operator `cpop` to a state `std` of the initial composite space and returns the resulting state of the final composite space or calculates its inner product between an initial and a final state. The action is evaluated block by block : for every decomposition channel and every pair of coupling channels it takes the Kronecker product of the corresponding per-part reduced matrix element blocks, weighted by the channel coefficient and the ``9j`` re-coupling factor. 
 """
 function Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Float64, ComplexF64}
     th_lock = ReentrantLock()
@@ -284,7 +284,7 @@ computes the lowest `nst` eigenvalues and eigenvectors of the composite operator
 * `tol :: Float64` is the tolerance of the eigensolver. Facultative, `1E-8` by default.
 * `ncv :: Int64` is the dimension of the Krylov subspace. Facultative, `max(2 * nst, nst + 10)` by default.
 * `initvec :: Vector{T}` is the initial vector. Facultative, a random vector by default.
-* `kwargs...` are further keyword arguments forwarded to `eigsolve`.
+* `kwargs...` are further keyword arguments forwarded to `eigsolve`, _e. g._, `ishermitian = true` for complex and `issymmetric = true` for real matrix.
 
 # Output
 
