@@ -44,26 +44,19 @@ st∂σ = st1[:, 1]
 st∂ϵ = st1[:, 2]
 
 cpd_nx_l1 = ContactCouple([c_obs', c_obs], [ 1 -1 ; 0 0 ], 2) - ContactCouple([c_obs, c_obs'], [ -1 1 ; 0 0 ], 2)
-sgop_nx_l1 = BuildSegOperators([sgsp, sgsp], cpd_nx_l1)
-cpop_nx_l1 = BuildCompOperator(cpsp0, cpsp1, cpd_nx_l1, sgop_nx_l1)
-
 cpd_int_l1_0 = CoupleDecomps([ n_mod, n_mod ], RecouplePsPot(s, s, s, s, [Int64[4s 4s;4s 2]], [1.0])..., [ 0 0 ; 0 0 ])
-sgop_int_l1_0 = BuildSegOperators([sgsp, sgsp], cpd_int_l1_0)
-cpop_int_l1_0 = BuildCompOperator(cpsp0, cpsp1, cpd_int_l1_0, sgop_int_l1_0)
-
 cpd_int_l1_1 = CoupleDecomps([ n_mod, n_mod ], RecouplePsPot(s, s, s, s, [Int64[4s-2 4s-2;4s-2 2]], [1.0])..., [ 0 0 ; 0 0 ])
-sgop_int_l1_1 = BuildSegOperators([sgsp, sgsp], cpd_int_l1_1)
-cpop_int_l1_1 = BuildCompOperator(cpsp0, cpsp1, cpd_int_l1_1, sgop_int_l1_1)
+cpd_pk_cand = [cpd_nx_l1, cpd_int_l1_0, cpd_int_l1_1]
+cpop_pk_cand = BuildCompOperator.(Ref(cpsp0), Ref(cpsp1), cpd_pk_cand)
 
-opst = [cpop_nx_l1 * stI, cpop_int_l1_1 * stI, cpop_int_l1_0 * stI]
+opst = cpop_pk_cand .* Ref(stI)
 mat = [sti' * stj for sti in opst, stj in opst]
 eigval, eigvec = eigen(mat);
 
-cpd_pk = eigvec[:, 1]' * [cpd_nx_l1, cpd_int_l1_1, cpd_int_l1_0]
-sgop_pk = BuildSegOperators([sgsp, sgsp], cpd_pk)
-cpop_pk = BuildCompOperator(cpsp0, cpsp1, cpd_pk, sgop_pk)
+cpd_pk = eigvec[:, 1]' * cpd_pk_cand
+cpop_pk = BuildCompOperator(cpsp0, cpsp1, cpd_pk)
 
-compare_st(st0, st1) = abs(st0' * st1) ^ 2 / ((st0' * st0) * (st1' * st1)) ;
+compare_st(st0, st1) = abs(st0' * st1) ^ 2 / ((st0' * st0) * (st1' * st1))
 
 @show compare_st(cpop_pk * stσ, st∂σ)
 @show compare_st(cpop_pk * stϵ, st∂ϵ)

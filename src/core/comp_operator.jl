@@ -36,7 +36,7 @@ end
 
 
 """
-    BuildCompOperator(cpspd :: CompSpace{T}[, cpspf :: CompSpace{T}], cpd :: CoupleDecomps, sgop :: Matrix{SegOperator}, ltot :: Int64) :: CompOperator
+    BuildCompOperator(cpspd :: CompSpace{T}[, cpspf :: CompSpace{T}], cpd :: CoupleDecomps[, sgop :: Matrix{SegOperator}][, ltot :: Int64]) :: CompOperator
 
 constructs a [CompOperator](@ref CompOperator) from the composite spaces, the coupling decompositions `cpd` and the segment operators `sgop`. It computes and stores the ``9j`` recoupling coefficient between every pair of initial and final coupling channels and every decomposition channel together with the sign arising from fermion parity.
 
@@ -45,7 +45,7 @@ constructs a [CompOperator](@ref CompOperator) from the composite spaces, the co
 * `cpspd :: CompSpace{T}` is the initial composite space.
 * `cpspf :: CompSpace{T}` is the final composite space. Facultative, the same as `cpspd` by default.
 * `cpd :: CoupleDecomps` is the list of coupling decompositions ; it must be the same one used to build `sgop`.
-* `sgop :: Matrix{SegOperator}` is the matrix of segment operators from [BuildSegOperators](@ref BuildSegOperators).
+* `sgop :: Matrix{SegOperator}` is the matrix of segment operators. Facultative, if omitted, the segment operators will be automatically generated from [`BuildSegOperators`](@ref).
 * `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}`` carried by the operator. Facultative, ``0`` (a scalar) by default.
 
 # Output
@@ -120,7 +120,15 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
 
     return CompOperator{T}(cpspd, cpspf, nd, ltot, coeff, sgop, colptr, rowid, idel, mat9j, wklist)
 end
+
 BuildCompOperator(cpspd :: CompSpace{T}, cpd :: CoupleDecomps, sgop :: Matrix{SegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64} = BuildCompOperator(cpspd, cpspd, cpd, sgop, ltot)
+
+function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: CoupleDecomps, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64}
+    sgop = BuildSegOperators(cpspd.sgsp, cpspf.sgsp, cpd)
+    return BuildCompOperator(cpspd, cpspf, cpd, sgop, ltot)
+end
+
+BuildCompOperator(cpspd :: CompSpace{T}, cpd :: CoupleDecomps, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64} = BuildCompOperator(cpspd, cpspd, cpd, ltot)
 
 """
     *(cpop :: CompOperator{T}, std :: Vector{T}) :: Vector{T}

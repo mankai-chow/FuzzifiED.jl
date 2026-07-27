@@ -45,7 +45,6 @@ stϵ = st[:, 3]
 # Measure f_{σσϵ}=⟨σ|n^z_{00}|ϵ⟩ / ⟨σ|n^z_{00}|𝕀⟩
 nz_00 = GetComponent(GetDensityObs(nm, 1), 0, 0)
 cpd_nz = SingleSegCouple(2, 1, nz_00, [0, 0]) - SingleSegCouple(2, 2, nz_00, [0, 0])
-sgop_nz = BuildSegOperators([sgsp, sgsp], cpd_nz)
-cpop_nz = BuildCompOperator(cpsp, cpd_nz, sgop_nz)
+cpop_nz = BuildCompOperator(cpsp, cpd_nz)
 f_σσϵ = (stσ' * cpop_nz * stϵ) / (stσ' * cpop_nz * stI)
 @show f_σσϵ
