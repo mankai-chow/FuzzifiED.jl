@@ -1,3 +1,6 @@
+# This example constructs the conformal generator Λ = P + K 
+# and compare the states Λ|Φ⟩ with |∂Φ⟩ where Φ = σ, ϵ.
+
 using FuzzifiED
 using FuzzifiEDFullRotation
 using LinearAlgebra
@@ -14,7 +17,6 @@ qnd_pt = [
 sec_pt = stack([ [ne1, ((nm + 1) * ne1) % 2] for ne1 = 0 : ne])
 sec_tot = [ne, 0]
 tms_lzlp_pt = GetLpLzTerms(nm, 1)
-
 
 n_mod = GetDensityMod(nm, 1, [1;;]) 
 cpd_int = 2 * CoupleDecomps([ n_mod, n_mod ], ConvPsPot(RecoupleAngMom((nm-1)/2, [4.75, 1.0]))..., [ 0 0 ; 0 0 ])
