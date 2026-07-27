@@ -36,7 +36,7 @@ end
 
 
 """
-    BuildCompOperator(cpspd :: CompSpace{T}[, cpspf :: CompSpace{T}], cpd :: CoupleDecomps[, sgop :: Matrix{SegOperator}][, ltot :: Int64]) :: CompOperator
+    BuildCompOperator(cpspd :: CompSpace{T}[, cpspf :: CompSpace{T}], cpd :: CoupleDecomps[, sgop :: Matrix{SegOperator}][, ltot :: Int64] ; ident_seg :: Vector{Int64}, num_th :: Int64) :: CompOperator
 
 constructs a [CompOperator](@ref CompOperator) from the composite spaces, the coupling decompositions `cpd` and the segment operators `sgop`. It computes and stores the ``9j`` recoupling coefficient between every pair of initial and final coupling channels and every decomposition channel together with the sign arising from fermion parity.
 
@@ -47,6 +47,7 @@ constructs a [CompOperator](@ref CompOperator) from the composite spaces, the co
 * `cpd :: CoupleDecomps` is the list of coupling decompositions ; it must be the same one used to build `sgop`.
 * `sgop :: Matrix{SegOperator}` is the matrix of segment operators. Facultative, if omitted, the segment operators will be automatically generated from [`BuildSegOperators`](@ref).
 * `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}`` carried by the operator. Facultative, ``0`` (a scalar) by default.
+* `ident_seg :: Vector{Int64}` and `num_th :: Int64` are forwarded to [`BuildSegOperators`](@ref) ; they are accepted only when `sgop` is omitted. 
 
 # Output
 
@@ -85,8 +86,10 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
     wkcost = [ Vector{Int64}(undef, colptr[end, d] - 1) for d = 1 : nd ]
     Threads.@threads :greedy for (jsec, d) in collect(Iterators.product(axes(cpspd.idsec, 2), 1 : nd))
         idsecj = cpspd.idsec[:, jsec]
+        dimj = [ _ChannelDims(cpspd, jsec, j) for j in eachindex(cpspd.chs[jsec]) ]
         for e = colptr[jsec, d] : colptr[jsec + 1, d] - 1
             isec = rowid[d][e]
+            dimi = [ _ChannelDims(cpspf, isec, i) for i in eachindex(cpspf.chs[isec]) ]
             pfh = [ mod(cpd[d].sec[1, p], 2) for p = 1 : np ]
             pfj = [ mod(cpspd.sgsp[p].sec[1, idsecj[p]], 2) for p = 1 : np]
             pftot = sum([pfj[p] * sum(pfh[p + 1 : end]) for p = 1 : np]) % 2
@@ -108,7 +111,7 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
             cost = 0
             for j in eachindex(cpspd.chs[jsec]), i in eachindex(cpspf.chs[isec])
                 (abs(mat[i, j]) < √eps(Float64)) && continue
-                cost += (cpspd.ptr_st[jsec][j + 1] - cpspd.ptr_st[jsec][j]) + (cpspf.ptr_st[isec][i + 1] - cpspf.ptr_st[isec][i])
+                cost += _KronMulCost(dimi[i], dimj[j])
             end
             wkcost[d][e] = cost
         end
@@ -123,12 +126,12 @@ end
 
 BuildCompOperator(cpspd :: CompSpace{T}, cpd :: CoupleDecomps, sgop :: Matrix{SegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64} = BuildCompOperator(cpspd, cpspd, cpd, sgop, ltot)
 
-function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: CoupleDecomps, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64}
-    sgop = BuildSegOperators(cpspd.sgsp, cpspf.sgsp, cpd)
+function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: CoupleDecomps, ltot :: Int64 = 0 ; ident_seg :: Vector{Int64} = collect(1 : cpspd.np), num_th :: Int64 = FuzzifiED.NumThreads) where T <: Union{Float64, ComplexF64}
+    sgop = BuildSegOperators(cpspd.sgsp, cpspf.sgsp, cpd ; ident_seg, num_th)
     return BuildCompOperator(cpspd, cpspf, cpd, sgop, ltot)
 end
 
-BuildCompOperator(cpspd :: CompSpace{T}, cpd :: CoupleDecomps, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64} = BuildCompOperator(cpspd, cpspd, cpd, ltot)
+BuildCompOperator(cpspd :: CompSpace{T}, cpd :: CoupleDecomps, ltot :: Int64 = 0 ; ident_seg :: Vector{Int64} = collect(1 : cpspd.np), num_th :: Int64 = FuzzifiED.NumThreads) where T <: Union{Float64, ComplexF64} = BuildCompOperator(cpspd, cpspd, cpd, ltot ; ident_seg, num_th)
 
 """
     *(cpop :: CompOperator{T}, std :: Vector{T}) :: Vector{T}
@@ -226,6 +229,32 @@ function _KronMul!(y :: AbstractVector{T}, As, x :: AbstractVector{T}, scr :: Ve
         copyto!(y, _KronVec(As, x))
     end
     return y
+end
+
+# The dimension that each part contributes to the channel `ich` of the sector `isec`
+function _ChannelDims(cpsp :: CompSpace, isec :: Int64, ich :: Int64)
+    idseci = @view cpsp.idsec[:, isec]
+    chi = cpsp.chs[isec][ich]
+    return [ begin
+        il = cpsp.sgsp[p].l_lookup[idseci[p]][chi[1, p]]
+        cpsp.sgsp[p].ptr_st[idseci[p]][il + 1] - cpsp.sgsp[p].ptr_st[idseci[p]][il]
+    end for p = 1 : cpsp.np ]
+end
+
+# The number of multiplications performed by `_KronMul!`
+function _KronMulCost(mpt :: Vector{Int64}, npt :: Vector{Int64})
+    np = length(mpt)
+    cost = 0
+    sufm = 1
+    for p = np : -1 : 1
+        pren = 1
+        for q = 1 : p - 1
+            pren *= npt[q]
+        end
+        cost += pren * sufm * mpt[p] * npt[p]
+        sufm *= mpt[p]
+    end
+    return cost
 end
 
 function _KronVec(As, x :: AbstractVector{T}) where T
