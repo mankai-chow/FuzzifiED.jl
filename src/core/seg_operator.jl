@@ -138,19 +138,39 @@ constructs, in parallel, all the [SegOperators](@ref SegOperator) required to as
 
 * `sgop :: Matrix{SegOperator}` is a matrix of segment operators of size ``N_p×N_d``, where ``N_p`` is the number of parts and ``N_d`` the total number of channels of `cpd`. It is passed together with the same `cpd` to [BuildCompOperator](@ref BuildCompOperator).
 """
-function BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, sgspf :: Vector{<:AbstractSegSpace{T}}, cpd :: CoupleDecomps ; p_rng :: Vector{Int64} = collect(eachindex(sgspd))) where T <: Union{Float64, ComplexF64}
+function BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, sgspf :: Vector{<:AbstractSegSpace{T}}, cpd :: CoupleDecomps ; p_rng :: Vector{Int64} = collect(eachindex(sgspd)), ident_seg :: Vector{Int64} = collect(1 : maximum(p_rng))) where T <: Union{Float64, ComplexF64}
     nd = length(cpd)
     np = length(p_rng)
+
+    _id_tms(tms :: Union{Terms, STerms}) = isempty(tms) ? 0.0 : sum(abs.(round.(getproperty.(tms, :coeff), digits = 8)))
+    _id_amd(:: Symbol) = [-1.0]
+    _id_amd(amd :: Union{AngModes, SAngModes}) = [amd.l2m ; [_id_tms(GetComponent(amd, l, l)) for l = amd.l2m / 2 : -1 : 0]]
+    id = [ [ident_seg[p] ; cpdi.ch[1, p] ; cpdi.sec[p] ; _id_amd(cpdi.amd[p]) ] for p in p_rng, cpdi in cpd]
+    coord_sort = sort(vec(collect(Iterators.product(1 : length(p_rng), 1 : length(cpd)))), by = ij -> id[ij...])
+
+    sgop_cnx = Dict{Tuple{Int64, Int64}, Tuple{Int64, Int64}}()
+    for i in eachindex(coord_sort)
+        coordi = coord_sort[i]
+        for j = i - 1 : -1 : 1
+            coordj = coord_sort[j]
+            id[coordi...] ≠ id[coordj...] && continue 
+            sgop_cnx[coordi] = haskey(sgop_cnx, coordj) ? sgop_cnx[coordj] : coordj
+        end
+    end
+
     sgop = Matrix{SegOperator}(undef, np, nd)
-    # Threads.@threads :greedy for (ip, d) in collect(Iterators.product(1 : np, 1 : nd))
     for d = 1 : nd, ip = 1 : np
+        haskey(sgop_cnx, (ip, d)) && continue 
         p = p_rng[ip]
         amd = cpd[d].amd[p]
         secop = cpd[d].sec[:, p]
         ll = cpd[d].ch[1, p]
         sgop[ip, d] = BuildSegOperator(sgspd[ip], sgspf[ip], amd, ll, secop)
     end
+    for ((ip, d), (ip1, d1)) in sgop_cnx 
+        sgop[ip, d] = sgop[ip1, d1]
+    end
     @info "FINISH BUILDING $np * $nd SEG OPERATORS"
     return sgop
 end
-BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, cpd :: CoupleDecomps ; p_rng :: Vector{Int64} = collect(eachindex(sgspd))) where T <: Union{Float64, ComplexF64} = BuildSegOperators(sgspd, sgspd, cpd ; p_rng)
+BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, cpd :: CoupleDecomps ; p_rng :: Vector{Int64} = collect(eachindex(sgspd)), ident_seg :: Vector{Int64} = collect(1 : maximum(p_rng))) where T <: Union{Float64, ComplexF64} = BuildSegOperators(sgspd, sgspd, cpd ; p_rng, ident_seg)
