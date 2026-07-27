@@ -86,9 +86,9 @@ c_obs = GetElectronObs(nm, 1, 1)
 cpd_nx = ContactCouple([c_obs', c_obs], [ 1 -1 ; 0 0 ]) - ContactCouple([c_obs, c_obs'], [ -1 1 ; 0 0 ])
 ```
 
-Coupling decompositions support addition, subtraction and scalar multiplication, so the full Hamiltonian is assembled directly. It is passed through `PrepareCouple`, which pre-stores the components of each `AngModes` and, for real matrix elements, rotates away purely imaginary factors.
+Coupling decompositions support addition, subtraction and scalar multiplication, so the full Hamiltonian is assembled directly. 
 ```julia
-cpd_hmt = PrepareCouple(cpd_int - 3.16 * cpd_nx)
+cpd_hmt = cpd_int - 3.16 * cpd_nx
 ```
 
 ## Building the Segment Operators

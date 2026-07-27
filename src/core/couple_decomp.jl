@@ -1,6 +1,5 @@
 export CoupleDecomp, CoupleDecomps
 export RecouplePsPot, ConvPsPot, ContactCouple, SingleSegCouple, InsertSegment
-export PrepareCouple
 import FuzzifiED: AngModes
 
 
@@ -46,8 +45,25 @@ const CoupleDecomps = Vector{CoupleDecomp}
 
 constructs a `CoupleDecomps` — one single-channel `CoupleDecomp` per coupling channel `ch[i]` with coefficient `coeff[i]` — all sharing the operators `amd` (each entry an `AngModes`, `SAngModes` or the `:Identity` sentinel) and the quantum number shift `sec`. It consumes the channels and coefficients returned by [ConvPsPot](@ref ConvPsPot).
 """
-function CoupleDecomps(amd :: Vector{<: Union{AngModes, SAngModes, Symbol}}, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64})
-    return CoupleDecomp[ CoupleDecomp(amd, ch[i], ComplexF64(coeff[i]), sec) for i in eachindex(ch) ]
+function CoupleDecomps(amd :: Vector{<: Union{AngModes, SAngModes, Symbol}}, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64} ; eltype = FuzzifiED.ElementType)
+    amd1 = Union{AngModes, SAngModes, Symbol}[]
+    ph = 1.0 + 0.0im
+    for amdi in amd
+        if (amdi === :Identity)
+            push!(amd1, amdi)
+            continue
+        end
+        amdi1 = StoreComps(deepcopy(amdi))
+        if (eltype == Float64)
+            coeff1 = collect(amdi1.comps)[1][2][1].coeff
+            if (abs(coeff1.re / coeff1.im) < 1E-4)
+                amdi1 *= 1.0im 
+                ph *= -1.0im
+            end
+        end
+        push!(amd1, amdi1)
+    end
+    return CoupleDecomp[ CoupleDecomp(amd1, ch[i], ph * coeff[i], sec) for i in eachindex(ch) ]
 end
 
 
@@ -302,40 +318,3 @@ function InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpd :: CoupleDecomp)
     return CoupleDecomp(amd1, ch1, cpd.coeff, sec1)
 end
 InsertSegment(np :: Int64, p_rng :: Vector{Int64}, cpds :: CoupleDecomps) = InsertSegment.(Ref(np), Ref(p_rng), cpds)
-
-
-"""
-    PrepareCouple(cpd :: CoupleDecomps ; eltype :: Type) :: CoupleDecomps
-
-prepares a coupling decomposition for the construction of operators by pre-storing the components of each `AngModes`/`SAngModes` and, when `eltype == Float64`, rotating any purely imaginary operator by ``i`` while compensating the phase in the coefficients, so that all the matrix elements can be represented with real numbers. This should be called once on an assembled operator before it is passed to [BuildSegOperators](@ref BuildSegOperators).
-
-# Arguments
-
-* `cpd :: CoupleDecomps` is the coupling decomposition to be prepared.
-* `eltype :: Type` is the target matrix element type, either `Float64` or `ComplexF64`. Facultative, `FuzzifiED.ElementType` by default.
-
-# Output
-
-* the prepared coupling decompositions.
-"""
-function PrepareCouple(cpd :: CoupleDecomp ; eltype = FuzzifiED.ElementType)
-    amd1 = Union{AngModes, SAngModes, Symbol}[]
-    ph = 1.0 + 0.0im
-    for amdi in cpd.amd
-        if (amdi === :Identity)
-            push!(amd1, amdi)
-            continue
-        end
-        amdi1 = StoreComps(amdi)
-        if (eltype == Float64)
-            coeff1 = collect(amdi1.comps)[1][2][1].coeff
-            if (abs(coeff1.re / coeff1.im) < 1E-4)
-                amdi1 *= 1.0im 
-                ph *= -1.0im
-            end
-        end
-        push!(amd1, amdi1)
-    end
-    return CoupleDecomp(amd1, cpd.ch, cpd.coeff * ph, cpd.sec)
-end
-PrepareCouple(cpd :: CoupleDecomps ; eltype = FuzzifiED.ElementType) = PrepareCouple.(cpd ; eltype)

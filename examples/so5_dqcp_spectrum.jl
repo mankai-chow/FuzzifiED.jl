@@ -32,13 +32,13 @@ cpd_ΔΔ = SingleSegCouple(2, 1, GetPairIntTerms(nm, 2, [0 1;0 0]), [0, 0, 0]) +
     SingleSegCouple(2, 2, GetPairIntTerms(nm, 2, [0 1;0 0]), [0, 0, 0]) + 
     CoupleDecomps([Δ', Δ], ConvPsPot(Dict(2s => 1))..., [2 -2;0 0;0 0]) + 
     CoupleDecomps([Δ, Δ'], ConvPsPot(Dict(2s => 1))..., [-2 2;0 0;0 0])
-cpd_hmt = PrepareCouple(cpd_nn - 0.9 * cpd_ΔΔ)
+cpd_hmt = cpd_nn - 0.9 * cpd_ΔΔ
 
 tms_c2_sg = GetC2Terms(nm, 2, :SU) + (nf - 2) / 4 * GetPolTerms(nm, 2)
-cpd_c2 = PrepareCouple(SingleSegCouple(2, 1, tms_c2_sg, [0, 0, 0]) + SingleSegCouple(2, 2, tms_c2_sg, [0, 0, 0]) + 
+cpd_c2 = SingleSegCouple(2, 1, tms_c2_sg, [0, 0, 0]) + SingleSegCouple(2, 2, tms_c2_sg, [0, 0, 0]) + 
     CoupleDecomps([n, n], ConvPsPot(Dict([2s - l => -0.5 for l = 0 : 2s]))..., [0 0;0 0;0 0]) +
     CoupleDecomps([Δ', Δ], ConvPsPot(Dict([2s - l => -1 for l = 0 : 2 : 2s]))..., [2 -2;0 0;0 0]) + 
-    CoupleDecomps([Δ, Δ'], ConvPsPot(Dict([2s - l => -1 for l = 0 : 2 : 2s]))..., [-2 2;0 0;0 0]))
+    CoupleDecomps([Δ, Δ'], ConvPsPot(Dict([2s - l => -1 for l = 0 : 2 : 2s]))..., [-2 2;0 0;0 0])
 
 s_rng = collect(0 : 2)
 c2_rng = [Float64[s * (s + 1)] for s in s_rng]

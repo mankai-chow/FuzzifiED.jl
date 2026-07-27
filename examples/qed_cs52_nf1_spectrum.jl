@@ -65,7 +65,7 @@ cpd_hop = ContactCouple([c', b', f], [ 1 2 -3 ; 0 0 0 ; 0 1 -1 ; 0 0 0]) -
 cpd_int_e = 4 * ContactCouple([nc, nb, one(SSphereObs)], zeros(Int64, 4, 3)) +
             6 * ContactCouple([nc, one(SSphereObs), nf ], zeros(Int64, 4, 3)) +
             12 * ContactCouple([one(SSphereObs), nb, nf ], zeros(Int64, 4, 3)); 
-cpd_hmt = PrepareCouple(cpd_int_e - 0.2 * cpd_hop + 0.2 * cpd_pol_f) # An example of Hamiltonian, not necessarily conformal
+cpd_hmt = cpd_int_e - 0.2 * cpd_hop + 0.2 * cpd_pol_f # An example of Hamiltonian, not necessarily conformal
 
 result = []
 for q = -1 : 1, l = 0 : 2

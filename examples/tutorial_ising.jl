@@ -27,7 +27,7 @@ n_mod = GetDensityMod(nm, 1, [1;;])
 cpd_int = 2 * CoupleDecomps([ n_mod, n_mod ], ConvPsPot(RecouplePsPot((nm-1)/2, [4.75, 1.0]))..., [ 0 0 ; 0 0 ]) # Ising interaction from pseudo-potential recoupling
 c_obs = GetElectronObs(nm, 1, 1) 
 cpd_nx = ContactCouple([c_obs', c_obs], [ 1 -1 ; 0 0 ]) - ContactCouple([c_obs, c_obs'], [ -1 1 ; 0 0 ]) # Transverse field from contact coupling
-cpd_hmt = PrepareCouple(cpd_int - 3.16 * cpd_nx)
+cpd_hmt = cpd_int - 3.16 * cpd_nx
 
 # Build the segment operators for each channel in the Hamiltonian
 sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt)

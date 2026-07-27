@@ -37,7 +37,7 @@ cpd_hop = CoupleDecomps([f' * f', b * b], ConvPsPot(Dict(2s-1 => 1))..., [0 0 ; 
 cpd_fb = CoupleDecomps([f' * f, b' * b], ConvPsPot(RecouplePsPot(s-1/2, s, s, s-1/2, Dict(2s-1/2 => 1)))..., [0 0 ; 0 0 ; 0 0 ; 0 0 ])
 cpd_bb = SingleSegCouple(2, 2, ContractMod(b' * b', b * b, 2s-1), [0, 0, 0, 0])
 cpd_μ = SingleSegCouple(2, 1, STerms(GetPolTerms(nmf, 1, [1;;])), [0, 0, 0, 0])
-cpd_hmt = PrepareCouple(2.0 * cpd_fb + 1.0 * cpd_bb - 0.3 * cpd_hop)
+cpd_hmt = 2.0 * cpd_fb + 1.0 * cpd_bb - 0.3 * cpd_hop
 
 sgsp_f = BuildSegSpace(nmf, 1, nebm_f, sec_f, qnd_f, tms_lzlp_f, modul)
 nst_max = [ zeros(Int64, size(sec_b, 2) - 3) ; 5 .* nmf .^ [2,1,0] ]

@@ -48,7 +48,6 @@ Several methods help recoupling pseudo-potentials, converting them to coupling c
 ```@docs
 RecouplePsPot
 ConvPsPot
-PrepareCouple
 ```
 
 ## Segmented Operators

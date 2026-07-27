@@ -22,7 +22,7 @@ cpd_1 = CoupleDecomps([ c' * c', c * c], ConvPsPot(Dict(2s - 1 => -1/2))..., [2 
     SingleSegCouple(2, 1, GetDenIntTerms(nm, 1, [0, 1/2]), zeros(Int64, 2)) + 
     SingleSegCouple(2, 2, GetDenIntTerms(nm, 1, [0, 1/2]), zeros(Int64, 2))
 cpd_h = SingleSegCouple(2, 1, GetPolTerms(nm, 1), zeros(Int64, 2)) - SingleSegCouple(2, 2, GetPolTerms(nm, 1), zeros(Int64, 2))
-cpd_hmt = PrepareCouple(cpd_0 + cpd_1 - 3.16 * cpd_h) 
+cpd_hmt = cpd_0 + cpd_1 - 3.16 * cpd_h
 tms_lzlp_pt = GetLpLzTerms(nm, 1) 
 
 b = @benchmark begin

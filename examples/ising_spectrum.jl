@@ -25,7 +25,7 @@ cpd_int_1 = CoupleDecomps([ c' * c', c * c], ConvPsPot(Dict(2s - 1 => -1/2))...,
     SingleSegCouple(2, 1, GetDenIntTerms(nm, 1, [0, 1/2]), zeros(Int64, 3)) + 
     SingleSegCouple(2, 2, GetDenIntTerms(nm, 1, [0, 1/2]), zeros(Int64, 3))
 cpd_h = SingleSegCouple(2, 1, GetPolTerms(nm, 1), zeros(Int64, 3)) - SingleSegCouple(2, 2, GetPolTerms(nm, 1), zeros(Int64, 3))
-cpd_hmt = PrepareCouple(4.75 * cpd_int_0 + cpd_int_1 - 3.16 * cpd_h) ;
+cpd_hmt = 4.75 * cpd_int_0 + cpd_int_1 - 3.16 * cpd_h
 
 sgsp = [ BuildSegSpace(nm, sec_pt[:, p, :], qnd_pt[:, p], tms_lzlp_pt, [1, 1, 2]) for p = 1 : 2]
 sgop_hmt = BuildSegOperators(sgsp, cpd_hmt)
