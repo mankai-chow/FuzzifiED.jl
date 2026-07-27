@@ -34,7 +34,7 @@ tms_lzlp_b = GetBosonLpLzSTerms(nmb, 1)
 tms_proj = ContractMod(b' * b' * b', b * b * b, 3(s-1/2))
 
 cpd_hop = CoupleDecomps([f' * f', b * b], ConvPsPot(Dict(2s-1 => 1))..., [0 0 ; 0 0 ; 2 -2 ; 0 0]) + CoupleDecomps([f * f, b' * b'], ConvPsPot(Dict(2s-1 => 1))..., [0 0 ; 0 0 ; -2 2 ; 0 0])
-cpd_fb = CoupleDecomps([f' * f, b' * b], ConvPsPot(RecouplePsPot(s-1/2, s, s, s-1/2, Dict(2s-1/2 => 1)))..., [0 0 ; 0 0 ; 0 0 ; 0 0 ])
+cpd_fb = CoupleDecomps([f' * f, b' * b], ConvPsPot(RecoupleAngMom(s-1/2, s, s, s-1/2, Dict(2s-1/2 => 1)))..., [0 0 ; 0 0 ; 0 0 ; 0 0 ])
 cpd_bb = SingleSegCouple(2, 2, ContractMod(b' * b', b * b, 2s-1), [0, 0, 0, 0])
 cpd_μ = SingleSegCouple(2, 1, STerms(GetPolTerms(nmf, 1, [1;;])), [0, 0, 0, 0])
 cpd_hmt = 2.0 * cpd_fb + 1.0 * cpd_bb - 0.3 * cpd_hop

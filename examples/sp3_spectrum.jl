@@ -23,10 +23,12 @@ sec_tot = [ne, 0, 0]
 
 Δ = GetPairingMod(nm, 2, [0 1;0 0])
 n = GetDensityMod(nm, 2, [1 0;0 1])
-tms_intra = GetDenIntTerms(nm, 2, [1.0, 0.2643, 0.0652]) - GetPairIntTerms(nm, 2, [0.3798, 0.0, -0.0219], [0 1;0 0])
-cpd_nn_inter = 2 * CoupleDecomps([n, n], ConvPsPot(RecouplePsPot(s, [1.0, 0.2643, 0.0652]))..., [0 0;0 0;0 0])
-cpd_ΔΔ_inter = CoupleDecomps([Δ', Δ], ConvPsPot(Dict(2s => 0.3798, 2s-2 => -0.0219))..., [2 -2;0 0;0 0]) + 
-    CoupleDecomps([Δ, Δ'], ConvPsPot(Dict(2s => 0.3798, 2s-2 => -0.0219))..., [-2 2;0 0;0 0])
+ps_pot_u = [1.0, 0.2643, 0.0652]
+ps_pot_v = [0.3798, 0, -0.0219]
+tms_intra = GetDenIntTerms(nm, 2, ps_pot_u) - GetPairIntTerms(nm, 2, [0.3798, 0.0, -0.0219], [0 1;0 0])
+cpd_nn_inter = 2 * CoupleDecomps([n, n], ConvPsPot(RecoupleAngMom(s, ps_pot_u))..., [0 0;0 0;0 0])
+cpd_ΔΔ_inter = CoupleDecomps([Δ', Δ], ConvPsPot(s, ps_pot_v)..., [2 -2;0 0;0 0]) + 
+    CoupleDecomps([Δ, Δ'], ConvPsPot(s, ps_pot_v)..., [-2 2;0 0;0 0])
 cpd_hmt = sum([SingleSegCouple(3, p, tms_intra, [0, 0, 0]) for p = 1 : 3]) +
     sum([InsertSegment(3, [p1, p2], cpd_nn_inter) for p1 = 1 : 3 for p2 = p1 + 1 : 3]) -
     sum([InsertSegment(3, [p1, p2], cpd_ΔΔ_inter) for p1 = 1 : 3 for p2 = p1 + 1 : 3]) ;

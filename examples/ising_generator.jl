@@ -17,7 +17,7 @@ tms_lzlp_pt = GetLpLzTerms(nm, 1)
 
 
 n_mod = GetDensityMod(nm, 1, [1;;]) 
-cpd_int = 2 * CoupleDecomps([ n_mod, n_mod ], ConvPsPot(RecouplePsPot((nm-1)/2, [4.75, 1.0]))..., [ 0 0 ; 0 0 ])
+cpd_int = 2 * CoupleDecomps([ n_mod, n_mod ], ConvPsPot(RecoupleAngMom((nm-1)/2, [4.75, 1.0]))..., [ 0 0 ; 0 0 ])
 c_obs = GetElectronObs(nm, 1, 1) 
 cpd_nx = ContactCouple([c_obs', c_obs], [ 1 -1 ; 0 0 ]) - ContactCouple([c_obs, c_obs'], [ -1 1 ; 0 0 ])
 cpd_hmt = cpd_int - 3.16 * cpd_nx
@@ -44,8 +44,8 @@ st∂σ = st1[:, 1]
 st∂ϵ = st1[:, 2]
 
 cpd_nx_l1 = ContactCouple([c_obs', c_obs], [ 1 -1 ; 0 0 ], 2) - ContactCouple([c_obs, c_obs'], [ -1 1 ; 0 0 ], 2)
-cpd_int_l1_0 = CoupleDecomps([ n_mod, n_mod ], RecouplePsPot(s, s, s, s, [Int64[4s 4s;4s 2]], [1.0])..., [ 0 0 ; 0 0 ])
-cpd_int_l1_1 = CoupleDecomps([ n_mod, n_mod ], RecouplePsPot(s, s, s, s, [Int64[4s-2 4s-2;4s-2 2]], [1.0])..., [ 0 0 ; 0 0 ])
+cpd_int_l1_0 = CoupleDecomps([ n_mod, n_mod ], RecoupleAngMom(s, s, s, s, [Int64[4s 4s;4s 2]], [1.0])..., [ 0 0 ; 0 0 ])
+cpd_int_l1_1 = CoupleDecomps([ n_mod, n_mod ], RecoupleAngMom(s, s, s, s, [Int64[4s-2 4s-2;4s-2 2]], [1.0])..., [ 0 0 ; 0 0 ])
 cpd_pk_cand = [cpd_nx_l1, cpd_int_l1_0, cpd_int_l1_1]
 cpop_pk_cand = BuildCompOperator.(Ref(cpsp0), Ref(cpsp1), cpd_pk_cand)
 

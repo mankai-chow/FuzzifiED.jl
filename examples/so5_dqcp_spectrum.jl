@@ -27,11 +27,11 @@ sec_tot = [ne, 0, 0]
 n = GetDensityMod(nm, 2, [1 0;0 1])
 cpd_nn = SingleSegCouple(2, 1, GetDenIntTerms(nm, 2), [0, 0, 0]) + 
     SingleSegCouple(2, 2, GetDenIntTerms(nm, 2), [0, 0, 0]) + 
-    2 * CoupleDecomps([n, n], ConvPsPot(RecouplePsPot(s, [1]))..., [0 0;0 0;0 0])
+    2 * CoupleDecomps([n, n], ConvPsPot(RecoupleAngMom(s, [1]))..., [0 0;0 0;0 0])
 cpd_ΔΔ = SingleSegCouple(2, 1, GetPairIntTerms(nm, 2, [0 1;0 0]), [0, 0, 0]) + 
     SingleSegCouple(2, 2, GetPairIntTerms(nm, 2, [0 1;0 0]), [0, 0, 0]) + 
-    CoupleDecomps([Δ', Δ], ConvPsPot(Dict(2s => 1))..., [2 -2;0 0;0 0]) + 
-    CoupleDecomps([Δ, Δ'], ConvPsPot(Dict(2s => 1))..., [-2 2;0 0;0 0])
+    CoupleDecomps([Δ', Δ], ConvPsPot(s, [1])..., [2 -2;0 0;0 0]) + 
+    CoupleDecomps([Δ, Δ'], ConvPsPot(s, [1])..., [-2 2;0 0;0 0])
 cpd_hmt = cpd_nn - 0.9 * cpd_ΔΔ
 
 tms_c2_sg = GetC2Terms(nm, 2, :SU) + (nf - 2) / 4 * GetPolTerms(nm, 2)

@@ -16,9 +16,9 @@ sec_pt = stack([ [ne1, 0] for ne1 = 0 : 2 : ne])
 sec_tot = [ne, 0]
 
 c = GetElectronMod(nm, 1, 1)
-cpd_0 = CoupleDecomps([ c' * c, c' * c ], ConvPsPot(RecouplePsPot(s, [4.75 * 2]))..., zeros(Int64, 2, 2))
-cpd_1 = CoupleDecomps([ c' * c', c * c], ConvPsPot(Dict(2s - 1 => -1/2))..., [2 -2;0 0]) + 
-    CoupleDecomps([ c * c, c' * c'], ConvPsPot(Dict(2s - 1 => -1/2))..., [-2 2;0 0]) +
+cpd_0 = CoupleDecomps([ c' * c, c' * c ], ConvPsPot(RecoupleAngMom(s, [4.75 * 2]))..., zeros(Int64, 2, 2))
+cpd_1 = CoupleDecomps([ c' * c', c * c], ConvPsPot(s, [0, -1/2])..., [2 -2;0 0]) + 
+    CoupleDecomps([ c * c, c' * c'], ConvPsPot(s, [0, -1/2])..., [-2 2;0 0]) +
     SingleSegCouple(2, 1, GetDenIntTerms(nm, 1, [0, 1/2]), zeros(Int64, 2)) + 
     SingleSegCouple(2, 2, GetDenIntTerms(nm, 1, [0, 1/2]), zeros(Int64, 2))
 cpd_h = SingleSegCouple(2, 1, GetPolTerms(nm, 1), zeros(Int64, 2)) - SingleSegCouple(2, 2, GetPolTerms(nm, 1), zeros(Int64, 2))

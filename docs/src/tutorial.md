@@ -74,10 +74,10 @@ _N. b._, throughout the package, angular momenta are stored or specified by twic
 
 Having built the segment and composite spaces, we now record the decomposed Hamiltonian. In FuzzifiED-Full-Rotation, an operator is written as a sum of decomposed coupling channels, specified by the angular modes $[Φ_p]_{lm}$, the coupling channel, the co-efficient $g_d$, and the shift of quantum numbers in the format of a $\#_{\text{QN}}×N_p$ matrix. 
 
-We record the Ising interaction by recoupling the pseudo-potential $V_0=4.75,V_1=1.0$ from pairing channel $\big[[c^\dagger_1 c^\dagger_2][c_3c_4]\big]$ into the density channel $\big[[c^\dagger_1c_4][c^\dagger_2c_3]\big]$. The recoupling is done by `RecouplePsPot` function, and then [`ConvPsPot`](@ref) converts it into coupling channels and coefficients. The pairing modes $[c^\dagger c]$ is recorded by the type `AngModes` (which composes in the manner of CG-co-efficient) and generated from `GetDensityMod`.
+We record the Ising interaction by recoupling the pseudo-potential $V_0=4.75,V_1=1.0$ from pairing channel $\big[[c^\dagger_1 c^\dagger_2][c_3c_4]\big]$ into the density channel $\big[[c^\dagger_1c_4][c^\dagger_2c_3]\big]$. The recoupling is done by `RecoupleAngMom` function, and then [`ConvPsPot`](@ref) converts it into coupling channels and coefficients. The pairing modes $[c^\dagger c]$ is recorded by the type `AngModes` (which composes in the manner of CG-co-efficient) and generated from `GetDensityMod`.
 ```julia
 n_mod = GetDensityMod(nm, 1, [1;;])
-cpd_int = 2 * CoupleDecomps([ n_mod, n_mod ], ConvPsPot(RecouplePsPot((nm-1)/2, [4.75, 1.0]))..., [ 0 0 ; 0 0 ])
+cpd_int = 2 * CoupleDecomps([ n_mod, n_mod ], ConvPsPot(RecoupleAngMom((nm-1)/2, [4.75, 1.0]))..., [ 0 0 ; 0 0 ])
 ```
 
 We record the transverse field $h\int\mathrm{d}^2\mathbf{r}\,(c_\uparrow c_\downarrow^\dagger-c_\uparrow^\dagger c_\downarrow)(\mathbf{r})$ in terms of contact coupling. The local electron operator is specified by the type `SphereObs` and generated from `GetElectronObs`. The contact coupling is generated from [`ContactCouple`](@ref), which takes the local operator on each part and the quantum number shift. 

@@ -46,7 +46,7 @@ InsertSegment
 
 Several methods help recoupling pseudo-potentials, converting them to coupling channels, and preparing an assembled operator.
 ```@docs
-RecouplePsPot
+RecoupleAngMom
 ConvPsPot
 ```
 

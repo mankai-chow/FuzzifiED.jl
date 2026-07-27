@@ -1,5 +1,5 @@
 export CoupleDecomp, CoupleDecomps
-export RecouplePsPot, ConvPsPot, ContactCouple, SingleSegCouple, InsertSegment
+export RecoupleAngMom, ConvPsPot, ContactCouple, SingleSegCouple, InsertSegment
 import FuzzifiED: AngModes
 
 
@@ -96,24 +96,35 @@ end
 
 
 """
-    RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ps_pot0 :: Dict) :: Dict
-    RecouplePsPot(s :: Number, ps_pot :: Vector{<:Number}) :: Dict
-    RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ch0 :: Vector{Matrix{Int64}}, coeff0 :: Vector{<:Number})
+    RecoupleAngMom(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ch0 :: Vector{Matrix{Int64}}, coeff0 :: Vector{<:Number}) :: Tuple{Vector{Matrix{Int64}}, Vector{<:Number}}
+    RecoupleAngMom(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ps_pot0 :: Dict) :: Dict
+    RecoupleAngMom(s :: Number, ps_pot :: Vector{<:Number}) :: Dict
 
-recouples the Haldane pseudo-potentials of a two-body interaction ``c^†_1c^†_2c_3c_4`` from the pairing channel ``(12)(34)`` — creations and annihilations each coupled to a pair angular momentum ``j`` — into the density channel ``(14)(23)`` — density modes ``n^{(14)}=c^†_1c_4`` and ``n^{(23)}=c^†_2c_3`` each coupled to a rank ``l``. This is the form consumed by [ConvPsPot](@ref ConvPsPot) and expressed as a product of two density operators. 
+recouples the angular momentum composition or pseudo-potentials of a four-fermion term ``c^†_1c^†_2c_3c_4`` from the pairing channel ``(12)(34)`` — creations and annihilations each coupled to a pair angular momentum ``j`` — into the density channel ``(14)(23)`` — density modes ``n^{(14)}=c^†_1c_4`` and ``n^{(23)}=c^†_2c_3`` – using Wigner's ``6j`` or ``9j``-symbol. 
 
-# Arguments
+# Arguments (Method 1)
 
-* `s1, s2, s3, s4 :: Number` are the single-particle angular momenta of the four operators.
-* `ps_pot0 :: Dict` maps a pair angular momentum ``j`` to the pseudo-potential ``V_j``.
+* `s1, s2, s3, s4 :: Number` are the spins of the four particles.
+* `ch0 :: Vector{Matrix{Int64}}` are the angular-momentum channels.
+* `coeff0 :: Vector` are the coefficient of each channel.
 
-In the second form the interaction is a single flavour with spin `s`, and `ps_pot :: Vector` lists the pseudo-potentials ordered from the largest pair angular momentum ``j=2s`` downwards, _i. e._ `ps_pot[i]` is ``V_{2s+1-i}``.
+This is the most general method and allows non-zero total angular momentum. 
+
+# Arguments (Method 2)
+
+* `s1, s2, s3, s4 :: Number` are the spins of the four particles.
+* `ps_pot0 :: Dict` is a dictionary mapping a density rank ``l`` to its coefficient ``V_l``
+
+# Arguments (Method 3)
+
+* `s` is the single-particle spin, and 
+* `ps_pot` is a vector of pseudo-potentials from `l=2s` downwards. 
 
 # Output
 
-* `ps_pot1 :: Dict` maps a density rank ``l`` to the recoupled coefficient ``W_l``, ready to be passed to [ConvPsPot](@ref ConvPsPot).
+A tuple of re-coupled channels `ch0 :: Vector{Matrix{Int64}}` and co-efficients `coeff0 :: Vector{<:Number}`, or `ps_pot1 :: Dict` mapping the angular momentum ``l`` to the pseudoo-potential ``W_l``
 """
-function RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ps_pot0 :: Dict)
+function RecoupleAngMom(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ps_pot0 :: Dict)
     ps_pot1 = Dict{Float64, ComplexF64}()
     for j in max(abs(s1 - s4), abs(s2 - s3)) : min(s1 + s4, s2 + s3)
         W = 0.0
@@ -129,11 +140,11 @@ function RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, p
     end
     return ps_pot1
 end
-function RecouplePsPot(s :: Number, ps_pot :: Vector{<:Number})
-    ps_pot0 = Dict([ 2s + 1 - i => ps_pot[i] for i ∈ eachindex(ps_pot)])
-    return RecouplePsPot(s, s, s, s, ps_pot0)
+function RecoupleAngMom(s :: Number, ps_pot :: Vector{<:Number})
+    ps_pot0 = Dict([ 2s + 1 - i => ps_pot[i] for i ∈ eachindex(ps_pot) if abs(ps_pot[i]) > 1E-8])
+    return RecoupleAngMom(s, s, s, s, ps_pot0)
 end
-function RecouplePsPot(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ch0 :: Vector{Matrix{Int64}}, coeff0 :: Vector{<:Number})
+function RecoupleAngMom(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ch0 :: Vector{Matrix{Int64}}, coeff0 :: Vector{<:Number})
     s12 = Int64(2s1)
     s22 = Int64(2s2)
     s32 = Int64(2s3)
@@ -165,8 +176,18 @@ end
 
 """
     ConvPsPot(ps_pot0 :: Dict) :: Tuple{Vector{Matrix{Int64}}, Vector{ComplexF64}}
+    ConvPsPot(s :: Number, ps_pot :: Vector{<:Number}) :: Tuple{Vector{Matrix{Int64}}, Vector{ComplexF64}}
 
-converts a pseudo-potential — a dictionary mapping a density rank ``l`` to its coefficient ``V_l`` — into the coupling channels and coefficients used by a two-part density—density [CoupleDecomp](@ref CoupleDecomp). For each rank ``l`` it produces the channel ``\\begin{smallmatrix}2l&2l\\\\2l&0\\end{smallmatrix}`` (two rank-``l`` operators coupled to a total scalar) with coefficient ``W_l\\sqrt{2l+1}(-1)^{l}``.
+converts a pseudo-potential into the coupling channels and coefficients used by a [CoupleDecomp](@ref CoupleDecomp). The co-efficient is connected to the pseudo-potential by ``Ṽ_l = (-1)^l\\sqrt(2l+1)V_l``.
+
+# Arguments (Method 1)
+
+* `ps_pot0 :: Dict` is a dictionary mapping a density rank ``l`` to its coefficient ``V_l``
+
+# Arguments (Method 2)
+
+* `s` is the spin of a single electron, and 
+* `ps_pot` is a vector of pseudo-potentials from `l=2s` downwards. 
 
 # Output
 
@@ -182,6 +203,10 @@ function ConvPsPot(ps_pot0 :: Dict)
         push!(coeff, V * √(J2 + 1) * (1.0im) ^ (J2))
     end
     return ch, coeff
+end
+function ConvPsPot(s :: Number, ps_pot :: Vector{<:Number})
+    ps_pot0 = Dict([ 2s + 1 - i => ps_pot[i] for i ∈ eachindex(ps_pot) if abs(ps_pot[i]) > 1E-8])
+    return ConvPsPot(ps_pot0)
 end
 
 

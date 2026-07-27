@@ -19,9 +19,9 @@ sec_pt = stack([ [ne1  ne1 ; ((nm + 1) * ne1) % 2  ((nm + 1) * ne1) % 2 ; 0  ne1
 tms_lzlp_pt = GetLpLzTerms(nm, 1) 
 
 c = GetElectronMod(nm, 1, 1)
-cpd_int_0 = CoupleDecomps([ c' * c, c' * c ], ConvPsPot(RecouplePsPot(s, [2.0]))..., zeros(Int64, 3, 2))
-cpd_int_1 = CoupleDecomps([ c' * c', c * c], ConvPsPot(Dict(2s - 1 => -1/2))..., [2 -2;0 0;0 0]) + 
-    CoupleDecomps([ c * c, c' * c'], ConvPsPot(Dict(2s - 1 => -1/2))..., [-2 2;0 0;0 0]) +
+cpd_int_0 = CoupleDecomps([ c' * c, c' * c ], ConvPsPot(RecoupleAngMom(s, [2.0]))..., zeros(Int64, 3, 2))
+cpd_int_1 = CoupleDecomps([ c' * c', c * c], ConvPsPot(s, [0, -1/2])..., [2 -2;0 0;0 0]) + 
+    CoupleDecomps([ c * c, c' * c'], ConvPsPot(s, [0, -1/2])..., [-2 2;0 0;0 0]) +
     SingleSegCouple(2, 1, GetDenIntTerms(nm, 1, [0, 1/2]), zeros(Int64, 3)) + 
     SingleSegCouple(2, 2, GetDenIntTerms(nm, 1, [0, 1/2]), zeros(Int64, 3))
 cpd_h = SingleSegCouple(2, 1, GetPolTerms(nm, 1), zeros(Int64, 3)) - SingleSegCouple(2, 2, GetPolTerms(nm, 1), zeros(Int64, 3))
