@@ -158,91 +158,14 @@ function BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, sgspf :: Vect
     end
 
     sgop = Matrix{SegOperator}(undef, np, nd)
-    wklist = Tuple{Int64, Int64, Int64, Int64, Int64}[]
-    wkcost = Int64[]
     for d = 1 : nd, ip = 1 : np
         haskey(sgop_cnx, (ip, d)) && continue
         p = p_rng[ip]
+        amd = cpd[d].amd[p]
         secop = cpd[d].sec[:, p]
-        modul = sgspd[ip].sec_modul
-        index = 0
-        colptr = zeros(Int64, size(sgspd[ip].sec, 2) + 1)
-        colptr[1] = 1
-        rowid = Int64[]
-        for j in axes(sgspd[ip].sec, 2)
-            secd = sgspd[ip].sec[:, j]
-            for i in axes(sgspf[ip].sec, 2)
-                EquivSec(secd .+ secop, sgspf[ip].sec[:, i], modul) || continue
-                index += 1
-                push!(rowid, i)
-                push!(wklist, (i, j, ip, d, index))
-                push!(wkcost, size(sgspf[ip].sts[i], 2) * size(sgspf[ip].sts[i], 1) * size(sgspd[ip].sts[j], 1))
-            end
-            colptr[j + 1] = index + 1
-        end
-        sgop[ip, d] = SegOperator{T}(colptr, rowid, Vector{Matrix{Matrix{T}}}(undef, index))
+        ll = cpd[d].ch[1, p]
+        sgop[ip, d] = BuildSegOperator(sgspd[ip], sgspf[ip], amd, ll, secop)
     end
-    permute!(wklist, sortperm(wkcost ; rev = true))
-
-    nwk = length(wklist)
-    next_wk = Threads.Atomic{Int64}(0)
-    nth_blas = BLAS.get_num_threads()
-    num_th == 1 || BLAS.set_num_threads(1)
-    @sync for _ = 1 : max(1, min(num_th, nwk))
-        Threads.@spawn while true
-            iwk = Threads.atomic_add!(next_wk, 1) + 1
-            iwk > nwk && break
-            i, j, ip, d, e = wklist[iwk]
-            sgspd_p = sgspd[ip]
-            sgspf_p = sgspf[ip]
-            p = p_rng[ip]
-            amd = cpd[d].amd[p]
-            (amd === :Identity) && (amd = _SegIdentity(sgspd_p))
-            ll = cpd[d].ch[1, p]
-            md = sgspd_p.sec[2, j]
-            mf = sgspf_p.sec[2, i]
-            mm = mf - md
-
-            std = sgspd_p.sts[j]
-            stf = sgspf_p.sts[i]
-            tms = GetComponent(amd, ll/2, mm/2)
-            op = _SegOperator(sgspd_p, sgspd_p.bs[j], sgspf_p.bs[i], tms)
-            op_mat = Matrix(OpMat(op ; num_th = num_th_blk))
-            hmt_block = stf' * op_mat * std
-
-            if (md == 0 && mf == 0 && ll > 0) # when 3j could vanish
-                std1 = sgspd_p.sts1[j]
-                tms1 = GetComponent(amd, ll/2, mm/2 - 1)
-                op1 = _SegOperator(sgspd_p, sgspd_p.bs1[j], sgspf_p.bs[i], tms1)
-                op_mat1 = Matrix(OpMat(op1 ; num_th = num_th_blk))
-                hmt_block1 = stf' * op_mat1 * std1
-            end
-
-            hmt_mat = Matrix{Matrix{T}}(undef, length(sgspf_p.l_rng[i]), length(sgspd_p.l_rng[j]))
-
-            for jl in eachindex(sgspd_p.l_rng[j])
-                ld = sgspd_p.l_rng[j][jl]
-                rngj = (sgspd_p.ptr_st[j][jl] + 1 : sgspd_p.ptr_st[j][jl + 1]) .- sgspd_p.ptr_st[j][1]
-                for il in eachindex(sgspf_p.l_rng[i])
-                    lf = sgspf_p.l_rng[i][il]
-                    (ll < abs(ld - lf) || ll > ld + lf) && continue
-                    rngi = (sgspf_p.ptr_st[i][il] + 1 : sgspf_p.ptr_st[i][il + 1]) .- sgspf_p.ptr_st[i][1]
-                    fac3j = wigner3j(lf/2, ll/2, ld/2, -mf/2, mm/2, md/2)
-                    ((lf - mf) % 4 == 2) && (fac3j = -fac3j)
-                    if (fac3j ≠ 0)
-                        hmt_mat[il, jl] = hmt_block[rngi, rngj] / fac3j
-                    else
-                        fac3j1 = wigner3j(lf/2, ll/2, ld/2, -mf/2, mm/2 - 1, md/2 + 1)
-                        ((lf - mf) % 4 == 2) && (fac3j1 = -fac3j1)
-                        hmt_mat[il, jl] = hmt_block1[rngi, rngj] / √(ld/2 * (ld/2 + 1)) / fac3j1
-                    end
-                end
-            end
-            sgop[ip, d].elmat[e] = hmt_mat
-        end
-    end
-    BLAS.set_num_threads(nth_blas)
-
     for ((ip, d), (ip1, d1)) in sgop_cnx
         sgop[ip, d] = sgop[ip1, d1]
     end
