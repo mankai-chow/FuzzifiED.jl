@@ -3,10 +3,8 @@ module SO3lver
 using FuzzifiED
 using FuzzifiED.Fuzzifino
 using LinearAlgebra
-using SparseArrays
 using WignerSymbols
 using CGcoefficient
-using Kronecker
 using KrylovKit
 
 function __init__()
