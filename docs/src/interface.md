@@ -64,5 +64,6 @@ BuildSegOperators
 CompOperator
 BuildCompOperator
 Base.:*(cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Float64, ComplexF64}
+Base.Matrix(cpop :: CompOperator{T}) where T <: Union{Float64, ComplexF64}
 GetEigensystem(cpop :: CompOperator{ComplexF64}, nst :: Int64)
 ```

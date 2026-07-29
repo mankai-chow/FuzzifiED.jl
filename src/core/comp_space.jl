@@ -60,7 +60,7 @@ In the second form the composite sectors are found automatically with [ComposeSe
 
 * `cpsp :: CompSpace` is the resulting composite space.
 """
-function BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, idsec :: Matrix{Int64}, ltot :: Int64) where T <: Union{Float64, ComplexF64}
+function BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, idsec :: Matrix{Int64}, ltot :: Int64 ; disp_std = !FuzzifiED.SilentStd) where T <: Union{Float64, ComplexF64}
     np = length(sgsp)
     chs = [ Matrix{Int64}[] for _ ∈ axes(idsec, 2)]
     ptr_ch = Int64[1]
@@ -87,14 +87,14 @@ function BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, idsec :: Matrix{I
     end
     nch = ptr_ch[end] - 1
     dim = ptr_st[end][end] - 1
-    @info "FINISH BUILDING COMP SPACE, ANGULAR MOMENTUM $(ltot/2), TOTAL DIMENSION $(dim), # OF CHANNELS $(nch), # OF SECTORS $(size(idsec, 2))"
+    disp_std && @info "FINISH BUILDING COMP SPACE, ANGULAR MOMENTUM $(ltot/2), TOTAL DIMENSION $(dim), # OF CHANNELS $(nch), # OF SECTORS $(size(idsec, 2))"
     return CompSpace{T}(np, nch, dim, ltot, sgsp, idsec, chs, ptr_ch, ptr_st)
 end
-function BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64) where T <: Union{Float64, ComplexF64}
+function BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64 ; disp_std = !FuzzifiED.SilentStd) where T <: Union{Float64, ComplexF64}
     sec_pt = [ sgspi.sec for sgspi in sgsp]
     modul = sgsp[1].sec_modul
     idsec = ComposeSec(sec_tot, sec_pt, modul)
-    return BuildCompSpace(sgsp, idsec, ltot)
+    return BuildCompSpace(sgsp, idsec, ltot ; disp_std)
 end
 
 

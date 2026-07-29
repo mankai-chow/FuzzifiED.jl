@@ -4,12 +4,11 @@ To demonstrate the usage of FuzzifiEDFullRoataion interfaces, in this section, w
 
 Practically, the ED calculation can be divided into 4 steps.
 
-* Build the [segment spaces](@ref SegSpace) by diagonalizing the total angular momentum in the segment basis and couple them into a [composite space](@ref CompSpace) of definite total angular momentum,
-* Decompose the Hamiltonian into coupling channels of segments,
-* Build the [segment operators](@ref SegOperator) and assemble them into the [composite operator](@ref CompOperator),
-* Find the lowest eigen-states of the Hamiltonian and make measurements on the eigenstates.
+* Build the segment spaces by diagonalizing the total angular momentum in the segment basis and couple them into a composite space of definite total angular momentum,
+* Build the segment operators of the Hamiltonian and assemble them into the composite operator,
+* Find the lowest eigen-states of the Hamiltonian and make measurements.
 
-The examples can be found in the directory [`examples`](https://github.com/FuzzifiED/SO3lver.jl/tree/main/examples). We also append in the end [a list of given examples](@ref List-of-Examples) at the end of the page. 
+The examples can be found in the directory [`examples`](https://github.com/FuzzifiED/SO3lver.jl/tree/main/examples). We also append [a list of given examples](@ref List-of-Examples) at the end of the page. 
 
 ## Set-up
 

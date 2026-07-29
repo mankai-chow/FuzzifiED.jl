@@ -127,7 +127,7 @@ For multiple parts, the angular-momentum composes successively along a chain, so
 ```math
     \|(\cdots((l_1 l_2)l_{12}\,l_3)l_{123}\cdots l_p)l_{1\cdots p}\cdots l_{N_p})l\rangle,
 ```
-Each channel is specified by $2N_p+1$ angular momenta in total — $l_p$ ($p=1,\dots,N_p$), $l_{1\cdots p}$ ($p=2,\dots,N_p-1$) and $l$. The coupling of segment operators are specified in a similar way. 
+Each channel is specified by $2N_p-1$ angular momenta in total — $l_p$ ($p=1,\dots,N_p$), $l_{1\cdots p}$ ($p=2,\dots,N_p-1$) and $l$. The coupling of segment operators are specified in a similar way. 
 _E. g_., for the contact coupling
 ```math
     H=\int\mathrm{d}^2\mathbf{r}\,\Phi_1(\mathbf{r})\Phi_2(\mathbf{r})\cdots\Phi_p(\mathbf{r})\cdots\Phi_{N_p}(\mathbf{r}),

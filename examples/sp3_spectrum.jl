@@ -30,8 +30,7 @@ cpd_nn_inter = 2 * CoupleDecomps([n, n], ConvPsPot(RecoupleAngMom(s, ps_pot_u)).
 cpd_ΔΔ_inter = CoupleDecomps([Δ', Δ], ConvPsPot(s, ps_pot_v)..., [2 -2;0 0;0 0]) + 
     CoupleDecomps([Δ, Δ'], ConvPsPot(s, ps_pot_v)..., [-2 2;0 0;0 0])
 cpd_hmt = sum([SingleSegCouple(3, p, tms_intra, [0, 0, 0]) for p = 1 : 3]) +
-    sum([InsertSegment(3, [p1, p2], cpd_nn_inter) for p1 = 1 : 3 for p2 = p1 + 1 : 3]) -
-    sum([InsertSegment(3, [p1, p2], cpd_ΔΔ_inter) for p1 = 1 : 3 for p2 = p1 + 1 : 3]) ;
+    sum([InsertSegment(3, [p1, p2], cpd_nn_inter - cpd_ΔΔ_inter) for p1 = 1 : 3 for p2 = p1 + 1 : 3])
 
 tms_c2_sg = GetC2Terms(nm, 2, :SU) + (nf - 2) / 4 * GetPolTerms(nm, 2)
 cpd_c2_inter = CoupleDecomps([n, n], ConvPsPot(Dict([2s - l => -0.5 for l = 0 : 2s]))..., [0 0;0 0;0 0]) +

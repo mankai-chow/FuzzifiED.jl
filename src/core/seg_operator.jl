@@ -15,7 +15,7 @@ The matrix ``⟨\\{Q\\}_2l_2α_2\\|[Φ]_l\\|\\{Q\\}_1l_1α_1⟩`` is stored in b
 
 * `sgspd :: SegSpace` and `sgspf :: SegSpace` are the initial and final segment spaces.
 * `colptr :: Vector{Int64}` and `rowid :: Vector{Int64}` store the allowed blocks of sectors ``\\{Q\\}_{12}`` in the format of a sparse matrix.
-* `elmat :: Vector{Matrix{T}}` stores, for each block, the reduced matrix elements. 
+* `elmat :: Vector{Matrix{Matrix{T}}}` stores, for each block, the reduced matrix elements. It takes five indices `elmat[e][ich, jch][i, j]`, where `e` is the index for the sector block, `ich` and `jch` are the channel index, and `i` and `j` are the state index within each channel. 
 """
 mutable struct SegOperator{T <: Union{Float64, ComplexF64}}
     colptr :: Vector{Int64}
@@ -75,13 +75,13 @@ function BuildSegOperator(sgspd :: AbstractSegSpace{T}, sgspf :: AbstractSegSpac
             stf = sgspf.sts[i]
             tms = GetComponent(amd, ll/2, mm/2)
             op = _SegOperator(sgspd, sgspd.bs[j], sgspf.bs[i], tms)
-            op_mat = Matrix(OpMat(op ; num_th))
+            op_mat = Matrix(OpMat(op ; num_th, disp_std = false))
             hmt_block = stf' * op_mat * std
 
             if (md == 0 && mf == 0 && ll > 0) # when 3j could vanish
                 tms1 = GetComponent(amd, ll/2, mm/2 - 1)
                 op1 = _SegOperator(sgspd, sgspd.bs1[j], sgspf.bs[i], tms1)
-                op_mat1 = Matrix(OpMat(op1 ; num_th))
+                op_mat1 = Matrix(OpMat(op1 ; num_th, disp_std = false))
                 hmt_block1 = stf' * op_mat1 * std1
             end
 
@@ -111,7 +111,7 @@ function BuildSegOperator(sgspd :: AbstractSegSpace{T}, sgspf :: AbstractSegSpac
     end
     return SegOperator{T}(colptr, rowid, elmat)
 end
-BuildSegOperator(sgspd :: AbstractSegSpace, amd :: Union{AngModes, SAngModes, Symbol}, ll :: Int64, secop :: Vector{Int64} ; num_th = 1) = BuildSegOperator(sgspd, sgspd, amd, ll, secop ; num_th)
+BuildSegOperator(sgspd :: AbstractSegSpace, amd :: Union{AngModes, SAngModes, Symbol}, ll :: Int64, secop :: Vector{Int64} ; num_th = FuzzifiED.NumThreads) = BuildSegOperator(sgspd, sgspd, amd, ll, secop ; num_th)
 
 
 """
@@ -127,17 +127,15 @@ constructs, in parallel, all the [SegOperators](@ref SegOperator) required to as
 * `p_rng :: Vector{Int64}`. When specified, only the SegOperators of the specified parts will be generated. It must be of the same length as `sgspd`. An array ``1:N_p`` by default.
 * `ident_seg :: Vector{Int64}` labels the identical segments. If given, an array of length ``N_p``, identical segments carry identical index. Facultative, empty by default, marking no identification. 
 * `num_th :: Int64` is the number of blocks treated concurrently. Facultative,  `FuzzifiED.NumThreads` by default. Consider set `num_th = 1` when memory is under pressure, then `OpMat` and BLAS are parallelized instead.
+* `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output
 
 * `sgop :: Matrix{SegOperator}` is a matrix of segment operators of size ``N_p×N_d``, where ``N_p`` is the number of parts and ``N_d`` the total number of channels of `cpd`. It is passed together with the same `cpd` to [BuildCompOperator](@ref BuildCompOperator).
 """
-function BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, sgspf :: Vector{<:AbstractSegSpace{T}}, cpd :: CoupleDecomps ; p_rng :: Vector{Int64} = collect(eachindex(sgspd)), ident_seg :: Vector{Int64} = Int64[], num_th :: Int64 = FuzzifiED.NumThreads) where T <: Union{Float64, ComplexF64}
+function BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, sgspf :: Vector{<:AbstractSegSpace{T}}, cpd :: CoupleDecomps ; p_rng :: Vector{Int64} = collect(eachindex(sgspd)), ident_seg :: Vector{Int64} = Int64[], num_th :: Int64 = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd) where T <: Union{Float64, ComplexF64}
     nd = length(cpd)
     np = length(p_rng)
-    # A single block at a time, so `OpMat` and BLAS may take all the threads ;
-    # several blocks at a time, so each of them is left with one thread.
-    num_th_blk = (num_th == 1) ? FuzzifiED.NumThreads : 1
 
     sgop_cnx = Dict{Tuple{Int64, Int64}, Tuple{Int64, Int64}}()
     if (!isempty(ident_seg))
@@ -164,14 +162,14 @@ function BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, sgspf :: Vect
         amd = cpd[d].amd[p]
         secop = cpd[d].sec[:, p]
         ll = cpd[d].ch[1, p]
-        sgop[ip, d] = BuildSegOperator(sgspd[ip], sgspf[ip], amd, ll, secop)
+        sgop[ip, d] = BuildSegOperator(sgspd[ip], sgspf[ip], amd, ll, secop ; num_th)
     end
     for ((ip, d), (ip1, d1)) in sgop_cnx
         sgop[ip, d] = sgop[ip1, d1]
     end
     info_str = "FINISH BUILDING $np * $nd SEG OPERATORS"
     isempty(sgop_cnx) || (info_str *= ", $(np * nd - length(sgop_cnx)) INDEPENDENT")
-    @info info_str
+    disp_std && @info info_str
     return sgop
 end
-BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, cpd :: CoupleDecomps ; p_rng :: Vector{Int64} = collect(eachindex(sgspd)), ident_seg :: Vector{Int64} = collect(1 : maximum(p_rng)), num_th :: Int64 = FuzzifiED.NumThreads) where T <: Union{Float64, ComplexF64} = BuildSegOperators(sgspd, sgspd, cpd ; p_rng, ident_seg, num_th)
+BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, cpd :: CoupleDecomps ; p_rng :: Vector{Int64} = collect(eachindex(sgspd)), ident_seg :: Vector{Int64} = collect(1 : maximum(p_rng)), num_th :: Int64 = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd) where T <: Union{Float64, ComplexF64} = BuildSegOperators(sgspd, sgspd, cpd ; p_rng, ident_seg, num_th, disp_std)

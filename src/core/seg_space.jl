@@ -66,12 +66,13 @@ For each sector the operator ``αL^2+C_2`` is built and diagonalised ; the facto
 * `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0` or exceeds half the total dimension, then ``αL^2+C_2`` is fully diagonalised ; if the number is non-zero, then the lowest `nst_max[i]` eigen-states of ``αL^2+C_2`` will be generated using Arnoldi. 
 * `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `FuzzifiED.ElementType` by default.
 * `num_th :: Int64` is the number of threads. Facultative, `FuzzifiED.NumThreads` by default.
+* `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output
 
 * `sgsp :: SegSpace` is the resulting [SegSpace](@ref SegSpace) object.
 """
-function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = zero(Terms), c2_rng :: Vector{Float64} = [0.0], sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
+function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = zero(Terms), c2_rng :: Vector{Float64} = [0.0], sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd)
     nsec = size(sec, 2)
     bs = Vector{Basis}(undef, nsec)
     bs1 = Vector{Basis}(undef, nsec)
@@ -83,17 +84,17 @@ function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag},
     tms_l2 = GetL2Terms(tms_lzlp)
     for isec ∈ axes(sec, 2)
         seci = sec[:, isec]
-        bs[isec] = Basis(Confs(no, seci, qnd ; num_th))
+        bs[isec] = Basis(Confs(no, seci, qnd ; num_th, disp_std = false))
 
-        l2c2_mat = OpMat(Operator(bs[isec], l2c2_ratio * tms_l2 + tms_c2) ; num_th)
+        l2c2_mat = OpMat(Operator(bs[isec], l2c2_ratio * tms_l2 + tms_c2) ; num_th, disp_std = false)
         nsti = nst_max[isec]
         if (nsti == 0 || nsti > bs[isec].dim / 2)
             l2c2_val, st = eigen(Hermitian(Matrix(l2c2_mat)))
         else
-            l2c2_val, st = GetEigensystem(l2c2_mat, nsti ; num_th)
+            l2c2_val, st = GetEigensystem(l2c2_mat, nsti ; num_th, disp_std = false)
         end
 
-        l2_mat = OpMat(Operator(bs[isec], tms_l2) ; num_th)
+        l2_mat = OpMat(Operator(bs[isec], tms_l2) ; num_th, disp_std = false)
         l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in axes(st, 2)]
         c2_val = l2c2_val .- l2c2_ratio .* l2_val
         l_val = round.(Int64, sqrt.(real.(4 * l2_val) .+ 1) .- 1)
@@ -128,9 +129,9 @@ function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag},
         if (seci[2] == 0)
             seci1 = deepcopy(seci)
             seci1[2] = 2
-            bs1[isec] = Basis(Confs(no, seci1, qnd ; num_th))
+            bs1[isec] = Basis(Confs(no, seci1, qnd ; num_th, disp_std = false))
             lp = Operator(bs[isec], bs1[isec], tms_lzlp[2])
-            lp_mat = Matrix(OpMat(lp))
+            lp_mat = Matrix(OpMat(lp ; disp_std = false))
             sts1[isec] = lp_mat * sts[isec]
         end
     end
@@ -138,10 +139,10 @@ function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag},
     for isec = 2 : nsec
         ptr_st[isec] .+= ptr_sec[isec - 1]
     end
-    @info "FINISH BUILDING SEG SPACE, TOTAL DIMENSION $(ptr_st[end][end] - 1)"
+    disp_std && @info "FINISH BUILDING SEG SPACE, TOTAL DIMENSION $(ptr_st[end][end] - 1)"
     return SegSpace{eltype}(sec, sec_modul, l_rng, l_lookup, ptr_st, bs, bs1, sts, sts1)
 end
-BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, modul :: Vector{Int64} ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads) = BuildSegSpace(no, sec, qnd, tms_lzlp, zero(Terms), [0.0], modul ; l2c2_ratio, nst_max, eltype, num_th)
+BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, modul :: Vector{Int64} ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd) = BuildSegSpace(no, sec, qnd, tms_lzlp, zero(Terms), [0.0], modul ; l2c2_ratio, nst_max, eltype, num_th, disp_std)
 
 
 """
@@ -162,12 +163,13 @@ constructs multiple [SegSpaces](@ref SegSpace) simultaneosly with different list
 * `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0`, then ``αL^2+C_2`` is fully diagonalised ; if the number is non-zero, then the lowest `nst_max[i]` eigen-states of ``αL^2+C_2`` will be generated using Arnoldi. 
 * `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `FuzzifiED.ElementType` by default.
 * `num_th :: Int64` is the number of threads. Facultative, `FuzzifiED.NumThreads` by default.
+* `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output
 
 * `sgsp :: SegSpace` is the resulting [SegSpace](@ref SegSpace) object.
 """
-function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms, c2_rng :: Vector{Vector{Float64}}, sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads)
+function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms, c2_rng :: Vector{Vector{Float64}}, sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd)
     nsec = size(sec, 2)
     bs = Vector{Basis}(undef, nsec)
     bs1 = Vector{Basis}(undef, nsec)
@@ -179,17 +181,17 @@ function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}
     tms_l2 = GetL2Terms(tms_lzlp)
     for isec ∈ axes(sec, 2)
         seci = sec[:, isec]
-        bs[isec] = Basis(Confs(no, seci, qnd ; num_th))
+        bs[isec] = Basis(Confs(no, seci, qnd ; num_th, disp_std = false))
 
-        l2c2_mat = OpMat(Operator(bs[isec], l2c2_ratio * tms_l2 + tms_c2) ; num_th)
+        l2c2_mat = OpMat(Operator(bs[isec], l2c2_ratio * tms_l2 + tms_c2) ; num_th, disp_std = false)
         nsti = nst_max[isec]
         if (nsti == 0 || nsti ≥ bs[isec].dim)
             l2c2_val, st = eigen(Hermitian(Matrix(l2c2_mat)))
         else
-            l2c2_val, st = GetEigensystem(l2c2_mat, nsti ; num_th)
+            l2c2_val, st = GetEigensystem(l2c2_mat, nsti ; num_th, disp_std = false)
         end
 
-        l2_mat = OpMat(Operator(bs[isec], tms_l2) ; num_th)
+        l2_mat = OpMat(Operator(bs[isec], tms_l2) ; num_th, disp_std = false)
         l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in axes(st, 2)]
         c2_val = l2c2_val .- l2c2_ratio .* l2_val
         l_val = round.(Int64, sqrt.(real.(4 * l2_val) .+ 1) .- 1)
@@ -226,9 +228,9 @@ function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}
         if (seci[2] == 0)
             seci1 = deepcopy(seci)
             seci1[2] = 2
-            bs1[isec] = Basis(Confs(no, seci1, qnd ; num_th))
+            bs1[isec] = Basis(Confs(no, seci1, qnd ; num_th, disp_std = false))
             lp = Operator(bs[isec], bs1[isec], tms_lzlp[2])
-            lp_mat = Matrix(OpMat(lp))
+            lp_mat = Matrix(OpMat(lp ; disp_std = false))
             for ic2 in eachindex(c2_rng)
                 sts1[ic2][isec] = lp_mat * sts[ic2][isec]
             end
@@ -240,7 +242,7 @@ function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}
             ptr_st[ic2][isec] .+= ptr_sec[isec - 1]
         end
     end
-    @info "FINISH BUILDING $(length(c2_rng)) SEG SPACES, TOTAL DIMENSIONS $([ptr_st[ic2][end][end] - 1 for ic2 in eachindex(c2_rng)])"
+    disp_std && @info "FINISH BUILDING $(length(c2_rng)) SEG SPACES, TOTAL DIMENSIONS $([ptr_st[ic2][end][end] - 1 for ic2 in eachindex(c2_rng)])"
     sgsp = [ SegSpace{eltype}(sec, sec_modul, l_rng[ic2], l_lookup[ic2], ptr_st[ic2], bs, bs1, sts[ic2], sts1[ic2]) for ic2 in eachindex(c2_rng)]
     return sgsp
 end

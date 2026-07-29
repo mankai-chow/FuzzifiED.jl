@@ -9,7 +9,6 @@ using KrylovKit
 
 function __init__()
     FuzzifiED.ObsMomIncr = true
-    FuzzifiED.SilentStd = true
 end
 
 include("core/seg_space.jl")

@@ -45,7 +45,7 @@ const CoupleDecomps = Vector{CoupleDecomp}
 
 constructs a `CoupleDecomps` — one single-channel `CoupleDecomp` per coupling channel `ch[i]` with coefficient `coeff[i]` — all sharing the operators `amd` (each entry an `AngModes`, `SAngModes` or the `:Identity` sentinel) and the quantum number shift `sec`. It consumes the channels and coefficients returned by [ConvPsPot](@ref ConvPsPot).
 """
-function CoupleDecomps(amd :: Vector{<: Union{AngModes, SAngModes, Symbol}}, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64} ; eltype = FuzzifiED.ElementType)
+function CoupleDecomps(amd :: Vector, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64} ; eltype = FuzzifiED.ElementType)
     amd1 = Union{AngModes, SAngModes, Symbol}[]
     ph = 1.0 + 0.0im
     for amdi in amd
@@ -261,7 +261,7 @@ constructs a [CoupleDecomps](@ref) for a contact term, _i. e._ the product of on
 
 * `cpd :: CoupleDecomps` is the resulting coupling decompositions, one [CoupleDecomps](@ref) per channel.
 """
-function ContactCouple(obs :: Vector{<:Union{SphereObs, SSphereObs}}, sec :: Matrix{Int64}, ltot :: Int64 = 0)
+function ContactCouple(obs :: Vector, sec :: Matrix{Int64}, ltot :: Int64 = 0)
     amd = _ContactAngModes.(obs)
     np = length(obs)
     s2 = [ obsi.s2 for obsi in obs ]

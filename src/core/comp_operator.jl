@@ -48,12 +48,13 @@ constructs a [CompOperator](@ref CompOperator) from the composite spaces, the co
 * `sgop :: Matrix{SegOperator}` is the matrix of segment operators. Facultative, if omitted, the segment operators will be automatically generated from [`BuildSegOperators`](@ref).
 * `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}`` carried by the operator. Facultative, ``0`` (a scalar) by default.
 * `ident_seg :: Vector{Int64}` and `num_th :: Int64` are forwarded to [`BuildSegOperators`](@ref) ; they are accepted only when `sgop` is omitted. 
+* `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output
 
 * `cpop :: CompOperator` is the resulting composite operator.
 """
-function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: CoupleDecomps, sgop :: Matrix{SegOperator}, ltot :: Int64 = 0) where T <: Union{Float64, ComplexF64}
+function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: CoupleDecomps, sgop :: Matrix{SegOperator}, ltot :: Int64 = 0 ; disp_std = !FuzzifiED.SilentStd) where T <: Union{Float64, ComplexF64}
     nd = length(cpd)
     ch = [ cpd[d].ch for d = 1 : nd ]
     coeff = [ cpd[d].coeff for d = 1 : nd ]
@@ -119,7 +120,7 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
 
     wklist = [ (jsec, d, e) for d = 1 : nd for jsec in axes(cpspd.idsec, 2) for e = colptr[jsec, d] : colptr[jsec + 1, d] - 1 ]
     sort!(wklist ; by = wk -> wkcost[wk[2]][wk[3]], rev = true)
-    @info "FINISH GENERATING COMP OPERATOR"
+    disp_std && @info "FINISH GENERATING COMP OPERATOR"
 
     return CompOperator{T}(cpspd, cpspf, nd, ltot, coeff, sgop, colptr, rowid, idel, mat9j, wklist)
 end
@@ -132,6 +133,7 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
 end
 
 BuildCompOperator(cpspd :: CompSpace{T}, cpd :: CoupleDecomps, ltot :: Int64 = 0 ; ident_seg :: Vector{Int64} = collect(1 : cpspd.np), num_th :: Int64 = FuzzifiED.NumThreads) where T <: Union{Float64, ComplexF64} = BuildCompOperator(cpspd, cpspd, cpd, ltot ; ident_seg, num_th)
+
 
 """
     *(cpop :: CompOperator{T}, std :: Vector{T}) :: Vector{T}
@@ -212,6 +214,76 @@ end
 Base.:*(stf :: LinearAlgebra.Adjoint{T, Vector{T}}, cpop :: CompOperator{T}, std :: Vector{T}) where T <: Union{Float64, ComplexF64} = stf * (cpop * std)
 
 
+"""
+    Matrix(cpop :: CompOperator{T}) :: Matrix{T}
+
+materialises the composite operator `cpop` into a dense matrix of size ``\\dim_{\\mathrm{f}}×\\dim_{\\mathrm{d}}`` in the coupled bases of the final and the initial composite spaces, in the same convention as the operator application [`*`](@ref). Each block is filled with the Kronecker product of the per-part reduced matrix element blocks, weighted by the channel coefficient and the ``9j`` re-coupling factor. Beware that the dense matrix costs ``O(\\dim_{\\mathrm{f}}\\dim_{\\mathrm{d}})`` memory ; it is meant for small spaces, for exact diagonalisation of the full spectrum and for tests.
+
+# Output
+
+* `mat :: Matrix{T}` is the dense matrix of the operator.
+"""
+function Base.Matrix(cpop :: CompOperator{T} ; disp_std = !FuzzifiED.SilentStd) where T <: Union{Float64, ComplexF64}
+    np = cpop.cpspd.np
+    mat = zeros(T, cpop.cpspf.dim, cpop.cpspd.dim)
+
+    nwk = length(cpop.wklist)
+    nth = max(1, min(Threads.nthreads(), nwk))
+
+    # the blocks of different `jsec` fill disjoint columns of `mat`, so one lock per initial sector suffices
+    sec_lock = [ ReentrantLock() for _ in axes(cpop.cpspd.idsec, 2) ]
+
+    next_wk = Threads.Atomic{Int64}(0)
+
+    nth_blas = BLAS.get_num_threads()
+    BLAS.set_num_threads(1)
+    @sync for _ = 1 : nth
+        Threads.@spawn begin
+            idlj = Vector{Int64}(undef, np)
+            idli = Vector{Int64}(undef, np)
+            blocks = Vector{Matrix{T}}(undef, np)
+            while true
+                iwk = Threads.atomic_add!(next_wk, 1) + 1
+                iwk > nwk && break
+                jsec, d, e = cpop.wklist[iwk]
+                idsecj = @view cpop.cpspd.idsec[:, jsec]
+                coeff = cpop.coeff[d]
+                idel_sg = @view cpop.idel[d][:, e]
+                isec = cpop.rowid[d][e]
+                idseci = @view cpop.cpspf.idsec[:, isec]
+                mat9j_e = cpop.mat9j[d][e]
+                for jch in eachindex(cpop.cpspd.chs[jsec])
+                    jrng = cpop.cpspd.ptr_st[jsec][jch] : cpop.cpspd.ptr_st[jsec][jch + 1] - 1
+                    for p = 1 : np
+                        lj = cpop.cpspd.chs[jsec][jch][1, p]
+                        idlj[p] = cpop.cpspd.sgsp[p].l_lookup[idsecj[p]][lj]
+                    end
+                    for ich in eachindex(cpop.cpspf.chs[isec])
+                        fac9j = mat9j_e[ich, jch]
+                        abs(fac9j) < √eps(Float64) && continue
+                        irng = cpop.cpspf.ptr_st[isec][ich] : cpop.cpspf.ptr_st[isec][ich + 1] - 1
+                        for p = 1 : np
+                            li = cpop.cpspf.chs[isec][ich][1, p]
+                            idli[p] = cpop.cpspf.sgsp[p].l_lookup[idseci[p]][li]
+                        end
+                        for p = 1 : np
+                            blocks[p] = cpop.sgop[p, d].elmat[idel_sg[p]][idli[p], idlj[p]]
+                        end
+                        blk = (np == 1) ? blocks[1] : kron(blocks...)
+                        lock(sec_lock[jsec]) do
+                            @views mat[irng, jrng] .+= (coeff * fac9j) .* blk
+                        end
+                    end
+                end
+            end
+        end
+    end
+    BLAS.set_num_threads(nth_blas)
+    disp_std && @info "FINISH GENERATING MATRIX OF DIMENSION $(size(mat, 1)) * $(size(mat, 2))"
+    return mat
+end
+
+
 function _KronMul!(y :: AbstractVector{T}, As, x :: AbstractVector{T}, scr :: Vector{T}) where T
     N = length(As)
     if N == 1
@@ -273,7 +345,7 @@ end
 
 
 """
-    GetEigensystem(cpop :: CompOperator{T}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{T}, kwargs...) :: Tuple{Vector{T}, Matrix{T}}
+    GetEigensystem(cpop :: CompOperator{T}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{T}, gen_mat :: Bool, kwargs...) :: Tuple{Vector{T}, Matrix{T}}
 
 computes the lowest `nst` eigenvalues and eigenvectors of the composite operator `cpop` through `KrylovKit.eigsolve`. This yields the spectrum resolved by angular momentum and flavour symmetries within segments.
 
@@ -284,14 +356,21 @@ computes the lowest `nst` eigenvalues and eigenvectors of the composite operator
 * `tol :: Float64` is the tolerance of the eigensolver. Facultative, `1E-8` by default.
 * `ncv :: Int64` is the dimension of the Krylov subspace. Facultative, `max(2 * nst, nst + 10)` by default.
 * `initvec :: Vector{T}` is the initial vector. Facultative, a random vector by default.
-* `kwargs...` are further keyword arguments forwarded to `eigsolve`, _e. g._, `ishermitian = true` for complex and `issymmetric = true` for real matrix.
+* `gen_mat :: Bool`, whether the operator is first materialized into a dense matrix and this matrix is handed to `eigsolve`. Facultative, `false` by default.
+* `kwargs...` are further keyword arguments forwarded to `eigsolve`, _e. g._, `ishermitian = true` for complex and `issymmetric = true` for real matrix. 
 
 # Output
 
 * `eigval :: Vector{T}` is the vector of the `nst` lowest eigenvalues.
 * `eigvec :: Matrix{T}` is the matrix whose columns are the corresponding eigenvectors.
 """
-function FuzzifiED.GetEigensystem(cpop :: CompOperator{T}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), initvec = rand(T, cpop.cpspd.dim), kwargs...) where T <: Union{ComplexF64,Float64}
-    eigval, eigvec, info = eigsolve(x -> cpop * x, initvec, nst, :SR ; tol, krylovdim = ncv, verbosity = 2, kwargs...)
+function FuzzifiED.GetEigensystem(cpop :: CompOperator{T}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), initvec = rand(T, cpop.cpspd.dim), gen_mat :: Bool = false, disp_std = !FuzzifiED.SilentStd, kwargs...) where T <: Union{ComplexF64,Float64}
+    verbosity = disp_std ? 2 : 0
+    if gen_mat
+        fmul = Matrix(cpop ; disp_std)
+    else
+        fmul = x -> cpop * x
+    end
+    eigval, eigvec, info = eigsolve(fmul, initvec, nst, :SR ; tol, krylovdim = ncv, verbosity, kwargs...)
     return Vector{T}(eigval), Matrix{T}(hcat(eigvec...))
 end

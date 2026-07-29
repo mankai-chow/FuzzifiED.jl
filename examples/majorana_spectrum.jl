@@ -11,10 +11,10 @@ ne = nmf
 s = (nmf - 1) / 2
 
 qnd_f = [ 
-    SQNDiag(GetFlavQNDiag(nmf, 1, [1], 1, 2), 1), 
-    SQNDiag(GetLz2QNDiag(nmf, 1), 1),
-    SQNDiag(GetNeQNDiag(nmf), 1), 
-    GetBosonNeSQNDiag(nmf, 1)]
+    GetFlavQNDiag(nmf, 1, [1], 1, 2),
+    GetLz2QNDiag(nmf, 1),
+    GetNeQNDiag(nmf), 
+    zero(QNDiag, nmf)]
 qnd_b = [ 
     zero(SQNDiag, 1, nmb), 
     GetBosonLz2SQNDiag(1, nmb, 1), 
@@ -23,23 +23,22 @@ qnd_b = [
 modul = [2, 1, 1, 1]
 sec_f = stack([ [ne1 % 2, ((nmf + 1) * ne1) % 2, ne1, 0] for ne1 = 0 : ne])
 sec_b = stack([ [0, ((nmb + 1) * ne1) % 2, ne1, 0] for ne1 = 0 : ne])
-nebm_f = [0 for ne1 = 0 : ne]
 nebm_b = [ne1 for ne1 = 0 : ne]
 
-f = GetFermionSMod(nmf, 1, 1)
+f = GetElectronMod(nmf, 1, 1)
 b = GetBosonSMod(nmb, 1, 1)
 
-tms_lzlp_f = STerms.(GetLpLzTerms(nmf, 1))
+tms_lzlp_f = GetLpLzTerms(nmf, 1)
 tms_lzlp_b = GetBosonLpLzSTerms(nmb, 1)
 tms_proj = ContractMod(b' * b' * b', b * b * b, 3(s-1/2))
 
 cpd_hop = CoupleDecomps([f' * f', b * b], ConvPsPot(Dict(2s-1 => 1))..., [0 0 ; 0 0 ; 2 -2 ; 0 0]) + CoupleDecomps([f * f, b' * b'], ConvPsPot(Dict(2s-1 => 1))..., [0 0 ; 0 0 ; -2 2 ; 0 0])
 cpd_fb = CoupleDecomps([f' * f, b' * b], ConvPsPot(RecoupleAngMom(s-1/2, s, s, s-1/2, Dict(2s-1/2 => 1)))..., [0 0 ; 0 0 ; 0 0 ; 0 0 ])
 cpd_bb = SingleSegCouple(2, 2, ContractMod(b' * b', b * b, 2s-1), [0, 0, 0, 0])
-cpd_μ = SingleSegCouple(2, 1, STerms(GetPolTerms(nmf, 1, [1;;])), [0, 0, 0, 0])
+cpd_μ = SingleSegCouple(2, 1, GetPolTerms(nmf, 1, [1;;]), [0, 0, 0, 0])
 cpd_hmt = 2.0 * cpd_fb + 1.0 * cpd_bb - 0.3 * cpd_hop
 
-sgsp_f = BuildSegSpace(nmf, 1, nebm_f, sec_f, qnd_f, tms_lzlp_f, modul)
+sgsp_f = BuildSegSpace(nmf, sec_f, qnd_f, tms_lzlp_f, modul)
 nst_max = [ zeros(Int64, size(sec_b, 2) - 3) ; 5 .* nmf .^ [2,1,0] ]
 sgsp_b = BuildSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0], modul ; l2c2_ratio = 0.1/nmf^2, nst_max)
 sgop_hmt = BuildSegOperators([sgsp_f, sgsp_b], cpd_hmt)
