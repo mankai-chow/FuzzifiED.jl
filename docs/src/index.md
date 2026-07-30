@@ -26,11 +26,6 @@ To use the package, include at the start of the Julia script
 using FuzzifiED
 using SO3lver
 ```
-To suppress the log into `stderr`, load the `Logging` module.
-```julia
-using Logging
-global_logger(ConsoleLogger(stderr, Logging.Warn))
-```
 
 ## Outline 
 
