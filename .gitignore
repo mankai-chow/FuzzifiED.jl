@@ -1,4 +1,5 @@
 .vscode/
+.claude/
 docs/build
 docs/publish
 docs/src/assets/
