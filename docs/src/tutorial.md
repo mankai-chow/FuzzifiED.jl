@@ -1,12 +1,12 @@
 # SO₃lver Explained in a Tutorial
 
-To demonstrate the usage of FuzzifiEDFullRoataion interfaces, in this section, we use a tutorial that calculates the eigenstates in the $l=0$ sector and the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$ for the Ising model on the fuzzy sphere. The tutorial can be found at [`tutorial_ising.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/tutorial_ising.jl). In this tutorial, the $\mathbb{Z}_2$ quantum number is not resolved. A version resolving the $\mathbb{Z}_2$ is given in [`ising_spectrum.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/ising_spectrum.jl) by using the $XX-Z$ basis.
+To demonstrate the usage of FuzzifiEDFullRoataion interfaces, in this section, we use a tutorial that calculates the eigen-states in the $l=0$ sector and the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$ for the Ising model on the fuzzy sphere. The tutorial can be found at [`tutorial_ising.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/tutorial_ising.jl). In this tutorial, the flavour $\mathbb{Z}_2$ is not resolved. A version resolving the $\mathbb{Z}_2$ is given in [`ising_spectrum.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/ising_spectrum.jl) by using the $XX-Z$ basis.
 
-Practically, the ED calculation can be divided into 4 steps.
+Practically, the ED calculation can be divided into 3 steps.
 
-* Build the segment spaces by diagonalizing the total angular momentum in the segment basis and couple them into a composite space of definite total angular momentum,
-* Build the segment operators of the Hamiltonian and assemble them into the composite operator,
-* Find the lowest eigen-states of the Hamiltonian and make measurements.
+* Build the angular-momentum-resolved segment spaces and couple them into a composite space of definite total angular momentum,
+* Build the segment operators of the decompositions and assemble them into the composite operator for the Hamiltonian,
+* Find the lowest eigen-states and make measurements.
 
 The examples can be found in the directory [`examples`](https://github.com/FuzzifiED/SO3lver.jl/tree/main/examples). We also append [a list of given examples](@ref List-of-Examples) at the end of the page. 
 
@@ -25,7 +25,7 @@ nm = 12
 ne = nm
 ```
 
-Throughout the package, all angular momenta are stored as *twice* their value (_i. e._ $2l$, $2m$) so that they remain integers. In this set-up, the system is bi-partited into two segments, _viz._ spin-up and spin-down flavour. Each segment is treated as a separate 1-flavour system.
+In this set-up, the system is bi-partited into two segments, _viz._ spin-up and spin-down flavour. Each segment is treated as a separate 1-flavour system.
 
 The first step is to describe a single segment by its diagonal quantum numbers (QNDiags). For a one-flavour segment these are the electron number $N_e$ and the angular momentum $2L^z$.
 ```julia
@@ -34,7 +34,7 @@ qnd_pt = [
     GetLz2QNDiag(nm, 1)
 ]
 ```
-_N. b._, in the construction, the first QNDiag must contain fermion parity — it must be odd the when state contains odd number of fermions and even when the state constains even number of fermions, and in many cases the total electric charge satisfies this requirement — and the second QNDiag must be the ``2L^z`` quantum number, _e. g._, from `GetLz2QNDiag`.
+_N. b._, in the construction, the first QNDiag must contain fermion parity — it must be odd the when state contains odd number of fermions and even when the state contains even number of fermions, and in many cases the total electric charge satisfies this requirement — and the second QNDiag must be the ``2L^z`` quantum number, _e. g._, from `GetLz2QNDiag`.
 
 Next we enumerate the sectors of a single segment. The list of sectors are specified by a $\#_\text{QN}×\#_\text{sec}$ matrix where each column specifies a column `[Ne, 2Lz]`. The electron number `ne1` run from $0$ to `ne`, and fix the representative $2L^z$ to the smallest compatible integer or half-integer value. 
 ```julia
@@ -81,7 +81,7 @@ c_obs = GetElectronObs(nm, 1, 1)
 cpd_nx = ContactCouple([c_obs', c_obs], [ 1 -1 ; 0 0 ]) - ContactCouple([c_obs, c_obs'], [ -1 1 ; 0 0 ])
 ```
 
-Coupling decompositions support addition, subtraction and scalar multiplication, so the full Hamiltonian is assembled directly. 
+Coupling decompositions support addition, subtraction and scalar multiplication, so the full Hamiltonian can be directly written as
 ```julia
 cpd_hmt = cpd_int - 3.16 * cpd_nx
 ```
@@ -102,9 +102,9 @@ cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
 
 The last argument for segment operators can be omitted and generated automatically. It is stored in a matrix-free, block-structured form, and is applied to a state through `*`.
 
-## Finding the Eigenstates
+## Finding the Eigen-States
 
-The lowest eigenstates are computed by [`GetEigensystem`](@ref), which applies `KrylovKit.eigsolve` to the matrix-free composite operator. Since the operator is real and symmetric we pass `issymmetric = true`.
+The lowest eigen-states are computed by [`GetEigensystem`](@ref), which applies `KrylovKit.eigsolve` to the matrix-free composite operator. Since the operator is real and symmetric we pass `issymmetric = true`.
 
 ```julia
 enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
