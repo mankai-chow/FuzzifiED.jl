@@ -1,6 +1,6 @@
 # SO₃lver Explained in a Tutorial
 
-To demonstrate the usage of FuzzifiEDFullRoataion interfaces, in this section, we use a tutorial that calculates the eigen-states in the $l=0$ sector and the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$ for the Ising model on the fuzzy sphere. The tutorial can be found at [`tutorial_ising.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/tutorial_ising.jl). In this tutorial, the flavour $\mathbb{Z}_2$ is not resolved. A version resolving the $\mathbb{Z}_2$ is given in [`ising_spectrum.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/ising_spectrum.jl) by using the $XX-Z$ basis.
+To demonstrate the usage of FuzzifiEDFullRoataion interfaces, in this section, we use a tutorial that calculates the eigen-states in the $l=0$ sector and the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$ for the Ising model on the fuzzy sphere. The tutorial can be found at [`tutorial_ising.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/tutorial_ising.jl). In this tutorial, the flavour $\mathbb{Z}_2$ is not resolved. A version resolving the $\mathbb{Z}_2$ is [given](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/ising_spectrum.jl) by using the $XX-Z$ basis.
 
 Practically, the ED calculation can be divided into 3 steps.
 
@@ -61,7 +61,7 @@ The mutable type [`CompSpace`](@ref) stores the composite Hilbert space obtained
 
 ```julia
 l = 0
-cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, l)
+cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, 2l)
 ```
 _N. b._, throughout the package, angular momenta are stored or specified by twice its value $2l$ or $2m$ to stay an integer. 
 

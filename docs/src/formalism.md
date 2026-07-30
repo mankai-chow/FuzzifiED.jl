@@ -90,7 +90,7 @@ Here we use the parentheses to indicate that these objects compose by the rule o
 ```
 _E. g._, for the electron and density operators 
 ```math
-    (c^\dagger)^{(s)}_{sm}=c^\dagger_m,\qquad(c)^{(s)}_{sm}=(-1)^{m-s}c_{-m}\\
+    (c^\dagger)^{(s)}_{sm}=c^\dagger_m,\qquad(c)^{(-s)}_{sm}=(-1)^{m-s}c_{-m}\\
     (n)_{lm}=(c^\dagger c)_{lm}=\sum_{m_1m_2}c^\dagger_{m_1} c_{-m_2}\frac{(-1)^{m_2-s}(2s+1)}{\sqrt{4\pi(2l+1)}}\langle sm_1,s(-m_2)|lm\rangle\langle s(-s),ss|l0\rangle.
 ```
 The Hamiltonian can therefore be expressed as 

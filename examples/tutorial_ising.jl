@@ -20,7 +20,7 @@ tms_lzlp_pt = GetLpLzTerms(nm, 1)
 sgsp = BuildSegSpace(nm, sec_pt, qnd_pt, tms_lzlp_pt)
 l = 0 # total angular momentum specified by twice the value 2l
 # Assemble the composed Hilbert space
-cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, l)
+cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, 2l)
 
 # Decompose the Hamiltonian
 n_mod = GetDensityMod(nm, 1, [1;;]) 

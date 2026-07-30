@@ -217,11 +217,7 @@ Base.:*(stf :: LinearAlgebra.Adjoint{T, Vector{T}}, cpop :: CompOperator{T}, std
 """
     Matrix(cpop :: CompOperator{T}) :: Matrix{T}
 
-materialises the composite operator `cpop` into a dense matrix of size ``\\dim_{\\mathrm{f}}×\\dim_{\\mathrm{d}}`` in the coupled bases of the final and the initial composite spaces, in the same convention as the operator application [`*`](@ref). Each block is filled with the Kronecker product of the per-part reduced matrix element blocks, weighted by the channel coefficient and the ``9j`` re-coupling factor. Beware that the dense matrix costs ``O(\\dim_{\\mathrm{f}}\\dim_{\\mathrm{d}})`` memory ; it is meant for small spaces, for exact diagonalisation of the full spectrum and for tests.
-
-# Output
-
-* `mat :: Matrix{T}` is the dense matrix of the operator.
+materializes the composite operator `cpop` into a dense matrix.
 """
 function Base.Matrix(cpop :: CompOperator{T} ; disp_std = !FuzzifiED.SilentStd) where T <: Union{Float64, ComplexF64}
     np = cpop.cpspd.np
