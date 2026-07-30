@@ -17,27 +17,27 @@ Our strategy is therefore to
 
 For simplicity, we first consider bi-partition of the full system. _E. g._, for the Ising model, we split it into two segment Hilbert spaces of spin-up and spin-down. We will build a Hilbert space
 ```math
-    \mathscr{H}(\{Q\},l,\{C_{2,p}\})
+    \mathscr{H}(Q,l,C_{2,\{p\}})
 ```
-with an assigned total angular momentum $l$, total $\mathrm{U}(1)$ quantum number $\{Q\}$, and representations under flavour symmetry within each segment specified by the values of the quadratic Casimir $C_{2,p}$ ($p=1,2$). For that purpose, on each of the system we build the basis with a set of $\mathrm{U}(1)$ quantum numbers $\{Q\}_p$ and diagonalize simultaneously the total angular momentum $L^2$ and the quadratic Casimir $C_{2,p}$ of the sub-group of the flavour symmetry on that segment. 
+with an assigned total angular momentum $l$, a set of total $\mathrm{U}(1)$ quantum number $Q$, and representations under flavour symmetry within each segment specified by the values of the quadratic Casimir $C_{2,p}$ ($p=1,2$). For that purpose, on each of the system we build the basis with a set of $\mathrm{U}(1)$ quantum numbers $Q_p$ and diagonalize simultaneously the total angular momentum $L^2$ and the quadratic Casimir $C_{2,p}$ of the sub-group of the flavour symmetry on that segment. 
 ```math
-    \mathscr{H}_p(C_{2,p})=\bigoplus_{\{Q\}_p,l_p}\left|\{Q\}_pC_{2,p},l_pm_p,\alpha_p\right\rangle
+    \mathscr{H}_p(C_{2,p})=\bigoplus_{Q_p,l_p}\left|Q_pC_{2,p},l_pm_p,\alpha_p\right\rangle
 ```
-Here, we only need to keep states with a specific value of $C_{2,p}$. On the contrary, although we only need a single value of $\{Q\}$ and $l$ on the composed space, we need to keep all values of $\{Q\}_p$ and $l$ in the segment space, as different sets of $\{Q\}_p$ and $l_p$ can all compose into the same total $\{Q\}$ and $l$. The index $\alpha_p$ denotes the multiplicity. 
+Here, we only need to keep states with a specific value of $C_{2,p}$. On the contrary, although we only need a single value of $Q$ and $l$ on the composed space, we need to keep all values of $Q_p$ and $l$ in the segment space, as different sets of $Q_p$ and $l_p$ can all compose into the same total $Q$ and $l$. The index $\alpha_p$ denotes the multiplicity. 
 
 Now we build the composed Hilbert space from the segment Hilbert spaces. Taking one state from each segment, the composed state is
 ```math
-    \left|\{Q\}_{\{12\}}C_{2,{\{12\}}},(l_1l_2)lm,\alpha_{\{12\}}\right\rangle=\sum_{m_1m_2}\left|\{Q\}_1C_{2,1},l_1m_1,\alpha_1\right\rangle\left|\{Q\}_2C_{2,p},l_2m_2,\alpha_2\right\rangle\langle l_1m_1,l_2m_2|lm\rangle
+    \left|Q_{\{12\}}C_{2,{\{12\}}},(l_1l_2)lm,\alpha_{\{12\}}\right\rangle=\sum_{m_1m_2}\left|Q_1C_{2,1},l_1m_1,\alpha_1\right\rangle\left|Q_2C_{2,p},l_2m_2,\alpha_2\right\rangle\langle l_1m_1,l_2m_2|lm\rangle
 ```
-Here $\{Q\}_{\{12\}}$ is a short-hand notation for $\left\{\{Q\}_1,\{Q\}_2\right\}$, and the same notation applies to the multiplicity $\alpha_{\{12\}}$ and $C_{2,{\{12\}}}$. The segment quantum numbers and angular momenta constraints that $\{Q\}_1+\{Q\}_2=\{Q\}$ and $|l_1-l_2|\leq l\leq l_1+l_2$. 
+Here $Q_{\{12\}}$ is a short-hand notation for $\left\{Q_1,Q_2\right\}$, and the same notation applies to the multiplicity $\alpha_{\{12\}}$ and $C_{2,{\{12\}}}$. The segment quantum numbers and angular momenta constraints that $Q_1+Q_2=Q$ and $|l_1-l_2|\leq l\leq l_1+l_2$. 
 
 The composed Hilbert space is then the collection of these states
 ```math
-    \mathscr{H}(\{Q\},l,C_{2,{12}})=\bigoplus_{\{Q\}_{\{12\}},l_{\{12\}}}\left|\{Q\}_{\{12\}}C_{2,{\{12\}}},(l_1l_2)lm,\alpha_{\{12\}}\right\rangle
+    \mathscr{H}(Q,l,C_{2,\{12\}})=\bigoplus_{Q_{\{12\}},l_{\{12\}}}\left|Q_{\{12\}}C_{2,{\{12\}}},(l_1l_2)lm,\alpha_{\{12\}}\right\rangle
 ```
 In practice, we pick a state with a representative $m$ within each $\mathrm{SO}(3)$ multiplet, and work in a $L^z$-free treatment. The composition can therefore be denoted by
 ```math
-    \left\|\{Q\}_{\{12\}}C_{2,{\{12\}}},(l_1l_2)l,\alpha_{\{12\}}\right\rangle=\big[\left\|\{Q\}_1C_{2,1},l_1,\alpha_1\right\rangle\otimes\left\|\{Q\}_2C_{2,2},l_2,\alpha_2\right\rangle\big]_l.
+    \left\|Q_{\{12\}}C_{2,{\{12\}}},(l_1l_2)l,\alpha_{\{12\}}\right\rangle=\big[\left\|Q_1C_{2,1},l_1,\alpha_1\right\rangle\otimes\left\|Q_2C_{2,2},l_2,\alpha_2\right\rangle\big]_l.
 ```
 
 ## Decomposing the Operator
@@ -73,6 +73,7 @@ _E. g._, in the Ising model, now $c^\dagger_1 c_4$ is completely in the spin-up 
     &=\sum_l\tilde{V}_l\,(-1)^{s_3+s_4-l}(2l+1)(2j+1)\begin{Bmatrix}s_1&s_2&l\\s_4&s_3&l\\j&j&0\end{Bmatrix}.
 \end{aligned}
 ```
+For an operator with a total spin $L$, one only needs to replace the nineth element $0$ by $L$.
 
 ### Translate from a Contact Coupling
 

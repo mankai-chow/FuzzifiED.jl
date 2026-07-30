@@ -9,8 +9,8 @@ import FuzzifiED: AngModes
 The mutable type `CoupleDecomp` records an angular-moemntum channel of a coupling — a direct product of spherical-symmetric actions on each part, coupled to a definite total angular momentum. A full operator is represented as a `CoupleDecomps`, _i. e._ a sum of such channels. _E. g._ for bipartite and tri-partite systems, a channel may take the form
 ```math
 \\begin{aligned}
-    [𝒪]_{(l_1l_2)l}&=[𝒪_1]_{l_1}⊗[𝒪_2]_{l_2}&𝒪_{lm}&=[𝒪_1]_{l_1l_1}[𝒪_2]_{l_2m_2}⟨l_1m_1,l_2m_2|lm⟩\\\\
-    [𝒪]_{((l_1l_2)l_{12}l_3)l}&=([𝒪_1]_{l_1}⊗[𝒪_2]_{l_2})_{l_{12}}[𝒪_3]_{l_3}&𝒪_{lm}&=[𝒪_1]_{l_1l_1}[𝒪_2]_{l_2m_2}[𝒪_3]_{l_3m_3}⟨l_1m_1,l_2m_2|l_{12}m_{12}⟩⟨l_{12}m_{12},l_3m_3|lm⟩
+    [𝒪]_{(l_1l_2)l}&=\\Big[[𝒪_1]_{l_1}⊗[𝒪_2]_{l_2}\\Big]_l&𝒪_{lm}&=[𝒪_1]_{l_1l_1}[𝒪_2]_{l_2m_2}⟨l_1m_1,l_2m_2|lm⟩\\\\
+    [𝒪]_{((l_1l_2)l_{12}l_3)l}&=\\Big[\\big[[𝒪_1]_{l_1}[𝒪_2]_{l_2}\\big]_{l_{12}}[𝒪_3]_{l_3}\\Big]_l&𝒪_{lm}&=[𝒪_1]_{l_1l_1}[𝒪_2]_{l_2m_2}[𝒪_3]_{l_3m_3}⟨l_1m_1,l_2m_2|l_{12}m_{12}⟩⟨l_{12}m_{12},l_3m_3|lm⟩
 \\end{aligned}
 ```
 

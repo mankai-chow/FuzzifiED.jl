@@ -9,12 +9,12 @@ The mutable type `SegOperator` stores the action of a spherical-symmetric operat
 ```math
     ⟨l_2m_2|[Φ]_{lm}|l_1m_1⟩=(-1)^{l_2-m_2}\\begin{pmatrix}l_2&l&l_1\\\\-m_2&m&m_1\\end{pmatrix}⟨l_2\\|[Φ]_l\\|l_1⟩
 ```
-The matrix ``⟨\\{Q\\}_2l_2α_2\\|[Φ]_l\\|\\{Q\\}_1l_1α_1⟩`` is stored in blocks of QNDiag — for given sectors ``\\{Q\\}_{\\{12\\}}``, the matrix elements ``M_{l_2α_2,l_1α_1}`` are stored. 
+The matrix ``⟨Q_2l_2α_2\\|[Φ]_l\\|Q_1l_1α_1⟩`` is stored in blocks of QNDiag — for given sectors ``Q_{\\{12\\}}``, the matrix elements ``(M_{l_2l_1})_{α_2α_1}`` are stored. 
 
 # Fields
 
 * `sgspd :: SegSpace` and `sgspf :: SegSpace` are the initial and final segment spaces.
-* `colptr :: Vector{Int64}` and `rowid :: Vector{Int64}` store the allowed blocks of sectors ``\\{Q\\}_{12}`` in the format of a sparse matrix.
+* `colptr :: Vector{Int64}` and `rowid :: Vector{Int64}` store the allowed blocks of sectors ``Q_{12}`` in the format of a sparse matrix.
 * `elmat :: Vector{Matrix{Matrix{T}}}` stores, for each block, the reduced matrix elements. It takes five indices `elmat[e][ich, jch][i, j]`, where `e` is the index for the sector block, `ich` and `jch` are the channel index, and `i` and `j` are the state index within each channel. 
 """
 mutable struct SegOperator{T <: Union{Float64, ComplexF64}}

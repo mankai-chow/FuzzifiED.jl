@@ -9,8 +9,8 @@ export EquivSec, ComposeSec, FindCouplingChannels
 The mutable type `CompSpace` stores the composite Hilbert space obtained by combining the segment spaces of all the parts and projecting onto a definite total angular momentum ``l_{\\text{tot}}``. A basis state of the composite space is specified by a composite sector (which sector each part sits in), a coupling channel (the angular momentum of each part and the intermediate totals along the coupling chain), and the position of the multiplet within each part. _E. g._ for bipartite and tri-partite systems, it may take the form 
 ```math
 \\begin{aligned}
-    |\\{Q\\}_{\\{12\\}}C_{2,\\{12\\}},(l_1l_2)lm,α_{\\{12\\}}⟩&=∑_{m_1m_2}|\\{Q\\}_1C_{2,1},l_1m_1,α_1⟩|\\{Q\\}_2C_{2,2},l_2m_2,α_2⟩⟨l_1m_1,l_2m_2|lm⟩\\\\
-    |\\{Q\\}_{\\{123\\}}C_{2,\\{123\\}},((l_1l_2)l_{12}l_3)lm,α_{\\{123\\}}⟩&=∑_{m_1m_2m_3}|\\{Q\\}_1C_{2,1},l_1m_1,α_1⟩|\\{Q\\}_2C_{2,2},l_2m_2,α_2⟩|\\{Q\\}_3C_{2,3},l_3m_3,α_3⟩⟨l_1m_1,l_2m_2|l_{12}m_{12}⟩⟨l_{12}m_{12},l_3m_3|lm⟩
+    |Q_{\\{12\\}}C_{2,\\{12\\}},(l_1l_2)lm,α_{\\{12\\}}⟩&=∑_{m_1m_2}|Q_1C_{2,1},l_1m_1,α_1⟩|Q_2C_{2,2},l_2m_2,α_2⟩⟨l_1m_1,l_2m_2|lm⟩\\\\
+    |Q_{\\{123\\}}C_{2,\\{123\\}},((l_1l_2)l_{12}l_3)lm,α_{\\{123\\}}⟩&=∑_{m_1m_2m_3}|Q_1C_{2,1},l_1m_1,α_1⟩|Q_2C_{2,2},l_2m_2,α_2⟩|Q_3C_{2,3},l_3m_3,α_3⟩⟨l_1m_1,l_2m_2|l_{12}m_{12}⟩⟨l_{12}m_{12},l_3m_3|lm⟩
 \\end{aligned}
 ```
 

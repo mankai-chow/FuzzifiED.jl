@@ -7,13 +7,13 @@ export SSegSpace
 
 The mutable type `SSegSpace` stores the Hilbert space of a single segment (part) of the system, diagonalized to have definite total angular momentum ``l`` and, facultatively, definite flavour Casimir ``C_2``. 
 ```math
-    |\\{Q\\}C_2,lm,α⟩
+    |QC_2,lm,α⟩
 ```
-where ``α`` is the multiplicity of the sector. For each multiplet only one state with representative ``m`` is stored. Throughout this type the angular momenta are stored as twice their value (_i. e._ ``2l``, ``2m``) so that they remain integers.
+where ``Q`` is a set of QNDiag, and ``α`` is the multiplicity of the sector. For each multiplet only one state with representative ``m`` is stored. Throughout this type the angular momenta are stored as twice their value (_i. e._ ``2l``, ``2m``) so that they remain integers.
 
 # Fields
 
-* `sec :: Matrix{Int64}` collects the diagonal quantum number (`SQNDiag`) sectors that are diagonalised. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the SQNDiag and `isec` is the index of the sector.
+* `sec :: Matrix{Int64}` collects the QNDiag sectors that are diagonalised. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the SQNDiag and `isec` is the index of the sector.
 * `sec_modul :: Vector{Int64}` collects the moduli of the SQNDiags.
 * `l_rng :: Vector{Vector{Int64}}` records, for each sector, the sorted list of the values of ``2l`` that appear. It takes two indices `l_rng[isec][il]`.
 * `l_lookup :: Vector{Dict{Int64, Int64}}` gives, for each sector, a dictionary that maps a value of ``2l`` to its index in `l_rng`.
