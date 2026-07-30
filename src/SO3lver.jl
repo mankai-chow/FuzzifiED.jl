@@ -8,7 +8,7 @@ using CGcoefficient
 using KrylovKit
 
 function __init__()
-    FuzzifiED.ObsMomIncr = true
+    FuzzifiED.ObsMomIncr || @warn "Please set FuzzifiED.ObsMomIncr = true"
 end
 
 include("core/seg_space.jl")
