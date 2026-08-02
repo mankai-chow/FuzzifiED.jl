@@ -16,8 +16,8 @@ The mutable type `CoupleDecomp` records an angular-moemntum channel of a couplin
 
 # Fields
 
-* `amd :: Vector{Union{AngModes, SAngModes, Symbol}}` records, for each segment ``p``, its angular modes ``[Φ_p]_{lm}`` — an `AngModes` on a fermionic segment, an `SAngModes` on a bosonic one, or the `:Identity` sentinel on an inert segment (resolved to that segment's own identity in [BuildSegOperator](@ref BuildSegOperator)).
-* `ch :: Matrix{Int64}` is the coupling channel.
+* `amd :: Vector{Union{AngModes, SAngModes, Symbol}}` records, for each segment ``p``, its angular modes ``[Φ_p]_{lm}`` — an `AngModes` on a fermionic segment, an `SAngModes` on a bosonic one, or `:Identity` on an inert segment.
+* `ch :: Matrix{Int64}` is the coupling channel in the form of a ``2×N_p`` matrix.
 * `coeff :: ComplexF64` is the coefficient of the channel.
 * `sec :: Matrix{Int64}` records the change of quantum numbers that the term induces : `sec[iqn, p]` is the shift of the `iqn`-th diagonal quantum number on part ``p``.
 """
@@ -43,7 +43,7 @@ const CoupleDecomps = Vector{CoupleDecomp}
 """
     CoupleDecomps(amd :: Vector, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64}) :: CoupleDecomps
 
-constructs a `CoupleDecomps` — one single-channel `CoupleDecomp` per coupling channel `ch[i]` with coefficient `coeff[i]` — all sharing the operators `amd` (each entry an `AngModes`, `SAngModes` or the `:Identity` sentinel) and the quantum number shift `sec`. It consumes the channels and coefficients returned by [ConvPsPot](@ref ConvPsPot).
+constructs a `CoupleDecomps` — one single-channel `CoupleDecomp` per coupling channel `ch[i]` with coefficient `coeff[i]` — all sharing the operators `amd` (each entry an `AngModes`, `SAngModes` or `:Identity`) and the quantum number shift `sec`. It consumes the channels and coefficients returned by [ConvPsPot](@ref ConvPsPot).
 """
 function CoupleDecomps(amd :: Vector, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64} ; eltype = FuzzifiED.ElementType)
     amd1 = Union{AngModes, SAngModes, Symbol}[]
@@ -98,7 +98,7 @@ end
 """
     RecoupleAngMom(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ps_pot0 :: Dict) :: Dict
 
-re-couples the pseudo-potentials of a four-fermion term ``c^†_1c^†_2c_3c_4`` from the pairing channel ``(12)(34)`` — creations and annihilations each coupled to a pair angular momentum ``j`` — into the density channel ``(14)(23)`` — density modes ``n^{(14)}=c^†_1c_4`` and ``n^{(23)}=c^†_2c_3`` – using Wigner's ``6j``-symbol. 
+re-couples the pseudo-potentials of a four-fermion term ``c^†_1c^†_2c_3c_4`` from the pairing channel ``(12)(34)`` into the density channel ``(14)(23)``  using Wigner's ``6j``-symbol. 
 
 # Arguments
 
@@ -128,7 +128,7 @@ end
 """
     RecoupleAngMom(s :: Number, ps_pot :: Vector{<:Number}) :: Dict
 
-re-couples the pseudo-potentials of a four-fermion term ``c^†_1c^†_2c_3c_4`` from the pairing channel ``(12)(34)`` — creations and annihilations each coupled to a pair angular momentum ``j`` — into the density channel ``(14)(23)`` — density modes ``n^{(14)}=c^†_1c_4`` and ``n^{(23)}=c^†_2c_3`` – using Wigner's ``6j``-symbol. 
+re-couples the pseudo-potentials of a four-fermion term ``c^†_1c^†_2c_3c_4`` from the pairing channel ``(12)(34)`` into the density channel ``(14)(23)``  using Wigner's ``6j``-symbol. 
 
 # Arguments
 
@@ -146,7 +146,7 @@ end
 """
     RecoupleAngMom(s1 :: Number, s2 :: Number, s3 :: Number, s4 :: Number, ch0 :: Vector{Matrix{Int64}}, coeff0 :: Vector{<:Number}) :: Tuple{Vector{Matrix{Int64}}, Vector{<:Number}}
 
-re-couples the angular momentum composition of a four-fermion term ``c^†_1c^†_2c_3c_4`` from the pairing channel ``(12)(34)`` — creations and annihilations each coupled to a pair angular momentum ``j`` — into the density channel ``(14)(23)`` — density modes ``n^{(14)}=c^†_1c_4`` and ``n^{(23)}=c^†_2c_3`` – using Wigner's ``9j``-symbol. This is the most general method and allows non-zero total angular momentum. 
+re-couples the angular momentum composition of a four-fermion term ``c^†_1c^†_2c_3c_4`` from the pairing channel ``(12)(34)`` into the density channel ``(14)(23)`` using Wigner's ``9j``-symbol. This is the most general method and allows non-zero total angular momentum. 
 
 # Arguments
 
@@ -292,21 +292,19 @@ function ContactCouple(obs :: Vector, sec :: Matrix{Int64}, ltot :: Int64 = 0)
     return CoupleDecomps(amd, ch, coeff, sec)
 end
 
+
 """
     SingleSegCouple([np :: Int64, p :: Int64, ]amdp :: Union{AngModes, SAngModes}, l :: Int64, secp :: Vector{Int64}) :: CoupleDecomps
-    SingleSegCouple([np :: Int64, p :: Int64, ]tms :: Union{Terms, STerms}, sec :: Vector{Int64}) :: CoupleDecomps
 
-constructs a [CoupleDecomps](@ref) for a term that acts only on a single part ``p`` and as the identity on all the other parts, which are filled with the `:Identity` sentinel.
+constructs a [CoupleDecomps](@ref) for an angular mode that acts only on a single part ``p`` and as the identity on all the other parts.
 
 # Arguments
 
 * `np :: Int64` is the number of parts. Facultative, 1 by default.
 * `p :: Int64` is the index of the part on which the operator acts. Facultative, 1 by default.
-* `amdp :: Union{AngModes, SAngModes}` is the spherical tensor operator acting on part ``p`` — an `AngModes` for a fermionic part or an `SAngModes` for a bosonic one.
+* `amdp :: AngModes` or `amdp :: SAngModes` is the angular modes acting on part ``p``.
 * `l :: Int64` is twice the rank ``2l`` of the operator on part ``p``.
 * `secp :: Vector{Int64}` is the change of quantum numbers on part ``p``.
-
-In the second form the operator is a scalar (rank ``0``) given directly as a list of terms `tms :: Terms` (or `tms :: STerms` for a bosonic part), and `sec` is its quantum number shift.
 
 # Output
 
@@ -322,6 +320,23 @@ function SingleSegCouple(np :: Int64, p :: Int64, amdp :: Union{AngModes, SAngMo
     sec[:, p] = secp
     return CoupleDecomps(amd, [ch], [1], sec)
 end
+"""
+    SingleSegCouple([np :: Int64, p :: Int64, ]tms :: Union{Terms, STerms}, sec :: Vector{Int64}) :: CoupleDecomps
+
+constructs a ``\\mathrm{SO}(3)``-spin-``0`` [CoupleDecomps](@ref) for terms that acts only on a single part ``p`` and as the identity on all the other parts.
+
+# Arguments
+
+* `np :: Int64` is the number of parts. Facultative, 1 by default.
+* `p :: Int64` is the index of the part on which the operator acts. Facultative, 1 by default.
+* `tms :: Terms` or `tms :: Terms` is the ``\\mathrm{SO}(3)``-spin-``0`` terms acting on part ``p``.
+* `l :: Int64` is twice the rank ``2l`` of the operator on part ``p``.
+* `secp :: Vector{Int64}` is the change of quantum numbers on part ``p``.
+
+# Output
+
+* `cpd :: CoupleDecomps` is the resulting coupling decomposition (a single channel).
+"""
 function SingleSegCouple(np :: Int64, p :: Int64, tms :: Terms, sec :: Vector{Int64})
     amdp = AngModes(0, Dict((0, 0) => tms))
     return SingleSegCouple(np, p, amdp, 0, sec)

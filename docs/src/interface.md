@@ -15,6 +15,11 @@ They can be built by
 BuildSegSpace
 ```
 
+Spaces with different $C_2$ can be built simultaneously.
+```@docs
+BuildSegSpaces
+```
+
 ## Composite Spaces
 
 ```@docs

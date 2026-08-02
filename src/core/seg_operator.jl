@@ -5,17 +5,17 @@ export SegOperator, BuildSegOperator, BuildSegOperators
     SegOperator{Float64}
     SegOperator{ComplexF64}
 
-The mutable type `SegOperator` stores the action of a spherical-symmetric operator from an initial [SegSpace](@ref SegSpace) to a final SegSpace. By virtue of the Wigner—Eckart theorem, the full ``m``-dependence is factored out and only the reduced matrix elements ``⟨l_2\\|[Φ]_l\\|l_1⟩`` — independent of ``l^z`` — need to be kept, and 
+The mutable type `SegOperator` stores the action of a spherical-symmetric operator from an initial [SegSpace](@ref SegSpace) to a final SegSpace. By virtue of the Wigner-Eckart theorem, the full ``m``-dependence is factored out and only the reduced matrix elements ``⟨l_2\\|[Φ]_l\\|l_1⟩`` – independent of ``l^z`` – need to be kept, and 
 ```math
     ⟨l_2m_2|[Φ]_{lm}|l_1m_1⟩=(-1)^{l_2-m_2}\\begin{pmatrix}l_2&l&l_1\\\\-m_2&m&m_1\\end{pmatrix}⟨l_2\\|[Φ]_l\\|l_1⟩
 ```
-The matrix ``⟨Q_2l_2α_2\\|[Φ]_l\\|Q_1l_1α_1⟩`` is stored in blocks of QNDiag — for given sectors ``Q_{\\{12\\}}``, the matrix elements ``(M_{l_2l_1})_{α_2α_1}`` are stored. 
+The matrix ``⟨Q_2l_2α_2\\|[Φ]_l\\|Q_1l_1α_1⟩`` is stored in blocks of QNDiag – for given sectors ``Q_{\\{12\\}}``, the matrix elements ``(M_{l_2l_1})_{α_2α_1}`` are stored. 
 
 # Fields
 
 * `sgspd :: SegSpace` and `sgspf :: SegSpace` are the initial and final segment spaces.
-* `colptr :: Vector{Int64}` and `rowid :: Vector{Int64}` store the allowed blocks of sectors ``Q_{12}`` in the format of a sparse matrix.
-* `elmat :: Vector{Matrix{Matrix{T}}}` stores, for each block, the reduced matrix elements. It takes five indices `elmat[e][ich, jch][i, j]`, where `e` is the index for the sector block, `ich` and `jch` are the channel index, and `i` and `j` are the state index within each channel. 
+* `colptr :: Vector{Int64}` and `rowid :: Vector{Int64}` store the allowed blocks of sectors ``Q_{12}`` in the format of a CSC sparse matrix.
+* `elmat :: Vector{Matrix{Matrix{T}}}` stores, for each block of sectors, the reduced matrix elements. It takes five indices `elmat[e][ich, jch][i, j]`, where `e` is the index for the sector block, `ich` and `jch` are the channel index, and `i` and `j` are the state index within each channel. 
 """
 mutable struct SegOperator{T <: Union{Float64, ComplexF64}}
     colptr :: Vector{Int64}
@@ -34,16 +34,16 @@ _SegIdentity(:: SSegSpace) = one(SAngModes)
     BuildSegOperator(sgspd :: SegSpace{T}[, sgspf :: SegSpace{T}], amd :: AngModes, ll :: Int64, secop :: Vector{Int64} ; num_th :: Int64) :: SegOperator{T}
     BuildSegOperator(sgspd :: SSegSpace{T}[, sgspf :: SSegSpace{T}], amd :: SAngModes, ll :: Int64, secop :: Vector{Int64} ; num_th :: Int64) :: SegOperator{T}
 
-constructs a [SegOperator](@ref SegOperator) for the spherical spherical-symmetric operator `amd` of rank `ll` acting on a single segment. For every pair of sectors related by the quantum number shift `secop`, and every pair of ``l``-multiplets allowed by the triangle rule, it computes the reduced matrix element from the full matrix element via the Wigner—Eckart theorem by dividing out the phase and the ``3j``-symbol. When the ``3j``-symbol vanishes (for ``m_1=m_2=0`` and ``l>0``) the reduced matrix element is instead recovered from the ``m=1`` components, using the ``L^z=1`` states ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩`` stored in the segment space.
+constructs a [SegOperator](@ref SegOperator) from the angular modes `amd` acting on a single segment and the angular momentum `ll`. For each allowed pair of sectors and angular momenta, it computes the reduced matrix element from the full matrix element via the Wigner-Eckart theorem by dividing out the phase and the ``3j``-symbol. When the ``3j``-symbol vanishes (for odd ``l'+L+l`` when ``m_1=m_2=0``) the reduced matrix element is instead calculated from the pre-stored``m=1`` components.
 
 # Arguments
 
-* `sgspd :: SegSpace{T}` or `sgspd :: SSegSpace{T}` is the initial segment space. Its element type `T` — either `Float64` or `ComplexF64` — is that of the resulting matrix elements.
+* `sgspd :: SegSpace{T}` or `sgspd :: SSegSpace{T}` is the initial segment space. 
 * `sgspf :: SegSpace{T}` or `sgspf :: SSegSpace{T}` is the final segment space. Facultative, the same as `sgspd` by default.
-* `amd :: AngModes` or `amd :: SAngModes` is the spherical spherical-symmetric operator.
-* `ll :: Int64` is twice the rank ``2l`` of the spherical-symmetric operator.
-* `secop :: Vector{Int64}` is the change of quantum numbers induced by the operator ; a final sector matches an initial sector when `secd .+ secop` is equivalent to it.
-* `num_th :: Int64` is the number of threads. Facultative, ``1`` by default.
+* `amd :: AngModes` or `amd :: SAngModes` is the angular modes.
+* `ll :: Int64` is twice the angular momentum ``2l`` of the segment operator.
+* `secop :: Vector{Int64}` is the QNDiag shift of the operator.
+* `num_th :: Int64` is the number of threads. Facultative, ``NumThreads`` by default.
 
 # Output
 
@@ -121,12 +121,12 @@ constructs, in parallel, all the [SegOperators](@ref SegOperator) required to as
 
 # Arguments
 
-* `sgspd :: Vector{<:AbstractSegSpace{T}}` is the list of the initial segment spaces. Its elements are either `SegSpace` or `SSegSpace`. Their element type `T` — either `Float64` or `ComplexF64` — is that of the resulting matrix elements.
+* `sgspd :: Vector{<:AbstractSegSpace{T}}` is the list of the initial segment spaces. Its elements are either `SegSpace` or `SSegSpace`. 
 * `sgspf :: Vector{<:AbstractSegSpace{T}}` is the list of the final segment spaces. Its elements are either `SegSpace` or `SSegSpace`. Facultative, the same as `sgspd` by default.
 * `cpd :: CoupleDecomps` is the list of coupling decompositions, _e. g._, an assembled Hamiltonian.
 * `p_rng :: Vector{Int64}`. When specified, only the SegOperators of the specified parts will be generated. It must be of the same length as `sgspd`. An array ``1:N_p`` by default.
 * `ident_seg :: Vector{Int64}` labels the identical segments. If given, an array of length ``N_p``, identical segments carry identical index. Facultative, empty by default, marking no identification. 
-* `num_th :: Int64` is the number of blocks treated concurrently. Facultative,  `FuzzifiED.NumThreads` by default. Consider set `num_th = 1` when memory is under pressure, then `OpMat` and BLAS are parallelized instead.
+* `num_th :: Int64` is the number of threads. BLAS and Generation of ``OpMat`` are parallelized. Facultative, ``NumThreads`` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output

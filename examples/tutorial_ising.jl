@@ -33,7 +33,7 @@ cpd_hmt = cpd_int - 3.16 * cpd_nx
 sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt ; ident_seg = [1, 1])
 # Assemble the segment operators into the composite operator for the Hamiltonian
 cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
-# Diagonalise for the 10 lowest states
+# Diagonalize for the 10 lowest states
 enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
 enrg /= √(2l + 1) # Convert ⟨l‖H‖l⟩ into energy E = ⟨lm|H|lm⟩
 display(enrg)

@@ -13,15 +13,15 @@ where ``Q`` is a set of QNDiag, and ``α`` is the multiplicity of the sector. Fo
 
 # Fields
 
-* `sec :: Matrix{Int64}` collects the QNDiag sectors that are diagonalised. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the SQNDiag and `isec` is the index of the sector.
+* `sec :: Matrix{Int64}` collects the QNDiag sectors that are diagonalized. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the SQNDiag and `isec` is the index of the sector.
 * `sec_modul :: Vector{Int64}` collects the moduli of the SQNDiags.
 * `l_rng :: Vector{Vector{Int64}}` records, for each sector, the sorted list of the values of ``2l`` that appear. It takes two indices `l_rng[isec][il]`.
 * `l_lookup :: Vector{Dict{Int64, Int64}}` gives, for each sector, a dictionary that maps a value of ``2l`` to its index in `l_rng`.
-* `ptr_st :: Vector{Vector{Int64}}` records, for each sector, the pointers that delimit the block of states of each ``l`` : the multiplets of angular momentum `l_rng[isec][il]` are numbered `ptr_st[isec][il] : ptr_st[isec][il + 1] - 1` across the space.
-* `bs :: Vector{SBasis}` stores, for each sector, the basis of the configurations. The configurations themselves remain accessible as `bs[isec].cfs`.
-* `bs1 :: Vector{SBasis}` stores, for each ``m=0`` sector, the basis of the auxiliary ``m=1`` (_i. e._ ``2m=2``) sector, used when the ``3j``-symbol of the ``m=0`` component vanishes.
-* `sts :: Vector{Matrix{T}}` stores, for each sector, the states as its columns. These states are numbered `ptr_st[isec][1] : ptr_st[isec][end] - 1`.
-* `sts1 :: Vector{Matrix{T}}` stores, for each ``m=0`` sector, the ``m=1`` components ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩``, used together with `bs1` when the ``3j``-symbol vanishes.
+* `ptr_st :: Vector{Vector{Int64}}` records, for each sector, the pointers that delimit the block of states of each ``l`` : the states of angular momentum `l_rng[isec][il]` are numbered `ptr_st[isec][il] : ptr_st[isec][il + 1] - 1`, and the states of sector indexed `isec` are numbered `ptr_st[isec][1] : ptr_st[isec][end] - 1`.
+* `bs :: Vector{SBasis}` stores, for each sector, the basis of the configurations. 
+* `bs1 :: Vector{SBasis}` stores, for each ``m=0`` sector, the basis of the auxiliary ``m=1`` sector, used when the ``3j``-symbol of the ``m=0`` component vanishes.
+* `sts :: Vector{Matrix{T}}` stores, for each sector, the states as its columns. 
+* `sts1 :: Vector{Matrix{T}}` stores, for each ``m=0`` sector, the ``m=1`` components ``L^+|l0,α⟩=\\sqrt{l(l+1)}|l1,α⟩``, used together with `bs1` when the ``3j``-symbol vanishes.
 """
 mutable struct SSegSpace{T <: Union{Float64, ComplexF64}} <: AbstractSegSpace{T}
     sec :: Matrix{Int64}
@@ -39,27 +39,27 @@ end
 """
     BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}[, tms_c2 :: STerms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64, nst_max :: Vector{Int64}, eltype :: Type, num_th :: Int64) :: SSegSpace
 
-constructs a [SSegSpace](@ref SSegSpace) by diagonalising the total angular momentum ``L^2`` — and, facultatively, the flavour Casimir ``C_2`` — within each diagonal quantum number sector, and organising the resulting eigenstates into multiplets.
+constructs a [SSegSpace](@ref SSegSpace) by diagonalizing the total angular momentum ``L^2`` — and, facultatively, the flavour Casimir ``C_2`` — within each diagonal quantum number sector, and organizing the resulting eigen-states into multiplets.
 
 _N. b._, in including the diagonal quantum numbers, it is required that  the first SQNDiag must contain fermion parity — it must be odd the when state contains odd number of fermions and even when the state contains even number of fermions, and in many cases the total electric charge satisfies this requirement — and the second SQNDiag must be the angular momentum ``2L^z``.
 
-For each sector the operator ``αL^2+C_2`` is built and diagonalised ; the factor ``α`` usually guarantees that the eigenvalues of ``L^2`` and ``C_2`` can be disentangled. Only the multiplets whose ``C_2`` lies within `c2_rng` are retained. For sectors with ``m=0`` the ``m=1`` components ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩`` are also computed and stored.
+For each sector the operator ``αL^2+C_2`` is built and diagonalized ; the factor ``α`` usually guarantees that the eigen-values of ``L^2`` and ``C_2`` can be disentangled. Only the multiplets whose ``C_2`` lies within `c2_rng` are retained. For sectors with ``m=0`` the ``m=1`` components ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩`` are also computed and stored.
 
 # Arguments
 
 * `nof :: Int64` is the number of fermionic orbitals ``N_{of}`` of the segment.
 * `nob :: Int64` is the number of bosonic orbitals ``N_{ob}`` of the segment.
 * `nebm :: Vector{Int64}` is the maximal number of bosons allowed in each sector ; it takes one index `nebm[isec]` where `isec` is the index of the sector.
-* `sec :: Matrix{Int64}` collects the diagonal quantum number (`SQNDiag`) sectors that are diagonalised. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the SQNDiag and `isec` is the index of the sector.
+* `sec :: Matrix{Int64}` collects the diagonal quantum number (`SQNDiag`) sectors that are diagonalized. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the SQNDiag and `isec` is the index of the sector.
 * `qnd :: Vector{SQNDiag}` is the list of diagonal quantum numbers `SQNDiag`, where the first contains fermion parity, and the second is ``2L^z``.
 * `tms_lzlp :: Tuple{STerms, STerms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLzLpTerms` converted to `STerms` (for fermions) or `GetBosonLzLpSTerms` (for bosons).
 * `tms_c2 :: STerms` is the flavour Casimir ``C_2``. Facultative, no flavour resolution by default.
 * `c2_rng :: Vector{Float64}` is the list of allowed eigenvalues of ``C_2`` ; a multiplet is kept when its Casimir is within `1E-4` of one of these values. Facultative, `[0.0]` by default.
 * `sec_modul :: Vector{Int64}` collects the moduli of the SQNDiags. Facultative, all 1 by default.
-* `l2c2_ratio :: Float64` is the ratio ``α`` that determines ``αL^2+C_2`` to be diagonalised. Facultative, ``\\sqrt{2}`` by default.
-* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0` or exceeds half the total dimension, then ``αL^2+C_2`` is fully diagonalised ; if the number is non-zero, then the lowest `nst_max[i]` eigen-states of ``αL^2+C_2`` will be generated using Arnoldi.
-* `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `FuzzifiED.ElementType` by default.
-* `num_th :: Int64` is the number of threads. Facultative, `FuzzifiED.NumThreads` by default.
+* `l2c2_ratio :: Float64` is the ratio ``α`` that determines ``αL^2+C_2`` to be diagonalized. Facultative, ``\\sqrt{2}`` by default.
+* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0` or exceeds half the total dimension, then ``αL^2+C_2`` is fully diagonalized ; if the number is non-zero, then the lowest `nst_max[i]` eigen-states of ``αL^2+C_2`` will be generated using Arnoldi.
+* `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `ElementType` by default.
+* `num_th :: Int64` is the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output
@@ -149,16 +149,16 @@ constructs multiple [SSegSpaces](@ref SSegSpace) simultaneosly with different li
 * `nof :: Int64` is the number of fermionic orbitals ``N_{of}`` of the segment.
 * `nob :: Int64` is the number of bosonic orbitals ``N_{ob}`` of the segment.
 * `nebm :: Vector{Int64}` is the maximal number of bosons allowed in each sector ; it takes one index `nebm[isec]` where `isec` is the index of the sector.
-* `sec :: Matrix{Int64}` collects the diagonal quantum number (`SQNDiag`) sectors that are diagonalised. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the SQNDiag and `isec` is the index of the sector.
+* `sec :: Matrix{Int64}` collects the QNDiag sectors that are diagonalized. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the SQNDiag and `isec` is the index of the sector.
 * `qnd :: Vector{SQNDiag}` is the list of diagonal quantum numbers `SQNDiag`, where the first contains fermion parity, and the second is ``2L^z``.
 * `tms_lzlp :: Tuple{STerms, STerms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLzLpTerms` converted to `STerms` (for fermions) or `GetBosonLzLpSTerms` (for bosons).
 * `tms_c2 :: STerms` is the flavour Casimir ``C_2``.
 * `c2_rng :: Vector{Vector{Float64}}` is a collection of lists of allowed eigenvalues of ``C_2`` ; for each list within, a SSegSpace is generated.
 * `sec_modul :: Vector{Int64}` collects the moduli of the SQNDiags. Facultative, all 1 by default.
-* `l2c2_ratio :: Float64` is the ratio ``α`` that determines ``αL^2+C_2`` to be diagonalised. Facultative, ``\\sqrt{2}`` by default.
-* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0`, then ``αL^2+C_2`` is fully diagonalised ; if the number is non-zero, then the lowest `nst_max[i]` eigen-states of ``αL^2+C_2`` will be generated using Arnoldi.
-* `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `FuzzifiED.ElementType` by default.
-* `num_th :: Int64` is the number of threads. Facultative, `FuzzifiED.NumThreads` by default.
+* `l2c2_ratio :: Float64` is the ratio ``α`` that determines ``αL^2+C_2`` to be diagonalized. Facultative, ``\\sqrt{2}`` by default.
+* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0`, then ``αL^2+C_2`` is fully diagonalized ; if the number is non-zero, then the lowest `nst_max[isec]` eigen-states of ``αL^2+C_2`` will be generated using Arnoldi.
+* `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `ElementType` by default.
+* `num_th :: Int64` is the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
 
 # Output

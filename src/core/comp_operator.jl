@@ -139,7 +139,7 @@ BuildCompOperator(cpspd :: CompSpace{T}, cpd :: CoupleDecomps, ltot :: Int64 = 0
     *(cpop :: CompOperator{T}, std :: Vector{T} ; num_th :: Int64) :: Vector{T}
     *(stf :: LinearAlgebra.Adjoint{T, Vector{T}}, cpop :: CompOperator{T}, std :: Vector{T} ; num_th :: Int64) :: Vector{T}
 
-applies the composite operator `cpop` to a state `std` of the initial composite space and returns the resulting state of the final composite space or calculates its inner product between an initial and a final state. The action is evaluated block by block : for every decomposition channel and every pair of coupling channels it takes the Kronecker product of the corresponding per-part reduced matrix element blocks, weighted by the channel coefficient and the ``9j`` re-coupling factor. The number of threads used `num_th` is by default `FuzzifiED.NumThreads`.
+applies the composite operator `cpop` to a state `std` of the initial composite space and returns the resulting state of the final composite space or calculates its inner product between an initial and a final state. The action is evaluated block by block : for every decomposition channel and every pair of coupling channels it takes the Kronecker product of the corresponding per-part reduced matrix element blocks, weighted by the channel coefficient and the ``9j`` re-coupling factor. The number of threads used `num_th` is by default `NumThreads`.
 """
 function Base.:*(cpop :: CompOperator{T}, std :: Vector{T} ; num_th = FuzzifiED.NumThreads) where T <: Union{Float64, ComplexF64}
     th_lock = ReentrantLock()
@@ -217,7 +217,7 @@ Base.:*(stf :: LinearAlgebra.Adjoint{T, Vector{T}}, cpop :: CompOperator{T}, std
 """
     Matrix(cpop :: CompOperator{T} ; disp_std :: Bool, num_th :: Int64) :: Matrix{T}
 
-materializes the composite operator `cpop` into a dense matrix. The number of threads used `num_th` is by default `FuzzifiED.NumThreads`.
+materializes the composite operator `cpop` into a dense matrix. The number of threads used `num_th` is by default `NumThreads`.
 """
 function Base.Matrix(cpop :: CompOperator{T} ; disp_std = !FuzzifiED.SilentStd, num_th = FuzzifiED.NumThreads) where T <: Union{Float64, ComplexF64}
     np = cpop.cpspd.np
@@ -340,23 +340,23 @@ end
 """
     GetEigensystem(cpop :: CompOperator{T}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{T}, gen_mat :: Bool, kwargs...) :: Tuple{Vector{T}, Matrix{T}}
 
-computes the lowest `nst` eigenvalues and eigenvectors of the composite operator `cpop` through `KrylovKit.eigsolve`. This yields the spectrum resolved by angular momentum and flavour symmetries within segments.
+computes the lowest `nst` eigen-values and eigen-states of the composite operator `cpop` through `KrylovKit.eigsolve`. 
 
 # Arguments
 
 * `cpop :: CompOperator{T}` is the composite operator (usually the Hamiltonian).
-* `nst :: Int64` is the number of eigenpairs to compute.
-* `tol :: Float64` is the tolerance of the eigensolver. Facultative, `1E-8` by default.
+* `nst :: Int64` is the number of eigen-states to compute.
+* `tol :: Float64` is the tolerance of the eigen-solver. Facultative, `1E-8` by default.
 * `ncv :: Int64` is the dimension of the Krylov subspace. Facultative, `max(2 * nst, nst + 10)` by default.
 * `initvec :: Vector{T}` is the initial vector. Facultative, a random vector by default.
 * `gen_mat :: Bool`, whether the operator is first materialized into a dense matrix and this matrix is handed to `eigsolve`. Facultative, `false` by default.
-* `num_th :: Int64` is the number of threads used in matrix multiplication. Facultative, `FuzzifiED.NumThreads` by default.
-* `kwargs...` are further keyword arguments forwarded to `eigsolve`, _e. g._, `ishermitian = true` for complex and `issymmetric = true` for real matrix. 
+* `num_th :: Int64` is the number of threads used in matrix multiplication. Facultative, `NumThreads` by default.
+* `kwargs...` are further key-word arguments forwarded to `eigsolve`, _e. g._, `ishermitian = true` for complex and `issymmetric = true` for real matrix. 
 
 # Output
 
-* `eigval :: Vector{T}` is the vector of the `nst` lowest eigenvalues.
-* `eigvec :: Matrix{T}` is the matrix whose columns are the corresponding eigenvectors.
+* `eigval :: Vector{T}` is the vector of the `nst` lowest eigen-values.
+* `eigvec :: Matrix{T}` is the matrix whose columns are the corresponding eigen-states.
 """
 function FuzzifiED.GetEigensystem(cpop :: CompOperator{T}, nst :: Int64 ; tol :: Float64 = 1E-8, ncv :: Int64 = max(2 * nst, nst + 10), initvec = rand(T, cpop.cpspd.dim), gen_mat :: Bool = false, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd, kwargs...) where T <: Union{ComplexF64,Float64}
     verbosity = disp_std ? 2 : 0

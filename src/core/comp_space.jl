@@ -24,7 +24,8 @@ Angular momenta are stored as twice their value so that they remain integers.
 * `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}``.
 * `sgsp :: Vector{<:AbstractSegSpace{T}}` is the list of the [AbstractSegSpaces](@ref AbstractSegSpace) of the parts, which may mix fermionic [SegSpace](@ref SegSpace) and bosonic [SSegSpace](@ref SSegSpace).
 * `idsec :: Matrix{Int64}` is the list of composite sector indices. It takes two indices `idsec[p, isec]` where `isec` is the index of the composite sector and `p` is the index of the part. The sector is then given by `sgsp[p].sec[idsec[p, isec]]`.
-* `chs :: Vector{Vector{Matrix{Int64}}}` records, for each composite sector, the list of angular momentum coupling channels. Each channel is stored as a ``2×N_p`` matrix, where the first row is the angular momentum of each part ``2l_p``, and the second row is the accumulated angular momentum ``2l_{12⋯p}`` of the first ``p`` parts. It takes two indices `chs[isec][ich]` where the `isec` is the index of the composite sector and `ich` is the index of the channel within the sector.
+* `chs :: Vector{Vector{Matrix{Int64}}}` records, for each composite sector, the list of angular momentum coupling channels. Each channel is stored as a ``2×N_p`` matrix ``\\begin{pmatrix}l_1&l_2&⋯&l_p&⋯&l_{N_p}\\\\l_1&l_{12}&⋯&l_{1⋯ p}&⋯&l\\end{pmatrix}``
+, where the first row is the angular momentum of each part ``2l_p``, and the second row is the accumulated angular momentum ``2l_{12⋯p}`` of the first ``p`` parts. It takes two indices `chs[isec][ich]` where the `isec` is the index of the composite sector and `ich` is the index of the channel within the sector.
 * `ptr_ch :: Vector{Int64}` are the pointers that delimit the channels of each composite sector.
 * `ptr_st :: Vector{Vector{Int64}}` records the pointers that delimit the states of each channel.
 """
@@ -40,6 +41,7 @@ mutable struct CompSpace{T <: Union{Float64, ComplexF64}}
     ptr_st :: Vector{Vector{Int64}}
 end
 
+
 """
     BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, idsec :: Matrix{Int64}, ltot :: Int64) :: CompSpace
     BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64) :: CompSpace
@@ -51,10 +53,6 @@ constructs a [CompSpace](@ref CompSpace) from the segment spaces of the parts wi
 * `sgsp :: Vector{<:AbstractSegSpace{T}}` is the list of the [AbstractSegSpaces](@ref AbstractSegSpace) of the parts, which may mix fermionic [SegSpace](@ref SegSpace) and bosonic [SSegSpace](@ref SSegSpace).
 * `idsec :: Matrix{Int64}` is the list of composite sector indices. It takes two indices `idsec[p, isec]`.
 * `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}``.
-
-In the second form the composite sectors are found automatically with [ComposeSec](@ref ComposeSec) from
-
-* `sec_tot :: Vector{Int64}` the target total diagonal quantum numbers.
 
 # Output
 
@@ -90,6 +88,21 @@ function BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, idsec :: Matrix{I
     disp_std && @info "FINISH BUILDING COMP SPACE, ANGULAR MOMENTUM $(ltot/2), TOTAL DIMENSION $(dim), # OF CHANNELS $(nch), # OF SECTORS $(size(idsec, 2))"
     return CompSpace{T}(np, nch, dim, ltot, sgsp, idsec, chs, ptr_ch, ptr_st)
 end
+"""
+    BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64) :: CompSpace
+
+constructs a [CompSpace](@ref CompSpace) from the segment spaces of the parts with total angular momentum `ltot`. For every composite sector it enumerates, through [FindCouplingChannels](@ref FindCouplingChannels), all the ways of coupling the per-part angular momenta into ``l_{\\text{tot}}``, and computes the resulting dimensions and pointers. The composite sectors are found automatically with [ComposeSec](@ref).
+
+# Arguments
+
+* `sgsp :: Vector{<:AbstractSegSpace{T}}` is the list of the [AbstractSegSpaces](@ref AbstractSegSpace) of the parts, which may mix fermionic [SegSpace](@ref SegSpace) and bosonic [SSegSpace](@ref SSegSpace).
+* `sec_tot :: Vector{Int64}` the target total diagonal quantum numbers.
+* `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}``.
+
+# Output
+
+* `cpsp :: CompSpace` is the resulting composite space.
+"""
 function BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64 ; disp_std = !FuzzifiED.SilentStd) where T <: Union{Float64, ComplexF64}
     sec_pt = [ sgspi.sec for sgspi in sgsp]
     modul = sgsp[1].sec_modul
@@ -122,7 +135,7 @@ end
 """
     ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Matrix{Int64}}[, modul :: Vector{Int64}]) :: Matrix{Int64}
 
-finds every combination of per-part sectors whose diagonal quantum numbers add up to the total sector `sec_tot` (in the sense of [EquivSec](@ref EquivSec)).
+finds every combination of segment sectors into the total sector `sec_tot`.
 
 # Arguments
 

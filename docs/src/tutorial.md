@@ -69,9 +69,9 @@ _N. b._, throughout the package, angular momenta are stored or specified by twic
 
 Having built the segment and composite spaces, we now record the decomposed Hamiltonian. In SO₃lver, an operator is written as a sum of decomposed coupling channels. Each channel takes the form of 
 ```math
-    \Phi_L=\Big[\dots[[\Phi_1]_{L_1}[\Phi_2]_{L_2}]_{L_{12}}\dots [\Phi_p]_{L_p}\big]_{L_{1\cdots p}} \cdots [\Phi_{N_p}]_{L_{N_p}}\Big]_L
+    \Phi_L=\Big[\cdots[[\Phi_1]_{L_1}[\Phi_2]_{L_2}]_{L_{12}}\cdots [\Phi_p]_{L_p}\big]_{L_{1\cdots p}} \cdots [\Phi_{N_p}]_{L_{N_p}}\Big]_L
 ```
-is stored in the type of [`CoupleDecomp`](@ref), specified by the angular modes of each segment $[Φ_p]_{L_pM_p}$, the coupling channel $\begin{pmatrix}L_1&L_2&\cdots&L_p&\cdots&L_{N_p}\\L_1&L_{12}&\dots&L_{1\cdots p}&\cdots&L\end{pmatrix}$, the co-efficient $g_d$, and the shift of quantum numbers in the format of a $\#_{\text{QN}}×N_p$ matrix. 
+is stored in the type of [`CoupleDecomp`](@ref), specified by the angular modes of each segment $[Φ_p]_{L_pM_p}$, the coupling channel $\begin{pmatrix}L_1&L_2&\cdots&L_p&\cdots&L_{N_p}\\L_1&L_{12}&\cdots&L_{1\cdots p}&\cdots&L\end{pmatrix}$, the co-efficient $g_d$, and the shift of quantum numbers in the format of a $\#_{\text{QN}}×N_p$ matrix. 
 
 We record the Ising interaction by re-coupling the pseudo-potential $V_0=4.75,V_1=1.0$ from pairing channel $\big[[c^\dagger_1 c^\dagger_2][c_3c_4]\big]$ into the density channel $\big[[c^\dagger_1c_4][c^\dagger_2c_3]\big]$. The re-coupling is done by [`RecoupleAngMom`](@ref) function, and then [`ConvPsPot`](@ref) converts it into coupling channels and coefficients. The pairing modes $[c^\dagger c]$ is recorded by the type `AngModes` (which composes in the manner of CG-co-efficient) and generated from `GetDensityMod`.
 ```julia
