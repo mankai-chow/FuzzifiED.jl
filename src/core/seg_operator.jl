@@ -139,7 +139,8 @@ function BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, sgspf :: Vect
 
     sgop_cnx = Dict{Tuple{Int64, Int64}, Tuple{Int64, Int64}}()
     if (!isempty(ident_seg))
-        _id_tms(tms :: Union{Terms, STerms}) = isempty(tms) ? 0.0 : sum(abs.(round.(getproperty.(tms, :coeff), digits = 8)))
+        _id_coeff(coeff :: ComplexF64) = round(abs(coeff) + real(coeff)/2 + imag(coeff)/2, digits = 8)
+        _id_tms(tms :: Union{Terms, STerms}) = isempty(tms) ? 0.0 : sum(_id_coeff.(getproperty.(tms, :coeff)))
         _id_amd(:: Symbol) = [-1.0]
         _id_amd(amd :: Union{AngModes, SAngModes}) = [amd.l2m ; [_id_tms(GetComponent(amd, l, l)) for l = amd.l2m / 2 : -1 : 0]]
         id = [ [ident_seg[p] ; cpdi.ch[1, p] ; cpdi.sec[:, p] ; _id_amd(cpdi.amd[p]) ] for p in p_rng, cpdi in cpd]
