@@ -18,7 +18,7 @@ qnd_pt = [
     GetFlavQNDiag(nm, nf, [1, -1, 0])  zero(QNDiag, nmf) ;
     GetFlavQNDiag(nm, nf, [1, 1, -2])  zero(QNDiag, nmf)
 ]
-tms_lzlp = [GetLpLzTerms(nm, nf), GetLpLzTerms(nmf, 1)]
+tms_lzlp = [GetLzLpTerms(nm, nf), GetLzLpTerms(nmf, 1)]
 tms_c2 = GetC2Terms(nm, nf, :SU)
 tms_proj = GetDenIntTerms(nmf, 1, [0, 1])
 
@@ -29,14 +29,11 @@ nf_obs = GetDensityObs(nmf, 1)
 nc_obs = GetDensityObs(nm, nf)
 
 cpd_μ = SingleSegCouple(2, 1, GetPolTerms(nm, nf, Matrix(I, nf, nf)), [0, 0, 0, 0])
-cpd_U1 = SingleSegCouple(2, 2, SimplifyTerms(GetIntegral(nf_obs * Laplacian(nf_obs))), [0, 0, 0, 0])
 cpd_t = -ContactCouple([ccc_obs, f_obs'], [-3 3 ; 0 0 ; 0 0 ; 0 0]) +
     ContactCouple([ccc_obs', f_obs], [3 -3 ; 0 0 ; 0 0 ; 0 0])
 cpd_U0 = 6 * ContactCouple([nc_obs, nf_obs], [0 0 ; 0 0 ; 0 0 ; 0 0]) + 
-    SingleSegCouple(2, 1, GetIntegral(nc_obs * nc_obs), [0, 0, 0, 0]) + 
-    9 * SingleSegCouple(2, 2, GetIntegral(nf_obs * nf_obs), [0, 0, 0, 0])
-
-cpd_hmt = 0.5 * cpd_U0 + cpd_U1 + 0.5 * cpd_t + 0.085 * cpd_μ
+    SingleSegCouple(2, 1, GetIntegral(nc_obs * nc_obs), [0, 0, 0, 0])
+cpd_hmt = cpd_U0 + cpd_t - 0.11 * cpd_μ
 
 sec_f = stack([ [ne, ((nmf + 1) * ne) % 2, 0, 0] for ne = 0 : nf : noc])
 nst_max = [ zeros(Int64, size(sec_f, 2) - 2) ; 5 .* nm .^ [1,0] ]

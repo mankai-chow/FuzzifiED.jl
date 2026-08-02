@@ -29,7 +29,7 @@ cpd_int_1 = CoupleDecomps([ c' * c', c * c], ConvPsPot(s, [0, -1/2])..., [2 -2;0
     SingleSegCouple(2, 2, GetDenIntTerms(nm, 1, [0, 1/2]), zeros(Int64, 2))
 cpd_h = SingleSegCouple(2, 1, GetPolTerms(nm, 1), zeros(Int64, 2)) - SingleSegCouple(2, 2, GetPolTerms(nm, 1), zeros(Int64, 2))
 cpd_hmt = 4.75 * cpd_int_0 + cpd_int_1 - 3.16 * cpd_h
-tms_lzlp_pt = GetLpLzTerms(nm, 1) 
+tms_lzlp_pt = GetLzLpTerms(nm, 1) 
 
 b = @benchmark begin
 

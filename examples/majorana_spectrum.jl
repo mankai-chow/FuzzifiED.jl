@@ -28,8 +28,8 @@ nebm_b = [ne1 for ne1 = 0 : ne]
 f = GetElectronMod(nmf, 1, 1)
 b = GetBosonSMod(nmb, 1, 1)
 
-tms_lzlp_f = GetLpLzTerms(nmf, 1)
-tms_lzlp_b = GetBosonLpLzSTerms(nmb, 1)
+tms_lzlp_f = GetLzLpTerms(nmf, 1)
+tms_lzlp_b = GetBosonLzLpSTerms(nmb, 1)
 tms_proj = ContractMod(b' * b' * b', b * b * b, 3(s-1/2))
 
 cpd_hop = CoupleDecomps([f' * f', b * b], ConvPsPot(Dict(2s-1 => 1))..., [0 0 ; 0 0 ; 2 -2 ; 0 0]) + CoupleDecomps([f * f, b' * b'], ConvPsPot(Dict(2s-1 => 1))..., [0 0 ; 0 0 ; -2 2 ; 0 0])

@@ -37,9 +37,9 @@ nebm_c = [0 for ne1 = 0 : nmc]
 nebm_b = [ne1 for ne1 = 0 : nmc]
 nebm_f = [0 for ne1 = 0 : nmc]
 
-tms_lzlp_c = STerms.(GetLpLzTerms(nmc, 1))
-tms_lzlp_b = GetBosonLpLzSTerms(nmb, 1)
-tms_lzlp_f = STerms.(GetLpLzTerms(nmf, 1))
+tms_lzlp_c = STerms.(GetLzLpTerms(nmc, 1))
+tms_lzlp_b = GetBosonLzLpSTerms(nmb, 1)
+tms_lzlp_f = STerms.(GetLzLpTerms(nmf, 1))
 tms_proj_b = GetBosonDenIntSTerms(nmb, 1)
 tms_proj_f = STerms(GetDenIntTerms(nmf, 1, [0, 1]))
 

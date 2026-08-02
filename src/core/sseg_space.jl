@@ -52,7 +52,7 @@ For each sector the operator ``αL^2+C_2`` is built and diagonalised ; the facto
 * `nebm :: Vector{Int64}` is the maximal number of bosons allowed in each sector ; it takes one index `nebm[isec]` where `isec` is the index of the sector.
 * `sec :: Matrix{Int64}` collects the diagonal quantum number (`SQNDiag`) sectors that are diagonalised. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the SQNDiag and `isec` is the index of the sector.
 * `qnd :: Vector{SQNDiag}` is the list of diagonal quantum numbers `SQNDiag`, where the first contains fermion parity, and the second is ``2L^z``.
-* `tms_lzlp :: Tuple{STerms, STerms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLpLzTerms` converted to `STerms` (for fermions) or `GetBosonLpLzSTerms` (for bosons).
+* `tms_lzlp :: Tuple{STerms, STerms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLzLpTerms` converted to `STerms` (for fermions) or `GetBosonLzLpSTerms` (for bosons).
 * `tms_c2 :: STerms` is the flavour Casimir ``C_2``. Facultative, no flavour resolution by default.
 * `c2_rng :: Vector{Float64}` is the list of allowed eigenvalues of ``C_2`` ; a multiplet is kept when its Casimir is within `1E-4` of one of these values. Facultative, `[0.0]` by default.
 * `sec_modul :: Vector{Int64}` collects the moduli of the SQNDiags. Facultative, all 1 by default.
@@ -151,7 +151,7 @@ constructs multiple [SSegSpaces](@ref SSegSpace) simultaneosly with different li
 * `nebm :: Vector{Int64}` is the maximal number of bosons allowed in each sector ; it takes one index `nebm[isec]` where `isec` is the index of the sector.
 * `sec :: Matrix{Int64}` collects the diagonal quantum number (`SQNDiag`) sectors that are diagonalised. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the SQNDiag and `isec` is the index of the sector.
 * `qnd :: Vector{SQNDiag}` is the list of diagonal quantum numbers `SQNDiag`, where the first contains fermion parity, and the second is ``2L^z``.
-* `tms_lzlp :: Tuple{STerms, STerms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLpLzTerms` converted to `STerms` (for fermions) or `GetBosonLpLzSTerms` (for bosons).
+* `tms_lzlp :: Tuple{STerms, STerms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLzLpTerms` converted to `STerms` (for fermions) or `GetBosonLzLpSTerms` (for bosons).
 * `tms_c2 :: STerms` is the flavour Casimir ``C_2``.
 * `c2_rng :: Vector{Vector{Float64}}` is a collection of lists of allowed eigenvalues of ``C_2`` ; for each list within, a SSegSpace is generated.
 * `sec_modul :: Vector{Int64}` collects the moduli of the SQNDiags. Facultative, all 1 by default.

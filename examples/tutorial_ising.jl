@@ -14,7 +14,7 @@ qnd_pt = [
 ]
 sec_pt = stack([ [ne1, ((nm + 1) * ne1) % 2] for ne1 = 0 : ne]) # 2L^z consistent to be ℤ or ℤ+1/2
 sec_tot = [ne, 0]
-tms_lzlp_pt = GetLpLzTerms(nm, 1)
+tms_lzlp_pt = GetLzLpTerms(nm, 1)
 
 # Build the segment Hilbert space
 sgsp = BuildSegSpace(nm, sec_pt, qnd_pt, tms_lzlp_pt)
@@ -45,6 +45,6 @@ stϵ = st[:, 3]
 # Measure f_{σσϵ}=⟨σ|n^z_{00}|ϵ⟩ / ⟨σ|n^z_{00}|𝕀⟩
 nz_00 = GetComponent(GetDensityObs(nm, 1), 0, 0)
 cpd_nz = SingleSegCouple(2, 1, nz_00, [0, 0]) - SingleSegCouple(2, 2, nz_00, [0, 0])
-cpop_nz = BuildCompOperator(cpsp, cpd_nz)
+cpop_nz = BuildCompOperator(cpsp, cpd_nz ; ident_seg = [1, 1])
 f_σσϵ = abs(stσ' * cpop_nz * stϵ) / abs(stσ' * cpop_nz * stI)
 @show f_σσϵ

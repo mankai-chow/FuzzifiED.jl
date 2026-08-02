@@ -16,7 +16,7 @@ qnd_pt = [
     zero(QNDiag, nm, 2)  GetNeQNDiag(nm, 2)
 ] 
 sec_pt = stack([ [ne1  ne1 ; ((nm + 1) * ne1) % 2  ((nm + 1) * ne1) % 2 ; 0  ne1 % 2 ] for ne1 = 0 : ne])
-tms_lzlp_pt = GetLpLzTerms(nm, 1) 
+tms_lzlp_pt = GetLzLpTerms(nm, 1) 
 
 c = GetElectronMod(nm, 1, 1)
 cpd_int_0 = CoupleDecomps([ c' * c, c' * c ], ConvPsPot(RecoupleAngMom(s, [2.0]))..., zeros(Int64, 3, 2))

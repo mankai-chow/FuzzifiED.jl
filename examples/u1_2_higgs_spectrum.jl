@@ -29,8 +29,8 @@ sec_f = stack([ [ne1, 0, 0, 0] for ne1 = 0 : 2 : nof ])
 sec_b = stack([ [ne1, 0, 0, 0] for ne1 = 0 : 2 : nof ])
 sec_tot = [nof, 0, 0, 0]
 nebm_b = [ne1 for ne1 = 0 : 2 : nof ]
-tms_lzlp_f = GetLpLzTerms(nmf, nf)
-tms_lzlp_b = GetBosonLpLzSTerms(nmb, 1)
+tms_lzlp_f = GetLzLpTerms(nmf, nf)
+tms_lzlp_b = GetBosonLzLpSTerms(nmb, 1)
 tms_c2 = GetC2Terms(nmf, nf, :SU)
 tms_proj = GetBosonDenIntSTerms(nmb, 1)
 

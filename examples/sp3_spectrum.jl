@@ -16,7 +16,7 @@ qnd_pt = [
     GetLz2QNDiag(nm, 2),
     GetFlavQNDiag(nm, 2, [1, -1])
 ]
-tms_lzlp_pt = GetLpLzTerms(nm, 2)
+tms_lzlp_pt = GetLzLpTerms(nm, 2)
 tms_c2 = GetC2Terms(nm, 2, :SU)
 sec_pt = stack([[ne1, ((nm + 1) * ne1) % 2, ne1 % 2] for ne1 = 0 : ne])
 sec_tot = [ne, 0, 0]

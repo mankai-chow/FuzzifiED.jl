@@ -58,7 +58,7 @@ For each sector the operator ``αL^2+C_2`` is built and diagonalised ; the facto
 * `no :: Int64` is the number of orbitals ``N_o`` of the segment.
 * `sec :: Matrix{Int64}` collects the diagonal quantum number (`QNDiag`) sectors that are diagonalised. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the QNDiag and `isec` is the index of the sector.
 * `qnd :: Vector{QNDiag}` is the list of diagonal quantum numbers `QNDiag`, where the first contains fermion parity, and the second is ``2L^z``.
-* `tms_lzlp :: Tuple{Terms, Terms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLpLzTerms`.
+* `tms_lzlp :: Tuple{Terms, Terms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLzLpTerms`.
 * `tms_c2 :: Terms` is the flavour Casimir ``C_2``. Facultative, no flavour resolution by default.
 * `c2_rng :: Vector{Float64}` is the list of allowed eigenvalues of ``C_2`` ; a multiplet is kept when its Casimir is within `1E-4` of one of these values. Facultative, `[0.0]` by default.
 * `sec_modul :: Vector{Int64}` collects the moduli of the QNDiags. Facultative, all 1 by default.
@@ -155,7 +155,7 @@ constructs multiple [SegSpaces](@ref SegSpace) simultaneosly with different list
 * `no :: Int64` is the number of orbitals ``N_o`` of the segment.
 * `sec :: Matrix{Int64}` collects the diagonal quantum number (`QNDiag`) sectors that are diagonalised. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the QNDiag and `isec` is the index of the sector.
 * `qnd :: Vector{QNDiag}` is the list of diagonal quantum numbers `QNDiag`, where the first contains fermion parity, and the second is ``2L^z``.
-* `tms_lzlp :: Tuple{Terms, Terms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLpLzTerms`.
+* `tms_lzlp :: Tuple{Terms, Terms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLzLpTerms`.
 * `tms_c2 :: Terms` is the flavour Casimir ``C_2``.
 * `c2_rng :: Vector{Vector{Float64}}` is a collection of lists of allowed eigenvalues of ``C_2`` ; for each list within, a SegSpace is generated. 
 * `sec_modul :: Vector{Int64}` collects the moduli of the QNDiags. Facultative, all 1 by default.
