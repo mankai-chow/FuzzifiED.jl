@@ -15,7 +15,7 @@ They can be built by
 BuildSegSpace
 ```
 
-## Composed Spaces
+## Composite Spaces
 
 ```@docs
 CompSpace
@@ -58,7 +58,7 @@ BuildSegOperator
 BuildSegOperators
 ```
 
-## Composed Operators
+## Composite Operators
 
 ```@docs
 CompOperator

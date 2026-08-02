@@ -19,7 +19,7 @@ tms_lzlp_pt = GetLzLpTerms(nm, 1)
 # Build the segment Hilbert space
 sgsp = BuildSegSpace(nm, sec_pt, qnd_pt, tms_lzlp_pt)
 l = 0 # total angular momentum specified by twice the value 2l
-# Assemble the composed Hilbert space
+# Assemble the composite Hilbert space
 cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, 2l)
 
 # Decompose the Hamiltonian
@@ -31,7 +31,7 @@ cpd_hmt = cpd_int - 3.16 * cpd_nx
 
 # Build the segment operators for each channel in the Hamiltonian
 sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt ; ident_seg = [1, 1])
-# Assemble the segment operators into the composed operator for the Hamiltonian
+# Assemble the segment operators into the composite operator for the Hamiltonian
 cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
 # Diagonalise for the 10 lowest states
 enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)

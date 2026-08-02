@@ -10,8 +10,8 @@ Our strategy is therefore to
 
 * split the system into segments, 
 * construct the Hilbert space resolved by $\mathrm{SO}(3)$ spatial rotation and flavour symmetry and the operators on each segment, 
-* assemble the segment Hilbert spaces and the segment operators into composed Hilbert space and composed operators,
-* find the eigen-system of the Hamiltonian on the composed Hilbert space, and make measurements. 
+* assemble the segment Hilbert spaces and the segment operators into composite Hilbert space and composite operators,
+* find the eigen-system of the Hamiltonian on the composite Hilbert space, and make measurements. 
 
 ## Composing the Segment Hilbert Spaces
 
@@ -19,30 +19,30 @@ For simplicity, we first consider bi-partition of the full system. _E. g._, for 
 ```math
     \mathscr{H}(Q,l,C_{2,\{p\}})
 ```
-with an assigned total angular momentum $l$, a set of total $\mathrm{U}(1)$ quantum number $Q$, and representations under flavour symmetry within each segment specified by the values of the quadratic Casimir $C_{2,p}$ ($p=1,2$). For that purpose, on each of the system we build the basis with a set of $\mathrm{U}(1)$ quantum numbers $Q_p$ and diagonalize simultaneously the total angular momentum $L^2$ and the quadratic Casimir $C_{2,p}$ of the sub-group of the flavour symmetry on that segment. 
+with an assigned total angular momentum $l$, a set of total $\mathrm{U}(1)$ quantum number $Q$, and representations under flavour symmetry within each segment specified by the values of the quadratic Casimir $C_{2,p}$ ($p=1,2$). For that purpose, on each segment of the system we build the basis with a set of $\mathrm{U}(1)$ quantum numbers $Q_p$ and diagonalize simultaneously the total angular momentum $L^2$ and the quadratic Casimir $C_{2,p}$ of the sub-group of the flavour symmetry on that segment. 
 ```math
-    \mathscr{H}_p(C_{2,p})=\bigoplus_{Q_p,l_p}\left|Q_pC_{2,p},l_pm_p,\alpha_p\right\rangle
+    \mathscr{H}_p(C_{2,p})=\Big\{|Q_pC_{2,p},l_pm_p,\alpha_p\rangle\Big\}=\bigoplus_{Q_p,l_p}\mathscr{H}_p(Q_p,l_p,C_{2,p})
 ```
-Here, we only need to keep states with a specific value of $C_{2,p}$. On the contrary, although we only need a single value of $Q$ and $l$ on the composed space, we need to keep all values of $Q_p$ and $l$ in the segment space, as different sets of $Q_p$ and $l_p$ can all compose into the same total $Q$ and $l$. The index $\alpha_p$ denotes the multiplicity. 
+Here, we only need to keep states with a specific value of $C_{2,p}$. On the contrary, although we only need a single value of $Q$ and $l$ on the composite space, we need to keep all values of $Q_p$ and $l$ in the segment space, as different sets of $Q_p$ and $l_p$ can all compose into the same total $Q$ and $l$. The index $\alpha_p$ denotes the multiplicity. 
 
-Now we build the composed Hilbert space from the segment Hilbert spaces. Taking one state from each segment, the composed state is
+Now we build the composite Hilbert space from the segment Hilbert spaces. Taking one state from each segment, the composite state is
 ```math
     \left|Q_{\{12\}}C_{2,{\{12\}}},(l_1l_2)lm,\alpha_{\{12\}}\right\rangle=\sum_{m_1m_2}\left|Q_1C_{2,1},l_1m_1,\alpha_1\right\rangle\left|Q_2C_{2,p},l_2m_2,\alpha_2\right\rangle\langle l_1m_1,l_2m_2|lm\rangle
 ```
 Here $Q_{\{12\}}$ is a short-hand notation for $\left\{Q_1,Q_2\right\}$, and the same notation applies to the multiplicity $\alpha_{\{12\}}$ and $C_{2,{\{12\}}}$. The segment quantum numbers and angular momenta constraints that $Q_1+Q_2=Q$ and $|l_1-l_2|\leq l\leq l_1+l_2$. 
 
-The composed Hilbert space is then the collection of these states
+The composite Hilbert space is then the collection of these states
 ```math
-    \mathscr{H}(Q,l,C_{2,\{12\}})=\bigoplus_{Q_{\{12\}},l_{\{12\}}}\left|Q_{\{12\}}C_{2,{\{12\}}},(l_1l_2)lm,\alpha_{\{12\}}\right\rangle
+    \mathscr{H}(Q,l,C_{2,\{12\}})=\Big\{\left|Q_{\{12\}}C_{2,{\{12\}}},(l_1l_2)lm,\alpha_{\{12\}}\right\rangle\Big\}=\bigoplus_{\substack{Q_1+Q_2=Q\\|l_1-l_2|\leq l\leq l_1+l_2}}\mathscr{H}_1(Q_1,l_1,C_{2,1})\otimes\mathscr{H}_2(Q_2,l_2,C_{2,2})
 ```
-In practice, we pick a state with a representative $m$ within each $\mathrm{SO}(3)$ multiplet, and work in a $L^z$-free treatment. The composition can therefore be denoted by
+In practice, we pick a state with a representative $m$ within each $\mathrm{SO}(3)$ multiplet, and work in a component-free notation. The composition can therefore be denoted by
 ```math
     \left\|Q_{\{12\}}C_{2,{\{12\}}},(l_1l_2)l,\alpha_{\{12\}}\right\rangle=\big[\left\|Q_1C_{2,1},l_1,\alpha_1\right\rangle\otimes\left\|Q_2C_{2,2},l_2,\alpha_2\right\rangle\big]_l.
 ```
 
 ## Decomposing the Operator
 
-Having contructed the Hilbert space, we now calculate the matrix element of the Hamiltonian. For that purpose, we decompose the Hamiltonian into direct product of -covariant (_i. e._ carrying definite spin) operators acting on the segments that carry definite $\mathrm{SO}(3)$ spin.
+Having contructed the Hilbert space, we now calculate the matrix element of the Hamiltonian. For that purpose, we decompose the Hamiltonian into direct product of $\mathrm{SO}(3)$-covariant (_i. e._ carrying definite spin) operators acting on the segments that carry definite $\mathrm{SO}(3)$ spin.
 ```math
     H=\sum_d g_d\Big[[\Phi^{(d)}_1]_{L_1^{(d)}}\otimes[\Phi^{(d)}_2]_{L^{(d)}_2}\Big]_{LM=00}
 ```
@@ -58,7 +58,7 @@ We consider a two-body interaction written in terms of pseudo-potentials
 ```math
     H=\sum_l\tilde{V}_l\Big[[c^\dagger_1 c^\dagger_2]_l\otimes [c_3c_4]_l\Big]_0
 ```
-_E. g._, in the Ising model, the fermions 1 and 4 are spin-up, the fermions 2 and 3 are spin-down, and $\tilde{V}_{0,1}$ are non-zero. Here, we use the brackets to indicate objects composed by the rule of CG-coefficient, and we adopt a notation where $[\Phi]_{lm}$ _increases_ the $L^z$ by $m$. In this notation, 
+_E. g._, in the Ising model, the fermions 1 and 4 are spin-up, the fermions 2 and 3 are spin-down, and $\tilde{V}_{0,1}$ are non-zero. Here, we use the brackets to indicate objects composite by the rule of CG-coefficient, and we adopt a notation where $[\Phi]_{lm}$ _increases_ the $L^z$ by $m$. In this notation, 
 ```math
     [c^\dagger]_{sm}=c^\dagger_m,\qquad[c]_{sm}=(-1)^{m}c_{-m}.
 ```
@@ -114,7 +114,7 @@ Having obtained the decomposed Hamiltonian, we first calculate the matrix elemen
 ```
 Here, $\langle l'\|[\Phi]_L\|l\rangle$ is independent of the choice of states $m,m'$ in the multiplet and is called the _reduced matrix element_. To calculate the reduced matrix of the segment operator, we need only pick one representative state from each multiplet in the segment Hilber space. We typically pick the representative state as $m'=M=m=0$ except when the $3j$-symbols vanish, _i. e._ when $l'+L+l\in 2\mathbb{Z}+1$, in which cases we pick $m=1$ instead.
 
-We now assemble the segment operator into the composed operator acting on the full Hilbert space. This involves re-coupling through the $9j$-symbol.
+We now assemble the segment operator into the composite operator acting on the full Hilbert space. This involves re-coupling through the $9j$-symbol.
 ```math
     \langle(l_1'l_2')l'\|[\Phi_{1,L_1}\otimes\Phi_{2,L_2}]_L\|(l_1 l_2)l\rangle
     =\sqrt{(2l+1)(2l'+1)(2L+1)}\begin{Bmatrix}l_1&l_2&l\\L_1&L_2&L\\l_1'&l_2'&l'\end{Bmatrix}
@@ -137,7 +137,7 @@ it can be rewritten in terms of channels as
 ```math
     H=\sum V_{\{L\}}\Big[\dots[[\Phi_1]_{L_1}[\Phi_2]_{L_2}]_{L_{12}}\dots [\Phi_p]_{L_p}\big]_{L_{1\cdots p}} \cdots [\Phi_{N_p}]_{L_{N_p}}\Big]_{L=0}
 ```
-Here we use $\{L\}$ as a short-hand notation for the coupling channel. The potentiaL reads
+Here we use $\{L\}$ as a short-hand notation for the coupling channel. The coefficient reads
 ```math
     V_{\{L\}}=\sqrt{\frac{\prod_p(2L_p+1)}{(4\pi)^{N_p-2}(2L+1)}}\prod_p\langle L_{1\dots (p-1)}(-s_{L\dots(p-1)}),L_p(-s_p)|L_{1\cdots p}(-s_{1\cdots p})\rangle
 ```
