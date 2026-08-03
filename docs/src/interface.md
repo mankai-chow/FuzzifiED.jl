@@ -27,6 +27,11 @@ CompSpace
 BuildCompSpace
 ```
 
+When the first two segments of a CompSpace are identical, to permute them for a state
+```@docs
+PermFirstSecondSegs
+```
+
 Several methods help comparing, composing sectors, and finding coupling channels of angular momenta.
 ```@docs
 EquivSec

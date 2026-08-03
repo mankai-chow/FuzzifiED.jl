@@ -114,6 +114,12 @@ The lowest eigen-states are computed by [`GetEigensystem`](@ref), which applies 
 enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
 ```
 
+To measure the $\mathbb{Z}_2$ quantum number, we need to permute the first and second segments for each state, and measure the overlap of the original and permuted states. This permutation can be done by [`PermFirstSecondSegs`](@ref)
+```julia
+Z = [ st[:, i]' * PermFirstSecondSegs(cpsp, st[:, i]) for i in axes(st, 2)]
+display(hcat(enrg, Z))
+```
+
 ### Make Measurements
 
 Beyond the spectrum, we demonstrate how to make measurements through the example of the OPE co-efficient 

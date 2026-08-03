@@ -1,4 +1,4 @@
-export CompSpace, BuildCompSpace
+export CompSpace, BuildCompSpace, PermFirstSecondSegs
 export EquivSec, ComposeSec, FindCouplingChannels
 
 
@@ -108,6 +108,66 @@ function BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, sec_tot :: Vector
     modul = sgsp[1].sec_modul
     idsec = ComposeSec(sec_tot, sec_pt, modul)
     return BuildCompSpace(sgsp, idsec, ltot ; disp_std)
+end
+
+
+""" 
+    PermFirstSecondSegs(cpsp :: CompSpace{T}, st :: Vector{T}) :: Vector{T}
+
+When the first two segments in `cpsp` are the same, this function returns the state with the first two segments permuted. 
+"""
+function PermFirstSecondSegs(cpsp :: CompSpace{T}, st :: Vector{T}) where T <: Union{Float64, ComplexF64}
+    sec_cnx = zeros(Int64, size(cpsp.idsec, 2))
+    ch_cnx = [zeros(Int64, length(cpsp.chs[isec])) for isec in axes(cpsp.idsec, 2)]
+    p_exch = [ones(Int64, length(cpsp.chs[isec])) for isec in axes(cpsp.idsec, 2)]
+    for isec in axes(cpsp.idsec, 2)
+        sec_cnx[isec] == 0 || continue
+        idseci = cpsp.idsec[:, isec]
+        for jsec = isec : size(cpsp.idsec, 2)
+            idsecj = cpsp.idsec[:, jsec]
+            (idseci == [idsecj[2] ; idsecj[1] ; idsecj[3 : end]]) || continue 
+            sec_cnx[isec] = jsec
+            sec_cnx[jsec] = isec
+            break
+        end
+    end
+    for isec in axes(cpsp.idsec, 2)
+        jsec = sec_cnx[isec]
+        for ich in eachindex(cpsp.chs[isec])
+            (ch_cnx[isec][ich] == 0) || continue
+            chi = cpsp.chs[isec][ich]
+            for jch in eachindex(cpsp.chs[jsec])
+                chj = cpsp.chs[jsec][jch]
+                chi[1, 2] == chj[1, 1] || continue
+                chi[1, 1] == chj[1, 2] || continue
+                chi[2, 2] == chj[2, 2] || continue
+                chi[:, 3 : end] == chj[:, 3 : end] || continue
+                ch_cnx[isec][ich] = jch 
+                ch_cnx[jsec][jch] = ich
+                if isodd(chi[1, 1] + (chi[1, 1] + chi[1, 2] + chi[2, 2]) ÷ 2)
+                # (l ∈ ℤ+1/2 && l₁+l₂-l ∈ 2ℤ) || (l ∈ ℤ && l₁+l₂-l ∈ 2ℤ+1)
+                    p_exch[isec][ich] = -1
+                    p_exch[jsec][jch] = -1            
+                end
+                break
+            end
+        end
+    end
+    st1 = similar(st)
+    for isec in eachindex(cpsp.chs)
+        for ich in eachindex(cpsp.chs[isec])
+            jsec = sec_cnx[isec]
+            jch = ch_cnx[isec][ich]
+            rngi = cpsp.ptr_st[isec][ich] : cpsp.ptr_st[isec][ich + 1] - 1
+            rngj = cpsp.ptr_st[jsec][jch] : cpsp.ptr_st[jsec][jch + 1] - 1
+            idlpt = [ cpsp.sgsp[p].l_lookup[cpsp.idsec[p, isec]][cpsp.chs[isec][ich][1, p]] for p in eachindex(cpsp.sgsp)]
+            dimpt = [ cpsp.sgsp[p].ptr_st[cpsp.idsec[p, isec]][idlpt[p] + 1] - cpsp.sgsp[p].ptr_st[cpsp.idsec[p, isec]][idlpt[p]] for p in eachindex(cpsp.sgsp)]
+            st_ich = reshape(st[rngi], (reverse(dimpt)...))
+            st_ich_perm = permutedims(st_ich, (2, 1, 3 : ndims(st_ich)...)) * p_exch[isec][ich]
+            st1[rngj] = vec(st_ich_perm)
+        end
+    end
+    return st1
 end
 
 

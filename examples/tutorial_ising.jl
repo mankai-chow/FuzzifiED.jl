@@ -36,7 +36,9 @@ cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
 # Diagonalize for the 10 lowest states
 enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
 enrg /= √(2l + 1) # Convert ⟨l‖H‖l⟩ into energy E = ⟨lm|H|lm⟩
-display(enrg)
+# Measure the ℤ_2 quantum number of each state 
+Z = [ st[:, i]' * PermFirstSecondSegs(cpsp, st[:, i]) for i in axes(st, 2)]
+display(hcat(enrg, Z))
 
 # This calculation do not resolve ℤ_2, so I, σ, and ϵ are obtained within the same Hilbert space 
 stI = st[:, 1] 
