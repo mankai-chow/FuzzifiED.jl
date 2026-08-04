@@ -75,14 +75,14 @@ function BuildSegOperator(sgspd :: AbstractSegSpace{T}, sgspf :: AbstractSegSpac
             stf = sgspf.sts[i]
             tms = GetComponent(amd, ll/2, mm/2)
             op = _SegOperator(sgspd, sgspd.bs[j], sgspf.bs[i], tms)
-            op_mat = Matrix(OpMat(op ; num_th, disp_std = false))
-            hmt_block = stf' * op_mat * std
+            op_mat = OpMat(op ; num_th, disp_std = false)
+            hmt_block = stf' * *(op_mat, std ; num_th)
 
             if (md == 0 && mf == 0 && ll > 0) # when 3j could vanish
                 tms1 = GetComponent(amd, ll/2, mm/2 - 1)
                 op1 = _SegOperator(sgspd, sgspd.bs1[j], sgspf.bs[i], tms1)
-                op_mat1 = Matrix(OpMat(op1 ; num_th, disp_std = false))
-                hmt_block1 = stf' * op_mat1 * std1
+                op_mat1 = OpMat(op1 ; num_th, disp_std = false)
+                hmt_block1 = stf' * *(op_mat1, std1 ; num_th)
             end
 
             hmt_mat = Matrix{Matrix{T}}(undef, length(sgspf.l_rng[i]), length(sgspd.l_rng[j]))
