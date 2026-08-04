@@ -11,7 +11,7 @@ ne = nmf
 s = (nmf - 1) / 2
 
 qnd_f = [ 
-    GetFlavQNDiag(nmf, 1, [1], 1, 2),
+    GetNeQNDiag(nmf, 2),
     GetLz2QNDiag(nmf, 1),
     GetNeQNDiag(nmf), 
     zero(QNDiag, nmf)]
@@ -39,18 +39,18 @@ cpd_μ = SingleSegCouple(2, 1, GetPolTerms(nmf, 1, [1;;]), [0, 0, 0, 0])
 cpd_hmt = 2.0 * cpd_fb + 1.0 * cpd_bb - 0.3 * cpd_hop
 
 sgsp_f = BuildSegSpace(nmf, sec_f, qnd_f, tms_lzlp_f, modul)
-nst_max = [ zeros(Int64, size(sec_b, 2) - 3) ; 5 .* nmf .^ [2,1,0] ]
+nst_max = [ zeros(Int64, size(sec_b, 2) - 3) ; 3 .* nmf .^ [3,1,0] ]
 sgsp_b = BuildSegSpace(1, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0], modul ; l2c2_ratio = 0.1/nmf^2, nst_max)
 sgop_hmt = BuildSegOperators([sgsp_f, sgsp_b], cpd_hmt)
 result = []
-for ltot = 0 : 1/2 : 2
-    ll = Int64(2ltot)
+for l = 0 : 1/2 : 2
+    ll = Int64(2l)
     sec_tot = [nmf + ll%2, 0, ne, 0]
     cpsp = BuildCompSpace([sgsp_f, sgsp_b], sec_tot, ll)
     cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
     enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
     for i in eachindex(enrg)
-        push!(result, [enrg[i] / √(ll + 1), ltot])
+        push!(result, [enrg[i] / √(ll + 1), l])
     end
 end
 
@@ -58,4 +58,4 @@ sort!(result, by = st -> real(st[1]))
 enrg_0 = result[1][1]
 enrg_T = filter(st -> st[2] ≈ 2, result)[1][1]
 spec = [ [ 3 * (st[1] - enrg_0) / (enrg_T - enrg_0) ; st] for st in result ]
-display(permutedims(stack(spec)))
+display(permutedims(stack(spec)))# This example calculates the spectrum of a free Majorana fermion.
