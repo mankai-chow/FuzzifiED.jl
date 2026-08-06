@@ -1,4 +1,4 @@
-export AbstractSegSpace, SegSpace, BuildSegSpace, BuildSegSpaces
+export AbstractSegSpace, SegSpace, BuildSegSpace, BuildSegSpaces, CountZeroModes
 
 
 """
@@ -91,7 +91,10 @@ function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag},
         if (nsti == 0 || nsti > bs[isec].dim / 2)
             l2c2_val, st = eigen(Hermitian(Matrix(l2c2_mat)))
         else
-            l2c2_val, st = GetEigensystem(l2c2_mat, nsti ; num_th, disp_std = false)
+            blsz = round(Int64, √nsti)
+            initvec = KrylovKit.Block([ randn(Float64, l2c2_mat.dimd) for _ in 1 : blsz ])
+            l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x ; num_th = 8), initvec, nst, :SR, BlockLanczos(krylovdim = max(nst + 10, nst * 2), maxiter = 10000, verbosity = 3, tol = 1E-8))
+            st = hcat(stvec)
         end
 
         l2_mat = OpMat(Operator(bs[isec], tms_l2) ; num_th, disp_std = false)
@@ -188,7 +191,10 @@ function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}
         if (nsti == 0 || nsti ≥ bs[isec].dim)
             l2c2_val, st = eigen(Hermitian(Matrix(l2c2_mat)))
         else
-            l2c2_val, st = GetEigensystem(l2c2_mat, nsti ; num_th, disp_std = false)
+            blsz = round(Int64, √nsti)
+            initvec = KrylovKit.Block([ randn(Float64, l2c2_mat.dimd) for _ in 1 : blsz ])
+            l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x ; num_th = 8), initvec, nst, :SR, BlockLanczos(krylovdim = max(nst + 10, nst * 2), maxiter = 10000, verbosity = 3, tol=1E-8))
+            st = hcat(stvec)
         end
 
         l2_mat = OpMat(Operator(bs[isec], tms_l2) ; num_th, disp_std = false)
@@ -245,4 +251,58 @@ function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}
     disp_std && @info "FINISH BUILDING $(length(c2_rng)) SEG SPACES, TOTAL DIMENSIONS $([ptr_st[ic2][end][end] - 1 for ic2 in eachindex(c2_rng)])"
     sgsp = [ SegSpace{eltype}(sec, sec_modul, l_rng[ic2], l_lookup[ic2], ptr_st[ic2], bs, bs1, sts[ic2], sts1[ic2]) for ic2 in eachindex(c2_rng)]
     return sgsp
+end
+
+"""
+    CountZeroModes(nm, ne, k, r, pfer = 0, lz2 = 0)
+
+Count ``(k,r)``-admissible ocuupation configurations with number of orbitals `nm`, number of particles `ne`, and total ``2L^z`` `lz2` and fermion parity ``𝒫_f`` `pfer`. The exclusion rule is
+```math 
+    n_j+n_{j+1}+⋯+n_{j+r-1}≤k
+```
+For Laughlin state ``ν=1/q``, set ``k=1``, ``r=q`` and ``𝒫_f=1`` for odd ``q``; for Moore-Read Pfaffian states with ``ν=1/q``, set ``k=2`` and ``r=2q`` and ``𝒫_f=1`` for even ``q``.
+"""
+function CountZeroModes(nm :: Int64, ne :: Int64, k :: Int64, r :: Int64, pfer = 0, lz2 :: Int64 = 0)::Int64
+    ne1_cap = (pfer == 1) ? 1 : k
+
+    ne > ne1_cap * nm && return 0
+    ne > k * cld(nm, r) && return 0
+    isodd(lz2 - ne * (nm - 1)) && return 0
+    abs(lz2) > ne * (nm - 1) && return 0
+
+    lth_hist = r - 1
+    base = ne1_cap + 1
+    drop_factor = lth_hist <= 1 ? 1 : base^(lth_hist - 1)
+
+    # State: (particle count, total 2Lz, history code, history sum) => multiplicity
+    states = Dict{NTuple{4,Int},Int64}((0, 0, 0, 0) => 1)
+    for j in 0:(nm - 1)
+        m2 = 2j - (nm - 1)
+        next_states = Dict{NTuple{4,Int},Int64}()
+        for ((n, mtot, code, sum_hist), multiplicity) in states
+            nocp_max = min(ne1_cap, k - sum_hist, ne - n)
+            for ne1 = 0 : nocp_max
+                if lth_hist == 0
+                    code1 = 0
+                    sum_hist1 = 0
+                else
+                    oldest = code ÷ drop_factor
+                    code1 = (code % drop_factor) * base + ne1
+                    sum_hist1 = sum_hist - oldest + ne1
+                end
+                key = (n + ne1, mtot + ne1 * m2, code1, sum_hist1)
+                next_states[key] = get(next_states, key, Int64(0)) + multiplicity
+            end
+        end
+        states = next_states
+    end
+
+    result = Int64(0)
+    for ((n, mtot, _, _), multiplicity) in states
+        if n == ne && mtot == lz2
+            result += multiplicity
+        end
+    end
+
+    return result
 end

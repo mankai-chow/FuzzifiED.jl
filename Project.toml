@@ -11,9 +11,9 @@ CGcoefficient = "c862aa61-d51e-47d1-b396-b1e789b4e0b6"
 KrylovKit = "0b1a1467-8014-51b9-945f-bf0ae24f4b77"
 
 [compat]
-FuzzifiED = "1.2.4"
+FuzzifiED = "1.2.5"
 LinearAlgebra = "1"
 WignerSymbols = "2"
 CGcoefficient = "0.3"
-KrylovKit = "0.4, 0.5, 0.6, 0.7, 0.8"
+KrylovKit = "0.10"
 julia = "1.10, 1.11, 1.12"

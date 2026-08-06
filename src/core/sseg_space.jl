@@ -85,7 +85,12 @@ function BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec ::
         if (nsti == 0 || nsti > bs[isec].dim / 2)
             l2c2_val, st = eigen(Hermitian(Matrix(l2c2_mat)))
         else
-            l2c2_val, st = GetEigensystem(l2c2_mat, nsti ; num_th, disp_std = false)
+            disp_std && @info "BUILDING SECTOR $seci"
+            verbosity = disp_std ? 3 : 0
+            blsz = round(Int64, √nsti)
+            initvec = KrylovKit.Block([ randn(Float64, l2c2_mat.dimd) for _ in 1 : blsz ])
+            l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x ; num_th = 8), initvec, nsti, :SR, BlockLanczos( ; krylovdim = max(nsti + 10, nsti * 2), maxiter = 10000, verbosity, tol=1E-8))
+            st = stack(stvec)
         end
 
         l2_mat = OpMat(SOperator(bs[isec], tms_l2) ; num_th, disp_std = false)
@@ -184,7 +189,10 @@ function BuildSegSpaces(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :
         if (nsti == 0 || nsti ≥ bs[isec].dim)
             l2c2_val, st = eigen(Hermitian(Matrix(l2c2_mat)))
         else
-            l2c2_val, st = GetEigensystem(l2c2_mat, nsti ; num_th, disp_std = false)
+            blsz = round(Int64, √nsti)
+            initvec = KrylovKit.Block([ randn(Float64, l2c2_mat.dimd) for _ in 1 : blsz ])
+            l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x ; num_th = 8), initvec, nst, :SR, BlockLanczos(krylovdim = max(nst + 10, nst * 2), maxiter = 10000, verbosity = 3, tol=1E-8))
+            st = hcat(stvec)
         end
 
         l2_mat = OpMat(SOperator(bs[isec], tms_l2) ; num_th, disp_std = false)

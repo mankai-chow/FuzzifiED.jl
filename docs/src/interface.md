@@ -20,6 +20,11 @@ Spaces with different $C_2$ can be built simultaneously.
 BuildSegSpaces
 ```
 
+For projections onto the parent Hamiltonian of fractional quantum Hall states, the following function helps count multiplicity
+```@docs
+CountZeroModes
+```
+
 ## Composite Spaces
 
 ```@docs
