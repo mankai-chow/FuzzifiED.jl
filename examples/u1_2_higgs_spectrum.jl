@@ -2,8 +2,16 @@
 
 using FuzzifiED
 using FuzzifiED.Fuzzifino
+using FuzzifiED.JackToolkit
 using SO3lver
 FuzzifiED.ElementType = Float64
+
+function GetLaughlin12Jack(nof :: Int64, nob :: Int64, sec :: Vector{Int64}, bs :: SBasis, l2c2_mat :: OpMat, nst :: Int64)
+    st0 = GetJackStates(bs, nob, sec[1] ÷ 2, 1, 2, sec[2]) 
+    l2c2_val, st = OrganizeJackStates(st0, l2c2_mat)
+    @info "Sector $sec, # of states $(size(st, 2))"
+    return l2c2_val, st
+end
 
 nmf = 7
 nf = 2
@@ -43,8 +51,8 @@ cpd_int_e = SingleSegCouple(2, 1, GetIntegral(nf * nf), [0, 0, 0]) + 4 * SingleS
 
 cpd_hmt = cpd_int_e - 0.5 * cpd_hop + 0.312 * cpd_μ 
 
-nst_max = [ CountZeroModes(nmb, sec_b[1, i] ÷ 2, 1, 2) for i in axes(sec_b, 2) ]
-sgsp_b = BuildSegSpace(0, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0] ; l2c2_ratio = 0.1/nmf^2, nst_max)
+nst_max = [ length(GetJackRoots(nmb, sec_b[1, i] ÷ 2, 1, 2, sec_b[2, i] ; fermion = false)) for i in axes(sec_b, 2) ]
+sgsp_b = BuildSegSpace(0, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0] ; l2c2_ratio = 0.1/nmf^2, diag_method = GetLaughlin12Jack, nst_max)
 ss = collect(0 : 2)
 c2_rng = [ Float64[s * (s + 1)] for s in ss]
 sgsps_f = BuildSegSpaces(nof, sec_f, qnd_f, tms_lzlp_f, tms_c2, c2_rng)

@@ -2,9 +2,17 @@
 # realized as a transition between a ν=1/3 Laughlin state and a ν=3 fIQH state.
 
 using FuzzifiED
+using FuzzifiED.JackToolkit
 using SO3lver
 using LinearAlgebra
 FuzzifiED.ElementType = Float64
+
+function GetLaughlin13Jack(no :: Int64, sec :: Vector{Int64}, bs :: Basis, l2c2_mat :: OpMat, nst :: Int64)
+    st0 = GetJackStates(bs, no, sec[1] ÷ 3, 1, 3, sec[2]) 
+    l2c2_val, st = OrganizeJackStates(st0, l2c2_mat)
+    @info "Sector $sec, # of states $(size(st, 2))"
+    return l2c2_val, st
+end
 
 nm = 6
 nf = 3
@@ -36,8 +44,8 @@ cpd_U0 = 6 * ContactCouple([nc_obs, nf_obs], [0 0 ; 0 0 ; 0 0 ; 0 0]) +
 cpd_hmt = cpd_U0 + cpd_t - 0.11 * cpd_μ
 
 sec_f = stack([ [ne, ((nmf + 1) * ne) % 2, 0, 0] for ne = 0 : nf : noc])
-nst_max = [ zeros(Int64, size(sec_f, 2) - 2) ; 5 .* nm .^ [1,0] ]
-sgsp_f = BuildSegSpace(nmf, sec_f, qnd_pt[:, 2], tms_lzlp[2], tms_proj, [0.0] ; l2c2_ratio = 0.1/nm^2, nst_max)
+nst_max = [ length(GetJackRoots(nmf, sec_f[1, i] ÷ 3, 1, 3, sec_f[2, i])) for i in axes(sec_f, 2) ]
+sgsp_f = BuildSegSpace(nmf, sec_f, qnd_pt[:, 2], tms_lzlp[2], tms_proj, [0.0] ; l2c2_ratio = 0.1/nm^2, diag_method = GetLaughlin13Jack, nst_max)
 sgop_hmt = Matrix{SegOperator}(undef, 2, length(cpd_hmt))
 sgop_hmt[2, :] = BuildSegOperators([sgsp_f], cpd_hmt ; p_rng = [2])
 

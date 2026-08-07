@@ -35,6 +35,14 @@ mutable struct SSegSpace{T <: Union{Float64, ComplexF64}} <: AbstractSegSpace{T}
     sts1 :: Vector{Matrix{T}}
 end
 
+function FuzzifiEDBlockLanczos(nof :: Int64, nob :: Int64, sec :: Vector{Int64}, bs :: SBasis, l2c2_mat :: OpMat, nst :: Int64)
+    blsz = round(Int64, √nst)
+    initvec = KrylovKit.Block([ randn(Float64, l2c2_mat.dimd) for _ in 1 : blsz ])
+    l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x ; num_th = 8), initvec, nst, :SR, BlockLanczos( ; krylovdim = max(nst + 10, nst * 2), maxiter = 10000, verbosity = 1, tol=1E-8))
+    st = stack(stvec)
+    return l2c2_val, st
+end
+
 
 """
     BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}[, tms_c2 :: STerms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64, nst_max :: Vector{Int64}, eltype :: Type, num_th :: Int64) :: SSegSpace
@@ -57,7 +65,8 @@ For each sector the operator ``αL^2+C_2`` is built and diagonalized ; the facto
 * `c2_rng :: Vector{Float64}` is the list of allowed eigenvalues of ``C_2`` ; a multiplet is kept when its Casimir is within `1E-4` of one of these values. Facultative, `[0.0]` by default.
 * `sec_modul :: Vector{Int64}` collects the moduli of the SQNDiags. Facultative, all 1 by default.
 * `l2c2_ratio :: Float64` is the ratio ``α`` that determines ``αL^2+C_2`` to be diagonalized. Facultative, ``\\sqrt{2}`` by default.
-* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0` or exceeds half the total dimension, then ``αL^2+C_2`` is fully diagonalized ; if the number is non-zero, then the lowest `nst_max[i]` eigen-states of ``αL^2+C_2`` will be generated using Arnoldi.
+* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0` or exceeds half the total dimension, then ``αL^2+C_2`` is fully diagonalized ; if the number is non-zero, then the lowest `nst_max[i]` eigen-states of ``αL^2+C_2`` will be generated using the method specified by `diag_method`.
+* `diag_method :: Function` is the method that generates the lowest `nst` states. It takes in six arguments : `nof :: Int64`, `nob :: Int64`, `sec :: Vector{Int64}`, `bs :: SBasis`, `l2c2_mat :: Opmat`, and `nst :: Int64` and returns `l2c2_val :: Vector{Float64}` that specifies the eigen-values and `st :: Matrix{Float64}` that specifies the eigen-states. Facultative, a block Lanczos method by default.
 * `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `ElementType` by default.
 * `num_th :: Int64` is the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
@@ -66,7 +75,7 @@ For each sector the operator ``αL^2+C_2`` is built and diagonalized ; the facto
 
 * `sgsp :: SSegSpace` is the resulting [SSegSpace](@ref SSegSpace) object.
 """
-function BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms = 0 * one(STerms), c2_rng :: Vector{Float64} = [0.0], sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd)
+function BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms = 0 * one(STerms), c2_rng :: Vector{Float64} = [0.0], sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), diag_method :: Function = FuzzifiEDBlockLanczos, eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd)
     nsec = size(sec, 2)
     bs = Vector{SBasis}(undef, nsec)
     bs1 = Vector{SBasis}(undef, nsec)
@@ -85,12 +94,7 @@ function BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec ::
         if (nsti == 0 || nsti > bs[isec].dim / 2)
             l2c2_val, st = eigen(Hermitian(Matrix(l2c2_mat)))
         else
-            disp_std && @info "BUILDING SECTOR $seci"
-            verbosity = disp_std ? 3 : 0
-            blsz = round(Int64, √nsti)
-            initvec = KrylovKit.Block([ randn(Float64, l2c2_mat.dimd) for _ in 1 : blsz ])
-            l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x ; num_th = 8), initvec, nsti, :SR, BlockLanczos( ; krylovdim = max(nsti + 10, nsti * 2), maxiter = 10000, verbosity, tol=1E-8))
-            st = stack(stvec)
+            l2c2_val, st = diag_method(nof, nob, seci, bs[isec], l2c2_mat, nsti)
         end
 
         l2_mat = OpMat(SOperator(bs[isec], tms_l2) ; num_th, disp_std = false)
@@ -130,7 +134,7 @@ function BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec ::
             seci1[2] = 2
             bs1[isec] = SBasis(SConfs(nof, nob, nebm[isec], seci1, qnd ; num_th, disp_std = false))
             lp = SOperator(bs[isec], bs1[isec], tms_lzlp[2])
-            lp_mat = Matrix(OpMat(lp ; disp_std = false))
+            lp_mat = OpMat(lp ; disp_std = false)
             sts1[isec] = lp_mat * sts[isec]
         end
     end
@@ -161,7 +165,8 @@ constructs multiple [SSegSpaces](@ref SSegSpace) simultaneosly with different li
 * `c2_rng :: Vector{Vector{Float64}}` is a collection of lists of allowed eigenvalues of ``C_2`` ; for each list within, a SSegSpace is generated.
 * `sec_modul :: Vector{Int64}` collects the moduli of the SQNDiags. Facultative, all 1 by default.
 * `l2c2_ratio :: Float64` is the ratio ``α`` that determines ``αL^2+C_2`` to be diagonalized. Facultative, ``\\sqrt{2}`` by default.
-* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0`, then ``αL^2+C_2`` is fully diagonalized ; if the number is non-zero, then the lowest `nst_max[isec]` eigen-states of ``αL^2+C_2`` will be generated using Arnoldi.
+* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0` or exceeds half the total dimension, then ``αL^2+C_2`` is fully diagonalized ; if the number is non-zero, then the lowest `nst_max[i]` eigen-states of ``αL^2+C_2`` will be generated using the method specified by `diag_method`.
+* `diag_method :: Function` is the method that generates the lowest `nst` states. It takes in six arguments : `nof :: Int64`, `nob :: Int64`, `sec :: Vector{Int64}`, `bs :: SBasis`, `l2c2_mat :: Opmat`, and `nst :: Int64` and returns `l2c2_val :: Vector{Float64}` that specifies the eigen-values and `st :: Matrix{Float64}` that specifies the eigen-states. Facultative, a block Lanczos method by default.
 * `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `ElementType` by default.
 * `num_th :: Int64` is the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
@@ -170,7 +175,7 @@ constructs multiple [SSegSpaces](@ref SSegSpace) simultaneosly with different li
 
 * `sgsp :: Vector{SSegSpace}` is the resulting list of [SSegSpace](@ref SSegSpace) objects.
 """
-function BuildSegSpaces(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms, c2_rng :: Vector{Vector{Float64}}, sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd)
+function BuildSegSpaces(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, tms_c2 :: STerms, c2_rng :: Vector{Vector{Float64}}, sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), diag_method :: Function = FuzzifiEDBlockLanczos, eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd)
     nsec = size(sec, 2)
     bs = Vector{SBasis}(undef, nsec)
     bs1 = Vector{SBasis}(undef, nsec)
@@ -189,10 +194,7 @@ function BuildSegSpaces(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :
         if (nsti == 0 || nsti ≥ bs[isec].dim)
             l2c2_val, st = eigen(Hermitian(Matrix(l2c2_mat)))
         else
-            blsz = round(Int64, √nsti)
-            initvec = KrylovKit.Block([ randn(Float64, l2c2_mat.dimd) for _ in 1 : blsz ])
-            l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x ; num_th = 8), initvec, nst, :SR, BlockLanczos(krylovdim = max(nst + 10, nst * 2), maxiter = 10000, verbosity = 3, tol=1E-8))
-            st = hcat(stvec)
+            l2c2_val, st = diag_method(nof, nob, seci, bs[isec], l2c2_mat, nsti)
         end
 
         l2_mat = OpMat(SOperator(bs[isec], tms_l2) ; num_th, disp_std = false)
@@ -234,7 +236,7 @@ function BuildSegSpaces(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :
             seci1[2] = 2
             bs1[isec] = SBasis(SConfs(nof, nob, nebm[isec], seci1, qnd ; num_th, disp_std = false))
             lp = SOperator(bs[isec], bs1[isec], tms_lzlp[2])
-            lp_mat = Matrix(OpMat(lp ; disp_std = false))
+            lp_mat = OpMat(lp ; disp_std = false)
             for ic2 in eachindex(c2_rng)
                 sts1[ic2][isec] = lp_mat * sts[ic2][isec]
             end

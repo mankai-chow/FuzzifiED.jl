@@ -2,8 +2,16 @@
 
 using FuzzifiED
 using FuzzifiED.Fuzzifino
+using FuzzifiED.JackToolkit
 using SO3lver
 FuzzifiED.ElementType = Float64
+
+function GetBPfJack(nof :: Int64, nob :: Int64, sec :: Vector{Int64}, bs :: SBasis, l2c2_mat :: OpMat, nst :: Int64)
+    st0 = GetJackStates(bs, nob, sec[3], 2, 2, sec[2]) 
+    l2c2_val, st = OrganizeJackStates(st0, l2c2_mat)
+    @info "Sector $sec, # of states $(size(st, 2))"
+    return l2c2_val, st
+end
 
 nmf = 10
 nmb = nmf - 1
@@ -38,8 +46,8 @@ cpd_hmt = 2.0 * cpd_fb + 1.0 * cpd_bb - 0.3 * cpd_hop
 
 sgsp_f = BuildSegSpace(nmf, sec_f, qnd_f, tms_lzlp_f, modul)
 
-nst_max = [ CountZeroModes(nmb, sec_b[3, i], 2, 2) for i in axes(sec_b, 2) ]
-sgsp_b = BuildSegSpace(0, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0], modul ; l2c2_ratio = 0.1/nmf^2, nst_max)
+nst_max = [ length(GetJackRoots(nmb, sec_b[3, i], 2, 2 ; fermion = false)) for i in axes(sec_b, 2) ]
+sgsp_b = BuildSegSpace(0, nmb, nebm_b, sec_b, qnd_b, tms_lzlp_b, tms_proj, [0.0], modul ; l2c2_ratio = 0.1/nmf^2, diag_method = GetBPfJack, nst_max)
 sgop_hmt = BuildSegOperators([sgsp_f, sgsp_b], cpd_hmt)
 result = []
 for l = 0 : 1/2 : 2

@@ -1,4 +1,4 @@
-export AbstractSegSpace, SegSpace, BuildSegSpace, BuildSegSpaces, CountZeroModes
+export AbstractSegSpace, SegSpace, BuildSegSpace, BuildSegSpaces
 
 
 """
@@ -43,6 +43,14 @@ mutable struct SegSpace{T <: Union{Float64, ComplexF64}} <: AbstractSegSpace{T}
     sts1 :: Vector{Matrix{T}}
 end
 
+function FuzzifiEDBlockLanczos(no :: Int64, sec :: Vector{Int64}, bs :: Basis, l2c2_mat :: OpMat, nst :: Int64)
+    blsz = round(Int64, √nst)
+    initvec = KrylovKit.Block([ randn(Float64, l2c2_mat.dimd) for _ in 1 : blsz ])
+    l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x ; num_th = 8), initvec, nst, :SR, BlockLanczos( ; krylovdim = max(nst + 10, nst * 2), maxiter = 10000, verbosity = 1, tol=1E-8))
+    st = stack(stvec)
+    return l2c2_val, st
+end
+
 
 """
     BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}[, tms_c2 :: Terms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64, nst_max :: Vector{Int64}, eltype :: Type, num_th :: Int64) :: SegSpace
@@ -63,7 +71,8 @@ For each sector the operator ``αL^2+C_2`` is built and diagonalized ; the facto
 * `c2_rng :: Vector{Float64}` is the list of allowed eigenvalues of ``C_2`` ; a multiplet is kept when its Casimir is within `1E-4` of one of these values. Facultative, `[0.0]` by default.
 * `sec_modul :: Vector{Int64}` collects the moduli of the QNDiags. Facultative, all 1 by default.
 * `l2c2_ratio :: Float64` is the ratio ``α`` that determines ``αL^2+C_2`` to be diagonalized. Facultative, ``\\sqrt{2}`` by default.
-* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0` or exceeds half the total dimension, then ``αL^2+C_2`` is fully diagonalized ; if the number is non-zero, then the lowest `nst_max[isec]` eigen-states of ``αL^2+C_2`` will be generated using Arnoldi. 
+* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0` or exceeds half the total dimension, then ``αL^2+C_2`` is fully diagonalized ; if the number is non-zero, then the lowest `nst_max[i]` eigen-states of ``αL^2+C_2`` will be generated using the method specified by `diag_method`.
+* `diag_method :: Function` is the method that generates the lowest `nst` states. It takes in five arguments : `no :: Int64`, `sec :: Vector{Int64}`, `bs :: SBasis`, `l2c2_mat :: Opmat`, and `nst :: Int64` and returns `l2c2_val :: Vector{Float64}` that specifies the eigen-values and `st :: Matrix{Float64}` that specifies the eigen-states. Facultative, a block Lanczos method by default.
 * `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `ElementType` by default.
 * `num_th :: Int64` is the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
@@ -72,7 +81,7 @@ For each sector the operator ``αL^2+C_2`` is built and diagonalized ; the facto
 
 * `sgsp :: SegSpace` is the resulting [SegSpace](@ref SegSpace) object.
 """
-function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = zero(Terms), c2_rng :: Vector{Float64} = [0.0], sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd)
+function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = zero(Terms), c2_rng :: Vector{Float64} = [0.0], sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), diag_method :: Function = FuzzifiEDBlockLanczos, eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd)
     nsec = size(sec, 2)
     bs = Vector{Basis}(undef, nsec)
     bs1 = Vector{Basis}(undef, nsec)
@@ -91,10 +100,7 @@ function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag},
         if (nsti == 0 || nsti > bs[isec].dim / 2)
             l2c2_val, st = eigen(Hermitian(Matrix(l2c2_mat)))
         else
-            blsz = round(Int64, √nsti)
-            initvec = KrylovKit.Block([ randn(Float64, l2c2_mat.dimd) for _ in 1 : blsz ])
-            l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x ; num_th = 8), initvec, nst, :SR, BlockLanczos(krylovdim = max(nst + 10, nst * 2), maxiter = 10000, verbosity = 3, tol = 1E-8))
-            st = hcat(stvec)
+            l2c2_val, st = diag_method(no, seci, bs[isec], l2c2_mat, nsti)
         end
 
         l2_mat = OpMat(Operator(bs[isec], tms_l2) ; num_th, disp_std = false)
@@ -134,7 +140,7 @@ function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag},
             seci1[2] = 2
             bs1[isec] = Basis(Confs(no, seci1, qnd ; num_th, disp_std = false))
             lp = Operator(bs[isec], bs1[isec], tms_lzlp[2])
-            lp_mat = Matrix(OpMat(lp ; disp_std = false))
+            lp_mat = OpMat(lp ; disp_std = false)
             sts1[isec] = lp_mat * sts[isec]
         end
     end
@@ -163,7 +169,8 @@ constructs multiple [SegSpaces](@ref SegSpace) simultaneosly with different list
 * `c2_rng :: Vector{Vector{Float64}}` is a collection of lists of allowed eigenvalues of ``C_2`` ; for each list within, a SegSpace is generated. 
 * `sec_modul :: Vector{Int64}` collects the moduli of the QNDiags. Facultative, all 1 by default.
 * `l2c2_ratio :: Float64` is the ratio ``α`` that determines ``αL^2+C_2`` to be diagonalized. Facultative, ``\\sqrt{2}`` by default.
-* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0`, then ``αL^2+C_2`` is fully diagonalized ; if the number is non-zero, then the lowest `nst_max[isec]` eigen-states of ``αL^2+C_2`` will be generated using Arnoldi. 
+* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0` or exceeds half the total dimension, then ``αL^2+C_2`` is fully diagonalized ; if the number is non-zero, then the lowest `nst_max[i]` eigen-states of ``αL^2+C_2`` will be generated using the method specified by `diag_method`.
+* `diag_method :: Function` is the method that generates the lowest `nst` states. It takes in five arguments : `no :: Int64`, `sec :: Vector{Int64}`, `bs :: SBasis`, `l2c2_mat :: Opmat`, and `nst :: Int64` and returns `l2c2_val :: Vector{Float64}` that specifies the eigen-values and `st :: Matrix{Float64}` that specifies the eigen-states. Facultative, a block Lanczos method by default.
 * `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `ElementType` by default.
 * `num_th :: Int64` is the number of threads. Facultative, `NumThreads` by default.
 * `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
@@ -172,7 +179,7 @@ constructs multiple [SegSpaces](@ref SegSpace) simultaneosly with different list
 
 * `sgsp :: SegSpace` is the resulting [SegSpace](@ref SegSpace) object.
 """
-function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms, c2_rng :: Vector{Vector{Float64}}, sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd)
+function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms, c2_rng :: Vector{Vector{Float64}}, sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), diag_method :: Function = FuzzifiEDBlockLanczos, eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd)
     nsec = size(sec, 2)
     bs = Vector{Basis}(undef, nsec)
     bs1 = Vector{Basis}(undef, nsec)
@@ -191,10 +198,7 @@ function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}
         if (nsti == 0 || nsti ≥ bs[isec].dim)
             l2c2_val, st = eigen(Hermitian(Matrix(l2c2_mat)))
         else
-            blsz = round(Int64, √nsti)
-            initvec = KrylovKit.Block([ randn(Float64, l2c2_mat.dimd) for _ in 1 : blsz ])
-            l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x ; num_th = 8), initvec, nst, :SR, BlockLanczos(krylovdim = max(nst + 10, nst * 2), maxiter = 10000, verbosity = 3, tol=1E-8))
-            st = hcat(stvec)
+            l2c2_val, st = diag_method(no, seci, bs[isec], l2c2_mat, nsti)
         end
 
         l2_mat = OpMat(Operator(bs[isec], tms_l2) ; num_th, disp_std = false)
@@ -236,7 +240,7 @@ function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}
             seci1[2] = 2
             bs1[isec] = Basis(Confs(no, seci1, qnd ; num_th, disp_std = false))
             lp = Operator(bs[isec], bs1[isec], tms_lzlp[2])
-            lp_mat = Matrix(OpMat(lp ; disp_std = false))
+            lp_mat = OpMat(lp ; disp_std = false)
             for ic2 in eachindex(c2_rng)
                 sts1[ic2][isec] = lp_mat * sts[ic2][isec]
             end
@@ -251,58 +255,4 @@ function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}
     disp_std && @info "FINISH BUILDING $(length(c2_rng)) SEG SPACES, TOTAL DIMENSIONS $([ptr_st[ic2][end][end] - 1 for ic2 in eachindex(c2_rng)])"
     sgsp = [ SegSpace{eltype}(sec, sec_modul, l_rng[ic2], l_lookup[ic2], ptr_st[ic2], bs, bs1, sts[ic2], sts1[ic2]) for ic2 in eachindex(c2_rng)]
     return sgsp
-end
-
-"""
-    CountZeroModes(nm, ne, k, r, pfer = 0, lz2 = 0)
-
-Count ``(k,r)``-admissible ocuupation configurations with number of orbitals `nm`, number of particles `ne`, and total ``2L^z`` `lz2` and fermion parity ``𝒫_f`` `pfer`. The exclusion rule is
-```math 
-    n_j+n_{j+1}+⋯+n_{j+r-1}≤k
-```
-For Laughlin state ``ν=1/q``, set ``k=1``, ``r=q`` and ``𝒫_f=1`` for odd ``q``; for Moore-Read Pfaffian states with ``ν=1/q``, set ``k=2`` and ``r=2q`` and ``𝒫_f=1`` for even ``q``.
-"""
-function CountZeroModes(nm :: Int64, ne :: Int64, k :: Int64, r :: Int64, pfer = 0, lz2 :: Int64 = 0)::Int64
-    ne1_cap = (pfer == 1) ? 1 : k
-
-    ne > ne1_cap * nm && return 0
-    ne > k * cld(nm, r) && return 0
-    isodd(lz2 - ne * (nm - 1)) && return 0
-    abs(lz2) > ne * (nm - 1) && return 0
-
-    lth_hist = r - 1
-    base = ne1_cap + 1
-    drop_factor = lth_hist <= 1 ? 1 : base^(lth_hist - 1)
-
-    # State: (particle count, total 2Lz, history code, history sum) => multiplicity
-    states = Dict{NTuple{4,Int},Int64}((0, 0, 0, 0) => 1)
-    for j in 0:(nm - 1)
-        m2 = 2j - (nm - 1)
-        next_states = Dict{NTuple{4,Int},Int64}()
-        for ((n, mtot, code, sum_hist), multiplicity) in states
-            nocp_max = min(ne1_cap, k - sum_hist, ne - n)
-            for ne1 = 0 : nocp_max
-                if lth_hist == 0
-                    code1 = 0
-                    sum_hist1 = 0
-                else
-                    oldest = code ÷ drop_factor
-                    code1 = (code % drop_factor) * base + ne1
-                    sum_hist1 = sum_hist - oldest + ne1
-                end
-                key = (n + ne1, mtot + ne1 * m2, code1, sum_hist1)
-                next_states[key] = get(next_states, key, Int64(0)) + multiplicity
-            end
-        end
-        states = next_states
-    end
-
-    result = Int64(0)
-    for ((n, mtot, _, _), multiplicity) in states
-        if n == ne && mtot == lz2
-            result += multiplicity
-        end
-    end
-
-    return result
 end
