@@ -145,7 +145,7 @@ function BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec ::
     disp_std && @info "FINISH BUILDING SEG SPACE, TOTAL DIMENSION $(ptr_st[end][end] - 1)"
     return SSegSpace{eltype}(sec, sec_modul, l_rng, l_lookup, ptr_st, bs, bs1, sts, sts1)
 end
-BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, modul :: Vector{Int64} ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd) = BuildSegSpace(nof, nob, nebm, sec, qnd, tms_lzlp, 0 * one(STerms), [0.0], modul ; l2c2_ratio, nst_max, eltype, num_th, disp_std)
+BuildSegSpace(nof :: Int64, nob :: Int64, nebm :: Vector{Int64}, sec :: Matrix{Int64}, qnd :: Vector{SQNDiag}, tms_lzlp :: Tuple{STerms, STerms}, modul :: Vector{Int64} ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), diag_method :: Function = FuzzifiEDBlockLanczos, eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd) = BuildSegSpace(nof, nob, nebm, sec, qnd, tms_lzlp, 0 * one(STerms), [0.0], modul ; l2c2_ratio, nst_max, diag_method, eltype, num_th, disp_std)
 
 
 """
