@@ -53,7 +53,7 @@ cpop_pk_cand = BuildCompOperator.(Ref(cpsp0), Ref(cpsp1), cpd_pk_cand ; ident_se
 
 opst = cpop_pk_cand .* Ref(stI)
 mat = [sti' * stj for sti in opst, stj in opst]
-eigval, eigvec = eigen(mat);
+eigval, eigvec = eigen(mat)
 
 cpd_pk = eigvec[:, 1]' * cpd_pk_cand
 cpop_pk = BuildCompOperator(cpsp0, cpsp1, cpd_pk ; ident_seg = [1, 1])

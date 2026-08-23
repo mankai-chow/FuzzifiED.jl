@@ -28,7 +28,7 @@ cpd_h = SingleSegCouple(2, 1, GetPolTerms(nm, 1), zeros(Int64, 3)) - SingleSegCo
 cpd_hmt = 4.75 * cpd_int_0 + cpd_int_1 - 3.16 * cpd_h
 
 sgsp = [ BuildSegSpace(nm, sec_pt[:, p, :], qnd_pt[:, p], tms_lzlp_pt, [1, 1, 2]) for p = 1 : 2]
-sgop_hmt = BuildSegOperators(sgsp, cpd_hmt ; ident_seg = [1, 1])
+sgop_hmt = BuildSegOperators(sgsp, cpd_hmt)
 
 result = []
 for l in 0 : 2, Z = 0 : 1 

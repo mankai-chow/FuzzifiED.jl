@@ -84,6 +84,12 @@ end
 function Base.:*(fac :: Number, cpd :: CoupleDecomps)
     return fac .* cpd
 end
+function Base.:*(cpd :: CoupleDecomps, fac :: Number)
+    return fac .* cpd
+end
+function Base.:/(cpd :: CoupleDecomps, fac :: Number)
+    return (1/fac) .* cpd
+end
 function Base.:-(cpd :: CoupleDecomps)
     return (-1) * cpd
 end
