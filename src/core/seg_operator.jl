@@ -1,4 +1,4 @@
-export SegOperator, BuildSegOperator, BuildSegOperators
+export SegOperator, BuildSegOperator, BuildSegOperators, BuildTransfSegOperator
 
 
 """
@@ -24,12 +24,6 @@ mutable struct SegOperator{T <: Union{Float64, ComplexF64}}
 end
 
 
-_SegOperator(:: SegSpace, bsd, bsf, tms) = Operator(bsd, bsf, tms)
-_SegOperator(:: SSegSpace, bsd, bsf, tms) = SOperator(bsd, bsf, tms)
-_SegIdentity(:: SegSpace) = one(AngModes)
-_SegIdentity(:: SSegSpace) = one(SAngModes)
-
-
 """
     BuildSegOperator(sgspd :: SegSpace{T}[, sgspf :: SegSpace{T}], amd :: AngModes, ll :: Int64, secop :: Vector{Int64} ; full_mat :: Bool, num_th :: Int64) :: SegOperator{T}
     BuildSegOperator(sgspd :: SSegSpace{T}[, sgspf :: SSegSpace{T}], amd :: SAngModes, ll :: Int64, secop :: Vector{Int64} ; full_mat :: Bool, num_th :: Int64) :: SegOperator{T}
@@ -51,7 +45,12 @@ constructs a [SegOperator](@ref SegOperator) from the angular modes `amd` acting
 * `sgop :: SegOperator{T}` is the resulting segment operator.
 """
 function BuildSegOperator(sgspd :: AbstractSegSpace{T}, sgspf :: AbstractSegSpace{T}, amd :: Union{AngModes, SAngModes, Symbol}, ll :: Int64, secop :: Vector{Int64} ; full_mat :: Bool = false, num_th = FuzzifiED.NumThreads) where T <: Union{Float64, ComplexF64}
-    (amd === :Identity) && (amd = _SegIdentity(sgspd))
+    _SegOperator(:: SegSpace, bsd, bsf, tms) = Operator(bsd, bsf, tms)
+    _SegOperator(:: SSegSpace, bsd, bsf, tms) = SOperator(bsd, bsf, tms)
+    _SegOneAngModes(:: SegSpace) = one(AngModes)
+    _SegOneAngModes(:: SSegSpace) = one(SAngModes)
+
+    (amd === :Identity) && (amd = _SegOneAngModes(sgspd))
     index = 0
     colptr = zeros(Int64, size(sgspd.sec, 2) + 1)
     colptr[1] = 1
@@ -184,3 +183,38 @@ function BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, sgspf :: Vect
     return sgop
 end
 BuildSegOperators(sgspd :: Vector{<:AbstractSegSpace{T}}, cpd :: CoupleDecomps ; p_rng :: Vector{Int64} = collect(eachindex(sgspd)), ident_seg :: Vector{Int64} = collect(1 : maximum(p_rng)), full_mat :: Bool = false, num_th :: Int64 = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd) where T <: Union{Float64, ComplexF64} = BuildSegOperators(sgspd, sgspd, cpd ; p_rng, ident_seg, full_mat, num_th, disp_std)
+
+
+function BuildTransfSegOperator(sgspd :: AbstractSegSpace{T}, sgspf :: AbstractSegSpace{T}, qnf :: Union{QNOffd,SQNOffd}, sec_cnx :: Vector{Int64} ; full_mat :: Bool = false, num_th = FuzzifiED.NumThreads) where T <: Union{Float64, ComplexF64}
+    _SegTransf(:: SegSpace, bsd, bsf, qnf :: QNOffd) = Transf(bsd, bsf, qnf)
+    _SegTransf(:: SSegSpace, bsd, bsf, qnf :: SQNOffd ) = STransf(bsd, bsf, qnf)
+
+    colptr = collect(1 : length(sec_cnx) + 1)
+    rowid = sec_cnx
+    elmat = Matrix{Matrix{T}}[]
+    modul = sgspd.sec_modul
+
+    for j in axes(sgspd.sec, 2)
+        i = sec_cnx[j]
+        std = sgspd.sts[j]
+        stf = sgspf.sts[i]
+        trs = _SegTransf(sgspd, sgspd.bs[j], sgspf.bs[i], qnf)
+        hmt_block = stf' * *(trs, std ; num_th)
+
+        hmt_mat = Matrix{Matrix{T}}(undef, length(sgspf.l_rng[i]), length(sgspd.l_rng[j]))
+        for jl in eachindex(sgspd.l_rng[j])
+            ld = sgspd.l_rng[j][jl]
+            rngj = (sgspd.ptr_st[j][jl] + 1 : sgspd.ptr_st[j][jl + 1]) .- sgspd.ptr_st[j][1]
+            for il in eachindex(sgspf.l_rng[i])
+                lf = sgspf.l_rng[i][il]
+                ld == lf || continue 
+                rngi = (sgspf.ptr_st[i][il] + 1 : sgspf.ptr_st[i][il + 1]) .- sgspf.ptr_st[i][1]
+                hmt_mat[il, jl] = hmt_block[rngi, rngj] * √(ld+1)
+            end
+        end
+        push!(elmat, hmt_mat)
+    end
+
+    return SegOperator{T}(colptr, rowid, elmat)
+end
+BuildTransfSegOperator(sgspd :: AbstractSegSpace{T}, qnf :: Union{QNOffd}, sec_cnx :: Vector{Int64} ; num_th = FuzzifiED.NumThreads) where T <: Union{Float64, ComplexF64} = BuildTransfSegOperator(sgspd, sgspd, qnf, sec_cnx ; num_th)
