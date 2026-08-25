@@ -338,7 +338,7 @@ end
 
 
 """
-    GetEigensystem(cpop :: CompOperator{T}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{T}, full_mat :: Bool, kwargs...) :: Tuple{Vector{T}, Matrix{T}}
+    GetEigensystem(cpop :: CompOperator{T}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{T}, full_mat :: Bool, proj_sym :: Function, num_th :: Int64, kwargs...) :: Tuple{Vector{T}, Matrix{T}}
 
 computes the lowest `nst` eigen-values and eigen-states of the composite operator `cpop` through `KrylovKit.eigsolve`. 
 
