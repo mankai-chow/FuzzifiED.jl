@@ -40,6 +40,7 @@ Alias for `Vector{CoupleDecomp}`, representing a full operator as a list of sing
 const CoupleDecomps = Vector{CoupleDecomp}
 
 
+
 """
     CoupleDecomps(amd :: Vector, ch :: Vector{Matrix{Int64}}, coeff :: Vector{<:Number}, sec :: Matrix{Int64}) :: CoupleDecomps
 
@@ -66,6 +67,8 @@ function CoupleDecomps(amd :: Vector, ch :: Vector{Matrix{Int64}}, coeff :: Vect
     return CoupleDecomp[ CoupleDecomp(amd1, ch[i], ph * coeff[i], sec) for i in eachindex(ch) ]
 end
 
+
+Base.one(CoupleDecomps, np :: Int64, nsec :: Int64) = CoupleDecomps([ :Identity for _ = 1 : np], [zeros(Int64, 2, np)], [ComplexF64(1)], zeros(Int64, nsec, np))
 
 """
     cpd1 + cpd2 :: CoupleDecomps
