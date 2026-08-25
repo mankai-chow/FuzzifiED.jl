@@ -10,7 +10,7 @@ using HDF5
 ```
 A typical file operation process looks like
 ```julia
-h5open(file_name, "cw")
+f = h5open(file_name, "cw")
 # include the file name as a string 
 # Modes : "cw" for write and "r" for read
 ...

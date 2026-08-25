@@ -13,7 +13,7 @@
 
 #### Version 1.2.4 (4th August 2026)
 
-- Fix bug in generating SparseMatrixCSC. (We acknowledge Matthew Yusef for his contribution.)
+- Fix bug in generating SparseMatrixCSC. (We acknowledge Matthew Yusuf for his contribution.)
 - Improve generating matrix from OpMat.
 - Change the cut-off for SimplifyTerms to 1E-14.
 - Fix angular-momentum bound in observable multiplication. 
