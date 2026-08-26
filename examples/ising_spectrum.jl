@@ -38,7 +38,7 @@ for l in 0 : 2, Z = 0 : 1
     nst = 10 - l
     enrg, st = GetEigensystem(cpop_hmt, nst ; issymmetric = true)
     for i in eachindex(enrg)
-        push!(result, [enrg[i] / √(2l + 1), l, Z])
+        push!(result, [enrg[i], l, Z])
     end
 end
 

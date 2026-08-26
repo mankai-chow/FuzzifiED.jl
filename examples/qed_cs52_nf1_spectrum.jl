@@ -76,7 +76,7 @@ for q = -1 : 1, l = 0 : 2
     nst = 10 - abs(q) - l
     enrg, st = GetEigensystem(cpop_hmt, nst ; issymmetric = true)
     for i in eachindex(enrg)
-        push!(result, [enrg[i] / √(2l + 1), l, q])
+        push!(result, [enrg[i], l, q])
     end
 end
  

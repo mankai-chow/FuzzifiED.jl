@@ -110,14 +110,14 @@ _E. g._, for the Ising interaction, we take $\Phi_1(\mathbf{r})=n_\uparrow(\math
 Having obtained the decomposed Hamiltonian, we first calculate the matrix elements of the segment operator $[H_{d,p}]_{l_d}$. By Wigner-Eckart theorem, the matrix elements with different $L^z$-numbers are connected through a $3j$-symbol. Omitting the irrelevant indices, 
 ```math
     \langle l'm'|[\Phi]_{LM}|lm\rangle
-    =(-1)^{l'-m'}\begin{pmatrix}l'&l&l\\-m'&m&m\end{pmatrix}\langle l'\|[\Phi]_L\|l\rangle.
+    =\langle lm, LM|l'm'\rangle\langle l'\|[\Phi]_L\|l\rangle.
 ```
 Here, $\langle l'\|[\Phi]_L\|l\rangle$ is independent of the choice of states $m,m'$ in the multiplet and is called the _reduced matrix element_. To calculate the reduced matrix of the segment operator, we need only pick one representative state from each multiplet in the segment Hilber space. We typically pick the representative state as $m'=M=m=0$ except when the $3j$-symbols vanish, _i. e._ when $l'+L+l\in 2\mathbb{Z}+1$, in which cases we pick $m=1$ instead.
 
 We now assemble the segment operator into the composite operator acting on the full Hilbert space. This involves re-coupling through the $9j$-symbol.
 ```math
     \langle(l_1'l_2')l'\|[\Phi_{1,L_1}\otimes\Phi_{2,L_2}]_L\|(l_1 l_2)l\rangle
-    =\sqrt{(2l+1)(2l'+1)(2L+1)}\begin{Bmatrix}l_1&l_2&l\\L_1&L_2&L\\l_1'&l_2'&l'\end{Bmatrix}
+    =\sqrt{(2l+1)(2L+1)(2l'_1+1)(2l'_2+1)}\begin{Bmatrix}l_1&l_2&l\\L_1&L_2&L\\l_1'&l_2'&l'\end{Bmatrix}
     \langle l_1'\|\Phi_{1,L_1}\|l_1\rangle\,\langle l_2'\|\Phi_{2,L_2}\|l_2\rangle .
 ```
 Note that when exchanging $|l_1\rangle$ and $\Phi_2$, a factor related to fermion parity may arise. 
@@ -144,7 +144,7 @@ Here we use $\{L\}$ as a short-hand notation for the coupling channel. The coeff
 where $s_{1\cdots p}=s_1+\cdots+s_p$. To calculate the matrix element, each re-coupling produces a $9j$-symbol, so the final 
 ```math
     \langle \{l'\}\|\Phi_{\{L\}}\|\{l\}\rangle
-    =\prod_{p=2}^{N_p}\left[\sqrt{(2l_{1\cdots p}+1)(2k_{1\cdots p}+1)(2l'_{1\cdots p}+1)}
-    \begin{Bmatrix}l_{1\cdots p-1}&l_p&l_{1\cdots p}\\k_{1\cdots p-1}&L_p&L_{1\cdots p}\\L'_{1\cdots p-1}&l'_p&l'_{1\cdots p}\end{Bmatrix}\right]
+    =\prod_{p=2}^{N_p}\left[\sqrt{(2l_{1\cdots p}+1)(2k_{1\cdots p}+1)(2l'_{1\cdots (p-1)}+1)(2l'_p+1)}
+    \begin{Bmatrix}l_{1\cdots(p-1)}&l_p&l_{1\cdots p}\\L_{1\cdots(p-1)}&L_p&L_{1\cdots p}\\l'_{1\cdots(p-1)}&l'_p&l'_{1\cdots p}\end{Bmatrix}\right]
     \prod_{p=1}^{N_p}\langle l'_p\|\Phi_{p,L_p}\|l_p\rangle ,
 ```

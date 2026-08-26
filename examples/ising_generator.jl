@@ -34,7 +34,6 @@ enrg0, st0 = GetEigensystem(cpop_hmt0, 5 ; issymmetric = true)
 cpsp1 = BuildCompSpace([sgsp, sgsp], sec_tot, 2)
 cpop_hmt1 = BuildCompOperator(cpsp1, cpd_hmt, sgop_hmt)
 enrg1, st1 = GetEigensystem(cpop_hmt1, 3 ; issymmetric = true)
-enrg1 ./= √3
 
 display(enrg0)
 display(enrg1)

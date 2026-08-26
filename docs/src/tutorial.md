@@ -153,11 +153,10 @@ for l in 0 : 2
     cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
     enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
     for i in eachindex(enrg)
-        push!(result, [enrg[i] / √(2l + 1), l])
+        push!(result, [enrg[i], l])
     end
 end
 ```
-_N. b._, [`GetEigensystem`](@ref) returns the _reduced_ matrix elements $\langle l\|H\|l\rangle$ which differs from physical energies by a factor $\sqrt{2l+1}$ from a $3j$-symbol.
 
 
 ## List of Examples

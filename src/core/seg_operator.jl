@@ -102,13 +102,15 @@ function BuildSegOperator(sgspd :: AbstractSegSpace{T}, sgspf :: AbstractSegSpac
                     lf = sgspf.l_rng[i][il]
                     (ll < abs(ld - lf) || ll > ld + lf) && continue 
                     rngi = (sgspf.ptr_st[i][il] + 1 : sgspf.ptr_st[i][il + 1]) .- sgspf.ptr_st[i][1]
-                    fac3j = wigner3j(lf/2, ll/2, ld/2, -mf/2, mm/2, md/2)
-                    ((lf - mf) % 4 == 2) && (fac3j = -fac3j)
+                    fac3j = clebschgordan(ld/2, md/2, ll/2, mm/2, lf/2)
+                    #fac3j = clebschgordan(ld/2, md/2, ll/2, mm/2, lf/2)
+                    #((lf - mf) % 4 == 2) && (fac3j = -fac3j)
                     if (fac3j ≠ 0) 
                         hmt_mat[il, jl] = hmt_block[rngi, rngj] / fac3j
                     else
-                        fac3j1 = wigner3j(lf/2, ll/2, ld/2, -mf/2, mm/2 - 1, md/2 + 1)
-                        ((lf - mf) % 4 == 2) && (fac3j1 = -fac3j1)
+                        fac3j1 = clebschgordan(ld/2, md/2 + 1, ll/2, mm/2 - 1, lf/2)
+                        #fac3j1 = wigner3j(lf/2, ll/2, ld/2, -mf/2, mm/2 - 1, md/2 + 1)
+                        #((lf - mf) % 4 == 2) && (fac3j1 = -fac3j1)
                         hmt_mat[il, jl] = hmt_block1[rngi, rngj] / √(ld/2 * (ld/2 + 1)) / fac3j1
                     end
                 end
@@ -209,7 +211,7 @@ function BuildTransfSegOperator(sgspd :: AbstractSegSpace{T}, sgspf :: AbstractS
                 lf = sgspf.l_rng[i][il]
                 ld == lf || continue 
                 rngi = (sgspf.ptr_st[i][il] + 1 : sgspf.ptr_st[i][il + 1]) .- sgspf.ptr_st[i][1]
-                hmt_mat[il, jl] = hmt_block[rngi, rngj] * √(ld+1)
+                hmt_mat[il, jl] = hmt_block[rngi, rngj]
             end
         end
         push!(elmat, hmt_mat)

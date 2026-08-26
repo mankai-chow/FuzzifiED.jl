@@ -55,8 +55,8 @@ for is = 1 : 3, js = is : 3
         cpop_c2 = BuildCompOperator(cpsp, cpd_c2, sgop_c2)
         enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
         for i in eachindex(enrg)
-            c2_val = st[:, i]' * (cpop_c2 * st[:, i]) / √(2l + 1)
-            push!(result, [enrg[i] / √(2l + 1), l, c2_val, si, sj])
+            c2_val = st[:, i]' * (cpop_c2 * st[:, i])
+            push!(result, [enrg[i], l, c2_val, si, sj])
         end
     end
 end

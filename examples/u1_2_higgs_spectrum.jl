@@ -69,7 +69,7 @@ for is in eachindex(ss)
         cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
         enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
         for i in eachindex(enrg)
-            push!(result, [enrg[i] / √(2l + 1), l, s])
+            push!(result, [enrg[i], l, s])
         end
     end
 end

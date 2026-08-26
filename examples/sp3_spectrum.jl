@@ -54,8 +54,8 @@ for is in [[1,1,1], [1,1,2], [1,1,3], [1,2,2], [1,2,3], [2,2,2]]
         nst = 10 - sum(si) - l
         enrg, st = GetEigensystem(cpop_hmt, nst ; issymmetric = true)
         for i in eachindex(enrg)
-            c2_val = st[:, i]' * (cpop_c2 * st[:, i]) / √(2l + 1)
-            push!(result, [enrg[i] / √(2l + 1), l, c2_val])
+            c2_val = st[:, i]' * (cpop_c2 * st[:, i])
+            push!(result, [enrg[i], l, c2_val])
         end
     end
 end

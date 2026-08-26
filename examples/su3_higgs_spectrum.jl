@@ -65,7 +65,7 @@ for (sz, c2s) in szc2s
             cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
             enrg, st = GetEigensystem(cpop_hmt, 10 ; issymmetric = true)
             for i in eachindex(enrg)
-                push!(result, [enrg[i] / √(2l + 1), l, c2])
+                push!(result, [enrg[i], l, c2])
             end
         end
     end

@@ -102,7 +102,7 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
                     chi = cpspf.chs[isec][i]
                     fac = 1
                     for p = 2 : np 
-                        fac = fac * float(d9j(chj[2,p-1], chj[1,p], chj[2,p],  chh[2,p-1], chh[1,p], chh[2,p],  chi[2,p-1], chi[1,p], chi[2,p])) * √((chj[2,p]+1) * (chh[2,p]+1) * (chi[2,p]+1))
+                        fac = fac * float(d9j(chj[2,p-1], chj[1,p], chj[2,p],  chh[2,p-1], chh[1,p], chh[2,p],  chi[2,p-1], chi[1,p], chi[2,p])) * √((chj[2,p]+1) * (chh[2,p]+1) * (chi[2,p-1]+1) * (chi[1,p]+1))
                     end
                     (pftot == 1) && (fac = -fac)
                     mat[i, j] = fac
