@@ -209,7 +209,7 @@ function Base.:*(obs1 :: SSphereObs, obs2 :: SSphereObs)
             obs1.get_comp(l21, m21) * obs2.get_comp(l22, m2 - m21)
         for m21 = max(-l21, -l22 + m2) : 2 : min(l21, l22 + m2)])
         for l21 = max(abs(s21), abs(l2 - l22)) : 2 : min(l2m1, l2 + l22)])
-        for l22 = abs(s22) : 2 : l2m2]) : Term[])
+        for l22 = abs(s22) : 2 : l2m2]) : STerm[])
     return SSphereObs(s2, l2m, gc)
 end
 
