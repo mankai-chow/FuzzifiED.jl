@@ -46,7 +46,7 @@ end
 function FuzzifiEDBlockLanczos(no :: Int64, sec :: Vector{Int64}, bs :: Basis, l2c2_mat :: OpMat, nst :: Int64)
     blsz = round(Int64, √nst)
     initvec = KrylovKit.Block([ randn(Float64, l2c2_mat.dimd) for _ in 1 : blsz ])
-    l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x ; num_th = 8), initvec, nst, :SR, BlockLanczos( ; krylovdim = max(nst + 10, nst * 2), maxiter = 10000, verbosity = 1, tol=1E-8))
+    l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x), initvec, nst, :SR, BlockLanczos( ; krylovdim = max(nst + 10, nst * 2), maxiter = 10000, verbosity = 1, tol=1E-8))
     st = stack(stvec)
     return l2c2_val, st
 end
