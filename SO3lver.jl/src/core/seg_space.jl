@@ -1,0 +1,258 @@
+export AbstractSegSpace, SegSpace, BuildSegSpace, BuildSegSpaces
+
+
+"""
+    AbstractSegSpace{T}
+
+Abstract supertype of the single-segment Hilbert spaces. Its concrete subtypes are [SegSpace](@ref SegSpace) for a fermionic segment and [SSegSpace](@ref SSegSpace) for a boson-fermion-mixed segment. Both share the same field layout.
+"""
+abstract type AbstractSegSpace{T <: Union{Float64, ComplexF64}} end
+
+
+"""
+    SegSpace{Float64}
+    SegSpace{ComplexF64}
+
+The mutable type `SegSpace` stores the Hilbert space of a single segment (part) of the system, diagonalized to have definite total angular momentum ``l`` and, facultatively, definite flavour Casimir ``C_2``. 
+```math
+    |QC_2,lm,α⟩
+```
+where ``Q`` is a set of QNDiag, and ``α`` is the multiplicity of the sector. For each multiplet only one state with representative ``m`` is stored. Throughout this type the angular momenta are stored as twice their value (_i. e._ ``2l``, ``2m``) so that they remain integers.
+
+# Fields
+
+* `sec :: Matrix{Int64}` collects the QNDiag sectors that are diagonalized. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the QNDiag and `isec` is the index of the sector.
+* `sec_modul :: Vector{Int64}` collects the moduli of the QNDiags.
+* `l_rng :: Vector{Vector{Int64}}` records, for each sector, the sorted list of the values of ``2l`` that appear. It takes two indices `l_rng[isec][il]`.
+* `l_lookup :: Vector{Dict{Int64, Int64}}` gives, for each sector, a dictionary that maps a value of ``2l`` to its index in `l_rng`.
+* `ptr_st :: Vector{Vector{Int64}}` records, for each sector, the pointers that delimit the block of states of each ``l`` : the states of angular momentum `l_rng[isec][il]` are numbered `ptr_st[isec][il] : ptr_st[isec][il + 1] - 1`, and the states of sector indexed `isec` are numbered `ptr_st[isec][1] : ptr_st[isec][end] - 1`.
+* `bs :: Vector{Basis}` stores, for each sector, the basis of the configurations.
+* `bs1 :: Vector{Basis}` stores, for each ``m=0`` sector, the basis of the auxiliary ``m=1`` sector, used when the ``3j``-symbol of the ``m=0`` component vanishes.
+* `sts :: Vector{Matrix{T}}` stores, for each sector, the states as its columns.
+* `sts1 :: Vector{Matrix{T}}` stores, for each ``m=0`` sector, the ``m=1`` components ``L^+|l0,α⟩=\\sqrt{l(l+1)}|l1,α⟩``, used when the ``3j``-symbol vanishes.
+"""
+mutable struct SegSpace{T <: Union{Float64, ComplexF64}} <: AbstractSegSpace{T}
+    sec :: Matrix{Int64}
+    sec_modul :: Vector{Int64}
+    l_rng :: Vector{Vector{Int64}}
+    l_lookup :: Vector{Dict{Int64, Int64}}
+    ptr_st :: Vector{Vector{Int64}}
+    bs :: Vector{Basis}
+    bs1 :: Vector{Basis}
+    sts :: Vector{Matrix{T}}
+    sts1 :: Vector{Matrix{T}}
+end
+
+function FuzzifiEDBlockLanczos(no :: Int64, sec :: Vector{Int64}, bs :: Basis, l2c2_mat :: OpMat, nst :: Int64)
+    blsz = round(Int64, √nst)
+    initvec = KrylovKit.Block([ randn(Float64, l2c2_mat.dimd) for _ in 1 : blsz ])
+    l2c2_val, stvec, _ = eigsolve(x -> *(l2c2_mat, x), initvec, nst, :SR, BlockLanczos( ; krylovdim = max(nst + 10, nst * 2), maxiter = 10000, verbosity = 1, tol=1E-8))
+    st = stack(stvec)
+    return l2c2_val, st
+end
+
+
+"""
+    BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}[, tms_c2 :: Terms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64, nst_max :: Vector{Int64}, eltype :: Type, num_th :: Int64) :: SegSpace
+
+constructs a [SegSpace](@ref SegSpace) by diagonalizing the total angular momentum ``L^2`` — and, facultatively, the flavour Casimir ``C_2`` — within each diagonal quantum number sector, and organizing the resulting eigen-states into multiplets.
+
+_N. b._, in including the diagonal quantum numbers, it is required that  the first QNDiag must contain fermion parity — it must be odd the when state contains odd number of fermions and even when the state contains even number of fermions, and in many cases the total electric charge satisfies this requirement — and the second QNDiag must be the angular momentum ``2L^z``.
+
+For each sector the operator ``αL^2+C_2`` is built and diagonalized ; the factor ``α`` usually guarantees that the eigen-values of ``L^2`` and ``C_2`` can be disentangled. Only the multiplets whose ``C_2`` lies within `c2_rng` are retained. For sectors with ``m=0`` the ``m=1`` components ``L^+|l,0⟩=\\sqrt{l(l+1)}|l,1⟩`` are also computed and stored.
+
+# Arguments
+
+* `no :: Int64` is the number of orbitals ``N_o`` of the segment.
+* `sec :: Matrix{Int64}` collects the diagonal quantum number (QNDiag) sectors that are diagonalized. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the QNDiag and `isec` is the index of the sector.
+* `qnd :: Vector{QNDiag}` is the list of diagonal quantum numbers `QNDiag`, where the first contains fermion parity, and the second is ``2L^z``.
+* `tms_lzlp :: Tuple{Terms, Terms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLzLpTerms`.
+* `tms_c2 :: Terms` is the flavour Casimir ``C_2``. Facultative, no flavour resolution by default.
+* `c2_rng :: Vector{Float64}` is the list of allowed eigenvalues of ``C_2`` ; a multiplet is kept when its Casimir is within `1E-4` of one of these values. Facultative, `[0.0]` by default.
+* `sec_modul :: Vector{Int64}` collects the moduli of the QNDiags. Facultative, all 1 by default.
+* `l2c2_ratio :: Float64` is the ratio ``α`` that determines ``αL^2+C_2`` to be diagonalized. Facultative, ``\\sqrt{2}`` by default.
+* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0` or exceeds half the total dimension, then ``αL^2+C_2`` is fully diagonalized ; if the number is non-zero, then the lowest `nst_max[i]` eigen-states of ``αL^2+C_2`` will be generated using the method specified by `diag_method`.
+* `diag_method :: Function` is the method that generates the lowest `nst` states. It takes in five arguments : `no :: Int64`, `sec :: Vector{Int64}`, `bs :: SBasis`, `l2c2_mat :: Opmat`, and `nst :: Int64` and returns `l2c2_val :: Vector{Float64}` that specifies the eigen-values and `st :: Matrix{Float64}` that specifies the eigen-states. Facultative, a block Lanczos method by default.
+* `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `ElementType` by default.
+* `num_th :: Int64` is the number of threads. Facultative, `NumThreads` by default.
+* `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
+
+# Output
+
+* `sgsp :: SegSpace` is the resulting [SegSpace](@ref SegSpace) object.
+"""
+function BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms = zero(Terms), c2_rng :: Vector{Float64} = [0.0], sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), diag_method :: Function = FuzzifiEDBlockLanczos, eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd)
+    nsec = size(sec, 2)
+    bs = Vector{Basis}(undef, nsec)
+    bs1 = Vector{Basis}(undef, nsec)
+    sts = Vector{Matrix{eltype}}(undef, nsec)
+    sts1 = Vector{Matrix{eltype}}(undef, nsec)
+    l_rng = [ Int64[] for _ ∈ axes(sec, 2) ]
+    ptr_st = [ Int64[] for _ ∈ axes(sec, 2) ]
+    l_lookup = [ Dict{Int64, Int64}() for _ ∈ axes(sec, 2) ]
+    tms_l2 = GetL2Terms(tms_lzlp)
+    for isec ∈ axes(sec, 2)
+        seci = sec[:, isec]
+        bs[isec] = Basis(Confs(no, seci, qnd ; num_th, disp_std = false))
+
+        l2c2_mat = OpMat(Operator(bs[isec], l2c2_ratio * tms_l2 + tms_c2) ; num_th, disp_std = false)
+        nsti = nst_max[isec]
+        if (nsti == 0 || nsti > bs[isec].dim / 2)
+            l2c2_val, st = eigen(Hermitian(Matrix(l2c2_mat)))
+        else
+            l2c2_val, st = diag_method(no, seci, bs[isec], l2c2_mat, nsti)
+        end
+
+        l2_mat = OpMat(Operator(bs[isec], tms_l2) ; num_th, disp_std = false)
+        l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in axes(st, 2)]
+        c2_val = l2c2_val .- l2c2_ratio .* l2_val
+        l_val = round.(Int64, sqrt.(real.(4 * l2_val) .+ 1) .- 1)
+
+        ls = sort(unique(l_val))
+        index = 1
+        i_rng = Int64[]
+        for l in ls
+            for i = 1 : size(st, 2)
+                (l_val[i] == l) || continue 
+                flag = false
+                for c2 in c2_rng 
+                    abs(c2_val[i] - c2) > 1E-4 && continue 
+                    flag = true 
+                    break
+                end
+                flag || continue
+                if (isempty(l_rng[isec]) || l_rng[isec][end] ≠ l)
+                    push!(l_rng[isec], l)
+                    push!(ptr_st[isec], index)
+                end
+                push!(i_rng, i)
+                index += 1
+            end
+        end
+        for il in eachindex(l_rng[isec])
+            l_lookup[isec][l_rng[isec][il]] = il
+        end
+        push!(ptr_st[isec], index)
+        sts[isec] = st[:, i_rng]
+
+        if (seci[2] == 0)
+            seci1 = deepcopy(seci)
+            seci1[2] = 2
+            bs1[isec] = Basis(Confs(no, seci1, qnd ; num_th, disp_std = false))
+            lp = Operator(bs[isec], bs1[isec], tms_lzlp[2])
+            lp_mat = OpMat(lp ; disp_std = false)
+            sts1[isec] = lp_mat * sts[isec]
+        end
+    end
+    ptr_sec = cumsum([ptr_st[isec][end] - 1 for isec ∈ axes(sec, 2)])
+    for isec = 2 : nsec
+        ptr_st[isec] .+= ptr_sec[isec - 1]
+    end
+    disp_std && @info "FINISH BUILDING SEG SPACE, TOTAL DIMENSION $(ptr_st[end][end] - 1)"
+    return SegSpace{eltype}(sec, sec_modul, l_rng, l_lookup, ptr_st, bs, bs1, sts, sts1)
+end
+BuildSegSpace(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, modul :: Vector{Int64} ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), diag_method :: Function = FuzzifiEDBlockLanczos, eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd) = BuildSegSpace(no, sec, qnd, tms_lzlp, zero(Terms), [0.0], modul ; l2c2_ratio, nst_max, diag_method, eltype, num_th, disp_std)
+
+
+"""
+    BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}[, tms_c2 :: Terms, c2_rng :: Vector{Float64}][, sec_modul :: Vector{Int64}] ; l2c2_ratio :: Float64, nst_max :: Vector{Int64}, eltype :: Type, num_th :: Int64) :: SegSpace
+
+constructs multiple [SegSpaces](@ref SegSpace) simultaneosly with different list of flavour Casimir ``C_2``.
+
+# Arguments
+
+* `no :: Int64` is the number of orbitals ``N_o`` of the segment.
+* `sec :: Matrix{Int64}` collects the QNDiag sectors that are diagonalized. It takes two indices `sec[iqn, isec]` where `iqn` is the index of the QNDiag and `isec` is the index of the sector.
+* `qnd :: Vector{QNDiag}` is the list of diagonal quantum numbers `QNDiag`, where the first contains fermion parity, and the second is ``2L^z``.
+* `tms_lzlp :: Tuple{Terms, Terms}` is the pair of terms ``(L^z,L^+)`` from which ``L^2`` is built, _e. g._, from `GetLzLpTerms`.
+* `tms_c2 :: Terms` is the flavour Casimir ``C_2``.
+* `c2_rng :: Vector{Vector{Float64}}` is a collection of lists of allowed eigenvalues of ``C_2`` ; for each list within, a SegSpace is generated. 
+* `sec_modul :: Vector{Int64}` collects the moduli of the QNDiags. Facultative, all 1 by default.
+* `l2c2_ratio :: Float64` is the ratio ``α`` that determines ``αL^2+C_2`` to be diagonalized. Facultative, ``\\sqrt{2}`` by default.
+* `nst_max :: Vector{Int64}` specifies the maximal number of eigen-states for each sector. For each sector, if the number is `0` or exceeds half the total dimension, then ``αL^2+C_2`` is fully diagonalized ; if the number is non-zero, then the lowest `nst_max[i]` eigen-states of ``αL^2+C_2`` will be generated using the method specified by `diag_method`.
+* `diag_method :: Function` is the method that generates the lowest `nst` states. It takes in five arguments : `no :: Int64`, `sec :: Vector{Int64}`, `bs :: SBasis`, `l2c2_mat :: Opmat`, and `nst :: Int64` and returns `l2c2_val :: Vector{Float64}` that specifies the eigen-values and `st :: Matrix{Float64}` that specifies the eigen-states. Facultative, a block Lanczos method by default.
+* `eltype :: Type` is the type of the matrix elements, either `Float64` or `ComplexF64`. Facultative, `ElementType` by default.
+* `num_th :: Int64` is the number of threads. Facultative, `NumThreads` by default.
+* `disp_std :: Bool`, whether or not the log shall be displayed. Facultative, `!SilentStd` by default. 
+
+# Output
+
+* `sgsp :: SegSpace` is the resulting [SegSpace](@ref SegSpace) object.
+"""
+function BuildSegSpaces(no :: Int64, sec :: Matrix{Int64}, qnd :: Vector{QNDiag}, tms_lzlp :: Tuple{Terms, Terms}, tms_c2 :: Terms, c2_rng :: Vector{Vector{Float64}}, sec_modul :: Vector{Int64} = ones(Int64, size(sec, 1)) ; l2c2_ratio :: Float64 = √2, nst_max :: Vector{Int64} = zeros(Int64, size(sec, 2)), diag_method :: Function = FuzzifiEDBlockLanczos, eltype = FuzzifiED.ElementType, num_th = FuzzifiED.NumThreads, disp_std = !FuzzifiED.SilentStd)
+    nsec = size(sec, 2)
+    bs = Vector{Basis}(undef, nsec)
+    bs1 = Vector{Basis}(undef, nsec)
+    sts = [ Vector{Matrix{eltype}}(undef, nsec) for _ in c2_rng ]
+    sts1 = [ Vector{Matrix{eltype}}(undef, nsec) for _ in c2_rng ]
+    l_rng = [ [ Int64[] for _ ∈ axes(sec, 2) ] for _ in c2_rng ]
+    ptr_st = [ [ Int64[] for _ ∈ axes(sec, 2) ] for _ in c2_rng ]
+    l_lookup = [ [ Dict{Int64, Int64}() for _ ∈ axes(sec, 2) ] for _ in c2_rng ]
+    tms_l2 = GetL2Terms(tms_lzlp)
+    for isec ∈ axes(sec, 2)
+        seci = sec[:, isec]
+        bs[isec] = Basis(Confs(no, seci, qnd ; num_th, disp_std = false))
+
+        l2c2_mat = OpMat(Operator(bs[isec], l2c2_ratio * tms_l2 + tms_c2) ; num_th, disp_std = false)
+        nsti = nst_max[isec]
+        if (nsti == 0 || nsti ≥ bs[isec].dim)
+            l2c2_val, st = eigen(Hermitian(Matrix(l2c2_mat)))
+        else
+            l2c2_val, st = diag_method(no, seci, bs[isec], l2c2_mat, nsti)
+        end
+
+        l2_mat = OpMat(Operator(bs[isec], tms_l2) ; num_th, disp_std = false)
+        l2_val = [ st[:, i]' * l2_mat * st[:, i] for i in axes(st, 2)]
+        c2_val = l2c2_val .- l2c2_ratio .* l2_val
+        l_val = round.(Int64, sqrt.(real.(4 * l2_val) .+ 1) .- 1)
+
+        ls = sort(unique(l_val))
+        index = ones(Int64, length(c2_rng))
+        i_rng = [ Int64[] for _ in c2_rng ]
+        for ic2 in eachindex(c2_rng)
+            for l in ls
+                for i = 1 : size(st, 2)
+                    (l_val[i] == l) || continue 
+                    flag = false
+                    for c2 in c2_rng[ic2]
+                        abs(c2_val[i] - c2) > 1E-4 && continue 
+                        flag = true 
+                        break
+                    end
+                    flag || continue
+                    if (isempty(l_rng[ic2][isec]) || l_rng[ic2][isec][end] ≠ l)
+                        push!(l_rng[ic2][isec], l)
+                        push!(ptr_st[ic2][isec], index[ic2])
+                    end
+                    push!(i_rng[ic2], i)
+                    index[ic2] += 1
+                end
+            end
+            for il in eachindex(l_rng[ic2][isec])
+                l_lookup[ic2][isec][l_rng[ic2][isec][il]] = il
+            end
+            push!(ptr_st[ic2][isec], index[ic2])
+            sts[ic2][isec] = st[:, i_rng[ic2]]
+        end
+
+        if (seci[2] == 0)
+            seci1 = deepcopy(seci)
+            seci1[2] = 2
+            bs1[isec] = Basis(Confs(no, seci1, qnd ; num_th, disp_std = false))
+            lp = Operator(bs[isec], bs1[isec], tms_lzlp[2])
+            lp_mat = OpMat(lp ; disp_std = false)
+            for ic2 in eachindex(c2_rng)
+                sts1[ic2][isec] = lp_mat * sts[ic2][isec]
+            end
+        end
+    end
+    for ic2 in eachindex(c2_rng)
+        ptr_sec = cumsum([ptr_st[ic2][isec][end] - 1 for isec ∈ axes(sec, 2)])
+        for isec = 2 : nsec
+            ptr_st[ic2][isec] .+= ptr_sec[isec - 1]
+        end
+    end
+    disp_std && @info "FINISH BUILDING $(length(c2_rng)) SEG SPACES, TOTAL DIMENSIONS $([ptr_st[ic2][end][end] - 1 for ic2 in eachindex(c2_rng)])"
+    sgsp = [ SegSpace{eltype}(sec, sec_modul, l_rng[ic2], l_lookup[ic2], ptr_st[ic2], bs, bs1, sts[ic2], sts1[ic2]) for ic2 in eachindex(c2_rng)]
+    return sgsp
+end
