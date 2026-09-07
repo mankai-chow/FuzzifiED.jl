@@ -2,7 +2,7 @@
 # It uses a tri-partition, each with two flavours and a SU(2) symmetry.
 
 using FuzzifiED
-using SO3lver
+using FuzzifiED.SO3lver
 using LinearAlgebra
 FuzzifiED.ElementType = Float64
 ≈(x, y) = abs(x - y) < eps(Float32)

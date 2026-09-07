@@ -27,6 +27,12 @@ makedocs(sitename = "FuzzifiED.jl",
         "ITensor Extension" => "itensors.md",
         "Other Extensions" => "extension.md", 
         "Fuzzifino" => "fuzzifino.md",
+        "SO(3)lver" => [
+            "Home" => "index.md", 
+            "Formalism" => "formalism.md",
+            "Tutorial" => "tutorial.md",
+            "Interface" => "interface.md"
+        ], 
         "Fuzzy Manifolds" => "manifolds.md",
         "Jack Tool Kit" => "jack.md",
         "Releases" => "releases.md"],

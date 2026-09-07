@@ -1,3 +1,5 @@
+export SO3lver
+
 module SO3lver
 
 using FuzzifiED

@@ -1,5 +1,5 @@
 using FuzzifiED
-using SO3lver
+using FuzzifiED.SO3lver
 FuzzifiED.ElementType = Float64
 
 # Set-up

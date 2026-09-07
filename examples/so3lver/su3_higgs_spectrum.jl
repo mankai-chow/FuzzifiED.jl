@@ -3,7 +3,7 @@
 
 using FuzzifiED
 using FuzzifiED.JackToolkit
-using SO3lver
+using FuzzifiED.SO3lver
 using LinearAlgebra
 FuzzifiED.ElementType = Float64
 

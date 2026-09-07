@@ -2,7 +2,7 @@
 
 using FuzzifiED
 using FuzzifiED.Fuzzifino
-using SO3lver
+using FuzzifiED.SO3lver
 FuzzifiED.ElementType = Float64
 
 nmc = 5

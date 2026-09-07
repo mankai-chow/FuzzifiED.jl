@@ -15,7 +15,7 @@ The examples can be found in the directory [`examples`](https://github.com/Fuzzi
 We begin by loading the packages and set the real element type. 
 ```julia
 using FuzzifiED
-using SO3lver
+using FuzzifiED.SO3lver
 FuzzifiED.ElementType = Float64
 ```
 

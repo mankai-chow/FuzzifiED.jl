@@ -24,7 +24,7 @@ Pkg.add(url="https://github.com/FuzzifiED/SO3lver.jl")
 To use the package, include at the start of the Julia script
 ```julia
 using FuzzifiED
-using SO3lver
+using FuzzifiED.SO3lver
 ```
 
 ## Outline 

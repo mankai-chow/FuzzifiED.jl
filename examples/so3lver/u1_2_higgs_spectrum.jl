@@ -3,7 +3,7 @@
 using FuzzifiED
 using FuzzifiED.Fuzzifino
 using FuzzifiED.JackToolkit
-using SO3lver
+using FuzzifiED.SO3lver
 FuzzifiED.ElementType = Float64
 
 function GetLaughlin12Jack(nof :: Int64, nob :: Int64, sec :: Vector{Int64}, bs :: SBasis, l2c2_mat :: OpMat, nst :: Int64)
