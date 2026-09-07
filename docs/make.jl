@@ -15,6 +15,7 @@ using HDF5
 using KrylovKit
 using FuzzifiED
 using FuzzifiED.Fuzzifino
+using FuzzifiED.SO3lver
 using FuzzifiED.FuzzyManifolds
 using FuzzifiED.JackToolkit
 
@@ -28,10 +29,10 @@ makedocs(sitename = "FuzzifiED.jl",
         "Other Extensions" => "extension.md", 
         "Fuzzifino" => "fuzzifino.md",
         "SO(3)lver" => [
-            "Home" => "index.md", 
-            "Formalism" => "formalism.md",
-            "Tutorial" => "tutorial.md",
-            "Interface" => "interface.md"
+            "Index" => "so3lver/index.md", 
+            "Formalism" => "so3lver/formalism.md",
+            "Tutorial" => "so3lver/tutorial.md",
+            "Interface" => "so3lver/interface.md"
         ], 
         "Fuzzy Manifolds" => "manifolds.md",
         "Jack Tool Kit" => "jack.md",

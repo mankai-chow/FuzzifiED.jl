@@ -1,6 +1,6 @@
-# SO₃lver Explained in a Tutorial
+# SO(3)lver Explained in a Tutorial
 
-To demonstrate the usage of SO₃lver interfaces, in this section, we use a tutorial that calculates the eigen-states in the $l=0$ sector and the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$ for the Ising model on the fuzzy sphere. The tutorial can be found at [`tutorial_ising.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/tutorial_ising.jl). In this tutorial, the flavour $\mathbb{Z}_2$ is not resolved. A version resolving the $\mathbb{Z}_2$ is [given](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/ising_spectrum.jl) by using the $XX-Z$ basis.
+To demonstrate the usage of SO(3)lver interfaces, in this section, we use a tutorial that calculates the eigen-states in the $l=0$ sector and the OPE coefficient $f_{\sigma\sigma\epsilon}=\langle \sigma|n^z_{00}|\epsilon\rangle/\langle \sigma|n^z_{00}|0\rangle$ for the Ising model on the fuzzy sphere. The tutorial can be found at [`tutorial_ising.jl`](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/tutorial_ising.jl). In this tutorial, the flavour $\mathbb{Z}_2$ is not resolved. A version resolving the $\mathbb{Z}_2$ is [given](https://github.com/FuzzifiED/SO3lver.jl/blob/main/examples/ising_spectrum.jl) by using the $XX-Z$ basis.
 
 Practically, the ED calculation can be divided into 3 steps.
 
@@ -8,7 +8,7 @@ Practically, the ED calculation can be divided into 3 steps.
 * Build the segment operators of the decompositions and assemble them into the composite operator for the Hamiltonian,
 * Find the lowest eigen-states and make measurements.
 
-The examples can be found in the directory [`examples`](https://github.com/FuzzifiED/SO3lver.jl/tree/main/examples). We also append [a list of given examples](@ref List-of-Examples) at the end of the page. 
+The examples can be found in the directory [`examples`](https://github.com/FuzzifiED/SO3lver.jl/tree/main/examples). We also append [a list of given examples](@ref Examples-Using-SO(3)lver) at the end of the page. 
 
 ## Set-up
 
@@ -67,7 +67,7 @@ _N. b._, throughout the package, angular momenta are stored or specified by twic
 
 ## Record the Coupling Decompositions
 
-Having built the segment and composite spaces, we now record the decomposed Hamiltonian. In SO₃lver, an operator is written as a sum of decomposed coupling channels. Each channel takes the form of 
+Having built the segment and composite spaces, we now record the decomposed Hamiltonian. In SO(3)lver, an operator is written as a sum of decomposed coupling channels. Each channel takes the form of 
 ```math
     \Phi_L=\Big[\cdots[[\Phi_1]_{L_1}[\Phi_2]_{L_2}]_{L_{12}}\cdots [\Phi_p]_{L_p}\big]_{L_{1\cdots p}} \cdots [\Phi_{N_p}]_{L_{N_p}}\Big]_L
 ```
@@ -159,7 +159,7 @@ end
 ```
 
 
-## List of Examples
+## Examples Using SO(3)lver
 
 We offer a series of examples that reproduce various fuzzy-sphere calculations with the full $\mathrm{SO}(3)$ symmetry resolved.
 

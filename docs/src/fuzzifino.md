@@ -136,7 +136,7 @@ SSphereObs
 SAngModes
 ```
 
-## Related Examples
+## Examples Using Fuzzifino
 
 * [`ising_frac_boson.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/ising_frac_boson.jl) calculates the spectrum of 3d Ising model on the fuzzy sphere for bosons at fractional filling ``ν = 1/2``. This example reproduces Figure 12a,b in [Voinea 2024](@ref Voinea2024).
 * [`su2_1_scal_spectrum.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/su2_1_scal_spectrum.jl) calculates the spectrum of the $\mathrm{SU}(2)_1$ coupled to a complex scalar Chern-Simons matter CFT on the fuzzy sphere. This example reproduces Figs. 2d and 3 in [Zhou 2025Jul](@ref Zhou2025Jul).
