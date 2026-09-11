@@ -1,5 +1,13 @@
 # Release notes 
 
+## Version 2.x
+
+### Version 2.0
+
+#### Version 2.0.0 (10th September 2026)
+
+- Add SO(3)lver for the $\mathrm{SO}(3)$ resolving ED
+
 ## Version 1.x
 
 ### Version 1.3 
