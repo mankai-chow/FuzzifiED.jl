@@ -24,6 +24,8 @@ include("models/ang_modes.jl")
 include("fuzzifino/fuzzifino.jl")
 include("manifolds/manifolds.jl")
 include("jack/jack.jl")
+include("so3lver/so3lver.jl")
+include("ext/krylovkit.jl")
 
 export GetSites, GetQNDiags, TruncateQNDiag
 function GetSites end
@@ -35,9 +37,6 @@ function SweepOne end
 function EasySweep end
 function GetMPOSites end
 function GetMPO end
-
-export GetEigensystemKrylov
-function GetEigensystemKrylov end
 
 export GetEigensystemCuda
 function GetEigensystemCuda end

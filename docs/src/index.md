@@ -1,6 +1,6 @@
 # FuzzifiED.jl 
 
-[![Version](https://img.shields.io/badge/Version-1.3.0-orange)](https://juliahub.com/ui/Packages/General/FuzzifiED/1.3.0)
+[![Version](https://img.shields.io/badge/Version-2.0.0-orange)](https://juliahub.com/ui/Packages/General/FuzzifiED/2.0.0)
 [![Documentation online](https://img.shields.io/badge/Documentation-Online-8e8eff)](https://docs.fuzzified.world/)
 [![Documentation PDF](https://img.shields.io/badge/Documentation-PDF-8e8eff)](https://docs.fuzzified.world/assets/FuzzifiED_Documentation.pdf)
 [![Source GitHub](https://img.shields.io/badge/Source-GitHub-silver)](https://github.com/FuzzifiED/FuzzifiED.jl)
@@ -68,6 +68,7 @@ Pages = [
     "itensors.md",
     "extension.md",
     "fuzzifino.md",
+    "so3lver/index.md",
     "manifolds.md",
     "jack.md",
     "releases.md"
@@ -137,6 +138,7 @@ Pages = [
     "itensors.md",
     "extension.md",
     "fuzzifino.md",
+    "so3lver/interface.md",
     "manifolds.md",
     "jack.md"
 ]

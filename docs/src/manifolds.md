@@ -15,6 +15,6 @@ GetTorusDenIntTerms(nm :: Int64, nf :: Int64, lx :: Number, ps_pot :: Vector{<:N
 GetTorusPairIntTerms(nm :: Int64, nf :: Int64, lx :: Number, ps_pot :: Vector{<:Number}, mat_a :: Matrix{<:Number}, mat_b :: Matrix{<:Number} = Matrix(mat_a'))
 ```
 
-## Related Examples 
+## Examples Using Fuzzy Manifolds
 
 * [`circle_ising.jl`](https://github.com/FuzzifiED/FuzzifiED.jl/blob/main/examples/circle_ising.jl) calculates the spectrum of 2d Ising CFT on a fuzzy thin torus. This example reproduces Figure 4 and Tables I—III in [Han 2025](@ref Han2025)

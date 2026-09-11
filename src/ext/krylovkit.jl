@@ -1,10 +1,5 @@
-module FuzzifiEDKrylovKitExt
-
 using KrylovKit
-using FuzzifiED
-import FuzzifiED: GetEigensystemKrylov
-import FuzzifiED: NumThreads, SilentStd, ElementType, AbstractOperator
-
+export GetEigensystemKrylov
 
 """
     GetEigensystemKrylov(mat :: OpMat{ComplexF64}, nst :: Int64 ; initvec :: Vector{ComplexF64}, num_th :: Int64, disp_std :: Bool, kwargs...) :: Tuple{Vector{ComplexF64}, Matrix{ComplexF64}}
@@ -40,6 +35,4 @@ function GetEigensystemKrylov(op :: AbstractOperator, nst :: Int64, type :: Data
     eigval, eigvec, info = eigsolve(x -> *(op, x ; num_th), initvec, nst, :SR ; tol, krylovdim = ncv, verbosity, kwargs...)
     if (disp_std) print(info) end
     return Vector{type}(eigval), Matrix{type}(hcat(eigvec...))
-end
-
 end
