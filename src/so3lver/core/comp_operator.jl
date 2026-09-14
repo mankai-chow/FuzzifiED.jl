@@ -338,7 +338,7 @@ end
 
 
 """
-    GetEigensystem(cpop :: CompOperator{T}, nst :: Int64 ; tol :: Float64, ncv :: Int64, initvec :: Vector{T}, full_mat :: Bool, proj_sym :: Function, num_th :: Int64, kwargs...) :: Tuple{Vector{T}, Matrix{T}}
+    GetEigensystem(cpop :: CompOperator{T}, nst :: Int64[, alg :: Type{<:KrylovKit.KrylovAlgorithm}] ; tol :: Float64, ncv :: Int64, initvec :: Vector{T}, full_mat :: Bool, proj_sym :: Function, num_th :: Int64, kwargs...) :: Tuple{Vector{T}, Matrix{T}}
 
 computes the lowest `nst` eigen-values and eigen-states of the composite operator `cpop` through `KrylovKit.eigsolve`. 
 
@@ -346,6 +346,7 @@ computes the lowest `nst` eigen-values and eigen-states of the composite operato
 
 * `cpop :: CompOperator{T}` is the composite operator (usually the Hamiltonian).
 * `nst :: Int64` is the number of eigen-states to compute.
+* `alg :: Type{<:KrylovKit.KrylovAlgorithm}`. Facultative. It specifies an algorithm that is directly fed into `KrylovKit.eigsolve`. _E. g._ `LockedLanczos` in the [modified version of KrylovKit].
 * `tol :: Float64` is the tolerance of the eigen-solver. Facultative, `1E-8` by default.
 * `ncv :: Int64` is the dimension of the Krylov subspace. Facultative, `max(2 * nst, nst + 10)` by default.
 * `initvec :: Vector{T}` is the initial vector. Facultative, a random vector after projection by default.
