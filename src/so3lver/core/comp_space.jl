@@ -89,7 +89,7 @@ function BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, idsec :: Matrix{I
     return CompSpace{T}(np, nch, dim, ltot, sgsp, idsec, chs, ptr_ch, ptr_st)
 end
 """
-    BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64) :: CompSpace
+    BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64[, qnfac :: Matrix{Int64}]) :: CompSpace
 
 constructs a [CompSpace](@ref CompSpace) from the segment spaces of the parts with total angular momentum `ltot`. For every composite sector it enumerates, through [FindCouplingChannels](@ref FindCouplingChannels), all the ways of coupling the per-part angular momenta into ``l_{\\text{tot}}``, and computes the resulting dimensions and pointers. The composite sectors are found automatically with [ComposeSec](@ref).
 
@@ -98,15 +98,16 @@ constructs a [CompSpace](@ref CompSpace) from the segment spaces of the parts wi
 * `sgsp :: Vector{<:AbstractSegSpace{T}}` is the list of the [AbstractSegSpaces](@ref AbstractSegSpace) of the parts, which may mix fermionic [SegSpace](@ref SegSpace) and bosonic [SSegSpace](@ref SSegSpace).
 * `sec_tot :: Vector{Int64}` the target total diagonal quantum numbers.
 * `ltot :: Int64` is twice the total angular momentum ``2l_{\\text{tot}}``.
+* `qnfac :: Matrix{Int64}` composes the quantum numbers in a factor. It takes two indices `qnfac[iqn, p]`. Facultative, all 1 by default.
 
 # Output
 
 * `cpsp :: CompSpace` is the resulting composite space.
 """
-function BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64 ; disp_std = !FuzzifiED.SilentStd) where T <: Union{Float64, ComplexF64}
+function BuildCompSpace(sgsp :: Vector{<:AbstractSegSpace{T}}, sec_tot :: Vector{Int64}, ltot :: Int64, qnfac :: Matrix{Int64} = ones(Int64, length(sec_tot), length(sgsp)) ; disp_std = !FuzzifiED.SilentStd) where T <: Union{Float64, ComplexF64}
     sec_pt = [ sgspi.sec for sgspi in sgsp]
     modul = sgsp[1].sec_modul
-    idsec = ComposeSec(sec_tot, sec_pt, modul)
+    idsec = ComposeSec(sec_tot, sec_pt, modul, qnfac)
     return BuildCompSpace(sgsp, idsec, ltot ; disp_std)
 end
 
@@ -193,7 +194,7 @@ end
 
 
 """
-    ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Matrix{Int64}}[, modul :: Vector{Int64}]) :: Matrix{Int64}
+    ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Matrix{Int64}}[, modul :: Vector{Int64}, qnfac :: Matrix{Int64}]) :: Matrix{Int64}
 
 finds every combination of segment sectors into the total sector `sec_tot`.
 
@@ -202,15 +203,16 @@ finds every combination of segment sectors into the total sector `sec_tot`.
 * `sec_tot :: Vector{Int64}` is the target total diagonal quantum numbers.
 * `sec_pt :: Vector{Matrix{Int64}}` lists, for each part, the sectors available in that part. It takes three indices `sec_pt[p][iqn, isec]`.
 * `modul :: Vector{Int64}` are the moduli used to match the quantum numbers. Facultative, all ``1`` by default.
+* `qnfac :: Matrix{Int64}` composes the quantum numbers in a factor. It takes two indices `qnfac[iqn, p]`. Facultative, all 1 by default.
 
 # Output
 
 * `idsec_tot :: Matrix{Int64}` is the sorted list of composite sectors, one per column ; each column is a vector of per-part sector indices.
 """
-function ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Matrix{Int64}}, modul :: Vector{Int64} = fill(1, length(sec_tot)))
+function ComposeSec(sec_tot :: Vector{Int64}, sec_pt :: Vector{Matrix{Int64}}, modul :: Vector{Int64} = fill(1, length(sec_tot)), qnfac :: Matrix{Int64} = ones(Int64, length(sec_tot), length(sec_pt)))
     idsec_tot = Vector{Int64}[]
     for isec in Iterators.product(axes.(sec_pt, 2)...)
-        seci_tot = sum([ sec_pt[p][:, isec[p]] for p ∈ eachindex(sec_pt) ])
+        seci_tot = sum([ sec_pt[p][:, isec[p]] .* qnfac[:, p] for p ∈ eachindex(sec_pt) ])
         EquivSec(seci_tot, sec_tot, modul) && push!(idsec_tot, collect(isec))
     end
     idsec_tot = sort(idsec_tot)

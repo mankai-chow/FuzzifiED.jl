@@ -11,11 +11,11 @@ ne = nm
 s = (nm - 1) / 2
 
 qnd_pt = [ 
-    GetNeQNDiag(nm)  GetNeQNDiag(nm) ;
-    GetLz2QNDiag(nm, 1)  GetLz2QNDiag(nm, 1) ;
-    zero(QNDiag, nm, 2)  GetNeQNDiag(nm, 2)
+    GetNeQNDiag(nm),
+    GetLz2QNDiag(nm, 1),
+    GetNeQNDiag(nm, 2)
 ] 
-sec_pt = stack([ [ne1  ne1 ; ((nm + 1) * ne1) % 2  ((nm + 1) * ne1) % 2 ; 0  ne1 % 2 ] for ne1 = 0 : ne])
+sec_pt = stack([ [ne1, ((nm + 1) * ne1) % 2, ne1 % 2] for ne1 = 0 : ne])
 tms_lzlp_pt = GetLzLpTerms(nm, 1) 
 
 c = GetElectronMod(nm, 1, 1)
@@ -27,13 +27,13 @@ cpd_int_1 = CoupleDecomps([ c' * c', c * c], ConvPsPot(s, [0, -1/2])..., [2 -2;0
 cpd_h = SingleSegCouple(2, 1, GetPolTerms(nm, 1), zeros(Int64, 3)) - SingleSegCouple(2, 2, GetPolTerms(nm, 1), zeros(Int64, 3))
 cpd_hmt = 4.75 * cpd_int_0 + cpd_int_1 - 3.16 * cpd_h
 
-sgsp = [ BuildSegSpace(nm, sec_pt[:, p, :], qnd_pt[:, p], tms_lzlp_pt, [1, 1, 2]) for p = 1 : 2]
-sgop_hmt = BuildSegOperators(sgsp, cpd_hmt)
+sgsp = BuildSegSpace(nm, sec_pt, qnd_pt, tms_lzlp_pt, [1, 1, 2])
+sgop_hmt = BuildSegOperators([sgsp, sgsp], cpd_hmt ; ident_seg = [1, 1])
 
 result = []
 for l in 0 : 2, Z = 0 : 1 
     sec_tot = [ne, 0, Z]
-    cpsp = BuildCompSpace(sgsp, sec_tot, 2l)
+    cpsp = BuildCompSpace([sgsp, sgsp], sec_tot, 2l, [1 1 ; 1 1 ; 0 1])
     cpop_hmt = BuildCompOperator(cpsp, cpd_hmt, sgop_hmt)
     nst = 10 - l
     enrg, st = GetEigensystem(cpop_hmt, nst ; issymmetric = true)
