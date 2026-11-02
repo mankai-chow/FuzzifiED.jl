@@ -64,7 +64,7 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
     colptr[1, :] .= 1
     rowid = [ Int64[] for d = 1 : nd ]
     idel = [ Matrix{Int64}(undef, np, 0) for d = 1 : nd]
-    Threads.@threads :greedy for d = 1 : nd 
+    Threads.@threads :dynamic for d = 1 : nd 
         index = 0
         for jsec in axes(cpspd.idsec, 2)
             idsecj = cpspd.idsec[:, jsec]
@@ -85,7 +85,7 @@ function BuildCompOperator(cpspd :: CompSpace{T}, cpspf :: CompSpace{T}, cpd :: 
 
     mat9j = [ Vector{Matrix{Float64}}(undef, colptr[end, d] - 1) for d = 1 : nd ]
     wkcost = [ Vector{Int64}(undef, colptr[end, d] - 1) for d = 1 : nd ]
-    Threads.@threads :greedy for (jsec, d) in collect(Iterators.product(axes(cpspd.idsec, 2), 1 : nd))
+    Threads.@threads :dynamic for (jsec, d) in collect(Iterators.product(axes(cpspd.idsec, 2), 1 : nd))
         idsecj = cpspd.idsec[:, jsec]
         dimj = [ _ChannelDims(cpspd, jsec, j) for j in eachindex(cpspd.chs[jsec]) ]
         for e = colptr[jsec, d] : colptr[jsec + 1, d] - 1
